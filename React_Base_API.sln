@@ -1,0 +1,45 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "react_lawyer.client", "React_Lawyer\react_lawyer.client\react_lawyer.client.esproj", "{3438B8E9-4E51-CAC0-8AB8-AFC36D32C3C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "React_Lawyer.Server", "React_Lawyer\React_Lawyer.Server\React_Lawyer.Server.csproj", "{1B83007A-97C5-4F0C-8B13-0C69CCA5E155}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx", "nginx", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ssl", "ssl", "{F0DEDD37-19FB-4C32-880E-029540A20C19}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logs", "logs", "{5A31252A-A3E4-4D80-B876-92FBBFA3AAF3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "conf.d", "conf.d", "{1B884825-FB2E-4E78-A424-D234171CCB5B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3438B8E9-4E51-CAC0-8AB8-AFC36D32C3C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3438B8E9-4E51-CAC0-8AB8-AFC36D32C3C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3438B8E9-4E51-CAC0-8AB8-AFC36D32C3C2}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3438B8E9-4E51-CAC0-8AB8-AFC36D32C3C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3438B8E9-4E51-CAC0-8AB8-AFC36D32C3C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3438B8E9-4E51-CAC0-8AB8-AFC36D32C3C2}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1B83007A-97C5-4F0C-8B13-0C69CCA5E155}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B83007A-97C5-4F0C-8B13-0C69CCA5E155}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B83007A-97C5-4F0C-8B13-0C69CCA5E155}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B83007A-97C5-4F0C-8B13-0C69CCA5E155}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F0DEDD37-19FB-4C32-880E-029540A20C19} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{5A31252A-A3E4-4D80-B876-92FBBFA3AAF3} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{1B884825-FB2E-4E78-A424-D234171CCB5B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7705D36B-1351-4295-9C84-DBAE3325E379}
+	EndGlobalSection
+EndGlobal
