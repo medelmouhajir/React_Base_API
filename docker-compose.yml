@@ -1,6 +1,85 @@
+version: '3.8'
+
 services:
+  # Backend .NET Core API service
   react_lawyer.server:
-    image: ${DOCKER_REGISTRY-}reactlawyerserver
     build:
       context: .
       dockerfile: React_Lawyer/React_Lawyer.Server/Dockerfile
+    container_name: react-lawyer-api
+    ports:
+      - "7068:8081"  # HTTPS port
+      - "5267:8080"  # HTTP port
+    volumes:
+      - ./React_Lawyer/React_Lawyer.Server:/app/server
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      # Enable debugging
+      - DOTNET_EnableDiagnostics=1
+    depends_on:
+      - db
+    networks:
+      - react-lawyer-network
+
+  # Frontend React client service
+  react_lawyer.client:
+    build:
+      context: ./React_Lawyer/react_lawyer.client
+      dockerfile: Dockerfile
+    container_name: react-lawyer-client
+    ports:
+      - "54440:54440"
+    volumes:
+      - ./React_Lawyer/react_lawyer.client:/app
+      - /app/node_modules
+    environment:
+      - DEV_SERVER_PORT=54440
+      - ASPNETCORE_HTTPS_PORT=8081
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+    depends_on:
+      - react_lawyer.server
+    networks:
+      - react-lawyer-network
+
+  # Database service (PostgreSQL as an example)
+  db:
+    image: postgres:15
+    container_name: react-lawyer-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: reactlawyerdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - react-lawyer-network
+
+  # Nginx reverse proxy (optional but helpful)
+  nginx:
+    image: nginx:latest
+    container_name: react-lawyer-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - react_lawyer.server
+      - react_lawyer.client
+    networks:
+      - react-lawyer-network
+
+networks:
+  react-lawyer-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
