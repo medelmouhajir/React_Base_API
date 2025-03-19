@@ -1,0 +1,6 @@
+services:
+  react_lawyer.server:
+    image: ${DOCKER_REGISTRY-}reactlawyerserver
+    build:
+      context: .
+      dockerfile: React_Lawyer/React_Lawyer.Server/Dockerfile
