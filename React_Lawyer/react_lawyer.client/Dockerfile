@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install MUI dependencies first
-RUN npm install @emotion/react @emotion/styled @mui/material @mui/icons-material
+RUN npm install workbox-window vite-plugin-pwa workbox-core workbox-precaching workbox-routing workbox-strategies --save-dev
 
 # Install dependencies
 RUN npm ci

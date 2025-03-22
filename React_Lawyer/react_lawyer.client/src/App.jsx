@@ -17,7 +17,9 @@ import {
     ListItemIcon,
     ListItemText,
     CircularProgress,
-    Paper
+    Paper,
+    Snackbar,
+    Alert
 } from '@mui/material';
 import {
     Menu as MenuIcon,
@@ -30,9 +32,12 @@ import {
     Receipt as ReceiptIcon,
     Notifications as NotificationsIcon,
     Settings as SettingsIcon,
-    Logout as LogoutIcon
+    Logout as LogoutIcon,
+    WifiOff as WifiOffIcon
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import useOnlineStatus from './hooks/useOnlineStatus';
+import OfflinePage from './components/OfflinePage';
 
 // Create theme with primary and secondary colors appropriate for a law firm
 const theme = createTheme({
@@ -108,6 +113,15 @@ function App() {
     const [open, setOpen] = useState(true);
     const [loading, setLoading] = useState(true);
     const [forecasts, setForecasts] = useState([]);
+    const isOnline = useOnlineStatus();
+    const [showOfflineMessage, setShowOfflineMessage] = useState(false);
+
+    // Show offline notification when going offline
+    useEffect(() => {
+        if (!isOnline) {
+            setShowOfflineMessage(true);
+        }
+    }, [isOnline]);
 
     // Toggle drawer
     const toggleDrawer = () => {
@@ -125,9 +139,22 @@ function App() {
             if (response.ok) {
                 const data = await response.json();
                 setForecasts(data);
+                // Store in local storage for offline access
+                localStorage.setItem('weatherData', JSON.stringify(data));
+            } else if (!isOnline) {
+                // Try to load from cache if offline
+                const cachedData = localStorage.getItem('weatherData');
+                if (cachedData) {
+                    setForecasts(JSON.parse(cachedData));
+                }
             }
         } catch (error) {
             console.error("Failed to fetch weather data:", error);
+            // Try to load from cache if fetch fails
+            const cachedData = localStorage.getItem('weatherData');
+            if (cachedData) {
+                setForecasts(JSON.parse(cachedData));
+            }
         } finally {
             setLoading(false);
         }
@@ -148,6 +175,16 @@ function App() {
         { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
         { text: 'Logout', icon: <LogoutIcon />, path: '/logout' },
     ];
+
+    // If completely offline and no cached data, show offline page
+    if (!isOnline && forecasts.length === 0 && !loading) {
+        return (
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <OfflinePage />
+            </ThemeProvider>
+        );
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -178,6 +215,11 @@ function App() {
                         >
                             React Lawyer Office Management
                         </Typography>
+                        {!isOnline && (
+                            <IconButton color="inherit">
+                                <WifiOffIcon />
+                            </IconButton>
+                        )}
                         <IconButton color="inherit">
                             <NotificationsIcon />
                         </IconButton>
@@ -282,6 +324,23 @@ function App() {
                     </Container>
                 </Box>
             </Box>
+
+            {/* Offline notification */}
+            <Snackbar
+                open={showOfflineMessage}
+                autoHideDuration={6000}
+                onClose={() => setShowOfflineMessage(false)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => setShowOfflineMessage(false)}
+                    severity="warning"
+                    sx={{ width: '100%' }}
+                    icon={<WifiOffIcon />}
+                >
+                    You're offline. Some features may be unavailable.
+                </Alert>
+            </Snackbar>
         </ThemeProvider>
     );
 }
