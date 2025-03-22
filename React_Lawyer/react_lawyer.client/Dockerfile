@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
+# Install MUI dependencies first
+RUN npm install @emotion/react @emotion/styled @mui/material @mui/icons-material
+
 # Install dependencies
 RUN npm ci
 
@@ -34,6 +37,9 @@ COPY vite.config.js ./
 COPY eslint.config.js ./
 COPY public ./public
 COPY src ./src
+
+# Install production dependencies
+RUN npm install @emotion/react @emotion/styled @mui/material @mui/icons-material
 
 # Install only production dependencies when running in production mode
 RUN npm ci --omit=dev
