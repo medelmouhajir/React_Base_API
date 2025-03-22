@@ -37,7 +37,7 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import useOnlineStatus from './hooks/useOnlineStatus';
-import OfflinePage from './components/OfflinePage';
+import OfflinePage from './components/Offline/OfflinePage';
 
 // Create theme with primary and secondary colors appropriate for a law firm
 const theme = createTheme({

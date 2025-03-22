@@ -1,61 +1,64 @@
-// Service Worker file for React Lawyer PWA
+// Service Worker for React Lawyer PWA
+// This file will be processed by the vite-plugin-pwa
 
-const CACHE_NAME = 'lawyer-app-v1';
-const urlsToCache = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/vite.svg',
-    '/assets/index.css',
-    '/assets/index.js'
-];
+import { precacheAndRoute } from 'workbox-precaching';
 
-// Install a service worker
-self.addEventListener('install', event => {
-    // Perform install steps
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache);
-            })
-    );
-});
+// Use with injectManifest
+precacheAndRoute(self.__WB_MANIFEST || []);
 
 // Cache and return requests
 self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                // Cache hit - return response
-                if (response) {
+    // Skip cross-origin requests
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .catch(() => {
+                    return caches.match('/index.html');
+                })
+        );
+    } else if (event.request.url.includes('/api/')) {
+        // Handle API requests
+        event.respondWith(
+            fetch(event.request)
+                .then(response => {
                     return response;
-                }
-                return fetch(event.request).then(
-                    response => {
-                        // Check if we received a valid response
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
-                        }
-
-                        // Clone the response
-                        const responseToCache = response.clone();
-
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                cache.put(event.request, responseToCache);
-                            });
-
-                        return response;
+                })
+                .catch(() => {
+                    return caches.match(event.request);
+                })
+        );
+    } else {
+        // For all other requests, try the cache first, fall back to the network
+        event.respondWith(
+            caches.match(event.request)
+                .then(cachedResponse => {
+                    if (cachedResponse) {
+                        return cachedResponse;
                     }
-                );
-            })
-    );
+                    return fetch(event.request)
+                        .then(response => {
+                            // Check if we received a valid response
+                            if (!response || response.status !== 200 || response.type !== 'basic') {
+                                return response;
+                            }
+
+                            // Clone the response
+                            const responseToCache = response.clone();
+                            caches.open('lawyer-app-v1')
+                                .then(cache => {
+                                    cache.put(event.request, responseToCache);
+                                });
+
+                            return response;
+                        });
+                })
+        );
+    }
 });
 
-// Update a service worker
+// Clean up old caches when a new service worker is activated
 self.addEventListener('activate', event => {
-    const cacheWhitelist = [CACHE_NAME];
+    const cacheWhitelist = ['lawyer-app-v1'];
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
