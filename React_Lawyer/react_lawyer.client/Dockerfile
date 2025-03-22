@@ -26,6 +26,9 @@ RUN echo '// Service worker registration for PWA support\n\nexport function regi
 # List contents to verify file structure
 RUN ls -la src/
 
+RUN npm pkg set dependencies.react-router-dom="^6.22.0"
+RUN npm install --legacy-peer-deps
+
 # Build the application with legacy peer deps
 RUN npm run build --legacy-peer-deps
 

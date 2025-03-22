@@ -3,7 +3,7 @@ import React from 'react';
 import { Box, Container, Typography, Button, Paper } from '@mui/material';
 import { LockOutlined as LockIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../features/auth/AuthContext';
+import { useAuth } from '../../features/auth/AuthContext';
 
 const UnauthorizedPage = () => {
     const navigate = useNavigate();

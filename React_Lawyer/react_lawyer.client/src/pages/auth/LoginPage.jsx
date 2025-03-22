@@ -22,8 +22,8 @@ import {
     VisibilityOff
 } from '@mui/icons-material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../features/auth/AuthContext';
-import useOnlineStatus from '../hooks/useOnlineStatus';
+import { useAuth } from '../../features/auth/AuthContext';
+import useOnlineStatus from '../../hooks/useOnlineStatus';
 
 const LoginPage = () => {
     const { login, loading, error: authError } = useAuth();

@@ -22,9 +22,9 @@ import { useAuth } from './features/auth/AuthContext';
 import ProtectedRoute from './features/auth/ProtectedRoute';
 
 // Pages
-import LoginPage from './pages/LoginPage';
-import DashboardPage from './pages/DashboardPage';
-import UnauthorizedPage from './pages/UnauthorizedPage';
+import LoginPage from './pages/auth/LoginPage';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import UnauthorizedPage from './pages/errors/UnauthorizedPage';
 import OfflinePage from './components/Offline/OfflinePage';
 
 // Create theme with primary and secondary colors appropriate for a law firm
