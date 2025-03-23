@@ -25,7 +25,7 @@ import {
     AttachMoney as MoneyIcon,
     Notifications as NotificationsIcon
 } from '@mui/icons-material';
-import { useAuth } from '../features/auth/AuthContext';
+import { useAuth } from '../../features/auth/AuthContext';
 
 const DashboardPage = () => {
     const { user } = useAuth();
