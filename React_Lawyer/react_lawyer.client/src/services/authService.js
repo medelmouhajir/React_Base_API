@@ -1,6 +1,6 @@
 // src/services/authService.js
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5267';
 
 /**
  * Service for handling authentication-related API calls
@@ -14,7 +14,8 @@ class AuthService {
      */
     async login(username, password) {
         try {
-            const response = await fetch(`${API_URL}/api/users/login`, {
+            console.log(`${API_URL}/api/auth/Login`);
+            const response = await fetch(`${API_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
