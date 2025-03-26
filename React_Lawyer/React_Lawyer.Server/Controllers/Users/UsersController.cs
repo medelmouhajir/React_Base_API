@@ -42,30 +42,6 @@ namespace React_Lawyer.Server.Controllers.Users
             return user;
         }
 
-        // POST: api/Users
-        [HttpPost]
-        public async Task<ActionResult<User>> CreateUser(RegisterModel user)
-        {
-            var newUser = new User
-            {
-                Username = user.Username,
-                Email = user.Email,
-                PasswordHash = HashPassword(user.PasswordHash),
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                Role = Enum.Parse<UserRole>(user.Role),
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                
-            };
-
-
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUser), new { id = newUser.UserId }, user);
-        }
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
@@ -122,28 +98,6 @@ namespace React_Lawyer.Server.Controllers.Users
             return NoContent();
         }
 
-        // POST: api/Users/Login
-        [HttpPost("login")]
-        public async Task<ActionResult<User>> Login(LoginModel model)
-        {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == model.Username && u.IsActive);
-
-            if (user == null || !VerifyPassword(model.Password, user.PasswordHash))
-            {
-                return Unauthorized("Invalid username or password");
-            }
-
-            // Update last login time
-            user.LastLogin = DateTime.UtcNow;
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            // Remove password from response
-            user.PasswordHash = null;
-
-            return user;
-        }
 
         // GET: api/Users/Lawyers
         [HttpGet("lawyers")]

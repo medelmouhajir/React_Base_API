@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using React_Lawyer.Server.Controllers.Users;
 using React_Lawyer.Server.Data;
 using Shared_Models.Users;
 using System;
@@ -119,6 +120,38 @@ namespace React_Lawyer.Server.Controllers.Auth
             {
                 _logger.LogError(ex, "Error during login process");
                 return StatusCode(500, new { message = "An error occurred during login" });
+            }
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<User>> CreateUser(RegisterModel user)
+        {
+            var newUser = new User
+            {
+                Username = user.Username,
+                Email = user.Email,
+                PasswordHash = HashPassword(user.PasswordHash),
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Role = Enum.Parse<UserRole>(user.Role),
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+
+            };
+
+
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+        private string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(hashedBytes);
             }
         }
 

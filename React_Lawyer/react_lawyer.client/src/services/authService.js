@@ -15,7 +15,7 @@ class AuthService {
     async login(username, password) {
         try {
             console.log(`${API_URL}/api/users/login`);
-            const response = await fetch(`${API_URL}/api/users/login`, {
+            const response = await fetch(`${API_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ class AuthService {
     logout() {
         localStorage.removeItem('user');
         // Call logout endpoint to invalidate the refresh token
-        return fetch(`${API_URL}/api/users/logout`, {
+        return fetch(`${API_URL}/api/auth/logout`, {
             method: 'POST',
             headers: this.authHeader(),
             credentials: 'include'
@@ -77,7 +77,7 @@ class AuthService {
         try {
             console.log(userData);
 
-            const response = await fetch(`${API_URL}/api/users`, {
+            const response = await fetch(`${API_URL}/api/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
