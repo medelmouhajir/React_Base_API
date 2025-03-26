@@ -23,6 +23,7 @@ import ProtectedRoute from './features/auth/ProtectedRoute';
 
 // Pages
 import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import UnauthorizedPage from './pages/errors/UnauthorizedPage';
 import OfflinePage from './components/Offline/OfflinePage';
@@ -105,6 +106,7 @@ function App() {
             <Routes>
                 {/* Public routes */}
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
                 {/* Protected routes that require authentication */}

@@ -14,8 +14,8 @@ class AuthService {
      */
     async login(username, password) {
         try {
-            console.log(`${API_URL}/api/auth/Login`);
-            const response = await fetch(`${API_URL}/api/auth/login`, {
+            console.log(`${API_URL}/api/users/login`);
+            const response = await fetch(`${API_URL}/api/users/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,6 +75,8 @@ class AuthService {
      */
     async register(userData) {
         try {
+            console.log(userData);
+
             const response = await fetch(`${API_URL}/api/users`, {
                 method: 'POST',
                 headers: {

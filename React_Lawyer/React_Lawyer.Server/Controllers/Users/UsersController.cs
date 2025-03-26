@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using React_Lawyer.Server.Data;
 using Shared_Models.Users;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -43,16 +44,27 @@ namespace React_Lawyer.Server.Controllers.Users
 
         // POST: api/Users
         [HttpPost]
-        public async Task<ActionResult<User>> CreateUser(User user)
+        public async Task<ActionResult<User>> CreateUser(RegisterModel user)
         {
-            // Hash the password before storing
-            user.PasswordHash = HashPassword(user.PasswordHash);
-            user.CreatedAt = DateTime.UtcNow;
+            var newUser = new User
+            {
+                Username = user.Username,
+                Email = user.Email,
+                PasswordHash = HashPassword(user.PasswordHash),
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Role = Enum.Parse<UserRole>(user.Role),
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                
+            };
 
-            _context.Users.Add(user);
+
+            _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
+            return CreatedAtAction(nameof(GetUser), new { id = newUser.UserId }, user);
         }
 
         // PUT: api/Users/5
@@ -203,5 +215,32 @@ namespace React_Lawyer.Server.Controllers.Users
     {
         public string Username { get; set; }
         public string Password { get; set; }
+    }
+    public class RegisterModel
+    {
+
+        [Required]
+        [StringLength(50)]
+        public string Username { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string Email { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string PasswordHash { get; set; }
+
+        [StringLength(100)]
+        public string FirstName { get; set; }
+
+        [StringLength(100)]
+        public string LastName { get; set; }
+
+        [StringLength(20)]
+        public string PhoneNumber { get; set; }
+
+        [Required]
+        public string Role { get; set; }
     }
 }
