@@ -197,8 +197,11 @@ const LoginPage = () => {
                             </MuiLink>
                         </Grid>
                         <Grid item>
-                            <MuiLink component={Link} to="/register" variant="body2">
-                                {"Don't have an account? Contact admin"}
+                            <MuiLink component={Link} to="/register" variant="body2" sx={{ mr: 2 }}>
+                                {"Register as a user"}
+                            </MuiLink>
+                            <MuiLink component={Link} to="/register-firm" variant="body2">
+                                {"Register your law firm"}
                             </MuiLink>
                         </Grid>
                     </Grid>

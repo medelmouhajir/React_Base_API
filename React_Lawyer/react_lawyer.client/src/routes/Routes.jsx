@@ -12,6 +12,7 @@ import ProtectedLayout from '../components/layout/ProtectedLayout';
 // Auth pages
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
+import FirmRegistrationPage from '../pages/auth/FirmRegistrationPage';
 //import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
 //import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 
@@ -65,6 +66,7 @@ const AppRoutes = () => {
                 !isAuthenticated() ? <LoginPage /> : <Navigate to="/" replace />
             } />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/register-firm" element={<FirmRegistrationPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
             {/* Protected routes with layout */}
