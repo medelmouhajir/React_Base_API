@@ -30,6 +30,7 @@ import {
 import PageHeader from '../../components/common/PageHeader';
 import { useAuth } from '../../features/auth/AuthContext';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
+import clientService from '../../services/clientService';
 
 const ClientsListPage = () => {
     const navigate = useNavigate();
@@ -47,36 +48,11 @@ const ClientsListPage = () => {
     // Fetch clients
     useEffect(() => {
         const fetchClients = async () => {
-            if (!isOnline) {
-                setLoading(false);
-                return;
-            }
-
             try {
-                const apiUrl = searchTerm
-                    ? `/api/clients/search?term=${encodeURIComponent(searchTerm)}`
-                    : user?.lawFirmId
-                        ? `/api/clients/byfirm/${user.lawFirmId}`
-                        : `/api/clients`;
-
-                const response = await fetch(apiUrl, {
-                    headers: {
-                        'Authorization': `Bearer ${user?.token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch clients');
-                }
-
-                const data = await response.json();
-                setClients(data);
-                setError(null);
-            } catch (err) {
-                console.error('Error fetching clients:', err);
-                setError('Failed to load clients. Please try again later.');
-            } finally {
-                setLoading(false);
+                const clients = await clientService.getClients();
+                setClients(clients);
+            } catch (error) {
+                setError(error.message);
             }
         };
 

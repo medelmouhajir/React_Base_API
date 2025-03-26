@@ -65,8 +65,6 @@ const AppRoutes = () => {
                 !isAuthenticated() ? <LoginPage /> : <Navigate to="/" replace />
             } />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
             {/* Protected routes with layout */}
@@ -89,35 +87,35 @@ const AppRoutes = () => {
                 <Route path="/clients" element={<ClientsListPage />} />
                 <Route path="/clients/new" element={<NewClientPage />} />
                 <Route path="/clients/:id" element={<ClientDetailsPage />} />
-
+                
                 {/* Appointments */}
-                <Route path="/appointments" element={<AppointmentsListPage />} />
-                <Route path="/appointments/new" element={<NewAppointmentPage />} />
-                <Route path="/appointments/:id" element={<AppointmentDetailsPage />} />
+                {/*<Route path="/appointments" element={<AppointmentsListPage />} />*/}
+                {/*<Route path="/appointments/new" element={<NewAppointmentPage />} />*/}
+                {/*<Route path="/appointments/:id" element={<AppointmentDetailsPage />} />*/}
 
                 {/* Billing - Not for Clients */}
-                <Route element={<ProtectedRoute requiredRole={["Lawyer", "Admin", "Secretary"]} />}>
-                    <Route path="/billing" element={<InvoicesListPage />} />
-                    <Route path="/billing/invoices/new" element={<NewInvoicePage />} />
-                    <Route path="/billing/invoices/:id" element={<InvoiceDetailsPage />} />
-                    <Route path="/billing/payments" element={<PaymentsPage />} />
-                </Route>
+                {/*<Route element={<ProtectedRoute requiredRole={["Lawyer", "Admin", "Secretary"]} />}>*/}
+                {/*    <Route path="/billing" element={<InvoicesListPage />} />*/}
+                {/*    <Route path="/billing/invoices/new" element={<NewInvoicePage />} />*/}
+                {/*    <Route path="/billing/invoices/:id" element={<InvoiceDetailsPage />} />*/}
+                {/*    <Route path="/billing/payments" element={<PaymentsPage />} />*/}
+                {/*</Route>*/}
 
                 {/* Documents */}
-                <Route path="/documents" element={<DocumentsListPage />} />
-                <Route path="/documents/upload" element={<UploadDocumentPage />} />
-                <Route path="/documents/:id" element={<DocumentDetailsPage />} />
+                {/*<Route path="/documents" element={<DocumentsListPage />} />*/}
+                {/*<Route path="/documents/upload" element={<UploadDocumentPage />} />*/}
+                {/*<Route path="/documents/:id" element={<DocumentDetailsPage />} />*/}
 
                 {/* Reports - Only for Lawyers and Admins */}
-                <Route element={<ProtectedRoute requiredRole={["Lawyer", "Admin"]} />}>
-                    <Route path="/reports" element={<ReportsPage />} />
-                </Route>
+                {/*<Route element={<ProtectedRoute requiredRole={["Lawyer", "Admin"]} />}>*/}
+                {/*    <Route path="/reports" element={<ReportsPage />} />*/}
+                {/*</Route>*/}
 
                 {/* Firm Management - Only for Admins */}
-                <Route element={<ProtectedRoute requiredRole="Admin" />}>
-                    <Route path="/firm" element={<FirmManagementPage />} />
-                    <Route path="/firm/users" element={<UsersManagementPage />} />
-                </Route>
+                {/*<Route element={<ProtectedRoute requiredRole="Admin" />}>*/}
+                {/*    <Route path="/firm" element={<FirmManagementPage />} />*/}
+                {/*    <Route path="/firm/users" element={<UsersManagementPage />} />*/}
+                {/*</Route>*/}
             </Route>
 
             {/* Catch-all route for 404 */}
