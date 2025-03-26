@@ -4,26 +4,32 @@ import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Card,
-    Grid,
     TextField,
     Button,
+    Grid,
+    FormControl,
     FormControlLabel,
-    Switch,
-    Divider,
+    FormLabel,
+    Radio,
+    RadioGroup,
+    InputLabel,
+    Select,
+    MenuItem,
     Typography,
-    CircularProgress,
     Alert,
     Snackbar,
-    FormControl,
-    FormHelperText
+    Paper,
+    Divider,
+    CircularProgress
 } from '@mui/material';
 import {
     Save as SaveIcon,
-    ArrowBack as ArrowBackIcon,
+    Cancel as CancelIcon,
     Person as PersonIcon,
     Business as BusinessIcon
 } from '@mui/icons-material';
 import PageHeader from '../../components/common/PageHeader';
+import clientService from '../../services/clientService';
 import { useAuth } from '../../features/auth/AuthContext';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
 
@@ -38,76 +44,96 @@ const NewClientPage = () => {
         lastName: '',
         email: '',
         phoneNumber: '',
-        companyName: '',
-        isIndividual: true,
         address: '',
-        city: '',
-        state: '',
-        zipCode: '',
+        type: 'Individual',
+        companyName: '',
+        taxId: '',
+        idNumber: '',
         notes: '',
-        isActive: true
+        lawFirmId: user?.lawFirmId || 0
     });
 
     // UI state
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
-    const [validationErrors, setValidationErrors] = useState({});
     const [submitAttempted, setSubmitAttempted] = useState(false);
 
-    // Handle form changes
+    // Validation state
+    const [validationErrors, setValidationErrors] = useState({
+        firstName: '',
+        lastName: '',
+        email: ''
+    });
+
+    // Handle form input changes
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
         }));
 
-        // Clear validation error when field is edited
-        if (submitAttempted && validationErrors[name]) {
-            setValidationErrors(prev => ({
-                ...prev,
-                [name]: ''
-            }));
+        // Clear validation errors when user types
+        if (submitAttempted) {
+            validateField(name, value);
         }
     };
 
-    // Validate form fields
+    // Validate a single field
+    const validateField = (name, value) => {
+        let error = '';
+
+        switch (name) {
+            case 'firstName':
+                if (!value.trim()) {
+                    error = 'First name is required';
+                }
+                break;
+            case 'lastName':
+                if (!value.trim()) {
+                    error = 'Last name is required';
+                }
+                break;
+            case 'email':
+                if (value && !/\S+@\S+\.\S+/.test(value)) {
+                    error = 'Please enter a valid email address';
+                }
+                break;
+            default:
+                break;
+        }
+
+        setValidationErrors(prev => ({ ...prev, [name]: error }));
+        return !error;
+    };
+
+    // Validate all fields before submission
     const validateForm = () => {
-        const errors = {};
+        const requiredFields = ['firstName', 'lastName'];
         let isValid = true;
 
-        // Required fields for individuals
-        if (formData.isIndividual) {
-            if (!formData.firstName.trim()) {
-                errors.firstName = 'First name is required';
-                isValid = false;
-            }
-            if (!formData.lastName.trim()) {
-                errors.lastName = 'Last name is required';
-                isValid = false;
-            }
-        } else {
-            // Required fields for businesses
-            if (!formData.companyName.trim()) {
-                errors.companyName = 'Company name is required';
-                isValid = false;
-            }
+        // Validate required fields
+        requiredFields.forEach(field => {
+            const fieldIsValid = validateField(field, formData[field]);
+            isValid = isValid && fieldIsValid;
+        });
+
+        // Validate email if provided
+        if (formData.email) {
+            const emailIsValid = validateField('email', formData.email);
+            isValid = isValid && emailIsValid;
         }
 
-        // Email validation
-        if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
-            errors.email = 'Please enter a valid email address';
+        // For corporate clients, companyName is required
+        if (formData.type === 'Corporate' && !formData.companyName.trim()) {
+            setValidationErrors(prev => ({
+                ...prev,
+                companyName: 'Company name is required for corporate clients'
+            }));
             isValid = false;
         }
 
-        // Phone validation (simple check)
-        if (formData.phoneNumber && !/^[0-9+\-\s()]{10,15}$/.test(formData.phoneNumber)) {
-            errors.phoneNumber = 'Please enter a valid phone number';
-            isValid = false;
-        }
-
-        setValidationErrors(errors);
         return isValid;
     };
 
@@ -115,59 +141,58 @@ const NewClientPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitAttempted(true);
+        setError('');
 
+        // Check if online
+        if (!isOnline) {
+            setError('You are offline. Please connect to the internet to add a new client.');
+            return;
+        }
+
+        // Validate form
         if (!validateForm()) {
             return;
         }
 
-        if (!isOnline) {
-            setError('You are offline. Please check your connection and try again.');
-            return;
-        }
-
         setLoading(true);
-        setError(null);
 
         try {
-            // Add lawFirmId from current user
+            // Prepare client data
             const clientData = {
                 ...formData,
-                lawFirmId: user?.lawFirmId
+                // Convert enum strings to actual enum values based on Client.cs
+                type: formData.type === 'Individual' ? 0 :
+                    formData.type === 'Corporate' ? 1 :
+                        formData.type === 'Government' ? 2 : 3, // NonProfit
+                isActive: true
             };
 
-            const response = await fetch('/api/clients', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user?.token}`
-                },
-                body: JSON.stringify(clientData)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create client');
-            }
+            // Submit the client data
+            const response = await clientService.createClient(clientData);
 
             setSuccess(true);
 
-            // Redirect to client list after 2 seconds
+            // Wait a moment before redirecting
             setTimeout(() => {
-                navigate('/clients');
-            }, 2000);
-
-        } catch (err) {
-            console.error('Error creating client:', err);
-            setError(err.message || 'An error occurred while creating the client');
+                navigate('/clients/' + response.clientId);
+            }, 1500);
+        } catch (error) {
+            setError(error.message || 'Failed to create client. Please try again.');
         } finally {
             setLoading(false);
         }
+    };
+
+    // Handle cancel (go back)
+    const handleCancel = () => {
+        navigate('/clients');
     };
 
     return (
         <>
             <PageHeader
                 title="Add New Client"
+                subtitle="Create a new client record"
                 breadcrumbs={[
                     { text: 'Dashboard', link: '/' },
                     { text: 'Clients', link: '/clients' },
@@ -175,185 +200,204 @@ const NewClientPage = () => {
                 ]}
             />
 
-            <form onSubmit={handleSubmit}>
-                <Card sx={{ mt: 3, p: 3 }}>
-                    <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={formData.isIndividual}
-                                    onChange={handleChange}
-                                    name="isIndividual"
-                                    color="primary"
-                                />
-                            }
-                            label=""
-                        />
-                        <Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}>
-                            {formData.isIndividual ? (
-                                <>
-                                    <PersonIcon color="primary" sx={{ mr: 1 }} />
-                                    <Typography variant="subtitle1">Individual Client</Typography>
-                                </>
-                            ) : (
-                                <>
-                                    <BusinessIcon color="secondary" sx={{ mr: 1 }} />
-                                    <Typography variant="subtitle1">Business Client</Typography>
-                                </>
-                            )}
-                        </Box>
-                    </Box>
-
+            <Paper sx={{ p: 3, mb: 3 }}>
+                <Box component="form" onSubmit={handleSubmit} noValidate>
+                    <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+                        <PersonIcon sx={{ mr: 1 }} />
+                        Client Information
+                    </Typography>
                     <Divider sx={{ mb: 3 }} />
 
-                    <Grid container spacing={3}>
-                        {formData.isIndividual ? (
-                            // Individual client fields
-                            <>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        fullWidth
-                                        required
-                                        label="First Name"
-                                        name="firstName"
-                                        value={formData.firstName}
-                                        onChange={handleChange}
-                                        error={!!validationErrors.firstName}
-                                        helperText={validationErrors.firstName}
-                                        disabled={loading}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        fullWidth
-                                        required
-                                        label="Last Name"
-                                        name="lastName"
-                                        value={formData.lastName}
-                                        onChange={handleChange}
-                                        error={!!validationErrors.lastName}
-                                        helperText={validationErrors.lastName}
-                                        disabled={loading}
-                                    />
-                                </Grid>
-                            </>
-                        ) : (
-                            // Business client fields
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    required
-                                    label="Company Name"
-                                    name="companyName"
-                                    value={formData.companyName}
-                                    onChange={handleChange}
-                                    error={!!validationErrors.companyName}
-                                    helperText={validationErrors.companyName}
-                                    disabled={loading}
-                                />
-                            </Grid>
-                        )}
+                    {/* Client Type Selection */}
+                    <FormControl component="fieldset" sx={{ mb: 3 }}>
+                        <FormLabel component="legend">Client Type</FormLabel>
+                        <RadioGroup
+                            row
+                            name="type"
+                            value={formData.type}
+                            onChange={handleChange}
+                        >
+                            <FormControlLabel
+                                value="Individual"
+                                control={<Radio />}
+                                label={
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <PersonIcon sx={{ mr: 0.5 }} />
+                                        Individual
+                                    </Box>
+                                }
+                            />
+                            <FormControlLabel
+                                value="Corporate"
+                                control={<Radio />}
+                                label={
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <BusinessIcon sx={{ mr: 0.5 }} />
+                                        Corporate
+                                    </Box>
+                                }
+                            />
+                            <FormControlLabel value="Government" control={<Radio />} label="Government" />
+                            <FormControlLabel value="NonProfit" control={<Radio />} label="Non-Profit" />
+                        </RadioGroup>
+                    </FormControl>
 
-                        <Grid item xs={12} sm={6}>
+                    <Grid container spacing={3}>
+                        {/* Personal Information */}
+                        <Grid item xs={12} md={6}>
+                            <TextField
+                                required
+                                fullWidth
+                                id="firstName"
+                                name="firstName"
+                                label="First Name"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                                error={!!validationErrors.firstName}
+                                helperText={validationErrors.firstName}
+                                margin="normal"
+                                autoFocus
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <TextField
+                                required
+                                fullWidth
+                                id="lastName"
+                                name="lastName"
+                                label="Last Name"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                                error={!!validationErrors.lastName}
+                                helperText={validationErrors.lastName}
+                                margin="normal"
+                            />
+                        </Grid>
+
+                        {/* Contact Information */}
+                        <Grid item xs={12} md={6}>
                             <TextField
                                 fullWidth
-                                label="Email Address"
+                                id="email"
                                 name="email"
+                                label="Email"
                                 type="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 error={!!validationErrors.email}
                                 helperText={validationErrors.email}
-                                disabled={loading}
+                                margin="normal"
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12} md={6}>
                             <TextField
                                 fullWidth
-                                label="Phone Number"
+                                id="phoneNumber"
                                 name="phoneNumber"
+                                label="Phone Number"
                                 value={formData.phoneNumber}
                                 onChange={handleChange}
-                                error={!!validationErrors.phoneNumber}
-                                helperText={validationErrors.phoneNumber}
-                                disabled={loading}
+                                margin="normal"
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
-                            <Typography variant="subtitle1" sx={{ mt: 2, mb: 2 }}>
-                                Address Information
-                            </Typography>
-                            <Divider sx={{ mb: 2 }} />
-                        </Grid>
+                        {/* Corporate Information (shown only for Corporate client type) */}
+                        {formData.type === 'Corporate' && (
+                            <>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        required
+                                        fullWidth
+                                        id="companyName"
+                                        name="companyName"
+                                        label="Company Name"
+                                        value={formData.companyName}
+                                        onChange={handleChange}
+                                        error={!!validationErrors.companyName}
+                                        helperText={validationErrors.companyName}
+                                        margin="normal"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        fullWidth
+                                        id="taxId"
+                                        name="taxId"
+                                        label="Tax ID / VAT Number"
+                                        value={formData.taxId}
+                                        onChange={handleChange}
+                                        margin="normal"
+                                    />
+                                </Grid>
+                            </>
+                        )}
 
+                        {/* Address */}
                         <Grid item xs={12}>
                             <TextField
                                 fullWidth
-                                label="Street Address"
+                                id="address"
                                 name="address"
+                                label="Address"
                                 value={formData.address}
                                 onChange={handleChange}
-                                disabled={loading}
+                                margin="normal"
+                                multiline
+                                rows={2}
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={6} md={4}>
-                            <TextField
-                                fullWidth
-                                label="City"
-                                name="city"
-                                value={formData.city}
-                                onChange={handleChange}
-                                disabled={loading}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <TextField
-                                fullWidth
-                                label="State/Province"
-                                name="state"
-                                value={formData.state}
-                                onChange={handleChange}
-                                disabled={loading}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <TextField
-                                fullWidth
-                                label="Zip/Postal Code"
-                                name="zipCode"
-                                value={formData.zipCode}
-                                onChange={handleChange}
-                                disabled={loading}
-                            />
-                        </Grid>
+                        {/* ID Number - for individuals */}
+                        {formData.type === 'Individual' && (
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    id="idNumber"
+                                    name="idNumber"
+                                    label="ID / Passport Number"
+                                    value={formData.idNumber}
+                                    onChange={handleChange}
+                                    margin="normal"
+                                />
+                            </Grid>
+                        )}
 
+                        {/* Notes */}
                         <Grid item xs={12}>
                             <TextField
                                 fullWidth
-                                label="Notes"
+                                id="notes"
                                 name="notes"
+                                label="Notes"
                                 value={formData.notes}
                                 onChange={handleChange}
+                                margin="normal"
                                 multiline
                                 rows={4}
-                                disabled={loading}
                             />
                         </Grid>
                     </Grid>
 
+                    {/* Error message */}
                     {error && (
                         <Alert severity="error" sx={{ mt: 3 }}>
                             {error}
                         </Alert>
                     )}
 
-                    <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
+                    {/* Offline warning */}
+                    {!isOnline && (
+                        <Alert severity="warning" sx={{ mt: 3 }}>
+                            You are currently offline. You need to be online to add a new client.
+                        </Alert>
+                    )}
+
+                    {/* Form actions */}
+                    <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                         <Button
                             variant="outlined"
-                            startIcon={<ArrowBackIcon />}
-                            onClick={() => navigate('/clients')}
+                            startIcon={<CancelIcon />}
+                            onClick={handleCancel}
                             disabled={loading}
                         >
                             Cancel
@@ -362,23 +406,24 @@ const NewClientPage = () => {
                             type="submit"
                             variant="contained"
                             color="primary"
-                            startIcon={loading ? <CircularProgress size={20} /> : <SaveIcon />}
+                            startIcon={loading ? <CircularProgress size={24} /> : <SaveIcon />}
                             disabled={loading || !isOnline}
                         >
                             {loading ? 'Saving...' : 'Save Client'}
                         </Button>
                     </Box>
-                </Card>
-            </form>
+                </Box>
+            </Paper>
 
+            {/* Success message snackbar */}
             <Snackbar
                 open={success}
                 autoHideDuration={6000}
                 onClose={() => setSuccess(false)}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
-                <Alert onClose={() => setSuccess(false)} severity="success">
-                    Client created successfully!
+                <Alert severity="success" sx={{ width: '100%' }}>
+                    Client created successfully! Redirecting...
                 </Alert>
             </Snackbar>
         </>

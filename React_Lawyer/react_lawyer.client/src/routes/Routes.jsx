@@ -51,9 +51,9 @@ import NewClientPage from '../pages/clients/NewClientPage';
 //// Reports pages
 //import ReportsPage from '../pages/reports/ReportsPage';
 
-//// Firm pages
-//import FirmManagementPage from '../pages/firm/FirmManagementPage';
-//import UsersManagementPage from '../pages/firm/UsersManagementPage';
+// Firm pages
+import FirmManagementPage from '../pages/firms/FirmsListPage';
+import UsersManagementPage from '../pages/firms/FirmDetailsPage';
 
 const AppRoutes = () => {
     const { isAuthenticated } = useAuth();
@@ -112,10 +112,10 @@ const AppRoutes = () => {
                 {/*</Route>*/}
 
                 {/* Firm Management - Only for Admins */}
-                {/*<Route element={<ProtectedRoute requiredRole="Admin" />}>*/}
-                {/*    <Route path="/firm" element={<FirmManagementPage />} />*/}
-                {/*    <Route path="/firm/users" element={<UsersManagementPage />} />*/}
-                {/*</Route>*/}
+                <Route element={<ProtectedRoute requiredRole="Admin" />}>
+                    <Route path="/firm" element={<FirmManagementPage />} />
+                    <Route path="/firm/users" element={<UsersManagementPage />} />
+                </Route>
             </Route>
 
             {/* Catch-all route for 404 */}

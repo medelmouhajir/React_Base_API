@@ -91,8 +91,12 @@ export default defineConfig({
                     }
                 ]
             },
+            strategies: 'generateSW', // Use generateSW strategy instead of injectManifest
+            filename: 'sw-workbox.js', // Custom name to avoid conflict with manual sw.js
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+                cleanupOutdatedCaches: true,
+                sourcemap: true,
                 runtimeCaching: [
                     {
                         urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -118,17 +122,17 @@ export default defineConfig({
                                 maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
                             },
                             cacheableResponse: {
-                                statuses: [0, 200]
+                                statuses: [0, , 200]
                             }
                         }
                     },
                     {
-                        urlPattern: /\/api\/weatherforecast/,
+                        urlPattern: /\/api\/.*/i,
                         handler: 'NetworkFirst',
                         options: {
                             cacheName: 'api-cache',
                             expiration: {
-                                maxEntries: 10,
+                                maxEntries: 50,
                                 maxAgeSeconds: 60 * 60 // 1 hour
                             },
                             cacheableResponse: {

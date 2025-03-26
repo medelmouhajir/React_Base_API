@@ -13,10 +13,10 @@ import ThemeProvider from './theme/ThemeProvider';
 import AppRoutes from './routes/Routes';
 
 // Service Worker Registration
-//import { registerServiceWorker } from './sw-register';
+import { registerServiceWorker } from './sw-register';
 
 // Register service worker for PWA functionality
-//registerServiceWorker();
+registerServiceWorker();
 
 function App() {
     return (
