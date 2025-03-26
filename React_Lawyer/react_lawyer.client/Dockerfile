@@ -12,6 +12,9 @@ RUN npm pkg set devDependencies.vite-plugin-pwa="^0.17.4"
 RUN npm pkg set devDependencies.vite="^5.0.12"
 RUN npm pkg set dependencies.react="^18.2.0"
 RUN npm pkg set dependencies.react-dom="^18.2.0"
+RUN npm pkg set dependencies.i18next="^24.2.3"
+RUN npm pkg set dependencies.i18next-browser-languagedetector="^8.0.4"
+RUN npm pkg set dependencies.react-i18next="^15.4.1"
 
 # Install dependencies with legacy peer deps flag to avoid conflicts
 RUN npm install --legacy-peer-deps
