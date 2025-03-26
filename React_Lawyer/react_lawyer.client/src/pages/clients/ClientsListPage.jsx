@@ -1,118 +1,141 @@
 // src/pages/clients/ClientsListPage.jsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
     Box,
-    Card,
+    Typography,
+    Paper,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
-    TablePagination,
     TextField,
     InputAdornment,
     IconButton,
-    Typography,
-    Chip,
     Button,
+    Chip,
+    Tooltip,
     CircularProgress,
+    Snackbar,
     Alert
 } from '@mui/material';
 import {
     Search as SearchIcon,
-    Add as AddIcon,
-    PersonOutlined as PersonIcon,
-    MoreVert as MoreVertIcon,
-    Business as BusinessIcon
+    PersonAdd as PersonAddIcon,
+    Phone as PhoneIcon,
+    Email as EmailIcon,
+    Business as BusinessIcon,
+    Person as PersonIcon
 } from '@mui/icons-material';
-import PageHeader from '../../components/common/PageHeader';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
-import useOnlineStatus from '../../hooks/useOnlineStatus';
+import PageHeader from '../../components/common/PageHeader';
 import clientService from '../../services/clientService';
+import useOnlineStatus from '../../hooks/useOnlineStatus';
 
 const ClientsListPage = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
     const isOnline = useOnlineStatus();
+    const { user } = useAuth();
 
-    // State variables
+    // State
     const [clients, setClients] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [filteredClients, setFilteredClients] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    // Fetch clients
+    // Fetch clients on component mount
     useEffect(() => {
         const fetchClients = async () => {
             try {
-                const clients = await clientService.getClients();
-                setClients(clients);
-            } catch (error) {
-                setError(error.message);
+                setLoading(true);
+                const data = await clientService.getClients();
+                setClients(data);
+                setFilteredClients(data);
+            } catch (err) {
+                console.error('Error fetching clients:', err);
+                setError('Failed to load clients. Please try again later.');
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchClients();
-    }, [searchTerm, user, isOnline]);
+    }, []);
 
-    // Handle search term change
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
-        setPage(0); // Reset to first page on search
-    };
+    // Handle search
+    useEffect(() => {
+        if (!searchTerm.trim()) {
+            setFilteredClients(clients);
+            return;
+        }
 
-    // Handle pagination changes
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+        const term = searchTerm.toLowerCase();
+        const filtered = clients.filter(client =>
+            client.firstName?.toLowerCase().includes(term) ||
+            client.lastName?.toLowerCase().includes(term) ||
+            client.email?.toLowerCase().includes(term) ||
+            client.phoneNumber?.includes(term) ||
+            client.companyName?.toLowerCase().includes(term)
+        );
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
+        setFilteredClients(filtered);
+    }, [searchTerm, clients]);
 
     // Navigate to client details
     const handleClientClick = (clientId) => {
         navigate(`/clients/${clientId}`);
     };
 
-    // Navigate to create new client
+    // Navigate to new client page
     const handleAddClient = () => {
         navigate('/clients/new');
     };
 
-    // Displayed clients with pagination
-    const displayedClients = clients
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    // Get client type chip color
+    const getClientTypeColor = (type) => {
+        switch (type) {
+            case 'Individual':
+                return 'primary';
+            case 'Corporate':
+                return 'secondary';
+            default:
+                return 'default';
+        }
+    };
+
+    // Render client type icon
+    const getClientTypeIcon = (type) => {
+        return type === 'Corporate' ? <BusinessIcon fontSize="small" /> : <PersonIcon fontSize="small" />;
+    };
 
     return (
         <>
             <PageHeader
                 title="Clients"
-                subtitle={`${clients.length} total clients`}
-                action
-                actionText="Add New Client"
-                actionIcon={<AddIcon />}
-                onActionClick={handleAddClient}
+                subtitle="Manage your clients and their information"
                 breadcrumbs={[
                     { text: 'Dashboard', link: '/' },
                     { text: 'Clients' }
                 ]}
+                action={true}
+                actionText="Add Client"
+                actionIcon={<PersonAddIcon />}
+                onActionClick={handleAddClient}
             />
 
-            <Card sx={{ mt: 3 }}>
-                <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
+            <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                     <TextField
-                        variant="outlined"
                         placeholder="Search clients..."
+                        variant="outlined"
+                        size="small"
                         fullWidth
-                        value={searchTerm}
-                        onChange={handleSearchChange}
                         sx={{ maxWidth: 500 }}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -124,19 +147,19 @@ const ClientsListPage = () => {
                 </Box>
 
                 {loading ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
                         <CircularProgress />
                     </Box>
                 ) : error ? (
-                    <Alert severity="error" sx={{ m: 2 }}>{error}</Alert>
-                ) : clients.length === 0 ? (
-                    <Box sx={{ p: 3, textAlign: 'center' }}>
-                        <Typography variant="body1" color="text.secondary">
-                            No clients found. {searchTerm && 'Try adjusting your search.'}
+                    <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+                ) : filteredClients.length === 0 ? (
+                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                        <Typography variant="subtitle1" color="text.secondary">
+                            {searchTerm ? 'No clients match your search criteria.' : 'No clients found.'}
                         </Typography>
                         <Button
                             variant="contained"
-                            startIcon={<AddIcon />}
+                            startIcon={<PersonAddIcon />}
                             sx={{ mt: 2 }}
                             onClick={handleAddClient}
                         >
@@ -144,81 +167,81 @@ const ClientsListPage = () => {
                         </Button>
                     </Box>
                 ) : (
-                    <>
-                        <TableContainer>
-                            <Table sx={{ minWidth: 650 }}>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Name</TableCell>
-                                        <TableCell>Email</TableCell>
-                                        <TableCell>Phone</TableCell>
-                                        <TableCell>Company</TableCell>
-                                        <TableCell>Type</TableCell>
-                                        <TableCell align="right">Actions</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {displayedClients.map((client) => (
-                                        <TableRow
-                                            key={client.clientId}
-                                            hover
-                                            onClick={() => handleClientClick(client.clientId)}
-                                            sx={{ cursor: 'pointer' }}
-                                        >
-                                            <TableCell>
-                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                    <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
-                                                    <Typography variant="body1">
-                                                        {client.firstName} {client.lastName}
-                                                    </Typography>
-                                                </Box>
-                                            </TableCell>
-                                            <TableCell>{client.email}</TableCell>
-                                            <TableCell>{client.phoneNumber}</TableCell>
-                                            <TableCell>
-                                                {client.companyName && (
-                                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                        <BusinessIcon fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} />
-                                                        {client.companyName}
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell>Type</TableCell>
+                                    <TableCell>Contact Info</TableCell>
+                                    <TableCell>Company</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {filteredClients.map((client) => (
+                                    <TableRow
+                                        key={client.clientId}
+                                        hover
+                                        onClick={() => handleClientClick(client.clientId)}
+                                        sx={{ cursor: 'pointer' }}
+                                    >
+                                        <TableCell>
+                                            <Typography variant="subtitle2">
+                                                {client.firstName} {client.lastName}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                icon={getClientTypeIcon(client.type)}
+                                                label={client.type}
+                                                color={getClientTypeColor(client.type)}
+                                                size="small"
+                                                variant="outlined"
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                                                {client.email && (
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        <EmailIcon fontSize="small" color="action" />
+                                                        <Typography variant="body2">{client.email}</Typography>
                                                     </Box>
                                                 )}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Chip
-                                                    size="small"
-                                                    label={client.isIndividual ? "Individual" : "Business"}
-                                                    color={client.isIndividual ? "primary" : "secondary"}
-                                                    variant="outlined"
-                                                />
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        // Handle menu options
-                                                    }}
-                                                >
-                                                    <MoreVertIcon fontSize="small" />
-                                                </IconButton>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <TablePagination
-                            rowsPerPageOptions={[5, 10, 25]}
-                            component="div"
-                            count={clients.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                    </>
+                                                {client.phoneNumber && (
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        <PhoneIcon fontSize="small" color="action" />
+                                                        <Typography variant="body2">{client.phoneNumber}</Typography>
+                                                    </Box>
+                                                )}
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell>
+                                            {client.companyName ? (
+                                                <Typography variant="body2">{client.companyName}</Typography>
+                                            ) : (
+                                                <Typography variant="body2" color="text.secondary">
+                                                    –
+                                                </Typography>
+                                            )}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 )}
-            </Card>
+            </Paper>
+
+            {!isOnline && (
+                <Snackbar
+                    open={!isOnline}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                >
+                    <Alert severity="warning">
+                        You're offline. Some features may be limited.
+                    </Alert>
+                </Snackbar>
+            )}
         </>
     );
 };

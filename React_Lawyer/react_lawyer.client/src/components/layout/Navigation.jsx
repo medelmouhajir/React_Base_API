@@ -24,6 +24,7 @@ import { useAuth } from '../../features/auth/AuthContext';
 import NotificationsMenu from './NotificationsMenu';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
 import { styled } from '@mui/material/styles';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
     zIndex: theme.zIndex.drawer + 1,
@@ -160,6 +161,10 @@ const Navigation = ({ toggleDrawer, open }) => {
                         open={Boolean(anchorElNotifications)}
                         onClose={handleCloseNotificationsMenu}
                     />
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                        <LanguageSwitcher />
+                    </Box>
 
                     {/* Online status indicator */}
                     <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>

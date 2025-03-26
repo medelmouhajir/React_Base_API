@@ -1,0 +1,17 @@
+{
+  "app": {
+    "title": "Gestion du Cabinet d'Avocats",
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "dashboard": "Tableau de bord",
+    "cases": "Affaires",
+    "clients": "Clients",
+    "settings": "Paramètres"
+  },
+  "auth": {
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "email": "Adresse e-mail",
+    "forgotPassword": "Mot de passe oublié ?"
+  }
+}

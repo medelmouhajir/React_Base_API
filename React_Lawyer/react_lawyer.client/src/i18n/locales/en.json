@@ -1,0 +1,17 @@
+{
+  "app": {
+    "title": "Law Office Management",
+    "login": "Sign in",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "cases": "Cases",
+    "clients": "Clients",
+    "settings": "Settings"
+  },
+  "auth": {
+    "username": "Username",
+    "password": "Password",
+    "email": "Email Address",
+    "forgotPassword": "Forgot password?"
+  }
+}

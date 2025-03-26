@@ -3,239 +3,175 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     Box,
-    Card,
-    Grid,
     Typography,
+    Card,
+    CardContent,
+    Grid,
     Divider,
-    Button,
-    Tab,
-    Tabs,
     Chip,
-    CircularProgress,
-    Alert,
+    Button,
+    Tabs,
+    Tab,
     IconButton,
     Dialog,
-    DialogActions,
+    DialogTitle,
     DialogContent,
-    DialogContentText,
-    DialogTitle
+    DialogActions,
+    CircularProgress,
+    Alert
 } from '@mui/material';
 import {
-    Edit as EditIcon,
-    Delete as DeleteIcon,
-    Person as PersonIcon,
+    PersonOutline as PersonIcon,
     Business as BusinessIcon,
     Phone as PhoneIcon,
     Email as EmailIcon,
-    LocationOn as LocationIcon,
-    Description as DescriptionIcon,
-    Gavel as GavelIcon,
-    EventNote as EventNoteIcon,
+    Edit as EditIcon,
+    Delete as DeleteIcon,
+    InsertDriveFile as FileIcon,
+    EventNote as EventIcon,
     Receipt as ReceiptIcon,
-    ArrowBack as ArrowBackIcon
+    Gavel as GavelIcon
 } from '@mui/icons-material';
+
+// Components
 import PageHeader from '../../components/common/PageHeader';
-import { useAuth } from '../../features/auth/AuthContext';
+import clientService from '../../services/clientService';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
 
-// Tab Panel Component
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`client-tabpanel-${index}`}
-            aria-labelledby={`client-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box sx={{ p: 3 }}>
-                    {children}
-                </Box>
-            )}
-        </div>
-    );
-}
-
-const ClientDetailsPage = () => {
+function ClientDetailsPage() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
     const isOnline = useOnlineStatus();
 
-    // State variables
+    // State
     const [client, setClient] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [tabValue, setTabValue] = useState(0);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [cases, setCases] = useState([]);
     const [appointments, setAppointments] = useState([]);
     const [invoices, setInvoices] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [tabValue, setTabValue] = useState(0);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [loadingRelated, setLoadingRelated] = useState(false);
 
-    // Fetch client data
+    // Load client data
     useEffect(() => {
-        const fetchClientData = async () => {
-            if (!isOnline) {
-                setLoading(false);
-                setError('You are offline. Some data may be unavailable.');
-                return;
-            }
-
+        const fetchClient = async () => {
             try {
-                // Fetch client details
-                const response = await fetch(`/api/clients/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${user?.token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch client details');
-                }
-
-                const data = await response.json();
+                setLoading(true);
+                const data = await clientService.getClientById(parseInt(id));
                 setClient(data);
-
-                // Fetch related data
-                const [casesRes, appointmentsRes, invoicesRes] = await Promise.all([
-                    fetch(`/api/clients/${id}/cases`, {
-                        headers: { 'Authorization': `Bearer ${user?.token}` }
-                    }),
-                    fetch(`/api/clients/${id}/appointments`, {
-                        headers: { 'Authorization': `Bearer ${user?.token}` }
-                    }),
-                    fetch(`/api/clients/${id}/invoices`, {
-                        headers: { 'Authorization': `Bearer ${user?.token}` }
-                    })
-                ]);
-
-                if (casesRes.ok) {
-                    const casesData = await casesRes.json();
-                    setCases(casesData);
-                }
-
-                if (appointmentsRes.ok) {
-                    const appointmentsData = await appointmentsRes.json();
-                    setAppointments(appointmentsData);
-                }
-
-                if (invoicesRes.ok) {
-                    const invoicesData = await invoicesRes.json();
-                    setInvoices(invoicesData);
-                }
-
-                setError(null);
+                setError('');
             } catch (err) {
-                console.error('Error fetching client data:', err);
-                setError('Failed to load client information. Please try again later.');
+                console.error('Error fetching client:', err);
+                setError('Failed to load client details. Please try again.');
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchClientData();
-    }, [id, user, isOnline]);
+        if (isOnline) {
+            fetchClient();
+        } else {
+            setError('You are offline. Some data may not be available.');
+            setLoading(false);
+        }
+    }, [id, isOnline]);
+
+    // Fetch related data when tab changes
+    useEffect(() => {
+        const fetchRelatedData = async () => {
+            if (!client) return;
+
+            setLoadingRelated(true);
+            try {
+                if (tabValue === 1) {
+                    // Fetch cases
+                    const casesData = await clientService.getClientCases(client.clientId);
+                    setCases(casesData);
+                } else if (tabValue === 2) {
+                    // Fetch appointments
+                    const appointmentsData = await clientService.getClientAppointments(client.clientId);
+                    setAppointments(appointmentsData);
+                } else if (tabValue === 3) {
+                    // Fetch invoices
+                    const invoicesData = await clientService.getClientInvoices(client.clientId);
+                    setInvoices(invoicesData);
+                }
+            } catch (err) {
+                console.error('Error fetching related data:', err);
+            } finally {
+                setLoadingRelated(false);
+            }
+        };
+
+        if (isOnline) {
+            fetchRelatedData();
+        }
+    }, [tabValue, client, isOnline]);
 
     // Handle tab change
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
 
-    // Navigate to edit client page
+    // Handle edit client
     const handleEditClient = () => {
         navigate(`/clients/edit/${id}`);
     };
 
-    // Open delete confirmation dialog
-    const handleDeleteClick = () => {
-        setDeleteDialogOpen(true);
-    };
-
-    // Close delete confirmation dialog
-    const handleDeleteClose = () => {
-        setDeleteDialogOpen(false);
-    };
-
-    // Handle client deletion
-    const handleDeleteConfirm = async () => {
+    // Handle delete client
+    const handleDeleteClient = async () => {
         if (!isOnline) {
-            setError('You are offline. Cannot delete client at this time.');
-            setDeleteDialogOpen(false);
+            setError('Cannot delete client while offline');
             return;
         }
 
-        setDeleteLoading(true);
-
         try {
-            const response = await fetch(`/api/clients/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${user?.token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete client');
-            }
-
-            // Navigate back to clients list on success
-            navigate('/clients', {
-                state: { notification: `Client ${client?.firstName} ${client?.lastName || client?.companyName} deleted successfully` }
-            });
+            await clientService.deleteClient(parseInt(id));
+            navigate('/clients', { replace: true });
         } catch (err) {
             console.error('Error deleting client:', err);
-            setError('Failed to delete client. Please try again later.');
-            setDeleteDialogOpen(false);
+            setError('Failed to delete client. Please try again.');
         } finally {
-            setDeleteLoading(false);
+            setDeleteDialogOpen(false);
         }
     };
 
-    // Format address for display
-    const formatAddress = (client) => {
-        if (!client) return '';
-
-        const parts = [
-            client.address,
-            client.city,
-            client.state,
-            client.zipCode
-        ].filter(Boolean);
-
-        return parts.join(', ');
-    };
-
+    // Show loading state
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
                 <CircularProgress />
             </Box>
         );
     }
 
-    if (!client && !loading) {
+    // Show error state
+    if (error && !client) {
         return (
-            <Box>
-                <PageHeader
-                    title="Client Not Found"
-                    breadcrumbs={[
-                        { text: 'Dashboard', link: '/' },
-                        { text: 'Clients', link: '/clients' },
-                        { text: 'Client Details' }
-                    ]}
-                />
-                <Alert severity="error" sx={{ mt: 2 }}>
-                    {error || 'Client not found. The client may have been deleted or you may not have permission to view it.'}
-                </Alert>
+            <Box sx={{ mt: 4, mx: 2 }}>
+                <Alert severity="error">{error}</Alert>
                 <Button
                     variant="contained"
-                    startIcon={<ArrowBackIcon />}
-                    onClick={() => navigate('/clients')}
                     sx={{ mt: 2 }}
+                    onClick={() => navigate('/clients')}
+                >
+                    Back to Clients
+                </Button>
+            </Box>
+        );
+    }
+
+    // If client not found
+    if (!client) {
+        return (
+            <Box sx={{ mt: 4, mx: 2 }}>
+                <Alert severity="warning">Client not found</Alert>
+                <Button
+                    variant="contained"
+                    sx={{ mt: 2 }}
+                    onClick={() => navigate('/clients')}
                 >
                     Back to Clients
                 </Button>
@@ -246,394 +182,339 @@ const ClientDetailsPage = () => {
     return (
         <>
             <PageHeader
-                title={client.isIndividual ? `${client.firstName} ${client.lastName}` : client.companyName}
-                subtitle={client.isIndividual ?
-                    (client.companyName ? `Individual Client - ${client.companyName}` : 'Individual Client') :
-                    'Business Client'
-                }
+                title={`${client.firstName} ${client.lastName}`}
+                subtitle={client.type === 'Corporate' ? client.companyName : 'Individual Client'}
                 breadcrumbs={[
                     { text: 'Dashboard', link: '/' },
                     { text: 'Clients', link: '/clients' },
-                    { text: client.isIndividual ? `${client.firstName} ${client.lastName}` : client.companyName }
+                    { text: `${client.firstName} ${client.lastName}` }
                 ]}
-                action
+                action={handleEditClient}
                 actionText="Edit Client"
                 actionIcon={<EditIcon />}
-                onActionClick={handleEditClient}
             />
 
-            {error && (
-                <Alert severity="warning" sx={{ mt: 2, mb: 2 }}>
-                    {error}
-                </Alert>
-            )}
+            {error && <Alert severity="warning" sx={{ mb: 3 }}>{error}</Alert>}
 
-            <Card sx={{ mb: 3 }}>
-                <Box sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            {client.isIndividual ? (
-                                <PersonIcon fontSize="large" color="primary" sx={{ mr: 2 }} />
-                            ) : (
-                                <BusinessIcon fontSize="large" color="secondary" sx={{ mr: 2 }} />
+            <Grid container spacing={3}>
+                {/* Client Overview Card */}
+                <Grid item xs={12} md={4}>
+                    <Card elevation={2}>
+                        <CardContent>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                {client.type === 'Corporate' ? (
+                                    <BusinessIcon color="primary" sx={{ fontSize: 32, mr: 1 }} />
+                                ) : (
+                                    <PersonIcon color="primary" sx={{ fontSize: 32, mr: 1 }} />
+                                )}
+                                <Typography variant="h6">
+                                    {client.firstName} {client.lastName}
+                                </Typography>
+                            </Box>
+
+                            {client.type === 'Corporate' && (
+                                <>
+                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Company</Typography>
+                                    <Typography variant="body1" sx={{ mb: 2 }}>{client.companyName}</Typography>
+                                </>
                             )}
-                            <Typography variant="h5">
-                                {client.isIndividual ?
-                                    `${client.firstName} ${client.lastName}` :
-                                    client.companyName}
-                            </Typography>
-                            <Chip
-                                label={client.isIndividual ? "Individual" : "Business"}
-                                color={client.isIndividual ? "primary" : "secondary"}
-                                size="small"
-                                sx={{ ml: 2 }}
-                            />
-                            {!client.isActive && (
+
+                            <Divider sx={{ my: 2 }} />
+
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                                <Typography>{client.email || 'No email provided'}</Typography>
+                            </Box>
+
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                                <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                                <Typography>{client.phoneNumber || 'No phone number provided'}</Typography>
+                            </Box>
+
+                            {client.address && (
+                                <Typography variant="body2" sx={{ mt: 2 }}>
+                                    <strong>Address:</strong><br />
+                                    {client.address}
+                                </Typography>
+                            )}
+
+                            <Divider sx={{ my: 2 }} />
+
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
                                 <Chip
-                                    label="Inactive"
-                                    color="error"
+                                    label={client.type}
+                                    color={client.type === 'Corporate' ? 'primary' : 'secondary'}
                                     size="small"
-                                    sx={{ ml: 1 }}
                                 />
-                            )}
-                        </Box>
-                        <IconButton
-                            color="error"
-                            onClick={handleDeleteClick}
-                            aria-label="delete client"
+                                <IconButton
+                                    color="error"
+                                    onClick={() => setDeleteDialogOpen(true)}
+                                    disabled={!isOnline}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Box>
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+                {/* Client Details and Related Items */}
+                <Grid item xs={12} md={8}>
+                    <Card elevation={2}>
+                        <Tabs
+                            value={tabValue}
+                            onChange={handleTabChange}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            variant="fullWidth"
                         >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Box>
+                            <Tab icon={<PersonIcon />} label="Details" />
+                            <Tab icon={<GavelIcon />} label="Cases" />
+                            <Tab icon={<EventIcon />} label="Appointments" />
+                            <Tab icon={<ReceiptIcon />} label="Invoices" />
+                        </Tabs>
 
-                    <Divider sx={{ mb: 3 }} />
+                        <CardContent>
+                            {/* Details Tab */}
+                            {tabValue === 0 && (
+                                <Grid container spacing={2}>
+                                    {client.idNumber && (
+                                        <Grid item xs={12} sm={6}>
+                                            <Typography variant="body2" color="text.secondary">ID Number</Typography>
+                                            <Typography variant="body1">{client.idNumber}</Typography>
+                                        </Grid>
+                                    )}
 
-                    <Grid container spacing={3}>
-                        {/* Contact Information */}
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="subtitle1" gutterBottom>
-                                Contact Information
-                            </Typography>
+                                    {client.type === 'Corporate' && client.taxId && (
+                                        <Grid item xs={12} sm={6}>
+                                            <Typography variant="body2" color="text.secondary">Tax ID</Typography>
+                                            <Typography variant="body1">{client.taxId}</Typography>
+                                        </Grid>
+                                    )}
 
-                            {client.email && (
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                    <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                                    <Typography variant="body1">
-                                        {client.email}
-                                    </Typography>
-                                </Box>
-                            )}
-
-                            {client.phoneNumber && (
-                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                    <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                                    <Typography variant="body1">
-                                        {client.phoneNumber}
-                                    </Typography>
-                                </Box>
-                            )}
-
-                            {formatAddress(client) && (
-                                <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                                    <LocationIcon sx={{ mr: 1, mt: 0.5, color: 'text.secondary' }} />
-                                    <Typography variant="body1">
-                                        {formatAddress(client)}
-                                    </Typography>
-                                </Box>
-                            )}
-                        </Grid>
-
-                        {/* Additional Information */}
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="subtitle1" gutterBottom>
-                                Additional Information
-                            </Typography>
-
-                            {client.createdAt && (
-                                <Box sx={{ mb: 1 }}>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Client since: {new Date(client.createdAt).toLocaleDateString()}
-                                    </Typography>
-                                </Box>
-                            )}
-
-                            <Box sx={{ mb: 1 }}>
-                                <Typography variant="body2" color="text.secondary">
-                                    Cases: {cases.length || 0}
-                                </Typography>
-                            </Box>
-
-                            <Box sx={{ mb: 1 }}>
-                                <Typography variant="body2" color="text.secondary">
-                                    Appointments: {appointments.length || 0}
-                                </Typography>
-                            </Box>
-
-                            <Box sx={{ mb: 1 }}>
-                                <Typography variant="body2" color="text.secondary">
-                                    Invoices: {invoices.length || 0}
-                                </Typography>
-                            </Box>
-                        </Grid>
-
-                        {/* Notes */}
-                        {client.notes && (
-                            <Grid item xs={12}>
-                                <Divider sx={{ my: 2 }} />
-                                <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                                    <DescriptionIcon sx={{ mr: 1, mt: 0.5, color: 'text.secondary' }} />
-                                    <Box>
-                                        <Typography variant="subtitle1" gutterBottom>
-                                            Notes
-                                        </Typography>
+                                    <Grid item xs={12} sm={6}>
+                                        <Typography variant="body2" color="text.secondary">Created</Typography>
                                         <Typography variant="body1">
-                                            {client.notes}
+                                            {new Date(client.createdAt).toLocaleDateString()}
                                         </Typography>
-                                    </Box>
-                                </Box>
-                            </Grid>
-                        )}
-                    </Grid>
-                </Box>
-            </Card>
+                                    </Grid>
 
-            {/* Tabs for related data */}
-            <Card>
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs
-                        value={tabValue}
-                        onChange={handleTabChange}
-                        aria-label="client details tabs"
-                    >
-                        <Tab
-                            icon={<GavelIcon />}
-                            iconPosition="start"
-                            label={`Cases (${cases.length})`}
-                            id="client-tab-0"
-                            aria-controls="client-tabpanel-0"
-                        />
-                        <Tab
-                            icon={<EventNoteIcon />}
-                            iconPosition="start"
-                            label={`Appointments (${appointments.length})`}
-                            id="client-tab-1"
-                            aria-controls="client-tabpanel-1"
-                        />
-                        <Tab
-                            icon={<ReceiptIcon />}
-                            iconPosition="start"
-                            label={`Invoices (${invoices.length})`}
-                            id="client-tab-2"
-                            aria-controls="client-tabpanel-2"
-                        />
-                    </Tabs>
-                </Box>
-
-                {/* Cases Tab */}
-                <TabPanel value={tabValue} index={0}>
-                    {cases.length > 0 ? (
-                        <Grid container spacing={2}>
-                            {cases.map(caseItem => (
-                                <Grid item xs={12} md={6} key={caseItem.caseId}>
-                                    <Card variant="outlined" sx={{ p: 2 }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <Typography variant="subtitle1">
-                                                {caseItem.title}
+                                    {client.notes && (
+                                        <Grid item xs={12}>
+                                            <Typography variant="body2" color="text.secondary">Notes</Typography>
+                                            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                                                {client.notes}
                                             </Typography>
-                                            <Chip
-                                                label={caseItem.status}
-                                                size="small"
-                                                color={
-                                                    caseItem.status === 'Active' ? 'success' :
-                                                        caseItem.status === 'Pending' ? 'warning' :
-                                                            caseItem.status === 'Closed' ? 'error' : 'default'
-                                                }
-                                            />
-                                        </Box>
-                                        <Typography variant="body2" color="text.secondary">
-                                            {caseItem.caseNumber}
-                                        </Typography>
-                                        <Button
-                                            size="small"
-                                            sx={{ mt: 1 }}
-                                            onClick={() => navigate(`/cases/${caseItem.caseId}`)}
-                                        >
-                                            View Details
-                                        </Button>
-                                    </Card>
+                                        </Grid>
+                                    )}
                                 </Grid>
-                            ))}
-                        </Grid>
-                    ) : (
-                        <Box sx={{ textAlign: 'center', py: 4 }}>
-                            <Typography variant="body1" color="text.secondary">
-                                No cases found for this client.
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                sx={{ mt: 2 }}
-                                onClick={() => navigate('/cases/new', { state: { clientId: client.clientId } })}
-                            >
-                                Create New Case
-                            </Button>
-                        </Box>
-                    )}
-                </TabPanel>
+                            )}
 
-                {/* Appointments Tab */}
-                <TabPanel value={tabValue} index={1}>
-                    {appointments.length > 0 ? (
-                        <Grid container spacing={2}>
-                            {appointments.map(appointment => (
-                                <Grid item xs={12} key={appointment.appointmentId}>
-                                    <Card variant="outlined" sx={{ p: 2 }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <Typography variant="subtitle1">
-                                                {appointment.title}
-                                            </Typography>
-                                            <Chip
-                                                label={appointment.status}
-                                                size="small"
-                                                color={
-                                                    appointment.status === 'Scheduled' ? 'primary' :
-                                                        appointment.status === 'Completed' ? 'success' :
-                                                            appointment.status === 'Cancelled' ? 'error' : 'default'
-                                                }
-                                            />
+                            {/* Cases Tab */}
+                            {tabValue === 1 && (
+                                <>
+                                    {loadingRelated ? (
+                                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                                            <CircularProgress size={30} />
                                         </Box>
-                                        <Typography variant="body2" color="text.secondary">
-                                            {new Date(appointment.startTime).toLocaleString()} -
-                                            {new Date(appointment.endTime).toLocaleTimeString()}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                                            {appointment.location || 'No location specified'}
-                                        </Typography>
-                                        <Button
-                                            size="small"
-                                            sx={{ mt: 1 }}
-                                            onClick={() => navigate(`/appointments/${appointment.appointmentId}`)}
-                                        >
-                                            View Details
-                                        </Button>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    ) : (
-                        <Box sx={{ textAlign: 'center', py: 4 }}>
-                            <Typography variant="body1" color="text.secondary">
-                                No appointments found for this client.
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                sx={{ mt: 2 }}
-                                onClick={() => navigate('/appointments/new', { state: { clientId: client.clientId } })}
-                            >
-                                Schedule Appointment
-                            </Button>
-                        </Box>
-                    )}
-                </TabPanel>
+                                    ) : cases.length > 0 ? (
+                                        <>
+                                            {cases.map((caseItem) => (
+                                                <Box
+                                                    key={caseItem.caseId}
+                                                    sx={{
+                                                        p: 2,
+                                                        mb: 2,
+                                                        border: '1px solid',
+                                                        borderColor: 'divider',
+                                                        borderRadius: 1,
+                                                        '&:hover': { bgcolor: 'action.hover', cursor: 'pointer' }
+                                                    }}
+                                                    onClick={() => navigate(`/cases/${caseItem.caseId}`)}
+                                                >
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                                        <GavelIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                                                        <Typography variant="subtitle1">{caseItem.title}</Typography>
+                                                    </Box>
+                                                    <Grid container spacing={2}>
+                                                        <Grid item xs={6}>
+                                                            <Typography variant="body2" color="text.secondary">Case Number</Typography>
+                                                            <Typography variant="body2">{caseItem.caseNumber}</Typography>
+                                                        </Grid>
+                                                        <Grid item xs={6}>
+                                                            <Typography variant="body2" color="text.secondary">Status</Typography>
+                                                            <Chip label={caseItem.status} size="small" />
+                                                        </Grid>
+                                                    </Grid>
+                                                </Box>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <Box sx={{ textAlign: 'center', p: 3 }}>
+                                            <FileIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
+                                            <Typography color="text.secondary">No cases found for this client</Typography>
+                                            <Button
+                                                variant="contained"
+                                                sx={{ mt: 2 }}
+                                                onClick={() => navigate('/cases/new', { state: { clientId: client.clientId } })}
+                                            >
+                                                Create New Case
+                                            </Button>
+                                        </Box>
+                                    )}
+                                </>
+                            )}
 
-                {/* Invoices Tab */}
-                <TabPanel value={tabValue} index={2}>
-                    {invoices.length > 0 ? (
-                        <Grid container spacing={2}>
-                            {invoices.map(invoice => (
-                                <Grid item xs={12} md={6} key={invoice.invoiceId}>
-                                    <Card variant="outlined" sx={{ p: 2 }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <Typography variant="subtitle1">
-                                                {invoice.invoiceNumber}
-                                            </Typography>
-                                            <Chip
-                                                label={invoice.status}
-                                                size="small"
-                                                color={
-                                                    invoice.status === 'Paid' ? 'success' :
-                                                        invoice.status === 'Overdue' ? 'error' :
-                                                            invoice.status === 'Pending' ? 'warning' : 'default'
-                                                }
-                                            />
+                            {/* Appointments Tab */}
+                            {tabValue === 2 && (
+                                <>
+                                    {loadingRelated ? (
+                                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                                            <CircularProgress size={30} />
                                         </Box>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Amount: ${invoice.amount.toFixed(2)}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Issued: {new Date(invoice.issueDate).toLocaleDateString()}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Due: {new Date(invoice.dueDate).toLocaleDateString()}
-                                        </Typography>
-                                        <Button
-                                            size="small"
-                                            sx={{ mt: 1 }}
-                                            onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}`)}
-                                        >
-                                            View Details
-                                        </Button>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    ) : (
-                        <Box sx={{ textAlign: 'center', py: 4 }}>
-                            <Typography variant="body1" color="text.secondary">
-                                No invoices found for this client.
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                sx={{ mt: 2 }}
-                                onClick={() => navigate('/billing/invoices/new', { state: { clientId: client.clientId } })}
-                            >
-                                Create New Invoice
-                            </Button>
-                        </Box>
-                    )}
-                </TabPanel>
-            </Card>
+                                    ) : appointments.length > 0 ? (
+                                        <>
+                                            {appointments.map((appointment) => (
+                                                <Box
+                                                    key={appointment.appointmentId}
+                                                    sx={{
+                                                        p: 2,
+                                                        mb: 2,
+                                                        border: '1px solid',
+                                                        borderColor: 'divider',
+                                                        borderRadius: 1
+                                                    }}
+                                                >
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                                        <EventIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                                                        <Typography variant="subtitle1">{appointment.title}</Typography>
+                                                    </Box>
+                                                    <Grid container spacing={2}>
+                                                        <Grid item xs={6}>
+                                                            <Typography variant="body2" color="text.secondary">Date & Time</Typography>
+                                                            <Typography variant="body2">
+                                                                {new Date(appointment.startTime).toLocaleString()}
+                                                            </Typography>
+                                                        </Grid>
+                                                        <Grid item xs={6}>
+                                                            <Typography variant="body2" color="text.secondary">Status</Typography>
+                                                            <Chip label={appointment.status} size="small" />
+                                                        </Grid>
+                                                    </Grid>
+                                                </Box>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <Box sx={{ textAlign: 'center', p: 3 }}>
+                                            <EventIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
+                                            <Typography color="text.secondary">No appointments found for this client</Typography>
+                                            <Button
+                                                variant="contained"
+                                                sx={{ mt: 2 }}
+                                                onClick={() => navigate('/appointments/new', { state: { clientId: client.clientId } })}
+                                            >
+                                                Schedule Appointment
+                                            </Button>
+                                        </Box>
+                                    )}
+                                </>
+                            )}
+
+                            {/* Invoices Tab */}
+                            {tabValue === 3 && (
+                                <>
+                                    {loadingRelated ? (
+                                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                                            <CircularProgress size={30} />
+                                        </Box>
+                                    ) : invoices.length > 0 ? (
+                                        <>
+                                            {invoices.map((invoice) => (
+                                                <Box
+                                                    key={invoice.invoiceId}
+                                                    sx={{
+                                                        p: 2,
+                                                        mb: 2,
+                                                        border: '1px solid',
+                                                        borderColor: 'divider',
+                                                        borderRadius: 1,
+                                                        '&:hover': { bgcolor: 'action.hover', cursor: 'pointer' }
+                                                    }}
+                                                    onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}`)}
+                                                >
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                                        <ReceiptIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                                                        <Typography variant="subtitle1">Invoice #{invoice.invoiceNumber}</Typography>
+                                                    </Box>
+                                                    <Grid container spacing={2}>
+                                                        <Grid item xs={4}>
+                                                            <Typography variant="body2" color="text.secondary">Amount</Typography>
+                                                            <Typography variant="body2">
+                                                                ${(invoice.amount + invoice.taxAmount).toFixed(2)}
+                                                            </Typography>
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <Typography variant="body2" color="text.secondary">Date</Typography>
+                                                            <Typography variant="body2">
+                                                                {new Date(invoice.issueDate).toLocaleDateString()}
+                                                            </Typography>
+                                                        </Grid>
+                                                        <Grid item xs={4}>
+                                                            <Typography variant="body2" color="text.secondary">Status</Typography>
+                                                            <Chip
+                                                                label={invoice.status}
+                                                                color={invoice.status === 'Paid' ? 'success' :
+                                                                    invoice.status === 'Overdue' ? 'error' : 'default'}
+                                                                size="small"
+                                                            />
+                                                        </Grid>
+                                                    </Grid>
+                                                </Box>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <Box sx={{ textAlign: 'center', p: 3 }}>
+                                            <ReceiptIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
+                                            <Typography color="text.secondary">No invoices found for this client</Typography>
+                                            <Button
+                                                variant="contained"
+                                                sx={{ mt: 2 }}
+                                                onClick={() => navigate('/billing/invoices/new', { state: { clientId: client.clientId } })}
+                                            >
+                                                Create New Invoice
+                                            </Button>
+                                        </Box>
+                                    )}
+                                </>
+                            )}
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Grid>
 
             {/* Delete Confirmation Dialog */}
             <Dialog
                 open={deleteDialogOpen}
-                onClose={handleDeleteClose}
-                aria-labelledby="delete-dialog-title"
-                aria-describedby="delete-dialog-description"
+                onClose={() => setDeleteDialogOpen(false)}
             >
-                <DialogTitle id="delete-dialog-title">
-                    Delete Client
-                </DialogTitle>
+                <DialogTitle>Delete Client</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="delete-dialog-description">
-                        Are you sure you want to delete {client.isIndividual ?
-                            `${client.firstName} ${client.lastName}` :
-                            client.companyName}? This action cannot be undone.
-                        {(cases.length > 0 || appointments.length > 0 || invoices.length > 0) && (
-                            <span>
-                                <br /><br />
-                                <strong>Warning:</strong> This client has associated data ({cases.length} cases,
-                                {appointments.length} appointments, {invoices.length} invoices) that may be affected.
-                            </span>
-                        )}
-                    </DialogContentText>
+                    Are you sure you want to delete client {client.firstName} {client.lastName}?
+                    This action cannot be undone.
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleDeleteClose} disabled={deleteLoading}>
-                        Cancel
-                    </Button>
+                    <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
                     <Button
-                        onClick={handleDeleteConfirm}
+                        onClick={handleDeleteClient}
                         color="error"
-                        autoFocus
-                        disabled={deleteLoading}
-                        startIcon={deleteLoading && <CircularProgress size={20} />}
+                        variant="contained"
                     >
-                        {deleteLoading ? 'Deleting...' : 'Delete'}
+                        Delete
                     </Button>
                 </DialogActions>
             </Dialog>
         </>
     );
-};
+}
 
 export default ClientDetailsPage;

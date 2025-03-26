@@ -24,8 +24,12 @@ import {
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
+
+    const { t } = useTranslation();
+
     const { login, loading, error: authError } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -131,7 +135,7 @@ const LoginPage = () => {
                 </Avatar>
 
                 <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-                    Sign in to Law Office Management
+                    {t('app.login')}
                 </Typography>
 
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
