@@ -24,12 +24,12 @@ COPY . .
 
 # Create the missing sw-register.js file in the src directory
 RUN mkdir -p src
-RUN echo '// Service worker registration for PWA support\n\nexport function registerServiceWorker() {\n  if (\"serviceWorker\" in navigator) {\n    window.addEventListener(\"load\", () => {\n      navigator.serviceWorker.register(\"/sw.js\")\n        .then(registration => {\n          console.log(\"ServiceWorker registration successful with scope: \", registration.scope);\n        })\n        .catch(error => {\n          console.log(\"ServiceWorker registration failed: \", error);\n        });\n    });\n  }\n}' > src/sw-register.js
 
 # List contents to verify file structure
 RUN ls -la src/
 
 RUN npm pkg set dependencies.react-router-dom="^6.22.0"
+RUN npm install --legacy-peer-deps i18next i18next-browser-languagedetector react-i18next
 RUN npm install --legacy-peer-deps
 
 # Build the application with legacy peer deps

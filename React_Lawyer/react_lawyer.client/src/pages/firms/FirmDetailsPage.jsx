@@ -1,54 +1,62 @@
 // src/pages/firms/FirmDetailsPage.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Box,
-    Card,
-    Grid,
-    Typography,
-    Divider,
     Button,
+    Card,
+    CardContent,
     CircularProgress,
-    Alert,
-    Tabs,
+    Container,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Divider,
+    Grid,
+    IconButton,
+    Paper,
     Tab,
+    Tabs,
+    TextField,
+    Typography,
+    Chip,
     Avatar,
     List,
     ListItem,
     ListItemAvatar,
     ListItemText,
     ListItemSecondaryAction,
-    IconButton,
-    Chip,
-    Paper,
-    Link
+    Snackbar,
+    Alert,
+    Tooltip
 } from '@mui/material';
 import {
-    Business as BusinessIcon,
-    Phone as PhoneIcon,
-    Email as EmailIcon,
-    Web as WebIcon,
-    LocationOn as LocationIcon,
-    Person as PersonIcon,
-    SupervisorAccount as AdminIcon,
-    PermIdentity as SecretaryIcon,
-    Gavel as LawyerIcon,
-    Assignment as CaseIcon,
-    People as ClientIcon,
+    Add as AddIcon,
     Edit as EditIcon,
     Delete as DeleteIcon,
-    Add as AddIcon,
-    Event as EventIcon,
+    Save as SaveIcon,
+    Cancel as CancelIcon,
+    Business as BusinessIcon,
+    PersonAdd as PersonAddIcon,
+    Gavel as LawyerIcon,
+    AssignmentInd as SecretaryIcon,
+    SupervisorAccount as AdminIcon,
+    Email as EmailIcon,
+    Phone as PhoneIcon,
+    Language as WebsiteIcon,
+    Description as TaxIdIcon,
+    LocationOn as LocationIcon,
     CalendarToday as CalendarIcon,
-    ReceiptLong as InvoiceIcon
+    Receipt as BillingIcon
 } from '@mui/icons-material';
 import PageHeader from '../../components/common/PageHeader';
-import DashboardCard from '../../pages/dashboard/DashboardCard';
-import { useAuth } from '../../features/auth/AuthContext';
-import useOnlineStatus from '../../hooks/useOnlineStatus';
 import firmsService from '../../services/firmsService';
+import secretaryService from '../../services/secretaryService';
+import lawyerService from '../../services/lawyerService';
 
-// TabPanel component for tabbed content
+// TabPanel component for tab content
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
 
@@ -61,7 +69,7 @@ function TabPanel(props) {
             {...other}
         >
             {value === index && (
-                <Box sx={{ py: 3 }}>
+                <Box sx={{ p: 3 }}>
                     {children}
                 </Box>
             )}
@@ -70,655 +78,1048 @@ function TabPanel(props) {
 }
 
 const FirmDetailsPage = () => {
-    const { id } = useParams();
     const navigate = useNavigate();
-    const { hasRole } = useAuth();
-    const isOnline = useOnlineStatus();
-    const isAdmin = hasRole('Admin');
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const firmId = parseInt(queryParams.get('id')) || 1;
 
-    // State variables
-    const [firmDetails, setFirmDetails] = useState(null);
-    const [statistics, setStatistics] = useState(null);
+    // State management
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
+    const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
     const [tabValue, setTabValue] = useState(0);
 
-    // Fetch firm details and statistics
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const [detailsData, statsData] = await Promise.all([
-                    firmsService.getLawFirmDetails(id),
-                    firmsService.getLawFirmStatistics(id)
-                ]);
-                setFirmDetails(detailsData);
-                setStatistics(statsData);
-            } catch (error) {
-                console.error('Error fetching firm data:', error);
-                setError(error.message || 'Failed to fetch firm data');
-            } finally {
-                setLoading(false);
-            }
-        };
+    // Firm data state
+    const [firm, setFirm] = useState(null);
+    const [firmDetails, setFirmDetails] = useState(null);
+    const [statistics, setStatistics] = useState(null);
 
-        if (isOnline && id) {
-            fetchData();
-        } else if (!isOnline) {
-            setError('You are offline. Connect to the internet to view firm details.');
+    // Edit mode state
+    const [editMode, setEditMode] = useState(false);
+    const [editedFirm, setEditedFirm] = useState(null);
+
+    // Staff management state
+    const [lawyers, setLawyers] = useState([]);
+    const [secretaries, setSecretaries] = useState([]);
+    const [staffDialogOpen, setStaffDialogOpen] = useState({ type: '', open: false });
+    const [newStaffMember, setNewStaffMember] = useState({});
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState({ type: '', data: null });
+
+    // Load data on mount and when firm ID changes
+    useEffect(() => {
+        fetchFirmData();
+    }, [firmId, location.search]);
+
+    // Fetch all firm data
+    const fetchFirmData = async () => {
+        setLoading(true);
+        setError('');
+
+        try {
+            // Get basic firm info
+            const firmData = await firmsService.getLawFirmById(firmId);
+            setFirm(firmData);
+            setEditedFirm({ ...firmData });
+
+            // Try to get detailed firm info, but continue if it fails
+            try {
+                const details = await firmsService.getLawFirmDetails(firmId);
+                setFirmDetails(details);
+                setLawyers(details.lawyers || []);
+                setSecretaries(details.secretaries || []);
+            } catch (detailsErr) {
+                console.error('Error fetching firm details:', detailsErr);
+                // We'll continue without details
+            }
+
+            // Try to get statistics, but continue if it fails
+            try {
+                const stats = await firmsService.getLawFirmStatistics(firmId);
+                setStatistics(stats);
+            } catch (statsErr) {
+                console.error('Error fetching statistics:', statsErr);
+                // We'll continue without statistics
+            }
+
+        } catch (err) {
+            console.error('Error fetching firm data:', err);
+            setError('Failed to load firm information. Please try again.');
+        } finally {
             setLoading(false);
         }
-    }, [id, isOnline]);
+    };
 
-    // Handle tab change
+    // Tab navigation
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
 
-    // Handle edit firm
-    const handleEditFirm = () => {
-        navigate(`/firms/${id}/edit`);
+    // Edit mode toggle
+    const handleEditToggle = () => {
+        if (editMode) {
+            // Cancel edit
+            setEditedFirm({ ...firm });
+        }
+        setEditMode(!editMode);
     };
 
-    // Handle delete firm
-    const handleDeleteFirm = async () => {
-        if (window.confirm('Are you sure you want to delete this firm? This action cannot be undone.')) {
-            try {
-                await firmsService.deleteLawFirm(id);
-                navigate('/firms');
-            } catch (error) {
-                console.error('Error deleting firm:', error);
-                setError(error.message || 'Failed to delete firm');
-            }
+    // Update form values
+    const handleFirmChange = (e) => {
+        const { name, value } = e.target;
+        setEditedFirm(prev => ({ ...prev, [name]: value }));
+    };
+
+    // Save firm changes
+    const handleSaveFirm = async () => {
+        try {
+            await firmsService.updateLawFirm(firmId, editedFirm);
+            setFirm(editedFirm);
+            setEditMode(false);
+            showNotification('Firm information updated successfully', 'success');
+        } catch (err) {
+            console.error('Error updating firm:', err);
+            showNotification('Failed to update firm information', 'error');
         }
     };
 
-    // Handle add lawyer
-    const handleAddLawyer = () => {
-        navigate(`/firms/${id}/lawyers/new`);
+    // Staff dialog management
+    const openStaffDialog = (type) => {
+        // Initialize new staff member based on type
+        if (type === 'lawyer') {
+            setNewStaffMember({
+                username: '',
+                email: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+                phone: '',
+                barNumber: '',
+                title: 'Associate',
+                specializations: '',
+                hourlyRate: 150
+            });
+        } else if (type === 'secretary') {
+            setNewStaffMember({
+                username: '',
+                email: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+                phone: '',
+                position: 'Legal Secretary',
+                canManageClients: true,
+                canScheduleAppointments: true,
+                canUploadDocuments: true,
+                canManageBilling: false
+            });
+        }
+        setStaffDialogOpen({ type, open: true });
     };
 
-    // Handle add secretary
-    const handleAddSecretary = () => {
-        navigate(`/firms/${id}/secretaries/new`);
+    const closeStaffDialog = () => {
+        setStaffDialogOpen({ type: '', open: false });
     };
 
-    if (loading) {
+    // Handle staff form changes
+    const handleStaffChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setNewStaffMember(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    // Add staff member
+    const handleAddStaff = async () => {
+        try {
+            if (staffDialogOpen.type === 'lawyer') {
+                await firmsService.addLawyer(firmId, newStaffMember);
+                showNotification('Lawyer added successfully', 'success');
+            } else if (staffDialogOpen.type === 'secretary') {
+                await firmsService.addSecretary(firmId, newStaffMember);
+                showNotification('Secretary added successfully', 'success');
+            }
+
+            closeStaffDialog();
+            fetchFirmData(); // Refresh data
+        } catch (err) {
+            console.error(`Error adding ${staffDialogOpen.type}:`, err);
+            showNotification(`Failed to add ${staffDialogOpen.type}: ${err.message || ''}`, 'error');
+        }
+    };
+
+    // Delete staff member
+    const openDeleteDialog = (type, user) => {
+        setUserToDelete({ type, data: user });
+        setDeleteDialogOpen(true);
+    };
+
+    const closeDeleteDialog = () => {
+        setDeleteDialogOpen(false);
+        setUserToDelete({ type: '', data: null });
+    };
+
+    const handleDeleteStaff = async () => {
+        try {
+            if (userToDelete.type === 'lawyer') {
+                await lawyerService.deleteLawyer(userToDelete.data.lawyerId);
+                setLawyers(lawyers.filter(l => l.lawyerId !== userToDelete.data.lawyerId));
+            } else if (userToDelete.type === 'secretary') {
+                await secretaryService.deleteSecretary(userToDelete.data.secretaryId);
+                setSecretaries(secretaries.filter(s => s.secretaryId !== userToDelete.data.secretaryId));
+            }
+
+            showNotification(`${userToDelete.type} deleted successfully`, 'success');
+        } catch (err) {
+            console.error(`Error deleting ${userToDelete.type}:`, err);
+            showNotification(`Failed to delete ${userToDelete.type}`, 'error');
+        } finally {
+            closeDeleteDialog();
+        }
+    };
+
+    // Notification helper
+    const showNotification = (message, severity) => {
+        setNotification({ open: true, message, severity });
+    };
+
+    const closeNotification = () => {
+        setNotification({ ...notification, open: false });
+    };
+
+    // Navigation
+    const handleBackToList = () => {
+        navigate('/firm');
+    };
+
+    // Render loading state
+    if (loading && !firm) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-                <CircularProgress />
-            </Box>
+            <Container maxWidth="lg">
+                <PageHeader
+                    title="Firm Details"
+                    subtitle="Loading firm information..."
+                    breadcrumbs={[
+                        { text: 'Dashboard', link: '/' },
+                        { text: 'Firm Management', link: '/firm' },
+                        { text: 'Firm Details' }
+                    ]}
+                />
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
+                    <CircularProgress />
+                </Box>
+            </Container>
         );
     }
 
+    // Render error state
     if (error) {
-        return <Alert severity="error" sx={{ m: 2 }}>{error}</Alert>;
+        return (
+            <Container maxWidth="lg">
+                <PageHeader
+                    title="Firm Details"
+                    subtitle="Error loading firm information"
+                    breadcrumbs={[
+                        { text: 'Dashboard', link: '/' },
+                        { text: 'Firm Management', link: '/firm' },
+                        { text: 'Firm Details' }
+                    ]}
+                    action="Back to List"
+                    onActionClick={handleBackToList}
+                />
+                <Alert severity="error" sx={{ mt: 2, mb: 2 }}>{error}</Alert>
+                <Button variant="contained" onClick={fetchFirmData}>Try Again</Button>
+            </Container>
+        );
     }
-
-    if (!firmDetails) {
-        return <Alert severity="warning" sx={{ m: 2 }}>Firm not found</Alert>;
-    }
-
-    const { lawFirm, lawyers, secretaries, clientCount, caseCount, recentClients, activeCases } = firmDetails;
 
     return (
-        <>
+        <Container maxWidth="lg">
             <PageHeader
-                title={lawFirm.name}
-                subtitle="Law Firm Details"
-                action={isAdmin}
-                actionText="Edit Firm"
-                actionIcon={<EditIcon />}
-                onActionClick={handleEditFirm}
+                title={firm?.name || 'Firm Details'}
+                subtitle="View and manage firm information"
                 breadcrumbs={[
                     { text: 'Dashboard', link: '/' },
-                    { text: 'Law Firms', link: '/firms' },
-                    { text: lawFirm.name }
+                    { text: 'Firm Management', link: '/firm' },
+                    { text: firm?.name || 'Firm Details' }
                 ]}
+                action={editMode ? "Cancel" : "Edit Firm"}
+                actionIcon={editMode ? <CancelIcon /> : <EditIcon />}
+                onActionClick={handleEditToggle}
             />
 
-            {/* Firm Information Card */}
-            <Card sx={{ mb: 3, p: 3 }}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                        <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                            <Avatar
-                                sx={{
-                                    width: 60,
-                                    height: 60,
-                                    bgcolor: 'primary.main',
-                                    mr: 2
-                                }}
-                            >
-                                <BusinessIcon sx={{ fontSize: 32 }} />
-                            </Avatar>
-                            <Box>
-                                <Typography variant="h5" component="h2" gutterBottom>
-                                    {lawFirm.name}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Established: {new Date(lawFirm.foundedDate).toLocaleDateString()}
-                                </Typography>
-                            </Box>
-                        </Box>
+            {/* Status indicator and save button */}
+            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Chip
+                    label={firm?.isActive ? 'Active' : 'Inactive'}
+                    color={firm?.isActive ? 'success' : 'error'}
+                    variant="outlined"
+                    sx={{ fontSize: '1rem', px: 1 }}
+                />
+                {editMode && (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<SaveIcon />}
+                        onClick={handleSaveFirm}
+                    >
+                        Save Changes
+                    </Button>
+                )}
+            </Box>
 
-                        <List sx={{ my: 2 }}>
-                            <ListItem>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <LocationIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary="Address"
-                                    secondary={lawFirm.address || 'Not specified'}
-                                />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <PhoneIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary="Phone"
-                                    secondary={
-                                        lawFirm.phoneNumber ? (
-                                            <Link href={`tel:${lawFirm.phoneNumber}`} color="inherit">
-                                                {lawFirm.phoneNumber}
-                                            </Link>
-                                        ) : 'Not specified'
-                                    }
-                                />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <EmailIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary="Email"
-                                    secondary={
-                                        lawFirm.email ? (
-                                            <Link href={`mailto:${lawFirm.email}`} color="inherit">
-                                                {lawFirm.email}
-                                            </Link>
-                                        ) : 'Not specified'
-                                    }
-                                />
-                            </ListItem>
-                            {lawFirm.website && (
-                                <ListItem>
-                                    <ListItemAvatar>
-                                        <Avatar>
-                                            <WebIcon />
-                                        </Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary="Website"
-                                        secondary={
-                                            <Link
-                                                href={lawFirm.website.startsWith('http') ? lawFirm.website : `https://${lawFirm.website}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                color="inherit"
-                                            >
-                                                {lawFirm.website}
-                                            </Link>
-                                        }
-                                    />
-                                </ListItem>
-                            )}
-                        </List>
-                    </Grid>
-
-                    <Grid item xs={12} md={6}>
-                        <Paper sx={{ p: 3, height: '100%', bgcolor: 'background.paper' }}>
-                            <Typography variant="h6" gutterBottom>
-                                Subscription Information
-                            </Typography>
-                            <Divider sx={{ mb: 2 }} />
-
-                            <Grid container spacing={2}>
-                                <Grid item xs={6}>
-                                    <Typography variant="subtitle2" color="text.secondary">Plan</Typography>
-                                    <Chip
-                                        label={lawFirm.subscriptionPlan || 'Standard'}
-                                        color="primary"
-                                        sx={{ mt: 1 }}
-                                    />
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Typography variant="subtitle2" color="text.secondary">Status</Typography>
-                                    <Chip
-                                        label={lawFirm.isActive ? 'Active' : 'Inactive'}
-                                        color={lawFirm.isActive ? 'success' : 'error'}
-                                        sx={{ mt: 1 }}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Typography variant="subtitle2" color="text.secondary">Expiry Date</Typography>
-                                    <Typography variant="body1">
-                                        {lawFirm.subscriptionExpiryDate ?
-                                            new Date(lawFirm.subscriptionExpiryDate).toLocaleDateString() :
-                                            'N/A'}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Typography variant="subtitle2" color="text.secondary">Billing Contact</Typography>
-                                    <Typography variant="body1">{lawFirm.billingContact || 'N/A'}</Typography>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Typography variant="subtitle2" color="text.secondary">Billing Address</Typography>
-                                    <Typography variant="body1">{lawFirm.billingAddress || 'Same as office address'}</Typography>
-                                </Grid>
-                            </Grid>
-
-                            {isAdmin && (
-                                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button
-                                        variant="outlined"
-                                        color="primary"
-                                        startIcon={<EditIcon />}
-                                        onClick={handleEditFirm}
-                                        sx={{ mr: 1 }}
-                                    >
-                                        Edit Details
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        color="error"
-                                        startIcon={<DeleteIcon />}
-                                        onClick={handleDeleteFirm}
-                                    >
-                                        Delete Firm
-                                    </Button>
-                                </Box>
-                            )}
-                        </Paper>
-                    </Grid>
-                </Grid>
-            </Card>
-
-            {/* Statistics Cards */}
-            {statistics && (
-                <Grid container spacing={3} sx={{ mb: 3 }}>
-                    <Grid item xs={12} sm={6} md={3}>
-                        <DashboardCard
-                            title="Active Cases"
-                            value={statistics.activeCases}
-                            icon={<CaseIcon />}
-                            color="primary"
-                            subtitle={`${statistics.closedCases} closed cases`}
-                            onClick={() => navigate('/cases')}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                        <DashboardCard
-                            title="Active Clients"
-                            value={statistics.activeClients}
-                            icon={<ClientIcon />}
-                            color="secondary"
-                            subtitle={`${statistics.totalClients} total clients`}
-                            onClick={() => navigate('/clients')}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                        <DashboardCard
-                            title="Upcoming Appointments"
-                            value={statistics.upcomingAppointments}
-                            icon={<EventIcon />}
-                            color="warning"
-                            onClick={() => navigate('/appointments')}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                        <DashboardCard
-                            title="Outstanding Invoices"
-                            value={statistics.outstandingInvoices}
-                            icon={<InvoiceIcon />}
-                            color="error"
-                            subtitle={`${statistics.totalInvoices} total invoices`}
-                            onClick={() => navigate('/billing')}
-                        />
-                    </Grid>
-                </Grid>
-            )}
-
-            {/* Tabbed Content */}
-            <Card sx={{ mb: 3 }}>
+            {/* Tabs Navigation */}
+            <Paper sx={{ mb: 3 }}>
                 <Tabs
                     value={tabValue}
                     onChange={handleTabChange}
-                    variant="scrollable"
-                    scrollButtons="auto"
-                    sx={{ borderBottom: 1, borderColor: 'divider' }}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="fullWidth"
                 >
-                    <Tab label="Lawyers" icon={<LawyerIcon />} iconPosition="start" />
-                    <Tab label="Secretaries" icon={<SecretaryIcon />} iconPosition="start" />
-                    <Tab label="Active Cases" icon={<CaseIcon />} iconPosition="start" />
-                    <Tab label="Recent Clients" icon={<ClientIcon />} iconPosition="start" />
+                    <Tab label="Firm Information" id="firm-tab-0" />
+                    <Tab label="Staff" id="firm-tab-1" />
+                    <Tab label="Statistics" id="firm-tab-2" />
                 </Tabs>
+            </Paper>
 
-                {/* Lawyers Tab */}
-                <TabPanel value={tabValue} index={0}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                        <Typography variant="h6" component="h2">
-                            Lawyers ({lawyers.length})
-                        </Typography>
-                        {isAdmin && (
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<AddIcon />}
-                                onClick={handleAddLawyer}
-                            >
-                                Add Lawyer
-                            </Button>
-                        )}
-                    </Box>
+            {/* Firm Information Tab */}
+            <TabPanel value={tabValue} index={0}>
+                <Grid container spacing={3}>
+                    {/* General Information */}
+                    <Grid item xs={12} md={6}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <BusinessIcon sx={{ mr: 1 }} />
+                                    General Information
+                                </Typography>
+                                <Divider sx={{ mb: 2 }} />
 
-                    {lawyers.length === 0 ? (
-                        <Alert severity="info">No lawyers found for this firm</Alert>
-                    ) : (
-                        <Grid container spacing={2}>
-                            {lawyers.map(lawyer => (
-                                <Grid item xs={12} sm={6} md={4} key={lawyer.lawyerId}>
-                                    <Card sx={{ p: 2 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
-                                                <LawyerIcon />
-                                            </Avatar>
-                                            <Box sx={{ flexGrow: 1 }}>
-                                                <Typography variant="h6" component="h3">
-                                                    {lawyer.user.firstName} {lawyer.user.lastName}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    {lawyer.title || 'Attorney at Law'}
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box sx={{ mt: 2 }}>
-                                            <Typography variant="body2">
-                                                <strong>Bar #:</strong> {lawyer.barNumber || 'N/A'}
-                                            </Typography>
-                                            <Typography variant="body2">
-                                                <strong>Email:</strong> {lawyer.user.email}
-                                            </Typography>
-                                            <Typography variant="body2">
-                                                <strong>Hourly Rate:</strong> ${lawyer.hourlyRate}
-                                            </Typography>
-                                            {lawyer.specializations && (
-                                                <Box sx={{ mt: 1 }}>
-                                                    {lawyer.specializations.split(',').map((spec, index) => (
-                                                        <Chip
-                                                            key={index}
-                                                            label={spec.trim()}
-                                                            size="small"
-                                                            sx={{ mr: 0.5, mb: 0.5 }}
-                                                        />
-                                                    ))}
-                                                </Box>
-                                            )}
-                                        </Box>
-                                        {isAdmin && (
-                                            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                                                <IconButton
-                                                    size="small"
-                                                    color="primary"
-                                                    onClick={() => navigate(`/lawyers/${lawyer.lawyerId}`)}
-                                                >
-                                                    <PersonIcon fontSize="small" />
-                                                </IconButton>
-                                                <IconButton
-                                                    size="small"
-                                                    color="primary"
-                                                    onClick={() => navigate(`/lawyers/${lawyer.lawyerId}/edit`)}
-                                                >
-                                                    <EditIcon fontSize="small" />
-                                                </IconButton>
-                                            </Box>
-                                        )}
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    )}
-                </TabPanel>
-
-                {/* Secretaries Tab */}
-                <TabPanel value={tabValue} index={1}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                        <Typography variant="h6" component="h2">
-                            Secretaries ({secretaries.length})
-                        </Typography>
-                        {isAdmin && (
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<AddIcon />}
-                                onClick={handleAddSecretary}
-                            >
-                                Add Secretary
-                            </Button>
-                        )}
-                    </Box>
-
-                    {secretaries.length === 0 ? (
-                        <Alert severity="info">No secretaries found for this firm</Alert>
-                    ) : (
-                        <Grid container spacing={2}>
-                            {secretaries.map(secretary => (
-                                <Grid item xs={12} sm={6} md={4} key={secretary.secretaryId}>
-                                    <Card sx={{ p: 2 }}>
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <Avatar sx={{ bgcolor: 'secondary.main', mr: 2 }}>
-                                                <SecretaryIcon />
-                                            </Avatar>
-                                            <Box sx={{ flexGrow: 1 }}>
-                                                <Typography variant="h6" component="h3">
-                                                    {secretary.user.firstName} {secretary.user.lastName}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    {secretary.position || 'Legal Secretary'}
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                        <Box sx={{ mt: 2 }}>
-                                            <Typography variant="body2">
-                                                <strong>Email:</strong> {secretary.user.email}
-                                            </Typography>
-                                            <Typography variant="body2">
-                                                <strong>Joined:</strong> {new Date(secretary.joinDate).toLocaleDateString()}
-                                            </Typography>
-                                        </Box>
-                                        <Box sx={{ mt: 1 }}>
-                                            <Typography variant="body2"><strong>Permissions:</strong></Typography>
-                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
-                                                {secretary.canManageClients && (
-                                                    <Chip label="Manage Clients" size="small" color="info" />
-                                                )}
-                                                {secretary.canScheduleAppointments && (
-                                                    <Chip label="Schedule Appointments" size="small" color="info" />
-                                                )}
-                                                {secretary.canUploadDocuments && (
-                                                    <Chip label="Upload Documents" size="small" color="info" />
-                                                )}
-                                                {secretary.canManageBilling && (
-                                                    <Chip label="Manage Billing" size="small" color="info" />
-                                                )}
-                                            </Box>
-                                        </Box>
-                                        {isAdmin && (
-                                            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                                                <IconButton
-                                                    size="small"
-                                                    color="primary"
-                                                    onClick={() => navigate(`/secretaries/${secretary.secretaryId}`)}
-                                                >
-                                                    <PersonIcon fontSize="small" />
-                                                </IconButton>
-                                                <IconButton
-                                                    size="small"
-                                                    color="primary"
-                                                    onClick={() => navigate(`/secretaries/${secretary.secretaryId}/edit`)}
-                                                >
-                                                    <EditIcon fontSize="small" />
-                                                </IconButton>
-                                            </Box>
-                                        )}
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    )}
-                </TabPanel>
-
-                {/* Active Cases Tab */}
-                <TabPanel value={tabValue} index={2}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                        <Typography variant="h6" component="h2">
-                            Active Cases
-                        </Typography>
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            onClick={() => navigate('/cases')}
-                        >
-                            View All Cases
-                        </Button>
-                    </Box>
-
-                    {activeCases.length === 0 ? (
-                        <Alert severity="info">No active cases found for this firm</Alert>
-                    ) : (
-                        <Grid container spacing={2}>
-                            {activeCases.map(caseItem => (
-                                <Grid item xs={12} key={caseItem.caseId}>
-                                    <Card
-                                        sx={{
-                                            p: 2,
-                                            cursor: 'pointer',
-                                            '&:hover': { boxShadow: 4 }
-                                        }}
-                                        onClick={() => navigate(`/cases/${caseItem.caseId}`)}
-                                    >
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
-                                                <CaseIcon />
-                                            </Avatar>
-                                            <Box sx={{ flexGrow: 1 }}>
-                                                <Typography variant="h6" component="h3">
-                                                    {caseItem.title}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Case #: {caseItem.caseNumber} | Status: <Chip
-                                                        label={caseItem.status}
-                                                        size="small"
-                                                        color={
-                                                            caseItem.status === 'Intake' ? 'default' :
-                                                                caseItem.status === 'Active' ? 'primary' :
-                                                                    caseItem.status === 'Pending' ? 'warning' :
-                                                                        'default'
-                                                        }
-                                                    />
-                                                </Typography>
-                                            </Box>
-                                            <Box>
-                                                <Typography variant="caption" display="block" textAlign="right">
-                                                    Opened: {new Date(caseItem.openDate).toLocaleDateString()}
-                                                </Typography>
-                                                {caseItem.nextHearingDate && (
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                                        <CalendarIcon fontSize="small" sx={{ mr: 0.5 }} />
-                                                        <Typography variant="caption">
-                                                            Next Hearing: {new Date(caseItem.nextHearingDate).toLocaleDateString()}
-                                                        </Typography>
-                                                    </Box>
-                                                )}
-                                            </Box>
-                                        </Box>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    )}
-                </TabPanel>
-
-                {/* Recent Clients Tab */}
-                <TabPanel value={tabValue} index={3}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                        <Typography variant="h6" component="h2">
-                            Recent Clients
-                        </Typography>
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            onClick={() => navigate('/clients')}
-                        >
-                            View All Clients
-                        </Button>
-                    </Box>
-
-                    {recentClients.length === 0 ? (
-                        <Alert severity="info">No clients found for this firm</Alert>
-                    ) : (
-                        <Grid container spacing={2}>
-                            {recentClients.map(client => (
-                                <Grid item xs={12} sm={6} key={client.clientId}>
-                                    <Card
-                                        sx={{
-                                            p: 2,
-                                            cursor: 'pointer',
-                                            '&:hover': { boxShadow: 4 }
-                                        }}
-                                        onClick={() => navigate(`/clients/${client.clientId}`)}
-                                    >
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <Avatar sx={{ bgcolor: 'secondary.main', mr: 2 }}>
-                                                <ClientIcon />
-                                            </Avatar>
-                                            <Box sx={{ flexGrow: 1 }}>
-                                                <Typography variant="h6" component="h3">
-                                                    {client.firstName} {client.lastName}
-                                                </Typography>
-                                                {client.companyName && (
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        {client.companyName}
-                                                    </Typography>
-                                                )}
-                                                <Box sx={{ display: 'flex', mt: 1 }}>
-                                                    {client.email && (
-                                                        <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                                                            <EmailIcon fontSize="small" sx={{ mr: 0.5 }} />
-                                                            <Typography variant="body2">{client.email}</Typography>
-                                                        </Box>
-                                                    )}
-                                                    {client.phoneNumber && (
-                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                            <PhoneIcon fontSize="small" sx={{ mr: 0.5 }} />
-                                                            <Typography variant="body2">{client.phoneNumber}</Typography>
-                                                        </Box>
-                                                    )}
-                                                </Box>
-                                            </Box>
-                                            <Chip
-                                                label={client.type || 'Individual'}
-                                                size="small"
-                                                color="primary"
-                                                variant="outlined"
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12}>
+                                        {editMode ? (
+                                            <TextField
+                                                fullWidth
+                                                label="Firm Name"
+                                                name="name"
+                                                value={editedFirm.name || ''}
+                                                onChange={handleFirmChange}
+                                                margin="normal"
                                             />
+                                        ) : (
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="body2" color="text.secondary">Firm Name</Typography>
+                                                <Typography variant="body1">{firm?.name}</Typography>
+                                            </Box>
+                                        )}
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        {editMode ? (
+                                            <TextField
+                                                fullWidth
+                                                label="Address"
+                                                name="address"
+                                                value={editedFirm.address || ''}
+                                                onChange={handleFirmChange}
+                                                margin="normal"
+                                            />
+                                        ) : (
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <LocationIcon fontSize="small" sx={{ mr: 0.5 }} /> Address
+                                                </Typography>
+                                                <Typography variant="body1">{firm?.address || 'No address provided'}</Typography>
+                                            </Box>
+                                        )}
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        {editMode ? (
+                                            <TextField
+                                                fullWidth
+                                                label="Email"
+                                                name="email"
+                                                type="email"
+                                                value={editedFirm.email || ''}
+                                                onChange={handleFirmChange}
+                                                margin="normal"
+                                            />
+                                        ) : (
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <EmailIcon fontSize="small" sx={{ mr: 0.5 }} /> Email
+                                                </Typography>
+                                                <Typography variant="body1">{firm?.email || 'No email provided'}</Typography>
+                                            </Box>
+                                        )}
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        {editMode ? (
+                                            <TextField
+                                                fullWidth
+                                                label="Phone Number"
+                                                name="phoneNumber"
+                                                value={editedFirm.phoneNumber || ''}
+                                                onChange={handleFirmChange}
+                                                margin="normal"
+                                            />
+                                        ) : (
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <PhoneIcon fontSize="small" sx={{ mr: 0.5 }} /> Phone
+                                                </Typography>
+                                                <Typography variant="body1">{firm?.phoneNumber || 'No phone provided'}</Typography>
+                                            </Box>
+                                        )}
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        {editMode ? (
+                                            <TextField
+                                                fullWidth
+                                                label="Website"
+                                                name="website"
+                                                value={editedFirm.website || ''}
+                                                onChange={handleFirmChange}
+                                                margin="normal"
+                                            />
+                                        ) : (
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <WebsiteIcon fontSize="small" sx={{ mr: 0.5 }} /> Website
+                                                </Typography>
+                                                <Typography variant="body1">
+                                                    {firm?.website ? (
+                                                        <a href={firm.website} target="_blank" rel="noopener noreferrer">
+                                                            {firm.website}
+                                                        </a>
+                                                    ) : (
+                                                        'No website provided'
+                                                    )}
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        {editMode ? (
+                                            <TextField
+                                                fullWidth
+                                                label="Tax ID"
+                                                name="taxId"
+                                                value={editedFirm.taxId || ''}
+                                                onChange={handleFirmChange}
+                                                margin="normal"
+                                            />
+                                        ) : (
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <TaxIdIcon fontSize="small" sx={{ mr: 0.5 }} /> Tax ID
+                                                </Typography>
+                                                <Typography variant="body1">{firm?.taxId || 'No Tax ID provided'}</Typography>
+                                            </Box>
+                                        )}
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <CalendarIcon fontSize="small" sx={{ mr: 0.5 }} /> Founded Date
+                                            </Typography>
+                                            <Typography variant="body1">
+                                                {firm?.foundedDate ? new Date(firm.foundedDate).toLocaleDateString() : 'Not specified'}
+                                            </Typography>
                                         </Box>
-                                    </Card>
+                                    </Grid>
                                 </Grid>
-                            ))}
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    {/* Subscription & Billing */}
+                    <Grid item xs={12} md={6}>
+                        <Card sx={{ mb: 3 }}>
+                            <CardContent>
+                                <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <BillingIcon sx={{ mr: 1 }} />
+                                    Subscription & Billing
+                                </Typography>
+                                <Divider sx={{ mb: 2 }} />
+
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="body2" color="text.secondary">Subscription Plan</Typography>
+                                            <Box sx={{ mt: 0.5 }}>
+                                                <Chip
+                                                    label={firm?.subscriptionPlan || 'Trial'}
+                                                    color="primary"
+                                                    size="small"
+                                                />
+                                            </Box>
+                                        </Box>
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="body2" color="text.secondary">Expiry Date</Typography>
+                                            <Typography variant="body1">
+                                                {firm?.subscriptionExpiryDate
+                                                    ? new Date(firm.subscriptionExpiryDate).toLocaleDateString()
+                                                    : 'Not specified'}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        {editMode ? (
+                                            <TextField
+                                                fullWidth
+                                                label="Billing Address"
+                                                name="billingAddress"
+                                                value={editedFirm.billingAddress || ''}
+                                                onChange={handleFirmChange}
+                                                margin="normal"
+                                                multiline
+                                                rows={2}
+                                            />
+                                        ) : (
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="body2" color="text.secondary">Billing Address</Typography>
+                                                <Typography variant="body1">{firm?.billingAddress || 'Same as firm address'}</Typography>
+                                            </Box>
+                                        )}
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        {editMode ? (
+                                            <TextField
+                                                fullWidth
+                                                label="Billing Contact"
+                                                name="billingContact"
+                                                value={editedFirm.billingContact || ''}
+                                                onChange={handleFirmChange}
+                                                margin="normal"
+                                            />
+                                        ) : (
+                                            <Box sx={{ mb: 2 }}>
+                                                <Typography variant="body2" color="text.secondary">Billing Contact</Typography>
+                                                <Typography variant="body1">{firm?.billingContact || 'Not specified'}</Typography>
+                                            </Box>
+                                        )}
+                                    </Grid>
+                                </Grid>
+                            </CardContent>
+                        </Card>
+
+                        {/* System Information */}
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" gutterBottom>System Information</Typography>
+                                <Divider sx={{ mb: 2 }} />
+
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="body2" color="text.secondary">Created At</Typography>
+                                            <Typography variant="body1">
+                                                {firm?.createdAt
+                                                    ? new Date(firm.createdAt).toLocaleString()
+                                                    : 'Not available'}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6}>
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="body2" color="text.secondary">Firm ID</Typography>
+                                            <Typography variant="body1">{firm?.lawFirmId}</Typography>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
+            </TabPanel>
+
+            {/* Staff Tab */}
+            <TabPanel value={tabValue} index={1}>
+                <Grid container spacing={3}>
+                    {!firmDetails ? (
+                        <Grid item xs={12}>
+                            <Alert severity="warning" sx={{ mb: 3 }}>
+                                Unable to load staff information. The server may be experiencing issues.
+                            </Alert>
                         </Grid>
+                    ) : (
+                        <>
+                            {/* Lawyers */}
+                            <Grid item xs={12} md={6}>
+                                <Card>
+                                    <CardContent>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <LawyerIcon sx={{ mr: 1 }} />
+                                                Lawyers ({lawyers?.length || 0})
+                                            </Typography>
+                                            <Button
+                                                variant="outlined"
+                                                startIcon={<PersonAddIcon />}
+                                                onClick={() => openStaffDialog('lawyer')}
+                                                size="small"
+                                            >
+                                                Add Lawyer
+                                            </Button>
+                                        </Box>
+                                        <Divider sx={{ mb: 2 }} />
+
+                                        {lawyers?.length > 0 ? (
+                                            <List>
+                                                {lawyers.map((lawyer) => (
+                                                    <ListItem key={lawyer.lawyerId} divider>
+                                                        <ListItemAvatar>
+                                                            <Avatar>
+                                                                <LawyerIcon />
+                                                            </Avatar>
+                                                        </ListItemAvatar>
+                                                        <ListItemText
+                                                            primary={`${lawyer.firstName} ${lawyer.lastName}`}
+                                                            secondary={
+                                                                <>
+                                                                    <Typography component="span" variant="body2" color="text.primary">
+                                                                        {lawyer.title || 'Lawyer'}
+                                                                    </Typography>
+                                                                    {lawyer.barNumber && (
+                                                                        <Typography component="span" variant="body2" display="block">
+                                                                            Bar #: {lawyer.barNumber}
+                                                                        </Typography>
+                                                                    )}
+                                                                    <Typography component="span" variant="body2" display="block">
+                                                                        {lawyer.email}
+                                                                    </Typography>
+                                                                </>
+                                                            }
+                                                        />
+                                                        <ListItemSecondaryAction>
+                                                            <IconButton
+                                                                edge="end"
+                                                                aria-label="delete"
+                                                                onClick={() => openDeleteDialog('lawyer', lawyer)}
+                                                                color="error"
+                                                            >
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </ListItemSecondaryAction>
+                                                    </ListItem>
+                                                ))}
+                                            </List>
+                                        ) : (
+                                            <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 3 }}>
+                                                No lawyers added to this firm yet
+                                            </Typography>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+
+                            {/* Secretaries */}
+                            <Grid item xs={12} md={6}>
+                                <Card>
+                                    <CardContent>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <SecretaryIcon sx={{ mr: 1 }} />
+                                                Secretaries ({secretaries?.length || 0})
+                                            </Typography>
+                                            <Button
+                                                variant="outlined"
+                                                startIcon={<PersonAddIcon />}
+                                                onClick={() => openStaffDialog('secretary')}
+                                                size="small"
+                                            >
+                                                Add Secretary
+                                            </Button>
+                                        </Box>
+                                        <Divider sx={{ mb: 2 }} />
+
+                                        {secretaries?.length > 0 ? (
+                                            <List>
+                                                {secretaries.map((secretary) => (
+                                                    <ListItem key={secretary.secretaryId} divider>
+                                                        <ListItemAvatar>
+                                                            <Avatar>
+                                                                <SecretaryIcon />
+                                                            </Avatar>
+                                                        </ListItemAvatar>
+                                                        <ListItemText
+                                                            primary={`${secretary.firstName} ${secretary.lastName}`}
+                                                            secondary={
+                                                                <>
+                                                                    <Typography component="span" variant="body2" color="text.primary">
+                                                                        {secretary.position || 'Secretary'}
+                                                                    </Typography>
+                                                                    <Typography component="span" variant="body2" display="block">
+                                                                        {secretary.email}
+                                                                    </Typography>
+                                                                </>
+                                                            }
+                                                        />
+                                                        <ListItemSecondaryAction>
+                                                            <IconButton
+                                                                edge="end"
+                                                                aria-label="delete"
+                                                                onClick={() => openDeleteDialog('secretary', secretary)}
+                                                                color="error"
+                                                            >
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </ListItemSecondaryAction>
+                                                    </ListItem>
+                                                ))}
+                                            </List>
+                                        ) : (
+                                            <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 3 }}>
+                                                No secretaries added to this firm yet
+                                            </Typography>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+
+                            {/* Administrators Card */}
+                            <Grid item xs={12}>
+                                <Card>
+                                    <CardContent>
+                                        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <AdminIcon sx={{ mr: 1 }} />
+                                            Administrators
+                                        </Typography>
+                                        <Divider sx={{ mb: 2 }} />
+
+                                        <Typography variant="body2" color="text.secondary">
+                                            System administrators with access to this firm can be managed by the system administrator.
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        </>
                     )}
-                </TabPanel>
-            </Card>
-        </>
+                </Grid>
+            </TabPanel>
+
+            {/* Statistics Tab */}
+            <TabPanel value={tabValue} index={2}>
+                {!statistics ? (
+                    <Alert severity="warning" sx={{ mb: 3 }}>
+                        Unable to load statistics. The server may be experiencing issues.
+                    </Alert>
+                ) : (
+                    <Grid container spacing={3}>
+                        {/* Cases Stats */}
+                        <Grid item xs={12} md={4}>
+                            <Card sx={{ height: '100%' }}>
+                                <CardContent>
+                                    <Typography variant="h6" gutterBottom>Cases</Typography>
+                                    <Divider sx={{ mb: 2 }} />
+
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary">Total Cases:</Typography>
+                                        <Typography variant="body1">{statistics?.totalCases || 0}</Typography>
+                                    </Box>
+
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary">Active Cases:</Typography>
+                                        <Typography variant="body1">{statistics?.activeCases || 0}</Typography>
+                                    </Box>
+
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary">Closed Cases:</Typography>
+                                        <Typography variant="body1">{statistics?.closedCases || 0}</Typography>
+                                    </Box>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+
+                        {/* Clients Stats */}
+                        <Grid item xs={12} md={4}>
+                            <Card sx={{ height: '100%' }}>
+                                <CardContent>
+                                    <Typography variant="h6" gutterBottom>Clients</Typography>
+                                    <Divider sx={{ mb: 2 }} />
+
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary">Total Clients:</Typography>
+                                        <Typography variant="body1">{statistics?.totalClients || 0}</Typography>
+                                    </Box>
+
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary">Active Clients:</Typography>
+                                        <Typography variant="body1">{statistics?.activeClients || 0}</Typography>
+                                    </Box>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+
+                        {/* Staff Stats */}
+                        <Grid item xs={12} md={4}>
+                            <Card sx={{ height: '100%' }}>
+                                <CardContent>
+                                    <Typography variant="h6" gutterBottom>Staff</Typography>
+                                    <Divider sx={{ mb: 2 }} />
+
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary">Lawyers:</Typography>
+                                        <Typography variant="body1">{statistics?.lawyerCount || 0}</Typography>
+                                    </Box>
+
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                        <Typography variant="body2" color="text.secondary">Secretaries:</Typography>
+                                        <Typography variant="body1">{statistics?.secretaryCount || 0}</Typography>
+                                    </Box>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+
+                        {/* Additional Stats */}
+                        <Grid item xs={12}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="h6" gutterBottom>Other Statistics</Typography>
+                                    <Divider sx={{ mb: 2 }} />
+
+                                    <Grid container spacing={3}>
+                                        <Grid item xs={6} md={3}>
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                                <Typography variant="body2" color="text.secondary">Upcoming Appointments:</Typography>
+                                                <Typography variant="body1">{statistics?.upcomingAppointments || 0}</Typography>
+                                            </Box>
+                                        </Grid>
+
+                                        <Grid item xs={6} md={3}>
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                                <Typography variant="body2" color="text.secondary">Total Documents:</Typography>
+                                                <Typography variant="body1">{statistics?.totalDocuments || 0}</Typography>
+                                            </Box>
+                                        </Grid>
+
+                                        <Grid item xs={6} md={3}>
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                                <Typography variant="body2" color="text.secondary">Total Invoices:</Typography>
+                                                <Typography variant="body1">{statistics?.totalInvoices || 0}</Typography>
+                                            </Box>
+                                        </Grid>
+
+                                        <Grid item xs={6} md={3}>
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                                <Typography variant="body2" color="text.secondary">Outstanding Invoices:</Typography>
+                                                <Typography variant="body1">{statistics?.outstandingInvoices || 0}</Typography>
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                )}
+            </TabPanel>
+
+            {/* Add Staff Dialog */}
+            <Dialog
+                open={staffDialogOpen.open}
+                onClose={closeStaffDialog}
+                maxWidth="md"
+                fullWidth
+            >
+                <DialogTitle>
+                    {staffDialogOpen.type === 'lawyer' ? 'Add New Lawyer' : 'Add New Secretary'}
+                </DialogTitle>
+                <DialogContent dividers>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                label="Username"
+                                name="username"
+                                value={newStaffMember.username || ''}
+                                onChange={handleStaffChange}
+                                fullWidth
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                label="Email"
+                                name="email"
+                                type="email"
+                                value={newStaffMember.email || ''}
+                                onChange={handleStaffChange}
+                                fullWidth
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                label="Password"
+                                name="password"
+                                type="password"
+                                value={newStaffMember.password || ''}
+                                onChange={handleStaffChange}
+                                fullWidth
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                label="First Name"
+                                name="firstName"
+                                value={newStaffMember.firstName || ''}
+                                onChange={handleStaffChange}
+                                fullWidth
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                label="Last Name"
+                                name="lastName"
+                                value={newStaffMember.lastName || ''}
+                                onChange={handleStaffChange}
+                                fullWidth
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                label="Phone"
+                                name="phone"
+                                value={newStaffMember.phone || ''}
+                                onChange={handleStaffChange}
+                                fullWidth
+                                margin="normal"
+                            />
+                        </Grid>
+
+                        {/* Lawyer-specific fields */}
+                        {staffDialogOpen.type === 'lawyer' && (
+                            <>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="Bar Number"
+                                        name="barNumber"
+                                        value={newStaffMember.barNumber || ''}
+                                        onChange={handleStaffChange}
+                                        fullWidth
+                                        margin="normal"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="Title"
+                                        name="title"
+                                        value={newStaffMember.title || ''}
+                                        onChange={handleStaffChange}
+                                        fullWidth
+                                        margin="normal"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        label="Hourly Rate ($)"
+                                        name="hourlyRate"
+                                        type="number"
+                                        value={newStaffMember.hourlyRate || ''}
+                                        onChange={handleStaffChange}
+                                        fullWidth
+                                        margin="normal"
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="Specializations"
+                                        name="specializations"
+                                        value={newStaffMember.specializations || ''}
+                                        onChange={handleStaffChange}
+                                        fullWidth
+                                        margin="normal"
+                                        placeholder="e.g., Family Law, Criminal Defense"
+                                    />
+                                </Grid>
+                            </>
+                        )}
+
+                        {/* Secretary-specific fields */}
+                        {staffDialogOpen.type === 'secretary' && (
+                            <>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        label="Position"
+                                        name="position"
+                                        value={newStaffMember.position || ''}
+                                        onChange={handleStaffChange}
+                                        fullWidth
+                                        margin="normal"
+                                    />
+                                </Grid>
+                            </>
+                        )}
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={closeStaffDialog}>Cancel</Button>
+                    <Button
+                        onClick={handleAddStaff}
+                        variant="contained"
+                        color="primary"
+                        disabled={!newStaffMember.username || !newStaffMember.email || !newStaffMember.password || !newStaffMember.firstName || !newStaffMember.lastName}
+                    >
+                        Add {staffDialogOpen.type === 'lawyer' ? 'Lawyer' : 'Secretary'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={closeDeleteDialog}
+            >
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete this {userToDelete.type}? Their user account will be deactivated.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={closeDeleteDialog}>Cancel</Button>
+                    <Button onClick={handleDeleteStaff} color="error">Delete</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Notification Snackbar */}
+            <Snackbar
+                open={notification.open}
+                autoHideDuration={6000}
+                onClose={closeNotification}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <Alert
+                    onClose={closeNotification}
+                    severity={notification.severity}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {notification.message}
+                </Alert>
+            </Snackbar>
+        </Container>
     );
 };
 

@@ -53,7 +53,7 @@ import NewClientPage from '../pages/clients/NewClientPage';
 //import ReportsPage from '../pages/reports/ReportsPage';
 
 // Firm pages
-import FirmManagementPage from '../pages/firms/FirmsListPage';
+import FirmManagementPage from '../pages/firms/FirmManagementPage';
 import UsersManagementPage from '../pages/firms/FirmDetailsPage';
 
 const AppRoutes = () => {

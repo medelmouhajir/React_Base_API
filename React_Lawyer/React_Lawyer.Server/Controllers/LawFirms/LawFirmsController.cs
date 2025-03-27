@@ -80,13 +80,18 @@ namespace React_Lawyer.Server.Controllers
         /// <param name="id">The law firm ID</param>
         /// <returns>Detailed law firm information</returns>
         [HttpGet("{id}/Details")]
-        public async Task<ActionResult<LawFirmDetailsModel>> GetLawFirmDetails(int id)
+        public async Task<ActionResult<object>> GetLawFirmDetails(int id)
         {
             try
             {
                 _logger.LogInformation("Fetching detailed information for law firm with ID: {Id}", id);
 
                 var lawFirm = await _context.LawFirms
+                    .Include(x=> x.Lawyers)
+                    .ThenInclude(x => x.User)
+                    .Include(x => x.Secretaries)
+                    .ThenInclude(x => x.User)
+                    .Include(x => x.Clients)
                     .FirstOrDefaultAsync(f => f.LawFirmId == id);
 
                 if (lawFirm == null)
@@ -95,47 +100,58 @@ namespace React_Lawyer.Server.Controllers
                     return NotFound(new { message = $"Law firm with ID {id} not found" });
                 }
 
-                var lawyers = await _context.Lawyers
-                    .Where(l => l.LawFirmId == id)
-                    .Include(l => l.User)
-                    .Where(l => l.User.IsActive)
-                    .ToListAsync();
 
-                var secretaries = await _context.Secretaries
-                    .Where(s => s.LawFirmId == id)
-                    .Include(s => s.User)
-                    .Where(s => s.User.IsActive)
-                    .ToListAsync();
-
-                var clientCount = await _context.Clients
-                    .CountAsync(c => c.LawFirmId == id && c.IsActive);
 
                 var caseCount = await _context.Cases
                     .CountAsync(c => c.LawFirmId == id);
 
-                var recentClients = await _context.Clients
-                    .Where(c => c.LawFirmId == id && c.IsActive)
-                    .OrderByDescending(c => c.CreatedAt)
-                    .Take(5)
-                    .ToListAsync();
 
-                var activeCases = await _context.Cases
-                    .Where(c => c.LawFirmId == id &&
-                               (c.Status != Shared_Models.Cases.CaseStatus.Closed &&
-                                c.Status != Shared_Models.Cases.CaseStatus.Archived))
-                    .OrderByDescending(c => c.OpenDate)
-                    .Take(5)
-                    .ToListAsync();
 
-                var result = new LawFirmDetailsModel
+                var result = new
                 {
-                    LawFirm = lawFirm,
-                    Lawyers = lawyers,
-                    Secretaries = secretaries,
-                    ClientCount = clientCount,
-                    CaseCount = caseCount,
-                    RecentClients = recentClients,
-                    ActiveCases = activeCases
+                    LawFirm = new LawFirm {
+                        LawFirmId = lawFirm.LawFirmId,
+                        Name = lawFirm.Name,
+                        Address = lawFirm.Address,
+                        PhoneNumber = lawFirm.PhoneNumber,
+                        Email = lawFirm.Email,
+                        Website = lawFirm.Website,
+                        TaxId = lawFirm.TaxId,
+                        FoundedDate = lawFirm.FoundedDate,
+                        CreatedAt = lawFirm.CreatedAt,
+                        SubscriptionPlan = lawFirm.SubscriptionPlan,
+                        SubscriptionExpiryDate = lawFirm.SubscriptionExpiryDate,
+                        IsActive = lawFirm.IsActive,
+                        BillingAddress = lawFirm.BillingAddress,
+                        BillingContact = lawFirm.BillingContact
+                    },
+                    Lawyers = lawFirm.Lawyers.Select( l => new
+                    {
+                        l.LawyerId,
+                        UserId = l.User.UserId,
+                        FirstName = l.User.FirstName,
+                        LastName = l.User.LastName,
+                        PhoneNumber = l.User.PhoneNumber,
+                        Email = l.User.Email,
+                        BarNumber = l.BarNumber,
+                        Title = l.Title,
+                        Biography = l.Biography,
+                        JoinDate = l.JoinDate,
+                        Specializations = l.Specializations,
+                        HourlyRate = l.HourlyRate
+                    } ),
+                    Secretaries = lawFirm.Secretaries.Select(s=> new
+                    {
+                        s.SecretaryId,
+                        UserId = s.User.UserId,
+                        FirstName = s.User.FirstName,
+                        LastName = s.User.LastName,
+                        PhoneNumber = s.User.PhoneNumber,
+                        Email = s.User.Email,
+                        Position = s.Position
+                    }),
+                    ClientCount = lawFirm.Clients.Count,
+                    CaseCount = caseCount
                 };
 
                 return result;
