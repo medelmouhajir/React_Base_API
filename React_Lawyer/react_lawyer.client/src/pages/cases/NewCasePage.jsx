@@ -276,7 +276,7 @@ const NewCasePage = () => {
             const submissionData = {
                 ...formData,
                 // Convert string type to numeric enum value for backend
-                type: caseTypeMap[formData.type] !== undefined ? caseTypeMap[formData.type] : 0,
+                type: formData.type,
                 // Ensure clientIds is an array
                 clientIds: Array.isArray(formData.clientIds) ? formData.clientIds : [],
                 // Convert empty strings to null for optional fields

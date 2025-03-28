@@ -1,11 +1,36 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
-    Container, Paper, Box, Typography, Button, TextField,
-    IconButton, Table, TableBody, TableCell, TableContainer,
-    TableHead, TableRow, TablePagination, Chip, InputAdornment,
-    MenuItem, FormControl, InputLabel, Select, Grid, Tooltip,
-    CircularProgress, Snackbar, Alert
+    Container,
+    Paper,
+    Box,
+    Typography,
+    Button,
+    TextField,
+    IconButton,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TablePagination,
+    Chip,
+    InputAdornment,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Select,
+    Grid,
+    Tooltip,
+    CircularProgress,
+    Snackbar,
+    Alert,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -16,16 +41,32 @@ import {
     Refresh as RefreshIcon,
     FilterList as FilterIcon
 } from '@mui/icons-material';
-import { useAuth } from '../../features/auth/AuthContext';
+
+// Components and Services
 import PageHeader from '../../components/common/PageHeader';
+import caseService from '../../services/caseService';
+import { useAuth } from '../../features/auth/AuthContext';
+import useOnlineStatus from '../../hooks/useOnlineStatus';
 
 // Case status color mapping
 const STATUS_COLORS = {
-    Intake: 'info',
-    Active: 'success',
-    Pending: 'warning',
-    Closed: 'default',
-    Archived: 'default'
+    0: 'info', // Intake
+    1: 'success', // Active
+    2: 'warning', // Pending
+    3: 'default', // Closed
+    4: 'default' // Archived
+};
+
+// Get status label from numeric value
+const getStatusLabel = (statusValue) => {
+    switch (statusValue) {
+        case 0: return 'Intake';
+        case 1: return 'Active';
+        case 2: return 'Pending';
+        case 3: return 'Closed';
+        case 4: return 'Archived';
+        default: return 'Unknown';
+    }
 };
 
 // Case types
@@ -34,8 +75,12 @@ const CASE_TYPES = [
     { value: 'Civil', label: 'Civil' },
     { value: 'Criminal', label: 'Criminal' },
     { value: 'Family', label: 'Family' },
+    { value: 'Immigration', label: 'Immigration' },
     { value: 'Corporate', label: 'Corporate' },
     { value: 'RealEstate', label: 'Real Estate' },
+    { value: 'Bankruptcy', label: 'Bankruptcy' },
+    { value: 'IntellectualProperty', label: 'Intellectual Property' },
+    { value: 'Tax', label: 'Tax' },
     { value: 'Other', label: 'Other' }
 ];
 
@@ -52,6 +97,8 @@ const CASE_STATUSES = [
 const CasesListPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
+    const isOnline = useOnlineStatus();
+    const { t } = useTranslation();
 
     // State
     const [cases, setCases] = useState([]);
@@ -68,54 +115,70 @@ const CasesListPage = () => {
     const [caseStatus, setCaseStatus] = useState('All');
     const [showFilters, setShowFilters] = useState(false);
 
+    // Delete dialog
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [caseToDelete, setCaseToDelete] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
     // Fetch cases
     useEffect(() => {
         const fetchCases = async () => {
-            if (!user?.lawFirmId) return;
+            if (!isOnline) {
+                setLoading(false);
+                setError('You are currently offline. Some data may not be available.');
+                return;
+            }
 
             setLoading(true);
             setError('');
 
             try {
-                let url = `/api/Cases/ByFirm/${user.lawFirmId}`;
+                let data;
 
-                // Add search parameter if provided
+                // Use search API if search term is provided
                 if (searchTerm) {
-                    url = `/api/Cases/Search?term=${encodeURIComponent(searchTerm)}`;
+                    data = await caseService.searchCases(searchTerm);
+                } else {
+                    // Otherwise get all cases or cases by firm
+                    data = await caseService.getCases();
                 }
 
-                const response = await fetch(url);
+                // Apply client-side filters
+                let filteredData = [...data];
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch cases');
-                }
-
-                let data = await response.json();
-
-                // Apply client-side filters (ideally this would be done server-side)
+                // Filter by case type
                 if (caseType !== 'All') {
-                    data = data.filter(c => c.type === caseType);
+                    // Map string type to numeric value before filtering
+                    const typeEnumValue = CASE_TYPES.findIndex(t => t.value === caseType) - 1;
+                    if (typeEnumValue >= 0) {
+                        filteredData = filteredData.filter(c => c.type === typeEnumValue);
+                    }
                 }
 
+                // Filter by case status
                 if (caseStatus !== 'All') {
-                    data = data.filter(c => c.status === caseStatus);
+                    // Map string status to numeric value before filtering
+                    const statusEnumValue = CASE_STATUSES.findIndex(s => s.value === caseStatus) - 1;
+                    if (statusEnumValue >= 0) {
+                        filteredData = filteredData.filter(c => c.status === statusEnumValue);
+                    }
                 }
 
                 // Sort by case creation date (newest first)
-                data.sort((a, b) => new Date(b.openDate) - new Date(a.openDate));
+                filteredData.sort((a, b) => new Date(b.openDate) - new Date(a.openDate));
 
-                setTotalCases(data.length);
-                setCases(data);
+                setTotalCases(filteredData.length);
+                setCases(filteredData);
             } catch (err) {
                 console.error('Error fetching cases:', err);
-                setError('Failed to load cases');
+                setError('Failed to load cases. ' + (err.message || ''));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchCases();
-    }, [user?.lawFirmId, searchTerm, caseType, caseStatus, refreshTrigger]);
+    }, [user, searchTerm, caseType, caseStatus, refreshTrigger, isOnline]);
 
     // Handle page change
     const handleChangePage = (event, newPage) => {
@@ -128,44 +191,77 @@ const CasesListPage = () => {
         setPage(0);
     };
 
+    // Open delete confirmation dialog
+    const handleOpenDeleteDialog = (caseItem) => {
+        setCaseToDelete(caseItem);
+        setDeleteDialogOpen(true);
+    };
+
+    // Close delete confirmation dialog
+    const handleCloseDeleteDialog = () => {
+        setDeleteDialogOpen(false);
+        setCaseToDelete(null);
+    };
+
     // Handle case deletion
-    const handleDeleteCase = async (caseId) => {
-        if (!window.confirm('Are you sure you want to delete this case?')) {
-            return;
-        }
+    const handleDeleteCase = async () => {
+        if (!caseToDelete || !isOnline) return;
+
+        setDeleteLoading(true);
 
         try {
-            const response = await fetch(`/api/Cases/${caseId}`, {
-                method: 'DELETE'
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete case');
-            }
+            await caseService.deleteCase(caseToDelete.caseId);
 
             // Refresh cases list
             setRefreshTrigger(prev => prev + 1);
+            handleCloseDeleteDialog();
         } catch (err) {
-            setError('Error deleting case');
+            console.error('Error deleting case:', err);
+            setError('Error deleting case: ' + (err.message || ''));
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
     // Calculate paged data
     const pagedCases = cases.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
+    // Clear error message
+    const handleClearError = () => {
+        setError('');
+    };
+
     return (
         <Container maxWidth="lg">
             <PageHeader
-                title="Cases"
-                subtitle={`Showing ${totalCases} cases`}
+                title={t('cases.cases')}
+                subtitle={t('cases.casesSubtitle', { count: totalCases })}
                 breadcrumbs={[
-                    { text: 'Dashboard', link: '/' },
-                    { text: 'Cases' }
+                    { text: t('app.dashboard'), link: '/' },
+                    { text: t('cases.cases') }
                 ]}
-                action="New Case"
+                action={t('cases.newCase')}
                 actionIcon={<AddIcon />}
                 onActionClick={() => navigate('/cases/new')}
             />
+
+            {/* Error message */}
+            {error && (
+                <Alert
+                    severity="error"
+                    sx={{ mb: 3 }}
+                    onClose={handleClearError}
+                >
+                    {error}
+                </Alert>
+            )}
+
+            {/* Offline warning */}
+            {!isOnline && (
+                <Alert severity="warning" sx={{ mb: 3 }}>
+                    {t('common.offlineWarning')}
+                </Alert>
+            )}
 
             {/* Search and filters */}
             <Paper sx={{ p: 2, mb: 3 }}>
@@ -173,7 +269,7 @@ const CasesListPage = () => {
                     <Grid item xs={12} md={6}>
                         <TextField
                             fullWidth
-                            placeholder="Search cases..."
+                            placeholder={t('cases.searchPlaceholder')}
                             variant="outlined"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -189,13 +285,13 @@ const CasesListPage = () => {
 
                     <Grid item xs={6} md={3}>
                         <FormControl fullWidth variant="outlined">
-                            <InputLabel id="type-filter-label">Type</InputLabel>
+                            <InputLabel id="type-filter-label">{t('cases.type')}</InputLabel>
                             <Select
                                 labelId="type-filter-label"
                                 id="type-filter"
                                 value={caseType}
                                 onChange={(e) => setCaseType(e.target.value)}
-                                label="Type"
+                                label={t('cases.type')}
                             >
                                 {CASE_TYPES.map(type => (
                                     <MenuItem key={type.value} value={type.value}>
@@ -208,13 +304,13 @@ const CasesListPage = () => {
 
                     <Grid item xs={6} md={3}>
                         <FormControl fullWidth variant="outlined">
-                            <InputLabel id="status-filter-label">Status</InputLabel>
+                            <InputLabel id="status-filter-label">{t('cases.status')}</InputLabel>
                             <Select
                                 labelId="status-filter-label"
                                 id="status-filter"
                                 value={caseStatus}
                                 onChange={(e) => setCaseStatus(e.target.value)}
-                                label="Status"
+                                label={t('cases.status')}
                             >
                                 {CASE_STATUSES.map(status => (
                                     <MenuItem key={status.value} value={status.value}>
@@ -231,8 +327,9 @@ const CasesListPage = () => {
                                 size="small"
                                 startIcon={<RefreshIcon />}
                                 onClick={() => setRefreshTrigger(prev => prev + 1)}
+                                disabled={!isOnline || loading}
                             >
-                                Refresh
+                                {t('common.refresh')}
                             </Button>
                         </Grid>
                     </Grid>
@@ -245,13 +342,13 @@ const CasesListPage = () => {
                     <Table aria-label="cases table">
                         <TableHead>
                             <TableRow>
-                                <TableCell>Case Number</TableCell>
-                                <TableCell>Title</TableCell>
-                                <TableCell>Type</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Open Date</TableCell>
-                                <TableCell>Assigned To</TableCell>
-                                <TableCell align="right">Actions</TableCell>
+                                <TableCell>{t('cases.caseNumber')}</TableCell>
+                                <TableCell>{t('cases.title')}</TableCell>
+                                <TableCell>{t('cases.type')}</TableCell>
+                                <TableCell>{t('cases.status')}</TableCell>
+                                <TableCell>{t('cases.openDate')}</TableCell>
+                                <TableCell>{t('cases.assignedTo')}</TableCell>
+                                <TableCell align="right">{t('common.actions')}</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -265,7 +362,9 @@ const CasesListPage = () => {
                                 <TableRow>
                                     <TableCell colSpan={7} align="center" height={100}>
                                         <Typography variant="body1" color="textSecondary">
-                                            No cases found
+                                            {searchTerm
+                                                ? t('cases.noSearchResults')
+                                                : t('cases.noCasesFound')}
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
@@ -274,29 +373,49 @@ const CasesListPage = () => {
                                     <TableRow key={caseItem.caseId} hover>
                                         <TableCell>{caseItem.caseNumber}</TableCell>
                                         <TableCell>
-                                            <Typography fontWeight={caseItem.isUrgent ? 'bold' : 'normal'}>
-                                                {caseItem.isUrgent && '🔴 '}
+                                            <Typography
+                                                fontWeight={caseItem.isUrgent ? 'bold' : 'normal'}
+                                                sx={{
+                                                    display: 'flex',
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                {caseItem.isUrgent && (
+                                                    <Box
+                                                        component="span"
+                                                        sx={{
+                                                            width: 8,
+                                                            height: 8,
+                                                            bgcolor: 'error.main',
+                                                            borderRadius: '50%',
+                                                            display: 'inline-block',
+                                                            mr: 1
+                                                        }}
+                                                    />
+                                                )}
                                                 {caseItem.title}
                                             </Typography>
                                         </TableCell>
-                                        <TableCell>{caseItem.type}</TableCell>
+                                        <TableCell>
+                                            {CASE_TYPES[caseItem.type + 1]?.label || 'Unknown'}
+                                        </TableCell>
                                         <TableCell>
                                             <Chip
                                                 color={STATUS_COLORS[caseItem.status] || 'default'}
                                                 size="small"
-                                                label={caseItem.status}
+                                                label={getStatusLabel(caseItem.status)}
                                             />
                                         </TableCell>
                                         <TableCell>
                                             {new Date(caseItem.openDate).toLocaleDateString()}
                                         </TableCell>
                                         <TableCell>
-                                            {caseItem.assignedLawyer ?
-                                                `${caseItem.assignedLawyer.user.firstName} ${caseItem.assignedLawyer.user.lastName}` :
-                                                'Unassigned'}
+                                            {caseItem.assignedLawyer && caseItem.assignedLawyer.user
+                                                ? `${caseItem.assignedLawyer.user.firstName} ${caseItem.assignedLawyer.user.lastName}`
+                                                : t('cases.unassigned')}
                                         </TableCell>
                                         <TableCell align="right">
-                                            <Tooltip title="View">
+                                            <Tooltip title={t('common.view')}>
                                                 <IconButton
                                                     size="small"
                                                     onClick={() => navigate(`/cases/${caseItem.caseId}`)}
@@ -304,19 +423,21 @@ const CasesListPage = () => {
                                                     <ViewIcon />
                                                 </IconButton>
                                             </Tooltip>
-                                            <Tooltip title="Edit">
+                                            <Tooltip title={t('common.edit')}>
                                                 <IconButton
                                                     size="small"
                                                     onClick={() => navigate(`/cases/${caseItem.caseId}/edit`)}
+                                                    disabled={!isOnline}
                                                 >
                                                     <EditIcon />
                                                 </IconButton>
                                             </Tooltip>
-                                            <Tooltip title="Delete">
+                                            <Tooltip title={t('common.delete')}>
                                                 <IconButton
                                                     size="small"
                                                     color="error"
-                                                    onClick={() => handleDeleteCase(caseItem.caseId)}
+                                                    onClick={() => handleOpenDeleteDialog(caseItem)}
+                                                    disabled={!isOnline}
                                                 >
                                                     <DeleteIcon />
                                                 </IconButton>
@@ -337,18 +458,44 @@ const CasesListPage = () => {
                     page={page}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
+                    labelRowsPerPage={t('common.rowsPerPage')}
                 />
             </Paper>
 
-            {/* Error message */}
-            <Snackbar
-                open={!!error}
-                autoHideDuration={6000}
-                onClose={() => setError('')}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={handleCloseDeleteDialog}
             >
-                <Alert severity="error">{error}</Alert>
-            </Snackbar>
+                <DialogTitle>{t('cases.deleteCase')}</DialogTitle>
+                <DialogContent>
+                    {caseToDelete && (
+                        <Typography variant="body1">
+                            {t('cases.deleteConfirmation', {
+                                caseNumber: caseToDelete.caseNumber || '',
+                                title: caseToDelete.title || ''
+                            })}
+                        </Typography>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={handleCloseDeleteDialog}
+                        disabled={deleteLoading}
+                    >
+                        {t('common.cancel')}
+                    </Button>
+                    <Button
+                        onClick={handleDeleteCase}
+                        color="error"
+                        variant="contained"
+                        disabled={deleteLoading}
+                        startIcon={deleteLoading ? <CircularProgress size={20} /> : null}
+                    >
+                        {deleteLoading ? t('common.deleting') : t('common.delete')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };

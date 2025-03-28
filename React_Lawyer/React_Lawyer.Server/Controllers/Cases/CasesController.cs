@@ -32,10 +32,34 @@ namespace React_Lawyer.Server.Controllers.Cases
             try
             {
                 _logger.LogInformation("Fetching all cases");
-                return await _context.Cases
+
+                var cases = await _context.Cases
                     .Include(c => c.AssignedLawyer)
                         .ThenInclude(l => l.User)
+                        .Select(c => new Case
+                        {
+                            CaseId = c.CaseId,
+                            CaseNumber = c.CaseNumber,
+                            LawFirmId = c.LawFirmId,
+                            LawyerId = c.LawyerId,
+                            Title = c.Title,
+                            Description = c.Description,
+                            Type = c.Type,
+                            Status = c.Status,
+                            OpenDate = c.OpenDate,
+                            CloseDate = c.CloseDate,
+                            CourtName = c.CourtName,
+                            CourtCaseNumber = c.CourtCaseNumber,
+                            OpposingParty = c.OpposingParty,
+                            OpposingCounsel = c.OpposingCounsel,
+                            NextHearingDate = c.NextHearingDate,
+                            Notes = c.Notes,
+                            IsUrgent = c.IsUrgent,
+                            ParentCaseId = c.ParentCaseId
+                        })
                     .ToListAsync();
+
+                return cases;
             }
             catch (Exception ex)
             {
@@ -69,7 +93,82 @@ namespace React_Lawyer.Server.Controllers.Cases
                     return NotFound();
                 }
 
-                return @case;
+                return new Case
+                {
+                    CaseId = @case.CaseId,
+                    CaseNumber = @case.CaseNumber,
+                    LawFirmId = @case.LawFirmId,
+                    LawyerId = @case.LawyerId,
+                    Title = @case.Title,
+                    Description = @case.Description,
+                    Type = @case.Type,
+                    Status = @case.Status,
+                    OpenDate = @case.OpenDate,
+                    CloseDate = @case.CloseDate,
+                    CourtName = @case.CourtName,
+                    CourtCaseNumber = @case.CourtCaseNumber,
+                    OpposingParty = @case.OpposingParty,
+                    OpposingCounsel = @case.OpposingCounsel,
+                    NextHearingDate = @case.NextHearingDate,
+                    Notes = @case.Notes,
+                    IsUrgent = @case.IsUrgent,
+                    ParentCaseId = @case.ParentCaseId,
+                    AssignedLawyer = new Shared_Models.Users.Lawyer
+                    {
+                        LawyerId = @case.AssignedLawyer.LawyerId,
+                        User = new Shared_Models.Users.User
+                        {
+                            FirstName = @case.AssignedLawyer.User.FirstName,
+                            LastName = @case.AssignedLawyer.User.LastName
+                        }
+                    },
+                    ActualSettlement = @case.ActualSettlement,
+                    Case_Clients = @case.Case_Clients.Select(cc => new Case_Client
+                    {
+                        CaseId = cc.CaseId,
+                        ClientId = cc.ClientId,
+                        Client = new Client
+                        {
+                            ClientId = cc.Client.ClientId,
+                            FirstName = cc.Client.FirstName,
+                            LastName = cc.Client.LastName
+                        }
+                    }).ToList(),
+                    Documents = @case.Documents.Select(x=> new Document
+                    {
+                        DocumentId = x.DocumentId,
+                        CaseId = x.CaseId,
+                        FileSize = x.FileSize,
+                        FileType = x.FileType,
+                        UploadDate = x.UploadDate
+                    }).ToList(),
+                    ExpectedSettlement = @case.ExpectedSettlement,
+                    Invoices = @case.Invoices.Select(x => new Shared_Models.Invoices.Invoice
+                    {
+                        InvoiceId = x.InvoiceId,
+                        CaseId = x.CaseId,
+                        DueDate = x.DueDate,
+                        IssueDate = x.IssueDate,
+                        InvoiceNumber = x.InvoiceNumber,
+                        Status = x.Status,
+                        Amount = x.Amount,
+                        PaidAmount = x.PaidAmount,
+                        TaxAmount = x.TaxAmount
+                    }
+                    ).ToList(),
+                    Events = @case.Events.Select(x=> new CaseEvent
+                    {
+                        CaseEventId = x.CaseEventId,
+                        CaseId = x.CaseId,
+                        CreatedAt = x.CreatedAt,
+                        Date = x.Date,
+                        Description = x.Description,
+                        EventType = x.EventType,
+                        IsImportant = x.IsImportant,
+                        Location = x.Location,
+                        Outcome = x.Outcome,
+                    }).ToList(),
+                };
             }
             catch (Exception ex)
             {
@@ -85,11 +184,44 @@ namespace React_Lawyer.Server.Controllers.Cases
             try
             {
                 _logger.LogInformation("Fetching cases for firm ID: {FirmId}", firmId);
-                return await _context.Cases
+
+                var cases = await _context.Cases
                     .Include(c => c.AssignedLawyer)
                         .ThenInclude(l => l.User)
+                        .Select(c => new Case
+                        {
+                            CaseId = c.CaseId,
+                            CaseNumber = c.CaseNumber,
+                            LawFirmId = c.LawFirmId,
+                            LawyerId = c.LawyerId,
+                            Title = c.Title,
+                            Description = c.Description,
+                            Type = c.Type,
+                            Status = c.Status,
+                            OpenDate = c.OpenDate,
+                            CloseDate = c.CloseDate,
+                            CourtName = c.CourtName,
+                            CourtCaseNumber = c.CourtCaseNumber,
+                            OpposingParty = c.OpposingParty,
+                            OpposingCounsel = c.OpposingCounsel,
+                            NextHearingDate = c.NextHearingDate,
+                            Notes = c.Notes,
+                            IsUrgent = c.IsUrgent,
+                            ParentCaseId = c.ParentCaseId,
+                            AssignedLawyer = new Shared_Models.Users.Lawyer
+                            {
+                                LawyerId = c.AssignedLawyer.LawyerId,
+                                User = new Shared_Models.Users.User
+                                {
+                                    FirstName = c.AssignedLawyer.User.FirstName,
+                                    LastName = c.AssignedLawyer.User.LastName,
+                                }
+                            }
+                        })
                     .Where(c => c.LawFirmId == firmId)
                     .ToListAsync();
+
+                return cases;
             }
             catch (Exception ex)
             {
@@ -210,14 +342,14 @@ namespace React_Lawyer.Server.Controllers.Cases
                     LawyerId = model.lawyerId,
                     Title = model.title,
                     Description = model.description,
-                    Type = CaseType.FamilyLaw,
+                    Type = model.type,
                     Status = CaseStatus.Intake,
                     OpenDate = DateTime.UtcNow,
                     CourtName = model.courtName,
                     CourtCaseNumber = model.courtCaseNumber,
                     OpposingParty = model.opposingParty,
                     OpposingCounsel = model.opposingCounsel,
-                    NextHearingDate = DateTime.UtcNow,
+                    NextHearingDate = model.nextHearingDate,
                     Notes = model.notes,
                     IsUrgent = model.isUrgent,
                     ParentCaseId = model.parentCaseId
@@ -250,7 +382,9 @@ namespace React_Lawyer.Server.Controllers.Cases
                     Description = "Case has been created and is in intake stage.",
                     Date = DateTime.UtcNow,
                     EventType = CaseEventType.StatusChange,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    Location = "",
+                    Outcome = ""
                 };
 
                 _context.CaseEvents.Add(caseEvent);
@@ -764,7 +898,7 @@ namespace React_Lawyer.Server.Controllers.Cases
         public string description { get; set; }
 
         // Required - Case type (enum)
-        public string? type { get; set; }
+        public CaseType type { get; set; }
 
         // Optional - Court information
         public string courtName { get; set; }
@@ -773,7 +907,7 @@ namespace React_Lawyer.Server.Controllers.Cases
         public string opposingCounsel { get; set; }
 
         // Optional - Next hearing date
-        //public DateTime? nextHearingDate { get; set; }
+        public DateTime? nextHearingDate { get; set; }
 
         // Optional - Notes
         public string notes { get; set; }

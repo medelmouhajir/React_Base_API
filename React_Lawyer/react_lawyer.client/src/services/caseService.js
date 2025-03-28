@@ -178,7 +178,10 @@ class CaseService {
                 lawFirmId: caseData.lawFirmId || 0,
                 createdById: caseData.createdById || 0,
                 title: caseData.title || '',
-                description: caseData.description || ''
+                description: caseData.description || '',
+                nextHearingDate: caseData.nextHearingDate
+                    ? new Date(caseData.nextHearingDate).toISOString()
+                    : null,
             };
 
             console.log('Submitting direct data to API:', sanitizedData);
