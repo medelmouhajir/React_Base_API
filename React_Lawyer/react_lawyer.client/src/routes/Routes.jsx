@@ -47,7 +47,7 @@ import NewClientPage from '../pages/clients/NewClientPage';
 //// Documents pages
 //import DocumentsListPage from '../pages/documents/DocumentsListPage';
 //import DocumentDetailsPage from '../pages/documents/DocumentDetailsPage';
-//import UploadDocumentPage from '../pages/documents/UploadDocumentPage';
+//import DocumentEditor from '../components/documents/DocumentEditor';
 
 //// Reports pages
 //import ReportsPage from '../pages/reports/ReportsPage';
@@ -105,7 +105,7 @@ const AppRoutes = () => {
 
                 {/* Documents */}
                 {/*<Route path="/documents" element={<DocumentsListPage />} />*/}
-                {/*<Route path="/documents/upload" element={<UploadDocumentPage />} />*/}
+                {/*<Route path="/documents/editor" element={<DocumentEditor />} />*/}
                 {/*<Route path="/documents/:id" element={<DocumentDetailsPage />} />*/}
 
                 {/* Reports - Only for Lawyers and Admins */}

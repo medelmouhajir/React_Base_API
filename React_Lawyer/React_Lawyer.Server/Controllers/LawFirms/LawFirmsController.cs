@@ -483,34 +483,46 @@ namespace React_Lawyer.Server.Controllers
             }
         }
 
-        /// <summary>
-        /// Get all lawyers for a law firm
-        /// </summary>
-        /// <param name="id">The law firm ID</param>
-        /// <returns>List of lawyers</returns>
+
+        // GET: api/LawFirms/{id}/Lawyers
         [HttpGet("{id}/Lawyers")]
-        public async Task<ActionResult<IEnumerable<Lawyer>>> GetLawFirmLawyers(int id)
+        public async Task<ActionResult<IEnumerable<object>>> GetLawyersByFirm(int id)
         {
             try
             {
-                _logger.LogInformation("Fetching lawyers for law firm with ID: {Id}", id);
+                _logger.LogInformation("Fetching lawyers for firm ID: {Id}", id);
 
-                // First check if the firm exists
-                var firmExists = await _context.LawFirms.AnyAsync(f => f.LawFirmId == id);
-                if (!firmExists)
+                // Check if firm exists
+                var firm = await _context.LawFirms.FindAsync(id);
+                if (firm == null)
                 {
-                    _logger.LogWarning("Law firm with ID {Id} not found", id);
-                    return NotFound(new { message = $"Law firm with ID {id} not found" });
+                    return NotFound(new { message = "Law firm not found" });
                 }
 
-                return await _context.Lawyers
+                // Get lawyers for this firm with their user data
+                var lawyers = await _context.Lawyers
                     .Include(l => l.User)
                     .Where(l => l.LawFirmId == id && l.User.IsActive)
+                    .Select(l => new
+                    {
+                        l.LawyerId,
+                        l.UserId,
+                        l.User.FirstName,
+                        l.User.LastName,
+                        l.User.Email,
+                        l.User.PhoneNumber,
+                        l.BarNumber,
+                        l.Title,
+                        l.Specializations,
+                        l.HourlyRate
+                    })
                     .ToListAsync();
+
+                return Ok(lawyers);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error fetching lawyers for law firm with ID: {Id}", id);
+                _logger.LogError(ex, "Error fetching lawyers for firm ID: {Id}", id);
                 return StatusCode(500, new { message = "An error occurred while fetching the lawyers" });
             }
         }
@@ -690,7 +702,7 @@ namespace React_Lawyer.Server.Controllers
 
                     await transaction.CommitAsync();
 
-                    return CreatedAtAction(nameof(GetLawFirmLawyers), new { id = id }, lawyer);
+                    return CreatedAtAction(nameof(GetLawyersByFirm), new { id = id }, lawyer);
                 }
                 catch (Exception ex)
                 {

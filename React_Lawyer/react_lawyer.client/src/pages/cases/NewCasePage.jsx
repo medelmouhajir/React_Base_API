@@ -1,417 +1,670 @@
+// src/pages/cases/NewCasePage.jsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
-    Container, Box, TextField, Button, MenuItem, FormControl,
-    InputLabel, Select, Typography, Paper, Grid, Checkbox,
-    FormControlLabel, CircularProgress, Snackbar, Alert,
-    Divider, Chip
+    Container,
+    Paper,
+    Box,
+    Typography,
+    Grid,
+    TextField,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    FormControlLabel,
+    Switch,
+    Button,
+    Autocomplete,
+    Chip,
+    Snackbar,
+    Alert,
+    CircularProgress
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../features/auth/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
+import useOnlineStatus from '../../hooks/useOnlineStatus';
 
-// Case types
-const CASE_TYPES = [
-    { value: 'Civil', label: 'Civil' },
-    { value: 'Criminal', label: 'Criminal' },
-    { value: 'Family', label: 'Family' },
-    { value: 'Corporate', label: 'Corporate' },
-    { value: 'RealEstate', label: 'Real Estate' },
-    { value: 'Other', label: 'Other' }
-];
+// Services
+import caseService from '../../services/caseService';
+import clientService from '../../services/clientService';
+import lawyerService from '../../services/lawyerService';
 
 const NewCasePage = () => {
-    const navigate = useNavigate();
-    const { user } = useAuth();
 
-    // Form state
+    const caseTypeMap = {
+        // Map string values to CaseType enum values
+        'Civil': 0,
+        'Criminal': 1,
+        'Family': 2,
+        'Immigration': 3,
+        'Corporate': 4,
+        'RealEstate': 5,
+        'Bankruptcy': 6,
+        'IntellectualProperty': 7,
+        'Tax': 8,
+        'Other': 9
+    };
+    const { t } = useTranslation();
+    const { user } = useAuth();
+    const navigate = useNavigate();
+    const isOnline = useOnlineStatus();
+
+    // State for form data
     const [formData, setFormData] = useState({
         caseNumber: '',
         lawFirmId: user?.lawFirmId || 0,
         lawyerId: user?.role === 'Lawyer' ? user.id : null,
         title: '',
         description: '',
-        type: '',
+        type: 'Civil', // Default case type
         courtName: '',
         courtCaseNumber: '',
         opposingParty: '',
         opposingCounsel: '',
-        nextHearingDate: null,
+        nextHearingDate: '',
         notes: '',
         isUrgent: false,
+        parentCaseId: null,
         clientIds: [],
         createdById: user?.id || 0
     });
 
     // UI state
     const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);
-    const [clients, setClients] = useState([]);
+    const [success, setSuccess] = useState('');
+    const [submitAttempted, setSubmitAttempted] = useState(false);
+
+    // Reference data
     const [lawyers, setLawyers] = useState([]);
+    const [clients, setClients] = useState([]);
+    const [parentCases, setParentCases] = useState([]);
+    const [selectedClients, setSelectedClients] = useState([]);
 
-    // Load clients and lawyers
+    // Validation state
+    const [validationErrors, setValidationErrors] = useState({});
+
+    // Fetch reference data
     useEffect(() => {
-        const fetchData = async () => {
-            if (!user?.lawFirmId) return;
-
+        const fetchReferenceData = async () => {
             try {
-                // Fetch clients
-                const clientsResponse = await fetch(`/api/Clients/ByFirm/${user.lawFirmId}`);
-                if (clientsResponse.ok) {
-                    setClients(await clientsResponse.json());
-                }
+                setInitialLoading(true);
 
-                // Fetch lawyers
-                const lawyersResponse = await fetch(`/api/LawFirms/${user.lawFirmId}/Lawyers`);
-                if (lawyersResponse.ok) {
-                    setLawyers(await lawyersResponse.json());
-                }
+                // Create an array of promises for parallel fetching
+                const fetchPromises = [
+                    // Default to empty arrays if fetch fails
+                    fetchLawyers(),
+                    fetchClients(),
+                    fetchCases()
+                ];
+
+                // Execute all promises in parallel
+                await Promise.allSettled(fetchPromises);
             } catch (err) {
-                console.error('Error fetching data:', err);
-                setError('Failed to load required data');
+                console.error('Error fetching reference data:', err);
+                setError(t('common.referenceDataError'));
+            } finally {
+                setInitialLoading(false);
             }
         };
 
-        fetchData();
-    }, [user?.lawFirmId]);
+        fetchReferenceData();
+    }, [user, t]);
 
-    // Handle form input changes
+    // Helper functions to fetch individual reference data types
+    const fetchLawyers = async () => {
+        try {
+            // Check if lawFirmId exists before making the API call
+            if (!user?.lawFirmId) {
+                console.warn('No lawFirmId available, skipping lawyer fetch');
+                setLawyers([]);
+                return;
+            }
+
+            const lawyersData = await lawyerService.getLawyersByFirm(user.lawFirmId);
+            console.log('Lawyers data fetched:', lawyersData);
+            setLawyers(lawyersData || []);
+        } catch (error) {
+            console.error('Error fetching lawyers:', error);
+            setLawyers([]); // Set empty array on error to allow the form to render
+        }
+    };
+
+    const fetchClients = async () => {
+        try {
+            const clientsData = await clientService.getClients();
+            console.log('Clients data fetched:', clientsData.length);
+            setClients(clientsData || []);
+        } catch (error) {
+            console.error('Error fetching clients:', error);
+            setClients([]); // Set empty array on error
+        }
+    };
+
+    const fetchCases = async () => {
+        try {
+            const casesData = await caseService.getActiveCases();
+            console.log('Cases data fetched:', casesData.length);
+            setParentCases(casesData || []);
+        } catch (error) {
+            console.error('Error fetching cases:', error);
+            setParentCases([]); // Set empty array on error
+        }
+    };
+
+    // Handle form field changes
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
+        setFormData(prevData => ({
+            ...prevData,
             [name]: type === 'checkbox' ? checked : value
         }));
+
+        // Clear validation errors when user types
+        if (submitAttempted) {
+            validateField(name, type === 'checkbox' ? checked : value);
+        }
     };
 
     // Handle client selection
-    const handleClientSelection = (e) => {
-        setFormData(prev => ({ ...prev, clientIds: e.target.value }));
+    const handleClientChange = (event, newValue) => {
+        setSelectedClients(newValue || []);
+
+        const clientIds = (newValue || []).map(client => client.clientId);
+        setFormData(prevData => ({
+            ...prevData,
+            clientIds
+        }));
+
+        if (submitAttempted) {
+            validateField('clientIds', clientIds);
+        }
     };
 
-    // Handle date change
-    const handleDateChange = (e) => {
-        const date = e.target.value ? new Date(e.target.value) : null;
-        setFormData(prev => ({ ...prev, nextHearingDate: date }));
+    // Validate a single field
+    const validateField = (name, value) => {
+        let error = '';
+
+        switch (name) {
+            case 'title':
+                if (!value || value.trim() === '') {
+                    error = t('cases.validation.titleRequired');
+                }
+                break;
+            case 'description':
+                if (!value || value.trim() === '') {
+                    error = t('cases.validation.descriptionRequired');
+                }
+                break;
+            case 'clientIds':
+                if (!value || value.length === 0) {
+                    error = t('cases.validation.clientRequired');
+                }
+                break;
+            default:
+                break;
+        }
+
+        setValidationErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
+
+        return !error;
+    };
+
+    // Validate all required fields
+    const validateForm = () => {
+        const fieldsToValidate = ['title', 'description', 'clientIds'];
+        let isValid = true;
+
+        fieldsToValidate.forEach(field => {
+            const value = field === 'clientIds' ? formData.clientIds : formData[field];
+            const fieldIsValid = validateField(field, value);
+            isValid = isValid && fieldIsValid;
+        });
+
+        return isValid;
     };
 
     // Handle form submission
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.title || !formData.type || formData.clientIds.length === 0) {
-            setError('Please fill all required fields');
+        // Clear previous errors
+        setError('');
+        setSuccess('');
+        setSubmitAttempted(true);
+
+        // Debug information
+        console.log('Form data before validation:', JSON.stringify(formData, null, 2));
+        console.log('Selected clients:', selectedClients);
+
+        // Manually check if clients are selected
+        if (!formData.clientIds || formData.clientIds.length === 0) {
+            console.warn('No clients selected');
+            setValidationErrors(prev => ({
+                ...prev,
+                clientIds: t('cases.validation.clientRequired')
+            }));
+            setError(t('common.validationError'));
+            return;
+        }
+
+        // Validate form before submission
+        if (!validateForm()) {
+            console.warn('Form validation failed');
+            setError(t('common.validationError'));
+            return;
+        }
+
+        // Check if online before submission
+        if (!isOnline) {
+            console.warn('User is offline');
+            setError(t('common.offlineError'));
             return;
         }
 
         setLoading(true);
-        setError('');
 
         try {
-            const response = await fetch('/api/Cases', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            });
+            // Create a sanitized version of the form data
+            const submissionData = {
+                ...formData,
+                // Convert string type to numeric enum value for backend
+                type: caseTypeMap[formData.type] !== undefined ? caseTypeMap[formData.type] : 0,
+                // Ensure clientIds is an array
+                clientIds: Array.isArray(formData.clientIds) ? formData.clientIds : [],
+                // Convert empty strings to null for optional fields
+                parentCaseId: formData.parentCaseId || null,
+                lawyerId: formData.lawyerId || null,
+                // Ensure we have proper values for required fields
+                lawFirmId: formData.lawFirmId || user?.lawFirmId || 0,
+                createdById: formData.createdById || user?.id || 0
+            };
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create case');
-            }
+            console.log('Submitting sanitized case data:', submissionData);
 
-            const data = await response.json();
-            setSuccess(true);
+            // Submit form data - call the service with our sanitized data
+            const result = await caseService.createCase(submissionData);
+            console.log('Case created successfully:', result);
 
-            // Navigate to the new case after success
+            // Show success message
+            setSuccess(t('cases.createSuccess'));
+
+            // Navigate to cases list after a delay
             setTimeout(() => {
-                navigate(`/cases/${data.caseId}`);
-            }, 1500);
+                navigate('/cases');
+            }, 2000);
         } catch (err) {
-            setError(err.message || 'An error occurred while creating the case');
+            console.error('Error creating case:', err);
+            // Display the error message from the API if available
+            setError(err.message || t('cases.createError'));
         } finally {
             setLoading(false);
         }
     };
 
+    // Get case type options based on backend enum
+    const caseTypeOptions = [
+        { value: 'Civil', label: t('cases.types.civil'), enumValue: 0 },
+        { value: 'Criminal', label: t('cases.types.criminal'), enumValue: 1 },
+        { value: 'Family', label: t('cases.types.family'), enumValue: 2 },
+        { value: 'Immigration', label: t('cases.types.immigration'), enumValue: 3 },
+        { value: 'Corporate', label: t('cases.types.corporate'), enumValue: 4 },
+        { value: 'RealEstate', label: t('cases.types.realEstate'), enumValue: 5 },
+        { value: 'Bankruptcy', label: t('cases.types.bankruptcy'), enumValue: 6 },
+        { value: 'IntellectualProperty', label: t('cases.types.intellectualProperty'), enumValue: 7 },
+        { value: 'Tax', label: t('cases.types.tax'), enumValue: 8 },
+        { value: 'Other', label: t('cases.types.other'), enumValue: 9 }
+    ];
+
     return (
         <Container maxWidth="lg">
             <PageHeader
-                title="Create New Case"
+                title={t('cases.newCase')}
+                subtitle={t('cases.newCaseSubtitle')}
                 breadcrumbs={[
-                    { text: 'Dashboard', link: '/' },
-                    { text: 'Cases', link: '/cases' },
-                    { text: 'New Case' }
+                    { text: t('app.dashboard'), link: '/' },
+                    { text: t('cases.cases'), link: '/cases' },
+                    { text: t('cases.newCase') }
                 ]}
             />
 
-            <Paper sx={{ p: 3, mb: 3 }}>
-                <Box component="form" onSubmit={handleSubmit} noValidate>
-                    <Grid container spacing={3}>
-                        {/* Basic Information */}
-                        <Grid item xs={12}>
-                            <Typography variant="h6" gutterBottom>
-                                Basic Information
-                            </Typography>
-                            <Divider />
-                        </Grid>
+            <Paper elevation={3} sx={{ p: 4, mt: 2 }}>
+                {initialLoading ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4 }}>
+                        <CircularProgress sx={{ mb: 2 }} />
+                        <Typography variant="body1">{t('common.loading')}</Typography>
+                    </Box>
+                ) : (
+                    <Box component="form" onSubmit={handleSubmit}>
+                        <Grid container spacing={3}>
+                            {/* Basic Information */}
+                            <Grid item xs={12}>
+                                <Typography variant="h6" component="h2" gutterBottom>
+                                    {t('cases.basicInfo')}
+                                </Typography>
+                            </Grid>
 
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                required
-                                fullWidth
-                                id="title"
-                                name="title"
-                                label="Case Title"
-                                value={formData.title}
-                                onChange={handleChange}
-                                autoFocus
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth required>
-                                <InputLabel id="type-label">Case Type</InputLabel>
-                                <Select
-                                    labelId="type-label"
-                                    id="type"
-                                    name="type"
-                                    value={formData.type}
-                                    label="Case Type"
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label={t('cases.caseNumber')}
+                                    name="caseNumber"
+                                    value={formData.caseNumber}
                                     onChange={handleChange}
-                                >
-                                    {CASE_TYPES.map(type => (
-                                        <MenuItem key={type.value} value={type.value}>
-                                            {type.label}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Grid>
+                                    placeholder={t('cases.caseNumberPlaceholder')}
+                                    helperText={t('cases.caseNumberHelp')}
+                                />
+                            </Grid>
 
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                id="caseNumber"
-                                name="caseNumber"
-                                label="Case Number"
-                                value={formData.caseNumber}
-                                onChange={handleChange}
-                                helperText="Optional - will be auto-generated if left blank"
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <InputLabel id="lawyer-label">Assigned Lawyer</InputLabel>
-                                <Select
-                                    labelId="lawyer-label"
-                                    id="lawyerId"
-                                    name="lawyerId"
-                                    value={formData.lawyerId || ''}
-                                    label="Assigned Lawyer"
-                                    onChange={handleChange}
-                                >
-                                    {lawyers.map(lawyer => (
-                                        <MenuItem key={lawyer.lawyerId} value={lawyer.lawyerId}>
-                                            {lawyer.user ? `${lawyer.user.firstName} ${lawyer.user.lastName}` : lawyer.lawyerId}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                multiline
-                                rows={3}
-                                id="description"
-                                name="description"
-                                label="Case Description"
-                                value={formData.description}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={formData.isUrgent}
+                            <Grid item xs={12} md={6}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="lawyer-select-label">{t('cases.assignedLawyer')}</InputLabel>
+                                    <Select
+                                        labelId="lawyer-select-label"
+                                        name="lawyerId"
+                                        value={formData.lawyerId || ''}
                                         onChange={handleChange}
-                                        name="isUrgent"
-                                        color="secondary"
+                                        label={t('cases.assignedLawyer')}
+                                        disabled={user?.role === 'Lawyer'}
+                                    >
+                                        <MenuItem value="">{t('common.none')}</MenuItem>
+                                        {lawyers && lawyers.length > 0 ? (
+                                            lawyers.map(lawyer => (
+                                                <MenuItem
+                                                    key={lawyer.lawyerId || `lawyer-${Math.random()}`}
+                                                    value={lawyer.lawyerId || ''}
+                                                >
+                                                    {`${lawyer.firstName || ''} ${lawyer.lastName || ''}`}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem disabled value="">
+                                                {t('common.noLawyersAvailable')}
+                                            </MenuItem>
+                                        )}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    label={t('cases.title')}
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={handleChange}
+                                    error={!!validationErrors.title}
+                                    helperText={validationErrors.title}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    label={t('cases.description')}
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                    multiline
+                                    rows={4}
+                                    error={!!validationErrors.description}
+                                    helperText={validationErrors.description}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="case-type-label">{t('cases.type')}</InputLabel>
+                                    <Select
+                                        labelId="case-type-label"
+                                        name="type"
+                                        value={formData.type}
+                                        onChange={handleChange}
+                                        label={t('cases.type')}
+                                    >
+                                        {caseTypeOptions.map(option => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={formData.isUrgent}
+                                            onChange={handleChange}
+                                            name="isUrgent"
+                                            color="error"
+                                        />
+                                    }
+                                    label={t('cases.urgent')}
+                                />
+                            </Grid>
+
+
+                                <Grid item xs={12}>
+                                    {/* Hidden input field to store the clientIds value for form validation */}
+                                    <input
+                                        type="hidden"
+                                        name="clientIds"
+                                        value={formData.clientIds.join(',')}
+                                        required={false}
                                     />
-                                }
-                                label="Mark as Urgent"
-                            />
-                        </Grid>
 
-                        {/* Client Information */}
-                        <Grid item xs={12}>
-                            <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
-                                Client Information
-                            </Typography>
-                            <Divider />
-                        </Grid>
+                                    <Autocomplete
+                                        multiple
+                                        value={selectedClients}
+                                        onChange={handleClientChange}
+                                        options={clients || []}
+                                        getOptionLabel={(option) =>
+                                            option.companyName
+                                                ? `${option.firstName || ''} ${option.lastName || ''} (${option.companyName})`
+                                                : `${option.firstName || ''} ${option.lastName || ''}`
+                                        }
+                                        isOptionEqualToValue={(option, value) => option.clientId === value.clientId}
+                                        renderTags={(value, getTagProps) =>
+                                            value.map((option, index) => (
+                                                <Chip
+                                                    key={option.clientId || `client-${index}`}
+                                                    label={option.companyName
+                                                        ? `${option.firstName || ''} ${option.lastName || ''} (${option.companyName})`
+                                                        : `${option.firstName || ''} ${option.lastName || ''}`}
+                                                    {...getTagProps({ index })}
+                                                />
+                                            ))
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label={t('cases.clients')}
+                                                placeholder={selectedClients.length > 0 ? t('cases.selectMoreClients') : t('cases.selectClients')}
+                                                error={!!validationErrors.clientIds}
+                                                helperText={validationErrors.clientIds}
+                                                // Remove the required attribute to prevent browser validation
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                            />
+                                        )}
+                                        noOptionsText={t('common.noClientsAvailable')}
+                                    />
+                                </Grid>
 
-                        <Grid item xs={12}>
-                            <FormControl fullWidth required>
-                                <InputLabel id="clients-label">Associated Clients</InputLabel>
-                                <Select
-                                    labelId="clients-label"
-                                    id="clientIds"
-                                    name="clientIds"
-                                    multiple
-                                    value={formData.clientIds}
-                                    onChange={handleClientSelection}
-                                    label="Associated Clients"
-                                    renderValue={(selected) => (
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                            {selected.map((clientId) => {
-                                                const client = clients.find(c => c.clientId === clientId);
-                                                return (
-                                                    <Chip
-                                                        key={clientId}
-                                                        label={client ? `${client.firstName} ${client.lastName}` : clientId}
-                                                    />
-                                                );
-                                            })}
-                                        </Box>
-                                    )}
+                            {/* Court Information */}
+                            <Grid item xs={12} sx={{ mt: 2 }}>
+                                <Typography variant="h6" component="h2" gutterBottom>
+                                    {t('cases.courtInfo')}
+                                </Typography>
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label={t('cases.courtName')}
+                                    name="courtName"
+                                    value={formData.courtName}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label={t('cases.courtCaseNumber')}
+                                    name="courtCaseNumber"
+                                    value={formData.courtCaseNumber}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label={t('cases.opposingParty')}
+                                    name="opposingParty"
+                                    value={formData.opposingParty}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label={t('cases.opposingCounsel')}
+                                    name="opposingCounsel"
+                                    value={formData.opposingCounsel}
+                                    onChange={handleChange}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <TextField
+                                    fullWidth
+                                    label={t('cases.nextHearingDate')}
+                                    name="nextHearingDate"
+                                    type="datetime-local"
+                                    value={formData.nextHearingDate}
+                                    onChange={handleChange}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="parent-case-label">{t('cases.parentCase')}</InputLabel>
+                                    <Select
+                                        labelId="parent-case-label"
+                                        name="parentCaseId"
+                                        value={formData.parentCaseId || ''}
+                                        onChange={handleChange}
+                                        label={t('cases.parentCase')}
+                                    >
+                                        <MenuItem value="">{t('common.none')}</MenuItem>
+                                        {parentCases && parentCases.length > 0 ? (
+                                            parentCases.map(pCase => (
+                                                <MenuItem key={pCase.caseId || `case-${Math.random()}`} value={pCase.caseId || ''}>
+                                                    {pCase.caseNumber ? `${pCase.caseNumber} - ${pCase.title || ''}` : pCase.title || ''}
+                                                </MenuItem>
+                                            ))
+                                        ) : (
+                                            <MenuItem disabled value="">
+                                                {t('common.noCasesAvailable')}
+                                            </MenuItem>
+                                        )}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label={t('cases.notes')}
+                                    name="notes"
+                                    value={formData.notes}
+                                    onChange={handleChange}
+                                    multiline
+                                    rows={3}
+                                />
+                            </Grid>
+
+                            {/* Action Buttons */}
+                            <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={() => navigate('/cases')}
+                                    disabled={loading}
                                 >
-                                    {clients.map(client => (
-                                        <MenuItem key={client.clientId} value={client.clientId}>
-                                            {`${client.firstName} ${client.lastName} ${client.companyName ? `(${client.companyName})` : ''}`}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                                    {t('common.cancel')}
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={loading || !isOnline}
+                                    startIcon={loading ? <CircularProgress size={20} /> : null}
+                                >
+                                    {loading ? t('common.creating') : t('common.create')}
+                                </Button>
+                            </Grid>
                         </Grid>
-
-                        {/* Court Information */}
-                        <Grid item xs={12}>
-                            <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
-                                Court Information
-                            </Typography>
-                            <Divider />
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                id="courtName"
-                                name="courtName"
-                                label="Court Name"
-                                value={formData.courtName}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                id="courtCaseNumber"
-                                name="courtCaseNumber"
-                                label="Court Case Number"
-                                value={formData.courtCaseNumber}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                id="nextHearingDate"
-                                name="nextHearingDate"
-                                label="Next Hearing Date"
-                                type="date"
-                                value={formData.nextHearingDate ? formData.nextHearingDate.toISOString().split('T')[0] : ''}
-                                onChange={handleDateChange}
-                                InputLabelProps={{ shrink: true }}
-                            />
-                        </Grid>
-
-                        {/* Opposing Party */}
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                id="opposingParty"
-                                name="opposingParty"
-                                label="Opposing Party"
-                                value={formData.opposingParty}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                id="opposingCounsel"
-                                name="opposingCounsel"
-                                label="Opposing Counsel"
-                                value={formData.opposingCounsel}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        {/* Notes */}
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                multiline
-                                rows={3}
-                                id="notes"
-                                name="notes"
-                                label="Additional Notes"
-                                value={formData.notes}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        {/* Form Actions */}
-                        <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                            <Button
-                                variant="outlined"
-                                onClick={() => navigate('/cases')}
-                                disabled={loading}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                disabled={loading}
-                                startIcon={loading ? <CircularProgress size={20} /> : null}
-                            >
-                                {loading ? 'Creating...' : 'Create Case'}
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Box>
+                    </Box>
+                )}
             </Paper>
 
-            {/* Success & Error messages */}
+            {/* Snackbar for success/error messages */}
             <Snackbar
-                open={success}
+                open={!!success}
                 autoHideDuration={6000}
-                onClose={() => setSuccess(false)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                onClose={() => setSuccess('')}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
-                <Alert severity="success">Case created successfully!</Alert>
+                <Alert
+                    onClose={() => setSuccess('')}
+                    severity="success"
+                    sx={{ width: '100%' }}
+                >
+                    {success}
+                </Alert>
             </Snackbar>
 
             <Snackbar
                 open={!!error}
                 autoHideDuration={6000}
                 onClose={() => setError('')}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
-                <Alert severity="error">{error}</Alert>
+                <Alert
+                    onClose={() => setError('')}
+                    severity="error"
+                    sx={{ width: '100%' }}
+                >
+                    {error}
+                </Alert>
             </Snackbar>
+
+            {/* Offline warning */}
+            {!isOnline && (
+                <Box mt={2}>
+                    <Alert severity="warning">
+                        {t('common.offlineWarning')}
+                    </Alert>
+                </Box>
+            )}
         </Container>
     );
 };
