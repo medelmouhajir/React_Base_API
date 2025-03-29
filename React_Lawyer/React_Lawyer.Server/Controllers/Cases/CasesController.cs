@@ -131,7 +131,9 @@ namespace React_Lawyer.Server.Controllers.Cases
                         {
                             ClientId = cc.Client.ClientId,
                             FirstName = cc.Client.FirstName,
-                            LastName = cc.Client.LastName
+                            LastName = cc.Client.LastName,
+                            Email = cc.Client.Email,
+                            PhoneNumber = cc.Client.PhoneNumber
                         }
                     }).ToList(),
                     Documents = @case.Documents.Select(x=> new Document

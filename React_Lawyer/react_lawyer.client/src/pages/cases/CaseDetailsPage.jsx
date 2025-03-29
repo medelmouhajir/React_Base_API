@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
     Container, Paper, Box, Typography, Button, Tabs, Tab,
     Chip, Grid, Card, CardContent, Divider, IconButton,
@@ -7,7 +8,8 @@ import {
     Avatar, CircularProgress, Snackbar, Alert, Dialog,
     DialogTitle, DialogContent, DialogActions, TextField,
     MenuItem, Select, FormControl, InputLabel, Table, TableBody,
-    TableCell, TableContainer, TableHead, TableRow
+    TableCell, TableContainer, TableHead, TableRow, Tooltip,
+    Skeleton
 } from '@mui/material';
 import {
     Edit as EditIcon,
@@ -21,31 +23,20 @@ import {
     Schedule as ScheduleIcon,
     Notes as NotesIcon,
     Add as AddIcon,
-    FileCopy as DocumentIcon
+    FileCopy as DocumentIcon,
+    CheckCircleOutline as CheckIcon,
+    ErrorOutline as WarningIcon,
+    ArrowBack as BackIcon,
+    LinkOff as OfflineIcon
 } from '@mui/icons-material';
 import { useAuth } from '../../features/auth/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
-
-// Case status color mapping
-const STATUS_COLORS = {
-    Intake: 'info',
-    Active: 'success',
-    Pending: 'warning',
-    Closed: 'default',
-    Archived: 'default'
-};
-
-// Case statuses
-const CASE_STATUSES = [
-    { value: 'Intake', label: 'Intake' },
-    { value: 'Active', label: 'Active' },
-    { value: 'Pending', label: 'Pending' },
-    { value: 'Closed', label: 'Closed' },
-    { value: 'Archived', label: 'Archived' }
-];
+import caseService from '../../services/caseService';
+import clientService from '../../services/clientService';
+import useOnlineStatus from '../../hooks/useOnlineStatus';
 
 // Tab panel component
-function TabPanel(props) {
+const TabPanel = (props) => {
     const { children, value, index, ...other } = props;
 
     return (
@@ -63,12 +54,14 @@ function TabPanel(props) {
             )}
         </div>
     );
-}
+};
 
 const CaseDetailsPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const isOnline = useOnlineStatus();
+    const { t } = useTranslation();
 
     // State
     const [caseData, setCaseData] = useState(null);
@@ -87,6 +80,36 @@ const CaseDetailsPage = () => {
     const [eventTitle, setEventTitle] = useState('');
     const [eventDescription, setEventDescription] = useState('');
     const [eventDialogLoading, setEventDialogLoading] = useState(false);
+    const [submitAttempted, setSubmitAttempted] = useState(false);
+
+    // Delete confirmation state
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+    // Success message state
+    const [successMessage, setSuccessMessage] = useState('');
+
+    // Case status options - mapped from the backend enum
+    const CASE_STATUSES = [
+        { value: 0, label: t('cases.status.intake'), color: 'info' },
+        { value: 1, label: t('cases.status.active'), color: 'success' },
+        { value: 2, label: t('cases.status.pending'), color: 'warning' },
+        { value: 3, label: t('cases.status.closed'), color: 'default' },
+        { value: 4, label: t('cases.status.archived'), color: 'default' }
+    ];
+
+    // Case type options - mapped from the backend enum
+    const CASE_TYPES = [
+        { value: 0, label: t('cases.type.civil') },
+        { value: 1, label: t('cases.type.criminal') },
+        { value: 2, label: t('cases.type.family') },
+        { value: 3, label: t('cases.type.immigration') },
+        { value: 4, label: t('cases.type.corporate') },
+        { value: 5, label: t('cases.type.realEstate') },
+        { value: 6, label: t('cases.type.bankruptcy') },
+        { value: 7, label: t('cases.type.intellectualProperty') },
+        { value: 8, label: t('cases.type.tax') },
+        { value: 9, label: t('cases.type.other') }
+    ];
 
     // Fetch case data
     useEffect(() => {
@@ -95,18 +118,33 @@ const CaseDetailsPage = () => {
             setError('');
 
             try {
-                const response = await fetch(`/api/Cases/${id}`);
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch case details');
+                if (!isOnline) {
+                    // If offline, try to get from localStorage or show offline message
+                    const cachedCase = localStorage.getItem(`case_${id}`);
+                    if (cachedCase) {
+                        setCaseData(JSON.parse(cachedCase));
+                        setError(t('common.offlineMode'));
+                    } else {
+                        setError(t('common.offlineNoData'));
+                    }
+                    setLoading(false);
+                    return;
                 }
 
-                const data = await response.json();
+                const data = await caseService.getCaseById(id);
+
+                // Store in localStorage for offline access
+                localStorage.setItem(`case_${id}`, JSON.stringify(data));
+
                 setCaseData(data);
-                setNewStatus(data.status); // Initialize status dialog with current status
+
+                // Initialize status dialog with current status
+                if (data) {
+                    setNewStatus(data.status);
+                }
             } catch (err) {
                 console.error('Error fetching case details:', err);
-                setError('Failed to load case details');
+                setError(t('cases.fetchError'));
             } finally {
                 setLoading(false);
             }
@@ -115,7 +153,7 @@ const CaseDetailsPage = () => {
         if (id) {
             fetchCaseData();
         }
-    }, [id]);
+    }, [id, isOnline, t]);
 
     // Handle tab change
     const handleTabChange = (event, newValue) => {
@@ -124,29 +162,24 @@ const CaseDetailsPage = () => {
 
     // Open status change dialog
     const handleOpenStatusDialog = () => {
+        if (!isOnline) {
+            setError(t('common.offlineActionError'));
+            return;
+        }
         setStatusDialogOpen(true);
     };
 
     // Handle status change
     const handleStatusChange = async () => {
+        if (!isOnline) {
+            setError(t('common.offlineActionError'));
+            return;
+        }
+
         setStatusDialogLoading(true);
 
         try {
-            const response = await fetch(`/api/Cases/${id}/Status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    newStatus,
-                    userId: user?.id,
-                    notes: statusNotes
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to update case status');
-            }
+            await caseService.updateCaseStatus(id, newStatus, user?.id, statusNotes);
 
             // Update local case data
             setCaseData(prev => ({
@@ -154,10 +187,11 @@ const CaseDetailsPage = () => {
                 status: newStatus
             }));
 
+            setSuccessMessage(t('cases.statusUpdateSuccess'));
             setStatusDialogOpen(false);
             setStatusNotes('');
         } catch (err) {
-            setError('Error updating case status');
+            setError(t('cases.statusUpdateError'));
         } finally {
             setStatusDialogLoading(false);
         }
@@ -165,80 +199,145 @@ const CaseDetailsPage = () => {
 
     // Open add event dialog
     const handleOpenEventDialog = () => {
+        if (!isOnline) {
+            setError(t('common.offlineActionError'));
+            return;
+        }
         setEventDialogOpen(true);
     };
 
     // Handle add event
     const handleAddEvent = async () => {
+        setSubmitAttempted(true);
+
         if (!eventTitle) {
-            setError('Event title is required');
+            setError(t('cases.events.titleRequired'));
             return;
         }
 
         setEventDialogLoading(true);
 
         try {
-            const response = await fetch(`/api/Cases/${id}/Events`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    caseId: Number(id),
-                    createdById: user?.id,
-                    title: eventTitle,
-                    description: eventDescription,
-                    date: new Date().toISOString(),
-                    eventType: 'Note',
-                    createdAt: new Date().toISOString()
-                })
+            await caseService.addCaseEvent(id, {
+                caseId: Number(id),
+                createdById: user?.id,
+                title: eventTitle,
+                description: eventDescription,
+                date: new Date().toISOString(),
+                eventType: 'Note',
+                createdAt: new Date().toISOString()
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to add case event');
-            }
-
             // Refetch case data to get the new event
-            const caseResponse = await fetch(`/api/Cases/${id}`);
-            if (caseResponse.ok) {
-                setCaseData(await caseResponse.json());
-            }
+            const updatedCase = await caseService.getCaseById(id);
+            setCaseData(updatedCase);
 
+            setSuccessMessage(t('cases.events.addSuccess'));
             setEventDialogOpen(false);
             setEventTitle('');
             setEventDescription('');
         } catch (err) {
-            setError('Error adding case event');
+            setError(t('cases.events.addError'));
         } finally {
             setEventDialogLoading(false);
         }
     };
 
+    // Handle case deletion
+    const handleDeleteCase = async () => {
+        if (!isOnline) {
+            setError(t('common.offlineActionError'));
+            return;
+        }
+
+        try {
+            await caseService.deleteCase(id);
+            setSuccessMessage(t('cases.deleteSuccess'));
+
+            // Wait a moment before navigating
+            setTimeout(() => {
+                navigate('/cases');
+            }, 1500);
+        } catch (err) {
+            setError(t('cases.deleteError'));
+        } finally {
+            setDeleteDialogOpen(false);
+        }
+    };
+
     // Format date
     const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
+        if (!dateString) return t('common.notAvailable');
         return new Date(dateString).toLocaleDateString();
     };
 
+    // Format datetime
+    const formatDateTime = (dateString) => {
+        if (!dateString) return t('common.notAvailable');
+        return new Date(dateString).toLocaleString();
+    };
+
+    // Get status chip color
+    const getStatusColor = (status) => {
+        const statusItem = CASE_STATUSES.find(s => s.value === status);
+        return statusItem ? statusItem.color : 'default';
+    };
+
+    // Get status label
+    const getStatusLabel = (status) => {
+        const statusItem = CASE_STATUSES.find(s => s.value === status);
+        return statusItem ? statusItem.label : t('common.unknown');
+    };
+
+    // Get case type label
+    const getCaseTypeLabel = (type) => {
+        const typeItem = CASE_TYPES.find(t => t.value === type);
+        return typeItem ? typeItem.label : t('common.unknown');
+    };
+
+    // Clear error message
+    const handleClearError = () => {
+        setError('');
+    };
+
+    // Clear success message
+    const handleClearSuccess = () => {
+        setSuccessMessage('');
+    };
+
+    // Loading skeleton
     if (loading) {
         return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-                <CircularProgress />
+            <Container maxWidth="lg">
+                <Box sx={{ mb: 3 }}>
+                    <Skeleton variant="rectangular" height={80} sx={{ mb: 2, borderRadius: 1 }} />
+                </Box>
+
+                <Skeleton variant="rectangular" height={180} sx={{ mb: 3, borderRadius: 1 }} />
+
+                <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 1 }} />
             </Container>
         );
     }
 
-    if (!caseData) {
+    // Error state when case not found
+    if (!caseData && error) {
         return (
-            <Container>
+            <Container maxWidth="lg">
                 <Paper sx={{ p: 4, my: 4, textAlign: 'center' }}>
-                    <Typography variant="h5" color="error">Case not found</Typography>
+                    <WarningIcon color="error" sx={{ fontSize: 64, mb: 2 }} />
+                    <Typography variant="h5" color="error" gutterBottom>
+                        {t('cases.notFound')}
+                    </Typography>
+                    <Typography variant="body1" paragraph>
+                        {error}
+                    </Typography>
                     <Button
                         variant="contained"
-                        sx={{ mt: 2 }}
+                        startIcon={<BackIcon />}
                         onClick={() => navigate('/cases')}
                     >
-                        Back to Cases
+                        {t('common.backToList')}
                     </Button>
                 </Paper>
             </Container>
@@ -247,18 +346,57 @@ const CaseDetailsPage = () => {
 
     return (
         <Container maxWidth="lg">
+            {/* Page Header */}
             <PageHeader
-                title={caseData.title}
-                subtitle={`Case #${caseData.caseNumber}`}
+                title={caseData?.title}
+                subtitle={t('cases.caseNumber', { number: caseData?.caseNumber })}
                 breadcrumbs={[
-                    { text: 'Dashboard', link: '/' },
-                    { text: 'Cases', link: '/cases' },
-                    { text: caseData.caseNumber || caseData.caseId }
+                    { text: t('app.dashboard'), link: '/' },
+                    { text: t('cases.cases'), link: '/cases' },
+                    { text: caseData?.caseNumber || caseData?.caseId }
                 ]}
-                action="Edit Case"
+                action={t('common.edit')}
                 actionIcon={<EditIcon />}
                 onActionClick={() => navigate(`/cases/${id}/edit`)}
             />
+
+            {/* Offline Mode Warning */}
+            {!isOnline && (
+                <Alert
+                    severity="warning"
+                    icon={<OfflineIcon />}
+                    sx={{ mb: 3 }}
+                >
+                    {t('common.offlineMode')}
+                </Alert>
+            )}
+
+            {/* Error Message */}
+            {error && (
+                <Alert
+                    severity="error"
+                    onClose={handleClearError}
+                    sx={{ mb: 3 }}
+                >
+                    {error}
+                </Alert>
+            )}
+
+            {/* Success Message */}
+            <Snackbar
+                open={!!successMessage}
+                autoHideDuration={6000}
+                onClose={handleClearSuccess}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={handleClearSuccess}
+                    severity="success"
+                    sx={{ width: '100%' }}
+                >
+                    {successMessage}
+                </Alert>
+            </Snackbar>
 
             {/* Case Summary Card */}
             <Paper sx={{ mb: 3, overflow: 'hidden' }}>
@@ -272,67 +410,89 @@ const CaseDetailsPage = () => {
                         alignItems: 'center'
                     }}
                 >
-                    <Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Chip
-                            label={caseData.status}
-                            color={STATUS_COLORS[caseData.status] || 'default'}
+                            label={getStatusLabel(caseData?.status)}
+                            color={getStatusColor(caseData?.status)}
                             size="small"
                             sx={{ mr: 1 }}
                         />
-                        {caseData.isUrgent && (
-                            <Chip label="URGENT" color="error" size="small" />
+                        {caseData?.isUrgent && (
+                            <Chip label={t('cases.urgent')} color="error" size="small" />
                         )}
                     </Box>
 
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        onClick={handleOpenStatusDialog}
-                    >
-                        Change Status
-                    </Button>
+                    <Box>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            size="small"
+                            onClick={handleOpenStatusDialog}
+                            disabled={!isOnline}
+                            sx={{ mr: 1 }}
+                        >
+                            {t('cases.changeStatus')}
+                        </Button>
+
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            size="small"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={!isOnline}
+                            sx={{
+                                bgcolor: 'rgba(255,255,255,0.1)',
+                                color: 'white',
+                                '&:hover': {
+                                    bgcolor: 'error.main',
+                                    color: 'white',
+                                }
+                            }}
+                        >
+                            {t('common.delete')}
+                        </Button>
+                    </Box>
                 </Box>
 
                 <Grid container spacing={2} sx={{ p: 2 }}>
                     <Grid item xs={12} md={6}>
                         <Box sx={{ mb: 2 }}>
                             <Typography variant="subtitle2" color="textSecondary">
-                                Type
+                                {t('cases.type')}
                             </Typography>
                             <Typography variant="body1">
-                                {caseData.type || 'N/A'}
+                                {getCaseTypeLabel(caseData?.type)}
                             </Typography>
                         </Box>
 
                         <Box sx={{ mb: 2 }}>
                             <Typography variant="subtitle2" color="textSecondary">
-                                Open Date
+                                {t('cases.openDate')}
                             </Typography>
                             <Typography variant="body1">
-                                {formatDate(caseData.openDate)}
+                                {formatDate(caseData?.openDate)}
                             </Typography>
                         </Box>
 
-                        {caseData.closeDate && (
+                        {caseData?.closeDate && (
                             <Box sx={{ mb: 2 }}>
                                 <Typography variant="subtitle2" color="textSecondary">
-                                    Close Date
+                                    {t('cases.closeDate')}
                                 </Typography>
                                 <Typography variant="body1">
-                                    {formatDate(caseData.closeDate)}
+                                    {formatDate(caseData?.closeDate)}
                                 </Typography>
                             </Box>
                         )}
 
                         <Box sx={{ mb: 2 }}>
                             <Typography variant="subtitle2" color="textSecondary">
-                                Assigned Lawyer
+                                {t('cases.assignedLawyer')}
                             </Typography>
                             <Typography variant="body1">
-                                {caseData.assignedLawyer ?
-                                    `${caseData.assignedLawyer.user.firstName} ${caseData.assignedLawyer.user.lastName}` :
-                                    'Unassigned'}
+                                {caseData?.assignedLawyer && caseData?.assignedLawyer.user
+                                    ? `${caseData.assignedLawyer.user.firstName} ${caseData.assignedLawyer.user.lastName}`
+                                    : t('cases.unassigned')}
                             </Typography>
                         </Box>
                     </Grid>
@@ -340,47 +500,47 @@ const CaseDetailsPage = () => {
                     <Grid item xs={12} md={6}>
                         <Box sx={{ mb: 2 }}>
                             <Typography variant="subtitle2" color="textSecondary">
-                                Court
+                                {t('cases.court')}
                             </Typography>
                             <Typography variant="body1">
-                                {caseData.courtName || 'N/A'}
+                                {caseData?.courtName || t('common.notAvailable')}
                             </Typography>
                         </Box>
 
                         <Box sx={{ mb: 2 }}>
                             <Typography variant="subtitle2" color="textSecondary">
-                                Court Case Number
+                                {t('cases.courtCaseNumber')}
                             </Typography>
                             <Typography variant="body1">
-                                {caseData.courtCaseNumber || 'N/A'}
+                                {caseData?.courtCaseNumber || t('common.notAvailable')}
                             </Typography>
                         </Box>
 
                         <Box sx={{ mb: 2 }}>
                             <Typography variant="subtitle2" color="textSecondary">
-                                Next Hearing
+                                {t('cases.nextHearing')}
                             </Typography>
                             <Typography variant="body1">
-                                {formatDate(caseData.nextHearingDate)}
+                                {formatDate(caseData?.nextHearingDate)}
                             </Typography>
                         </Box>
 
                         <Box sx={{ mb: 2 }}>
                             <Typography variant="subtitle2" color="textSecondary">
-                                Opposing Party
+                                {t('cases.opposingParty')}
                             </Typography>
                             <Typography variant="body1">
-                                {caseData.opposingParty || 'N/A'}
+                                {caseData?.opposingParty || t('common.notAvailable')}
                             </Typography>
                         </Box>
                     </Grid>
 
                     <Grid item xs={12}>
                         <Typography variant="subtitle2" color="textSecondary">
-                            Description
+                            {t('cases.description')}
                         </Typography>
-                        <Typography variant="body1">
-                            {caseData.description || 'No description provided.'}
+                        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                            {caseData?.description || t('common.noDescriptionProvided')}
                         </Typography>
                     </Grid>
                 </Grid>
@@ -395,11 +555,11 @@ const CaseDetailsPage = () => {
                     scrollButtons="auto"
                     sx={{ borderBottom: 1, borderColor: 'divider' }}
                 >
-                    <Tab label="Clients" icon={<PersonIcon />} iconPosition="start" />
-                    <Tab label="Events" icon={<EventIcon />} iconPosition="start" />
-                    <Tab label="Documents" icon={<DocumentIcon />} iconPosition="start" />
-                    <Tab label="Billing" icon={<MoneyIcon />} iconPosition="start" />
-                    <Tab label="Notes" icon={<NotesIcon />} iconPosition="start" />
+                    <Tab label={t('clients.clients')} icon={<PersonIcon />} iconPosition="start" />
+                    <Tab label={t('cases.events.events')} icon={<EventIcon />} iconPosition="start" />
+                    <Tab label={t('documents.documents')} icon={<DocumentIcon />} iconPosition="start" />
+                    <Tab label={t('billing.billing')} icon={<MoneyIcon />} iconPosition="start" />
+                    <Tab label={t('cases.notes')} icon={<NotesIcon />} iconPosition="start" />
                 </Tabs>
 
                 {/* Clients Tab */}
@@ -409,16 +569,24 @@ const CaseDetailsPage = () => {
                             variant="contained"
                             startIcon={<AddIcon />}
                             onClick={() => navigate(`/cases/${id}/clients/add`)}
+                            disabled={!isOnline}
                         >
-                            Add Client
+                            {t('clients.addClient')}
                         </Button>
                     </Box>
 
-                    {caseData.case_Clients && caseData.case_Clients.length > 0 ? (
+                    {caseData?.case_Clients && caseData.case_Clients.length > 0 ? (
                         <Grid container spacing={2}>
                             {caseData.case_Clients.map(clientRelation => (
                                 <Grid item xs={12} md={6} key={clientRelation.client.clientId}>
-                                    <Card sx={{ height: '100%' }}>
+                                    <Card sx={{
+                                        height: '100%',
+                                        transition: 'all 0.2s ease',
+                                        '&:hover': {
+                                            boxShadow: 4,
+                                            transform: 'translateY(-2px)'
+                                        }
+                                    }}>
                                         <CardContent>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                 <Box>
@@ -431,21 +599,23 @@ const CaseDetailsPage = () => {
                                                         </Typography>
                                                     )}
                                                 </Box>
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => navigate(`/clients/${clientRelation.client.clientId}`)}
-                                                >
-                                                    <PersonIcon />
-                                                </IconButton>
+                                                <Tooltip title={t('clients.viewClient')}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => navigate(`/clients/${clientRelation.client.clientId}`)}
+                                                    >
+                                                        <PersonIcon />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </Box>
 
                                             <Divider sx={{ my: 1 }} />
 
-                                            <Typography variant="body2">
-                                                <strong>Email:</strong> {clientRelation.client.email}
+                                            <Typography variant="body2" sx={{ mb: 0.5 }}>
+                                                <strong>{t('clients.email')}:</strong> {clientRelation.client.email || t('common.notAvailable')}
                                             </Typography>
                                             <Typography variant="body2">
-                                                <strong>Phone:</strong> {clientRelation.client.phoneNumber}
+                                                <strong>{t('clients.phone')}:</strong> {clientRelation.client.phoneNumber || t('common.notAvailable')}
                                             </Typography>
                                         </CardContent>
                                     </Card>
@@ -453,9 +623,12 @@ const CaseDetailsPage = () => {
                             ))}
                         </Grid>
                     ) : (
-                        <Typography variant="body1" color="textSecondary" align="center">
-                            No clients associated with this case.
-                        </Typography>
+                        <Box sx={{ textAlign: 'center', py: 4 }}>
+                            <PersonIcon color="disabled" sx={{ fontSize: 60, mb: 2, opacity: 0.5 }} />
+                            <Typography variant="body1" color="textSecondary">
+                                {t('cases.noClientsAssociated')}
+                            </Typography>
+                        </Box>
                     )}
                 </TabPanel>
 
@@ -466,64 +639,71 @@ const CaseDetailsPage = () => {
                             variant="contained"
                             startIcon={<AddIcon />}
                             onClick={handleOpenEventDialog}
+                            disabled={!isOnline}
                         >
-                            Add Event
+                            {t('cases.events.addEvent')}
                         </Button>
                     </Box>
 
-                    {caseData.events && caseData.events.length > 0 ? (
+                    {caseData?.events && caseData.events.length > 0 ? (
                         <List>
-                            {caseData.events.sort((a, b) => new Date(b.date) - new Date(a.date)).map(event => (
-                                <ListItem
-                                    key={event.caseEventId}
-                                    alignItems="flex-start"
-                                    sx={{
-                                        mb: 1,
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        borderRadius: 1
-                                    }}
-                                >
-                                    <ListItemIcon>
-                                        <Avatar
-                                            sx={{
-                                                bgcolor: event.eventType === 'StatusChange' ? 'primary.main' : 'secondary.main'
-                                            }}
-                                        >
-                                            {event.eventType === 'StatusChange' ? <GavelIcon /> : <EventIcon />}
-                                        </Avatar>
-                                    </ListItemIcon>
-                                    <ListItemText
-                                        primary={
-                                            <Typography variant="subtitle1">
-                                                {event.title}
+                            {caseData.events
+                                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                .map(event => (
+                                    <ListItem
+                                        key={event.caseEventId}
+                                        alignItems="flex-start"
+                                        sx={{
+                                            mb: 2,
+                                            border: '1px solid',
+                                            borderColor: 'divider',
+                                            borderRadius: 1,
+                                            bgcolor: event.isImportant ? 'rgba(255, 0, 0, 0.05)' : 'transparent'
+                                        }}
+                                    >
+                                        <ListItemIcon>
+                                            <Avatar
+                                                sx={{
+                                                    bgcolor: event.eventType === 'StatusChange' ? 'primary.main' : 'secondary.main'
+                                                }}
+                                            >
+                                                {event.eventType === 'StatusChange' ? <GavelIcon /> : <EventIcon />}
+                                            </Avatar>
+                                        </ListItemIcon>
+                                        <ListItemText
+                                            primary={
+                                                <Typography variant="subtitle1" fontWeight={event.isImportant ? 'bold' : 'normal'}>
+                                                    {event.title}
+                                                </Typography>
+                                            }
+                                            secondary={
+                                                <>
+                                                    <Typography variant="body2" color="textSecondary">
+                                                        {formatDateTime(event.date)}
+                                                    </Typography>
+                                                    <Typography variant="body2" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>
+                                                        {event.description}
+                                                    </Typography>
+                                                </>
+                                            }
+                                        />
+                                        <ListItemSecondaryAction>
+                                            <Typography variant="caption" color="textSecondary">
+                                                {event.createdBy ?
+                                                    `${event.createdBy.firstName} ${event.createdBy.lastName}` :
+                                                    t('common.system')}
                                             </Typography>
-                                        }
-                                        secondary={
-                                            <>
-                                                <Typography variant="body2" color="textSecondary">
-                                                    {new Date(event.date).toLocaleString()}
-                                                </Typography>
-                                                <Typography variant="body2" sx={{ mt: 1 }}>
-                                                    {event.description}
-                                                </Typography>
-                                            </>
-                                        }
-                                    />
-                                    <ListItemSecondaryAction>
-                                        <Typography variant="caption" color="textSecondary">
-                                            {event.createdBy ?
-                                                `${event.createdBy.firstName} ${event.createdBy.lastName}` :
-                                                'System'}
-                                        </Typography>
-                                    </ListItemSecondaryAction>
-                                </ListItem>
-                            ))}
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                ))}
                         </List>
                     ) : (
-                        <Typography variant="body1" color="textSecondary" align="center">
-                            No events recorded for this case.
-                        </Typography>
+                        <Box sx={{ textAlign: 'center', py: 4 }}>
+                            <EventIcon color="disabled" sx={{ fontSize: 60, mb: 2, opacity: 0.5 }} />
+                            <Typography variant="body1" color="textSecondary">
+                                {t('cases.events.noEventsRecorded')}
+                            </Typography>
+                        </Box>
                     )}
                 </TabPanel>
 
@@ -534,40 +714,50 @@ const CaseDetailsPage = () => {
                             variant="contained"
                             startIcon={<AddIcon />}
                             onClick={() => navigate(`/documents/upload?caseId=${id}`)}
+                            disabled={!isOnline}
                         >
-                            Upload Document
+                            {t('documents.uploadDocument')}
                         </Button>
                     </Box>
 
-                    {caseData.documents && caseData.documents.length > 0 ? (
+                    {caseData?.documents && caseData.documents.length > 0 ? (
                         <TableContainer>
                             <Table aria-label="documents table">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Title</TableCell>
-                                        <TableCell>Type</TableCell>
-                                        <TableCell>Uploaded By</TableCell>
-                                        <TableCell>Date</TableCell>
-                                        <TableCell align="right">Actions</TableCell>
+                                        <TableCell>{t('documents.title')}</TableCell>
+                                        <TableCell>{t('documents.type')}</TableCell>
+                                        <TableCell>{t('documents.uploadedBy')}</TableCell>
+                                        <TableCell>{t('documents.date')}</TableCell>
+                                        <TableCell align="right">{t('common.actions')}</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {caseData.documents.map(doc => (
-                                        <TableRow key={doc.documentId}>
-                                            <TableCell>{doc.title}</TableCell>
-                                            <TableCell>{doc.documentType}</TableCell>
-                                            <TableCell>{doc.uploadedBy}</TableCell>
+                                        <TableRow key={doc.documentId} hover>
+                                            <TableCell>{doc.title || doc.fileName}</TableCell>
+                                            <TableCell>{doc.documentType || doc.fileType}</TableCell>
+                                            <TableCell>{doc.uploadedBy || t('common.system')}</TableCell>
                                             <TableCell>{formatDate(doc.uploadDate)}</TableCell>
                                             <TableCell align="right">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => window.open(`/api/Documents/${doc.documentId}/download`)}
-                                                >
-                                                    <PdfIcon />
-                                                </IconButton>
-                                                <IconButton size="small">
-                                                    <DeleteIcon />
-                                                </IconButton>
+                                                <Tooltip title={t('documents.download')}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => window.open(`/api/Documents/${doc.documentId}/download`)}
+                                                        disabled={!isOnline}
+                                                    >
+                                                        <PdfIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title={t('common.delete')}>
+                                                    <IconButton
+                                                        size="small"
+                                                        color="error"
+                                                        disabled={!isOnline}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -575,60 +765,72 @@ const CaseDetailsPage = () => {
                             </Table>
                         </TableContainer>
                     ) : (
-                        <Typography variant="body1" color="textSecondary" align="center">
-                            No documents uploaded for this case.
-                        </Typography>
+                        <Box sx={{ textAlign: 'center', py: 4 }}>
+                            <DocumentIcon color="disabled" sx={{ fontSize: 60, mb: 2, opacity: 0.5 }} />
+                            <Typography variant="body1" color="textSecondary">
+                                {t('documents.noDocumentsUploaded')}
+                            </Typography>
+                        </Box>
                     )}
                 </TabPanel>
 
                 {/* Billing Tab */}
                 <TabPanel value={tabValue} index={3}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                        <Typography variant="h6">Invoices</Typography>
+                        <Typography variant="h6">{t('billing.invoices')}</Typography>
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}
                             onClick={() => navigate(`/billing/invoices/new?caseId=${id}`)}
+                            disabled={!isOnline}
                         >
-                            Create Invoice
+                            {t('billing.createInvoice')}
                         </Button>
                     </Box>
 
-                    {caseData.invoices && caseData.invoices.length > 0 ? (
+                    {caseData?.invoices && caseData.invoices.length > 0 ? (
                         <TableContainer>
                             <Table aria-label="invoices table">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Invoice #</TableCell>
-                                        <TableCell>Issue Date</TableCell>
-                                        <TableCell>Due Date</TableCell>
-                                        <TableCell>Amount</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell align="right">Actions</TableCell>
+                                        <TableCell>{t('billing.invoiceNumber')}</TableCell>
+                                        <TableCell>{t('billing.issueDate')}</TableCell>
+                                        <TableCell>{t('billing.dueDate')}</TableCell>
+                                        <TableCell>{t('billing.amount')}</TableCell>
+                                        <TableCell>{t('common.status')}</TableCell>
+                                        <TableCell align="right">{t('common.actions')}</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {caseData.invoices.map(invoice => (
-                                        <TableRow key={invoice.invoiceId}>
+                                        <TableRow key={invoice.invoiceId} hover>
                                             <TableCell>{invoice.invoiceNumber}</TableCell>
                                             <TableCell>{formatDate(invoice.issueDate)}</TableCell>
                                             <TableCell>{formatDate(invoice.dueDate)}</TableCell>
                                             <TableCell>${invoice.amount.toFixed(2)}</TableCell>
                                             <TableCell>
                                                 <Chip
-                                                    label={invoice.status}
-                                                    color={invoice.status === 'Paid' ? 'success' :
-                                                        invoice.status === 'Overdue' ? 'error' : 'warning'}
+                                                    label={invoice.status === 0 ? t('billing.status.draft') :
+                                                        invoice.status === 1 ? t('billing.status.sent') :
+                                                            invoice.status === 2 ? t('billing.status.partiallyPaid') :
+                                                                invoice.status === 3 ? t('billing.status.paid') :
+                                                                    invoice.status === 4 ? t('billing.status.overdue') :
+                                                                        t('billing.status.cancelled')}
+                                                    color={invoice.status === 3 ? 'success' :
+                                                        invoice.status === 4 ? 'error' :
+                                                            invoice.status === 2 ? 'warning' : 'default'}
                                                     size="small"
                                                 />
                                             </TableCell>
                                             <TableCell align="right">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}`)}
-                                                >
-                                                    <MoneyIcon />
-                                                </IconButton>
+                                                <Tooltip title={t('billing.viewInvoice')}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}`)}
+                                                    >
+                                                        <MoneyIcon />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -636,55 +838,62 @@ const CaseDetailsPage = () => {
                             </Table>
                         </TableContainer>
                     ) : (
-                        <Typography variant="body1" color="textSecondary" align="center">
-                            No invoices created for this case.
-                        </Typography>
+                        <Box sx={{ textAlign: 'center', p: 3, mb: 4 }}>
+                            <MoneyIcon color="disabled" sx={{ fontSize: 40, color: 'text.secondary', mb: 1, opacity: 0.5 }} />
+                            <Typography color="textSecondary">{t('billing.noInvoices')}</Typography>
+                        </Box>
                     )}
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, mb: 2 }}>
-                        <Typography variant="h6">Time Entries</Typography>
+                    <Divider sx={{ my: 4 }} />
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                        <Typography variant="h6">{t('billing.timeEntries')}</Typography>
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}
                             onClick={() => navigate(`/time-entries/new?caseId=${id}`)}
+                            disabled={!isOnline}
                         >
-                            Add Time Entry
+                            {t('billing.addTimeEntry')}
                         </Button>
                     </Box>
 
-                    {caseData.timeEntries && caseData.timeEntries.length > 0 ? (
+                    {caseData?.timeEntries && caseData.timeEntries.length > 0 ? (
                         <TableContainer>
                             <Table aria-label="time entries table">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Date</TableCell>
-                                        <TableCell>Description</TableCell>
-                                        <TableCell>Hours</TableCell>
-                                        <TableCell>Billable</TableCell>
-                                        <TableCell>Lawyer</TableCell>
-                                        <TableCell align="right">Actions</TableCell>
+                                        <TableCell>{t('billing.date')}</TableCell>
+                                        <TableCell>{t('common.description')}</TableCell>
+                                        <TableCell>{t('billing.hours')}</TableCell>
+                                        <TableCell>{t('billing.billable')}</TableCell>
+                                        <TableCell>{t('cases.lawyer')}</TableCell>
+                                        <TableCell align="right">{t('common.actions')}</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {caseData.timeEntries.map(entry => (
-                                        <TableRow key={entry.timeEntryId}>
+                                        <TableRow key={entry.timeEntryId} hover>
                                             <TableCell>{formatDate(entry.date)}</TableCell>
                                             <TableCell>{entry.description}</TableCell>
                                             <TableCell>{entry.hours}</TableCell>
                                             <TableCell>
                                                 {entry.isBillable ?
-                                                    <Chip label="Billable" color="success" size="small" /> :
-                                                    <Chip label="Non-billable" color="default" size="small" />
+                                                    <Chip label={t('billing.billableYes')} color="success" size="small" /> :
+                                                    <Chip label={t('billing.billableNo')} color="default" size="small" />
                                                 }
                                             </TableCell>
                                             <TableCell>{entry.lawyer}</TableCell>
                                             <TableCell align="right">
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => navigate(`/time-entries/${entry.timeEntryId}/edit`)}
-                                                >
-                                                    <EditIcon />
-                                                </IconButton>
+                                                <Tooltip title={t('common.edit')}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => navigate(`/time-entries/${entry.timeEntryId}/edit`)}
+                                                        disabled={!isOnline}
+                                                    >
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -692,35 +901,45 @@ const CaseDetailsPage = () => {
                             </Table>
                         </TableContainer>
                     ) : (
-                        <Typography variant="body1" color="textSecondary" align="center">
-                            No time entries recorded for this case.
-                        </Typography>
+                        <Box sx={{ textAlign: 'center', p: 3 }}>
+                            <ScheduleIcon color="disabled" sx={{ fontSize: 40, color: 'text.secondary', mb: 1, opacity: 0.5 }} />
+                            <Typography color="textSecondary">{t('billing.noTimeEntries')}</Typography>
+                        </Box>
                     )}
                 </TabPanel>
 
                 {/* Notes Tab */}
                 <TabPanel value={tabValue} index={4}>
-                    <Box sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
-                        <Typography variant="h6" gutterBottom>Case Notes</Typography>
-                        <Typography variant="body1">
-                            {caseData.notes || 'No notes have been added to this case.'}
+                    <Box sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
+                        <Typography variant="h6" gutterBottom>{t('cases.notes')}</Typography>
+                        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                            {caseData?.notes || t('cases.noNotes')}
                         </Typography>
+
+                        {!caseData?.notes && isOnline && (
+                            <Button
+                                variant="outlined"
+                                startIcon={<EditIcon />}
+                                sx={{ mt: 2 }}
+                                onClick={() => navigate(`/cases/${id}/edit?tab=notes`)}
+                            >
+                                {t('cases.addNotes')}
+                            </Button>
+                        )}
                     </Box>
                 </TabPanel>
             </Paper>
 
             {/* Status Change Dialog */}
             <Dialog open={statusDialogOpen} onClose={() => setStatusDialogOpen(false)}>
-                <DialogTitle>Change Case Status</DialogTitle>
+                <DialogTitle>{t('cases.changeStatus')}</DialogTitle>
                 <DialogContent>
                     <Box sx={{ minWidth: 400, mt: 1 }}>
                         <FormControl fullWidth sx={{ mb: 2 }}>
-                            <InputLabel id="status-change-label">New Status</InputLabel>
+                            <InputLabel>{t('cases.newStatus')}</InputLabel>
                             <Select
-                                labelId="status-change-label"
-                                id="new-status"
                                 value={newStatus}
-                                label="New Status"
+                                label={t('cases.newStatus')}
                                 onChange={(e) => setNewStatus(e.target.value)}
                             >
                                 {CASE_STATUSES.map(status => (
@@ -735,71 +954,97 @@ const CaseDetailsPage = () => {
                             fullWidth
                             multiline
                             rows={4}
-                            label="Notes"
+                            label={t('common.notes')}
                             value={statusNotes}
                             onChange={(e) => setStatusNotes(e.target.value)}
-                            placeholder="Add notes about this status change"
+                            placeholder={t('cases.statusNotesPlaceholder')}
                         />
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setStatusDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={() => setStatusDialogOpen(false)}>
+                        {t('common.cancel')}
+                    </Button>
                     <Button
                         variant="contained"
                         onClick={handleStatusChange}
                         disabled={!newStatus || statusDialogLoading}
+                        startIcon={statusDialogLoading ? <CircularProgress size={20} /> : <CheckIcon />}
                     >
-                        {statusDialogLoading ? <CircularProgress size={24} /> : 'Update Status'}
+                        {statusDialogLoading ? t('common.updating') : t('common.update')}
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Add Event Dialog */}
             <Dialog open={eventDialogOpen} onClose={() => setEventDialogOpen(false)}>
-                <DialogTitle>Add Case Event</DialogTitle>
+                <DialogTitle>{t('cases.events.addEvent')}</DialogTitle>
                 <DialogContent>
                     <Box sx={{ minWidth: 400, mt: 1 }}>
                         <TextField
                             fullWidth
-                            label="Event Title"
+                            label={t('cases.events.title')}
                             value={eventTitle}
                             onChange={(e) => setEventTitle(e.target.value)}
                             sx={{ mb: 2 }}
                             required
+                            error={!eventTitle && submitAttempted}
+                            helperText={!eventTitle && submitAttempted ? t('cases.events.titleRequired') : ''}
                         />
 
                         <TextField
                             fullWidth
                             multiline
                             rows={4}
-                            label="Description"
+                            label={t('common.description')}
                             value={eventDescription}
                             onChange={(e) => setEventDescription(e.target.value)}
-                            placeholder="Describe the event"
+                            placeholder={t('cases.events.descriptionPlaceholder')}
                         />
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setEventDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={() => setEventDialogOpen(false)}>
+                        {t('common.cancel')}
+                    </Button>
                     <Button
                         variant="contained"
                         onClick={handleAddEvent}
                         disabled={!eventTitle || eventDialogLoading}
+                        startIcon={eventDialogLoading ? <CircularProgress size={20} /> : <AddIcon />}
                     >
-                        {eventDialogLoading ? <CircularProgress size={24} /> : 'Add Event'}
+                        {eventDialogLoading ? t('common.adding') : t('common.add')}
                     </Button>
                 </DialogActions>
             </Dialog>
 
-            {/* Error message */}
-            <Snackbar
-                open={!!error}
-                autoHideDuration={6000}
-                onClose={() => setError('')}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            >
-                <Alert severity="error">{error}</Alert>
-            </Snackbar>
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+                <DialogTitle>{t('cases.deleteCase')}</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body1">
+                        {t('cases.deleteConfirmation', {
+                            caseNumber: caseData?.caseNumber,
+                            title: caseData?.title
+                        })}
+                    </Typography>
+                    <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+                        {t('common.actionCannotBeUndone')}
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setDeleteDialogOpen(false)}>
+                        {t('common.cancel')}
+                    </Button>
+                    <Button
+                        onClick={handleDeleteCase}
+                        color="error"
+                        variant="contained"
+                    >
+                        {t('common.delete')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 };
