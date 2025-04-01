@@ -33,7 +33,60 @@ namespace React_Lawyer.Server.Controllers.Clients
             var client = await _context.Clients
                 .Include(c => c.Cases)
                 .Include(c => c.Appointments)
+                .ThenInclude(x=> x.ScheduledBy)
                 .Include(c => c.Invoices)
+                .Select(x=> new Client
+                {
+                    ClientId = x.ClientId,
+                    LawFirmId = x.LawFirmId,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                    PhoneNumber = x.PhoneNumber,
+                    Address = x.Address,
+                    IdNumber = x.IdNumber,
+                    Type = x.Type,
+                    CompanyName = x.CompanyName,
+                    TaxId = x.TaxId,
+                    Notes = x.Notes,
+                    CreatedAt = x.CreatedAt,
+                    IsActive = x.IsActive,
+                    Cases = x.Cases.Select(c=> new Shared_Models.Cases.Case
+                    {
+                        CaseId = c.CaseId,
+                        CaseNumber = c.CaseNumber,
+                        ActualSettlement = c.ActualSettlement,
+                        AssignedLawyer = new Shared_Models.Users.Lawyer
+                        {
+                            LawyerId = c.AssignedLawyer.LawyerId,
+                            User = new Shared_Models.Users.User
+                            {
+                                FirstName = c.AssignedLawyer.User.FirstName,
+                                LastName = c.AssignedLawyer.User.LastName,
+                                Email = c.AssignedLawyer.User.Email,
+                                PhoneNumber = c.AssignedLawyer.User.PhoneNumber
+                            }
+                        },
+                    }).ToList(),
+                    Appointments = x.Appointments
+                                        .Select(x=> new Shared_Models.Appointments.Appointment
+                                        {
+                                            AppointmentId = x.AppointmentId,
+                                            Title = x.Title,
+                                            Description = x.Description,
+                                            StartTime = x.StartTime,
+                                            EndTime = x.EndTime,
+                                            Location = x.Location,
+                                            ScheduledBy = new Shared_Models.Users.User
+                                            {
+                                                FirstName = x.ScheduledBy.FirstName,
+                                                LastName = x.ScheduledBy.LastName,
+                                                Email = x.ScheduledBy.Email,
+                                                PhoneNumber = x.ScheduledBy.PhoneNumber
+                                            }
+                                        }).ToList(),
+                    Invoices = x.Invoices.ToList()
+                })
                 .FirstOrDefaultAsync(c => c.ClientId == id);
 
             if (client == null)

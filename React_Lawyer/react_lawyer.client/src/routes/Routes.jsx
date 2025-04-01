@@ -34,9 +34,9 @@ import ClientDetailsPage from '../pages/clients/ClientDetailsPage';
 import NewClientPage from '../pages/clients/NewClientPage';
 
 //// Appointments pages
-//import AppointmentsListPage from '../pages/appointments/AppointmentsListPage';
+import AppointmentsListPage from '../pages/appointments/AppointmentsListPage';
 //import AppointmentDetailsPage from '../pages/appointments/AppointmentDetailsPage';
-//import NewAppointmentPage from '../pages/appointments/NewAppointmentPage';
+import NewAppointmentPage from '../pages/appointments/NewAppointmentPage';
 
 //// Billing pages
 //import InvoicesListPage from '../pages/billing/InvoicesListPage';
@@ -91,8 +91,8 @@ const AppRoutes = () => {
                 <Route path="/clients/:id" element={<ClientDetailsPage />} />
                 
                 {/* Appointments */}
-                {/*<Route path="/appointments" element={<AppointmentsListPage />} />*/}
-                {/*<Route path="/appointments/new" element={<NewAppointmentPage />} />*/}
+                <Route path="/appointments" element={<AppointmentsListPage />} />
+                <Route path="/appointments/new" element={<NewAppointmentPage />} />
                 {/*<Route path="/appointments/:id" element={<AppointmentDetailsPage />} />*/}
 
                 {/* Billing - Not for Clients */}
