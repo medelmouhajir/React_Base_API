@@ -344,7 +344,7 @@ namespace React_Lawyer.Server.Controllers.Documents
                     document.FileSize,
                     document.UploadDate,
                     document.LastModified,
-                    document.Category,
+                    Category = document.Category.ToString(),
                     document.IsConfidential,
                     document.IsTemplate,
                     document.IsSharedWithClient,

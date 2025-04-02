@@ -46,7 +46,7 @@ import NewAppointmentPage from '../pages/appointments/NewAppointmentPage';
 
 //// Documents pages
 import DocumentsListPage from '../pages/documents/DocumentsListPage';
-//import DocumentDetailsPage from '../pages/documents/DocumentDetailsPage';
+import DocumentDetailsPage from '../pages/documents/DocumentDetailsPage';
 //import DocumentEditor from '../components/documents/DocumentEditor';
 
 //// Reports pages
@@ -106,7 +106,7 @@ const AppRoutes = () => {
                 {/* Documents */}
                 <Route path="/documents" element={<DocumentsListPage />} />
                 {/*<Route path="/documents/editor" element={<DocumentEditor />} />*/}
-                {/*<Route path="/documents/:id" element={<DocumentDetailsPage />} />*/}
+                <Route path="/documents/:id" element={<DocumentDetailsPage />} />
 
                 {/* Reports - Only for Lawyers and Admins */}
                 {/*<Route element={<ProtectedRoute requiredRole={["Lawyer", "Admin"]} />}>*/}
