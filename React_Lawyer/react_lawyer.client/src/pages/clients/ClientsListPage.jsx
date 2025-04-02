@@ -1,248 +1,451 @@
 // src/pages/clients/ClientsListPage.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
+    Container,
+    Paper,
     Box,
     Typography,
-    Paper,
+    Button,
+    TextField,
+    IconButton,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
-    TextField,
-    InputAdornment,
-    IconButton,
-    Button,
+    TablePagination,
     Chip,
+    InputAdornment,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    Select,
+    Grid,
     Tooltip,
     CircularProgress,
-    Snackbar,
-    Alert
+    Alert,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions
 } from '@mui/material';
 import {
+    Add as AddIcon,
     Search as SearchIcon,
-    PersonAdd as PersonAddIcon,
-    Phone as PhoneIcon,
-    Email as EmailIcon,
+    Visibility as ViewIcon,
+    Edit as EditIcon,
+    Delete as DeleteIcon,
+    FilterList as FilterIcon,
+    Refresh as RefreshIcon,
     Business as BusinessIcon,
-    Person as PersonIcon
+    Person as PersonIcon,
+    Clear as ClearIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../features/auth/AuthContext';
+
+// Components and Services
 import PageHeader from '../../components/common/PageHeader';
 import clientService from '../../services/clientService';
+import { useAuth } from '../../features/auth/AuthContext';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
 
 const ClientsListPage = () => {
     const navigate = useNavigate();
-    const isOnline = useOnlineStatus();
     const { user } = useAuth();
+    const isOnline = useOnlineStatus();
+    const { t } = useTranslation();
 
     // State
     const [clients, setClients] = useState([]);
-    const [filteredClients, setFilteredClients] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [totalClients, setTotalClients] = useState(0);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searching, setSearching] = useState(false);
 
-    // Fetch clients on component mount
+    // Filters
+    const [filterType, setFilterType] = useState('All');
+    const [showFilters, setShowFilters] = useState(false);
+
+    // Delete dialog
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [clientToDelete, setClientToDelete] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
+    // Fetch clients
     useEffect(() => {
         const fetchClients = async () => {
+            if (!isOnline) {
+                setLoading(false);
+                setError(t('common.offlineMode'));
+                return;
+            }
+
+            setLoading(true);
+            setError('');
+
             try {
-                setLoading(true);
-                const data = await clientService.getClients();
-                setClients(data);
-                setFilteredClients(data);
+                let data;
+
+                if (searchTerm) {
+                    setSearching(true);
+                    data = await clientService.searchClients(searchTerm);
+                    setSearching(false);
+                } else {
+                    data = await clientService.getClients();
+                }
+
+                // Apply type filter
+                let filteredData = [...data];
+                if (filterType !== 'All') {
+                    filteredData = filteredData.filter(c => c.type === filterType);
+                }
+
+                // Sort by name
+                filteredData.sort((a, b) => `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`));
+
+                setTotalClients(filteredData.length);
+                setClients(filteredData);
             } catch (err) {
                 console.error('Error fetching clients:', err);
-                setError('Failed to load clients. Please try again later.');
+                setError(t('clients.fetchError'));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchClients();
-    }, []);
+    }, [user, searchTerm, filterType, refreshTrigger, isOnline, t]);
+
+    // Handle page change
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    // Handle rows per page change
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     // Handle search
-    useEffect(() => {
-        if (!searchTerm.trim()) {
-            setFilteredClients(clients);
-            return;
+    const handleSearch = (e) => {
+        setSearchTerm(e.target.value);
+        setPage(0); // Reset to first page when searching
+    };
+
+    // Clear search
+    const handleClearSearch = () => {
+        setSearchTerm('');
+    };
+
+    // Open delete confirmation dialog
+    const handleOpenDeleteDialog = (client) => {
+        setClientToDelete(client);
+        setDeleteDialogOpen(true);
+    };
+
+    // Close delete confirmation dialog
+    const handleCloseDeleteDialog = () => {
+        setDeleteDialogOpen(false);
+        setClientToDelete(null);
+    };
+
+    // Handle client deletion
+    const handleDeleteClient = async () => {
+        if (!clientToDelete || !isOnline) return;
+
+        setDeleteLoading(true);
+
+        try {
+            await clientService.deleteClient(clientToDelete.clientId);
+
+            // Show success message
+            // Refresh clients list
+            setRefreshTrigger(prev => prev + 1);
+            handleCloseDeleteDialog();
+        } catch (err) {
+            console.error('Error deleting client:', err);
+            setError(t('clients.deleteError'));
+        } finally {
+            setDeleteLoading(false);
         }
-
-        const term = searchTerm.toLowerCase();
-        const filtered = clients.filter(client =>
-            client.firstName?.toLowerCase().includes(term) ||
-            client.lastName?.toLowerCase().includes(term) ||
-            client.email?.toLowerCase().includes(term) ||
-            client.phoneNumber?.includes(term) ||
-            client.companyName?.toLowerCase().includes(term)
-        );
-
-        setFilteredClients(filtered);
-    }, [searchTerm, clients]);
-
-    // Navigate to client details
-    const handleClientClick = (clientId) => {
-        navigate(`/clients/${clientId}`);
     };
 
-    // Navigate to new client page
-    const handleAddClient = () => {
-        navigate('/clients/new');
-    };
+    // Calculate paged data
+    const pagedClients = clients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
-    // Get client type chip color
-    const getClientTypeColor = (type) => {
-        switch (type) {
-            case 'Individual':
-                return 'primary';
-            case 'Corporate':
-                return 'secondary';
-            default:
-                return 'default';
-        }
-    };
-
-    // Render client type icon
+    // Get client type icon
     const getClientTypeIcon = (type) => {
-        return type === 'Corporate' ? <BusinessIcon fontSize="small" /> : <PersonIcon fontSize="small" />;
+        switch (type) {
+            case 'Corporate':
+                return <BusinessIcon fontSize="small" />;
+            case 'Individual':
+                return <PersonIcon fontSize="small" />;
+            default:
+                return null;
+        }
+    };
+
+    // Get client type label
+    const getClientTypeLabel = (type) => {
+        return t(`clients.${type.toLowerCase()}`);
+    };
+
+    // Clear error message
+    const handleClearError = () => {
+        setError('');
     };
 
     return (
-        <>
+        <Container maxWidth="lg">
             <PageHeader
-                title="Clients"
-                subtitle="Manage your clients and their information"
+                title={t('clients.clients')}
+                subtitle={t('clients.clientsSubtitle')}
                 breadcrumbs={[
-                    { text: 'Dashboard', link: '/' },
-                    { text: 'Clients' }
+                    { text: t('app.dashboard'), link: '/' },
+                    { text: t('clients.clients') }
                 ]}
-                action={true}
-                actionText="Add Client"
-                actionIcon={<PersonAddIcon />}
-                onActionClick={handleAddClient}
+                action={t('clients.newClient')}
+                actionIcon={<AddIcon />}
+                onActionClick={() => navigate('/clients/new')}
             />
 
-            <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                    <TextField
-                        placeholder="Search clients..."
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        sx={{ maxWidth: 500 }}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon />
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-                </Box>
+            {/* Error message */}
+            {error && (
+                <Alert
+                    severity="error"
+                    sx={{ mb: 3 }}
+                    onClose={handleClearError}
+                >
+                    {error}
+                </Alert>
+            )}
 
-                {loading ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                        <CircularProgress />
-                    </Box>
-                ) : error ? (
-                    <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
-                ) : filteredClients.length === 0 ? (
-                    <Box sx={{ textAlign: 'center', py: 4 }}>
-                        <Typography variant="subtitle1" color="text.secondary">
-                            {searchTerm ? 'No clients match your search criteria.' : 'No clients found.'}
-                        </Typography>
+            {/* Offline warning */}
+            {!isOnline && (
+                <Alert severity="warning" sx={{ mb: 3 }}>
+                    {t('common.offlineWarning')}
+                </Alert>
+            )}
+
+            {/* Search and Filter Bar */}
+            <Paper sx={{ p: 2, mb: 3 }}>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} md={6}>
+                        <TextField
+                            fullWidth
+                            placeholder={t('clients.searchPlaceholder')}
+                            value={searchTerm}
+                            onChange={handleSearch}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                                endAdornment: searchTerm && (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={handleClearSearch} size="small">
+                                            <ClearIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                    </Grid>
+
+                    <Grid item xs={6} md={3}>
                         <Button
-                            variant="contained"
-                            startIcon={<PersonAddIcon />}
-                            sx={{ mt: 2 }}
-                            onClick={handleAddClient}
+                            variant="outlined"
+                            startIcon={<FilterIcon />}
+                            onClick={() => setShowFilters(!showFilters)}
+                            fullWidth
                         >
-                            Add Your First Client
+                            {showFilters ? t('common.hideFilters') : t('common.showFilters')}
                         </Button>
-                    </Box>
-                ) : (
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
+                    </Grid>
+
+                    <Grid item xs={6} md={3}>
+                        <Button
+                            variant="outlined"
+                            startIcon={<RefreshIcon />}
+                            onClick={() => setRefreshTrigger(prev => prev + 1)}
+                            disabled={!isOnline || loading}
+                            fullWidth
+                        >
+                            {t('common.refresh')}
+                        </Button>
+                    </Grid>
+
+                    {showFilters && (
+                        <Grid item xs={12} md={6}>
+                            <FormControl fullWidth>
+                                <InputLabel id="type-filter-label">{t('clients.type')}</InputLabel>
+                                <Select
+                                    labelId="type-filter-label"
+                                    value={filterType}
+                                    onChange={(e) => setFilterType(e.target.value)}
+                                    label={t('clients.type')}
+                                >
+                                    <MenuItem value="All">{t('common.all')}</MenuItem>
+                                    <MenuItem value="Individual">{t('clients.individual')}</MenuItem>
+                                    <MenuItem value="Corporate">{t('clients.corporate')}</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    )}
+                </Grid>
+            </Paper>
+
+            {/* Clients Table */}
+            <Paper>
+                <TableContainer>
+                    <Table aria-label="clients table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>{t('clients.client')}</TableCell>
+                                <TableCell>{t('clients.email')}</TableCell>
+                                <TableCell>{t('clients.phone')}</TableCell>
+                                <TableCell>{t('clients.type')}</TableCell>
+                                <TableCell align="right">{t('common.actions')}</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {loading ? (
                                 <TableRow>
-                                    <TableCell>Name</TableCell>
-                                    <TableCell>Type</TableCell>
-                                    <TableCell>Contact Info</TableCell>
-                                    <TableCell>Company</TableCell>
+                                    <TableCell colSpan={5} align="center" height={200}>
+                                        <CircularProgress />
+                                    </TableCell>
                                 </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {filteredClients.map((client) => (
-                                    <TableRow
-                                        key={client.clientId}
-                                        hover
-                                        onClick={() => handleClientClick(client.clientId)}
-                                        sx={{ cursor: 'pointer' }}
-                                    >
+                            ) : pagedClients.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={5} align="center" height={100}>
+                                        <Typography variant="body1" color="textSecondary">
+                                            {searchTerm
+                                                ? t('clients.noSearchResults')
+                                                : t('clients.noClientsFound')}
+                                        </Typography>
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                pagedClients.map((client) => (
+                                    <TableRow key={client.clientId} hover>
                                         <TableCell>
-                                            <Typography variant="subtitle2">
-                                                {client.firstName} {client.lastName}
-                                            </Typography>
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                {getClientTypeIcon(client.type)}
+                                                <Box sx={{ ml: 1 }}>
+                                                    <Typography variant="body1">
+                                                        {client.lastName}, {client.firstName}
+                                                    </Typography>
+                                                    {client.type === 'Corporate' && client.companyName && (
+                                                        <Typography variant="caption" color="textSecondary">
+                                                            {client.companyName}
+                                                        </Typography>
+                                                    )}
+                                                </Box>
+                                            </Box>
                                         </TableCell>
+                                        <TableCell>{client.email || '-'}</TableCell>
+                                        <TableCell>{client.phoneNumber || '-'}</TableCell>
                                         <TableCell>
                                             <Chip
-                                                icon={getClientTypeIcon(client.type)}
-                                                label={client.type}
-                                                color={getClientTypeColor(client.type)}
                                                 size="small"
+                                                label={getClientTypeLabel(client.type)}
+                                                color={client.type === 'Corporate' ? 'primary' : 'default'}
                                                 variant="outlined"
                                             />
                                         </TableCell>
-                                        <TableCell>
-                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                                {client.email && (
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                        <EmailIcon fontSize="small" color="action" />
-                                                        <Typography variant="body2">{client.email}</Typography>
-                                                    </Box>
-                                                )}
-                                                {client.phoneNumber && (
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                        <PhoneIcon fontSize="small" color="action" />
-                                                        <Typography variant="body2">{client.phoneNumber}</Typography>
-                                                    </Box>
-                                                )}
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell>
-                                            {client.companyName ? (
-                                                <Typography variant="body2">{client.companyName}</Typography>
-                                            ) : (
-                                                <Typography variant="body2" color="text.secondary">
-                                                    –
-                                                </Typography>
-                                            )}
+                                        <TableCell align="right">
+                                            <Tooltip title={t('common.view')}>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => navigate(`/clients/${client.clientId}`)}
+                                                >
+                                                    <ViewIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={t('common.edit')}>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => navigate(`/clients/${client.clientId}/edit`)}
+                                                    disabled={!isOnline}
+                                                >
+                                                    <EditIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Tooltip title={t('common.delete')}>
+                                                <IconButton
+                                                    size="small"
+                                                    color="error"
+                                                    onClick={() => handleOpenDeleteDialog(client)}
+                                                    disabled={!isOnline}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </Tooltip>
                                         </TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                )}
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, 50]}
+                    component="div"
+                    count={totalClients}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    labelRowsPerPage={t('common.rowsPerPage')}
+                />
             </Paper>
 
-            {!isOnline && (
-                <Snackbar
-                    open={!isOnline}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                >
-                    <Alert severity="warning">
-                        You're offline. Some features may be limited.
-                    </Alert>
-                </Snackbar>
-            )}
-        </>
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={handleCloseDeleteDialog}
+            >
+                <DialogTitle>{t('clients.deleteClient')}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {clientToDelete && t('clients.deleteConfirmation', {
+                            firstName: clientToDelete.firstName,
+                            lastName: clientToDelete.lastName
+                        })}
+                    </DialogContentText>
+                    <Typography variant="caption" color="error" sx={{ display: 'block', mt: 2 }}>
+                        {t('common.actionCannotBeUndone')}
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={handleCloseDeleteDialog}
+                        disabled={deleteLoading}
+                    >
+                        {t('common.cancel')}
+                    </Button>
+                    <Button
+                        onClick={handleDeleteClient}
+                        color="error"
+                        variant="contained"
+                        disabled={deleteLoading}
+                        startIcon={deleteLoading ? <CircularProgress size={20} /> : null}
+                    >
+                        {deleteLoading ? t('common.deleting') : t('common.delete')}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </Container>
     );
 };
 

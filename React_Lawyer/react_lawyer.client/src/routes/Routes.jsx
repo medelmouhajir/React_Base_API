@@ -45,7 +45,7 @@ import NewAppointmentPage from '../pages/appointments/NewAppointmentPage';
 //import PaymentsPage from '../pages/billing/PaymentsPage';
 
 //// Documents pages
-//import DocumentsListPage from '../pages/documents/DocumentsListPage';
+import DocumentsListPage from '../pages/documents/DocumentsListPage';
 //import DocumentDetailsPage from '../pages/documents/DocumentDetailsPage';
 //import DocumentEditor from '../components/documents/DocumentEditor';
 
@@ -104,7 +104,7 @@ const AppRoutes = () => {
                 {/*</Route>*/}
 
                 {/* Documents */}
-                {/*<Route path="/documents" element={<DocumentsListPage />} />*/}
+                <Route path="/documents" element={<DocumentsListPage />} />
                 {/*<Route path="/documents/editor" element={<DocumentEditor />} />*/}
                 {/*<Route path="/documents/:id" element={<DocumentDetailsPage />} />*/}
 

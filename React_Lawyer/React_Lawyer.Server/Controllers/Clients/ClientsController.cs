@@ -21,21 +21,40 @@ namespace React_Lawyer.Server.Controllers.Clients
 
         // GET: api/Clients
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Client>>> GetClients()
+        public async Task<ActionResult<IEnumerable<object>>> GetClients()
         {
-            return await _context.Clients.Where(c => c.IsActive).ToListAsync();
+            return await _context.Clients
+                .Where(c => c.IsActive)
+                .Select(x=> new
+                {
+                    x.ClientId,
+                    x.LawFirmId,
+                    x.FirstName,
+                    x.LastName,
+                    x.Email,
+                    x.PhoneNumber,
+                    x.Address,
+                    x.IdNumber,
+                    Type = x.Type.ToString(),
+                    x.CompanyName,
+                    x.TaxId,
+                    x.Notes,
+                    x.CreatedAt,
+                    x.IsActive
+                })
+                .ToListAsync();
         }
 
         // GET: api/Clients/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Client>> GetClient(int id)
+        public async Task<ActionResult<object>> GetClient(int id)
         {
             var client = await _context.Clients
                 .Include(c => c.Cases)
                 .Include(c => c.Appointments)
                 .ThenInclude(x=> x.ScheduledBy)
                 .Include(c => c.Invoices)
-                .Select(x=> new Client
+                .Select(x=> new
                 {
                     ClientId = x.ClientId,
                     LawFirmId = x.LawFirmId,
@@ -45,7 +64,7 @@ namespace React_Lawyer.Server.Controllers.Clients
                     PhoneNumber = x.PhoneNumber,
                     Address = x.Address,
                     IdNumber = x.IdNumber,
-                    Type = x.Type,
+                    Type = x.Type.ToString(),
                     CompanyName = x.CompanyName,
                     TaxId = x.TaxId,
                     Notes = x.Notes,
@@ -69,7 +88,7 @@ namespace React_Lawyer.Server.Controllers.Clients
                         },
                     }).ToList(),
                     Appointments = x.Appointments
-                                        .Select(x=> new Shared_Models.Appointments.Appointment
+                                        .Select(x=> new
                                         {
                                             AppointmentId = x.AppointmentId,
                                             Title = x.Title,
@@ -77,6 +96,7 @@ namespace React_Lawyer.Server.Controllers.Clients
                                             StartTime = x.StartTime,
                                             EndTime = x.EndTime,
                                             Location = x.Location,
+                                            Status = x.Status.ToString(),
                                             ScheduledBy = new Shared_Models.Users.User
                                             {
                                                 FirstName = x.ScheduledBy.FirstName,
@@ -99,16 +119,33 @@ namespace React_Lawyer.Server.Controllers.Clients
 
         // GET: api/Clients/ByFirm/{firmId}
         [HttpGet("ByFirm/{firmId}")]
-        public async Task<ActionResult<IEnumerable<Client>>> GetClientsByFirm(int firmId)
+        public async Task<ActionResult<IEnumerable<object>>> GetClientsByFirm(int firmId)
         {
             return await _context.Clients
                 .Where(c => c.LawFirmId == firmId && c.IsActive)
+                .Select(x => new
+                {
+                    x.ClientId,
+                    x.LawFirmId,
+                    x.FirstName,
+                    x.LastName,
+                    x.Email,
+                    x.PhoneNumber,
+                    x.Address,
+                    x.IdNumber,
+                    Type = x.Type.ToString(),
+                    x.CompanyName,
+                    x.TaxId,
+                    x.Notes,
+                    x.CreatedAt,
+                    x.IsActive
+                })
                 .ToListAsync();
         }
 
         // GET: api/Clients/Search?term={searchTerm}
         [HttpGet("Search")]
-        public async Task<ActionResult<IEnumerable<Client>>> SearchClients(string term)
+        public async Task<ActionResult<IEnumerable<object>>> SearchClients(string term)
         {
             if (string.IsNullOrWhiteSpace(term))
             {
@@ -124,6 +161,23 @@ namespace React_Lawyer.Server.Controllers.Clients
                     c.PhoneNumber.Contains(term) ||
                     c.CompanyName.ToLower().Contains(term)
                 ))
+                .Select(x=> new
+                {
+                    x.ClientId,
+                    x.LawFirmId,
+                    x.FirstName,
+                    x.LastName,
+                    x.Email,
+                    x.PhoneNumber,
+                    x.Address,
+                    x.IdNumber,
+                    Type = x.Type.ToString(),
+                    x.CompanyName,
+                    x.TaxId,
+                    x.Notes,
+                    x.CreatedAt,
+                    x.IsActive
+                })
                 .ToListAsync();
         }
 

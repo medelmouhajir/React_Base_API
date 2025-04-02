@@ -213,6 +213,7 @@
     "corporate": "Corporate",
     "government": "Government",
     "nonProfit": "Non-Profit",
+    "nonprofit": "Non-Profit",
     "companyName": "Company Name",
     "taxId": "Tax ID / VAT Number",
     "idNumber": "ID / Passport Number",

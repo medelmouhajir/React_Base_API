@@ -1,520 +1,588 @@
 // src/pages/clients/ClientDetailsPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
+    Container,
+    Paper,
     Box,
     Typography,
-    Card,
-    CardContent,
     Grid,
-    Divider,
     Chip,
     Button,
+    IconButton,
+    Divider,
     Tabs,
     Tab,
-    IconButton,
+    Card,
+    CardContent,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    CircularProgress,
+    Alert,
     Dialog,
     DialogTitle,
     DialogContent,
+    DialogContentText,
     DialogActions,
-    CircularProgress,
-    Alert
+    Tooltip,
+    Avatar
 } from '@mui/material';
 import {
-    PersonOutline as PersonIcon,
-    Business as BusinessIcon,
-    Phone as PhoneIcon,
-    Email as EmailIcon,
     Edit as EditIcon,
     Delete as DeleteIcon,
-    InsertDriveFile as FileIcon,
-    EventNote as EventIcon,
+    Email as EmailIcon,
+    Phone as PhoneIcon,
+    Home as HomeIcon,
+    Person as PersonIcon,
+    Business as BusinessIcon,
+    Badge as BadgeIcon,
     Receipt as ReceiptIcon,
-    Gavel as GavelIcon
+    Gavel as GavelIcon,
+    CalendarToday as CalendarIcon,
+    Visibility as ViewIcon,
+    Add as AddIcon
 } from '@mui/icons-material';
 
-// Components
+// Components and Services
 import PageHeader from '../../components/common/PageHeader';
 import clientService from '../../services/clientService';
+import { useAuth } from '../../features/auth/AuthContext';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
 
-function ClientDetailsPage() {
+// TabPanel component for tab content
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`client-tabpanel-${index}`}
+            aria-labelledby={`client-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ pt: 3 }}>
+                    {children}
+                </Box>
+            )}
+        </div>
+    );
+}
+
+const ClientDetailsPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const isOnline = useOnlineStatus();
+    const { t } = useTranslation();
 
     // State
     const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [tabValue, setTabValue] = useState(0);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [cases, setCases] = useState([]);
-    const [appointments, setAppointments] = useState([]);
-    const [invoices, setInvoices] = useState([]);
-    const [loadingRelated, setLoadingRelated] = useState(false);
 
-    // Load client data
+    // Delete dialog
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
+    // Fetch client data
     useEffect(() => {
-        const fetchClient = async () => {
+        const fetchClientDetails = async () => {
+            if (!isOnline) {
+                setLoading(false);
+                setError(t('common.offlineMode'));
+                return;
+            }
+
+            setLoading(true);
+            setError('');
+
             try {
-                setLoading(true);
-                const data = await clientService.getClientById(parseInt(id));
+                const data = await clientService.getClientById(id);
                 setClient(data);
-                setError('');
             } catch (err) {
-                console.error('Error fetching client:', err);
-                setError('Failed to load client details. Please try again.');
+                console.error('Error fetching client details:', err);
+                setError(t('clients.notFound'));
             } finally {
                 setLoading(false);
             }
         };
 
-        if (isOnline) {
-            fetchClient();
-        } else {
-            setError('You are offline. Some data may not be available.');
-            setLoading(false);
-        }
-    }, [id, isOnline]);
-
-    // Fetch related data when tab changes
-    useEffect(() => {
-        const fetchRelatedData = async () => {
-            if (!client) return;
-
-            setLoadingRelated(true);
-            try {
-                if (tabValue === 1) {
-                    // Fetch cases
-                    const casesData = await clientService.getClientCases(client.clientId);
-                    setCases(casesData);
-                } else if (tabValue === 2) {
-                    // Fetch appointments
-                    const appointmentsData = await clientService.getClientAppointments(client.clientId);
-                    setAppointments(appointmentsData);
-                } else if (tabValue === 3) {
-                    // Fetch invoices
-                    const invoicesData = await clientService.getClientInvoices(client.clientId);
-                    setInvoices(invoicesData);
-                }
-            } catch (err) {
-                console.error('Error fetching related data:', err);
-            } finally {
-                setLoadingRelated(false);
-            }
-        };
-
-        if (isOnline) {
-            fetchRelatedData();
-        }
-    }, [tabValue, client, isOnline]);
+        fetchClientDetails();
+    }, [id, isOnline, t]);
 
     // Handle tab change
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
     };
 
-    // Handle edit client
-    const handleEditClient = () => {
-        navigate(`/clients/edit/${id}`);
+    // Open delete confirmation dialog
+    const handleOpenDeleteDialog = () => {
+        setDeleteDialogOpen(true);
     };
 
-    // Handle delete client
+    // Close delete confirmation dialog
+    const handleCloseDeleteDialog = () => {
+        setDeleteDialogOpen(false);
+    };
+
+    // Handle client deletion
     const handleDeleteClient = async () => {
-        if (!isOnline) {
-            setError('Cannot delete client while offline');
-            return;
-        }
+        if (!isOnline) return;
+
+        setDeleteLoading(true);
 
         try {
-            await clientService.deleteClient(parseInt(id));
-            navigate('/clients', { replace: true });
+            await clientService.deleteClient(id);
+            navigate('/clients');
         } catch (err) {
             console.error('Error deleting client:', err);
-            setError('Failed to delete client. Please try again.');
+            setError(t('clients.deleteError'));
         } finally {
+            setDeleteLoading(false);
             setDeleteDialogOpen(false);
         }
     };
 
-    // Show loading state
+    // Format date
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString();
+    };
+
+    // Format time
+    const formatTime = (dateString) => {
+        return new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+
+    // Get client type icon
+    const getClientTypeIcon = (type) => {
+        switch (type) {
+            case 'Corporate':
+                return <BusinessIcon />;
+            case 'Individual':
+            default:
+                return <PersonIcon />;
+        }
+    };
+
+    // Get client initials for avatar
+    const getClientInitials = (firstName, lastName) => {
+        return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
+    };
+
     if (loading) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>
-                <CircularProgress />
-            </Box>
+            <Container maxWidth="lg">
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+                    <CircularProgress />
+                </Box>
+            </Container>
         );
     }
 
-    // Show error state
     if (error && !client) {
         return (
-            <Box sx={{ mt: 4, mx: 2 }}>
-                <Alert severity="error">{error}</Alert>
-                <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={() => navigate('/clients')}
-                >
-                    Back to Clients
-                </Button>
-            </Box>
-        );
-    }
-
-    // If client not found
-    if (!client) {
-        return (
-            <Box sx={{ mt: 4, mx: 2 }}>
-                <Alert severity="warning">Client not found</Alert>
-                <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={() => navigate('/clients')}
-                >
-                    Back to Clients
-                </Button>
-            </Box>
+            <Container maxWidth="lg">
+                <Alert severity="error" sx={{ mt: 4 }}>
+                    {error}
+                </Alert>
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                    <Button
+                        variant="outlined"
+                        onClick={() => navigate('/clients')}
+                    >
+                        {t('common.back')}
+                    </Button>
+                </Box>
+            </Container>
         );
     }
 
     return (
-        <>
-            <PageHeader
-                title={`${client.firstName} ${client.lastName}`}
-                subtitle={client.type === 'Corporate' ? client.companyName : 'Individual Client'}
-                breadcrumbs={[
-                    { text: 'Dashboard', link: '/' },
-                    { text: 'Clients', link: '/clients' },
-                    { text: `${client.firstName} ${client.lastName}` }
-                ]}
-                action={handleEditClient}
-                actionText="Edit Client"
-                actionIcon={<EditIcon />}
-            />
+        <Container maxWidth="lg">
+            {client && (
+                <>
+                    <PageHeader
+                        title={`${client.firstName} ${client.lastName}`}
+                        subtitle={client.type === 'Corporate' && client.companyName ? client.companyName : t(`clients.${client.type?.toLowerCase()}`)}
+                        breadcrumbs={[
+                            { text: t('app.dashboard'), link: '/' },
+                            { text: t('clients.clients'), link: '/clients' },
+                            { text: `${client.firstName} ${client.lastName}` }
+                        ]}
+                        action={t('common.edit')}
+                        actionIcon={<EditIcon />}
+                        onActionClick={() => navigate(`/clients/${id}/edit`)}
+                    />
 
-            {error && <Alert severity="warning" sx={{ mb: 3 }}>{error}</Alert>}
-
-            <Grid container spacing={3}>
-                {/* Client Overview Card */}
-                <Grid item xs={12} md={4}>
-                    <Card elevation={2}>
-                        <CardContent>
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                {client.type === 'Corporate' ? (
-                                    <BusinessIcon color="primary" sx={{ fontSize: 32, mr: 1 }} />
-                                ) : (
-                                    <PersonIcon color="primary" sx={{ fontSize: 32, mr: 1 }} />
-                                )}
-                                <Typography variant="h6">
-                                    {client.firstName} {client.lastName}
-                                </Typography>
-                            </Box>
-
-                            {client.type === 'Corporate' && (
-                                <>
-                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Company</Typography>
-                                    <Typography variant="body1" sx={{ mb: 2 }}>{client.companyName}</Typography>
-                                </>
-                            )}
-
-                            <Divider sx={{ my: 2 }} />
-
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                <EmailIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                                <Typography>{client.email || 'No email provided'}</Typography>
-                            </Box>
-
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                                <PhoneIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                                <Typography>{client.phoneNumber || 'No phone number provided'}</Typography>
-                            </Box>
-
-                            {client.address && (
-                                <Typography variant="body2" sx={{ mt: 2 }}>
-                                    <strong>Address:</strong><br />
-                                    {client.address}
-                                </Typography>
-                            )}
-
-                            <Divider sx={{ my: 2 }} />
-
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                                <Chip
-                                    label={client.type}
-                                    color={client.type === 'Corporate' ? 'primary' : 'secondary'}
-                                    size="small"
-                                />
-                                <IconButton
-                                    color="error"
-                                    onClick={() => setDeleteDialogOpen(true)}
-                                    disabled={!isOnline}
+                    {/* Client Overview Card */}
+                    <Paper sx={{ p: 3, mb: 3 }}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} md={3} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Avatar
+                                    sx={{
+                                        width: 100,
+                                        height: 100,
+                                        mb: 2,
+                                        bgcolor: client.type === 'Corporate' ? 'primary.main' : 'secondary.main'
+                                    }}
                                 >
-                                    <DeleteIcon />
-                                </IconButton>
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                                    {client.type === 'Corporate' ?
+                                        <BusinessIcon sx={{ fontSize: 40 }} /> :
+                                        getClientInitials(client.firstName, client.lastName)}
+                                </Avatar>
+                                <Chip
+                                    icon={getClientTypeIcon(client.type)}
+                                    label={t(`clients.${client.type?.toLowerCase()}`)}
+                                    color={client.type === 'Corporate' ? 'primary' : 'default'}
+                                    variant="outlined"
+                                    sx={{ mb: 1 }}
+                                />
+                                <Typography variant="caption" color="textSecondary">
+                                    {t('clients.created')}: {formatDate(client.createdAt)}
+                                </Typography>
+                            </Grid>
 
-                {/* Client Details and Related Items */}
-                <Grid item xs={12} md={8}>
-                    <Card elevation={2}>
+                            <Grid item xs={12} md={9}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} md={6}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                            <EmailIcon color="action" sx={{ mr: 2 }} />
+                                            <Typography variant="body1">
+                                                {client.email || t('common.notAvailable')}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                            <PhoneIcon color="action" sx={{ mr: 2 }} />
+                                            <Typography variant="body1">
+                                                {client.phoneNumber || t('common.notAvailable')}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                            <HomeIcon color="action" sx={{ mr: 2 }} />
+                                            <Typography variant="body1">
+                                                {client.address || t('common.notAvailable')}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                            <BadgeIcon color="action" sx={{ mr: 2 }} />
+                                            <Typography variant="body1">
+                                                {t('clients.idNumber')}: {client.idNumber || t('common.notAvailable')}
+                                            </Typography>
+                                        </Box>
+                                        {client.type === 'Corporate' && (
+                                            <>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                                    <BusinessIcon color="action" sx={{ mr: 2 }} />
+                                                    <Typography variant="body1">
+                                                        {t('clients.companyName')}: {client.companyName || t('common.notAvailable')}
+                                                    </Typography>
+                                                </Box>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                                    <ReceiptIcon color="action" sx={{ mr: 2 }} />
+                                                    <Typography variant="body1">
+                                                        {t('clients.taxId')}: {client.taxId || t('common.notAvailable')}
+                                                    </Typography>
+                                                </Box>
+                                            </>
+                                        )}
+                                    </Grid>
+                                </Grid>
+
+                                {client.notes && (
+                                    <Box sx={{ mt: 2 }}>
+                                        <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                                            {t('clients.notes')}:
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
+                                            {client.notes}
+                                        </Typography>
+                                    </Box>
+                                )}
+
+                                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        startIcon={<DeleteIcon />}
+                                        onClick={handleOpenDeleteDialog}
+                                        disabled={!isOnline}
+                                    >
+                                        {t('common.delete')}
+                                    </Button>
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </Paper>
+
+                    {/* Tabs for Related Information */}
+                    <Paper sx={{ mb: 3 }}>
                         <Tabs
                             value={tabValue}
                             onChange={handleTabChange}
-                            indicatorColor="primary"
-                            textColor="primary"
-                            variant="fullWidth"
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            aria-label="client details tabs"
                         >
-                            <Tab icon={<PersonIcon />} label="Details" />
-                            <Tab icon={<GavelIcon />} label="Cases" />
-                            <Tab icon={<EventIcon />} label="Appointments" />
-                            <Tab icon={<ReceiptIcon />} label="Invoices" />
+                            <Tab label={`${t('cases.cases')} (${client.cases?.length || 0})`} id="client-tab-0" />
+                            <Tab label={`${t('appointments.appointments')} (${client.appointments?.length || 0})`} id="client-tab-1" />
+                            <Tab label={`${t('billing.invoices')} (${client.invoices?.length || 0})`} id="client-tab-2" />
                         </Tabs>
 
-                        <CardContent>
-                            {/* Details Tab */}
-                            {tabValue === 0 && (
-                                <Grid container spacing={2}>
-                                    {client.idNumber && (
-                                        <Grid item xs={12} sm={6}>
-                                            <Typography variant="body2" color="text.secondary">ID Number</Typography>
-                                            <Typography variant="body1">{client.idNumber}</Typography>
-                                        </Grid>
-                                    )}
+                        {/* Cases Tab */}
+                        <TabPanel value={tabValue} index={0}>
+                            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<AddIcon />}
+                                    onClick={() => navigate('/cases/new', { state: { clientId: client.clientId } })}
+                                    disabled={!isOnline}
+                                >
+                                    {t('cases.newCase')}
+                                </Button>
+                            </Box>
 
-                                    {client.type === 'Corporate' && client.taxId && (
-                                        <Grid item xs={12} sm={6}>
-                                            <Typography variant="body2" color="text.secondary">Tax ID</Typography>
-                                            <Typography variant="body1">{client.taxId}</Typography>
-                                        </Grid>
-                                    )}
-
-                                    <Grid item xs={12} sm={6}>
-                                        <Typography variant="body2" color="text.secondary">Created</Typography>
-                                        <Typography variant="body1">
-                                            {new Date(client.createdAt).toLocaleDateString()}
-                                        </Typography>
-                                    </Grid>
-
-                                    {client.notes && (
-                                        <Grid item xs={12}>
-                                            <Typography variant="body2" color="text.secondary">Notes</Typography>
-                                            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                                                {client.notes}
-                                            </Typography>
-                                        </Grid>
-                                    )}
-                                </Grid>
-                            )}
-
-                            {/* Cases Tab */}
-                            {tabValue === 1 && (
-                                <>
-                                    {loadingRelated ? (
-                                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-                                            <CircularProgress size={30} />
-                                        </Box>
-                                    ) : cases.length > 0 ? (
-                                        <>
-                                            {cases.map((caseItem) => (
-                                                <Box
-                                                    key={caseItem.caseId}
-                                                    sx={{
-                                                        p: 2,
-                                                        mb: 2,
-                                                        border: '1px solid',
-                                                        borderColor: 'divider',
-                                                        borderRadius: 1,
-                                                        '&:hover': { bgcolor: 'action.hover', cursor: 'pointer' }
-                                                    }}
-                                                    onClick={() => navigate(`/cases/${caseItem.caseId}`)}
-                                                >
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                                        <GavelIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                                                        <Typography variant="subtitle1">{caseItem.title}</Typography>
-                                                    </Box>
-                                                    <Grid container spacing={2}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="body2" color="text.secondary">Case Number</Typography>
-                                                            <Typography variant="body2">{caseItem.caseNumber}</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="body2" color="text.secondary">Status</Typography>
-                                                            <Chip label={caseItem.status} size="small" />
-                                                        </Grid>
-                                                    </Grid>
-                                                </Box>
-                                            ))}
-                                        </>
-                                    ) : (
-                                        <Box sx={{ textAlign: 'center', p: 3 }}>
-                                            <FileIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                                            <Typography color="text.secondary">No cases found for this client</Typography>
-                                            <Button
-                                                variant="contained"
-                                                sx={{ mt: 2 }}
-                                                onClick={() => navigate('/cases/new', { state: { clientId: client.clientId } })}
-                                            >
-                                                Create New Case
-                                            </Button>
-                                        </Box>
-                                    )}
-                                </>
-                            )}
-
-                            {/* Appointments Tab */}
-                            {tabValue === 2 && (
-                                <>
-                                    {loadingRelated ? (
-                                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-                                            <CircularProgress size={30} />
-                                        </Box>
-                                    ) : appointments.length > 0 ? (
-                                        <>
-                                            {appointments.map((appointment) => (
-                                                <Box
-                                                    key={appointment.appointmentId}
-                                                    sx={{
-                                                        p: 2,
-                                                        mb: 2,
-                                                        border: '1px solid',
-                                                        borderColor: 'divider',
-                                                        borderRadius: 1
-                                                    }}
-                                                >
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                                        <EventIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                                                        <Typography variant="subtitle1">{appointment.title}</Typography>
-                                                    </Box>
-                                                    <Grid container spacing={2}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="body2" color="text.secondary">Date & Time</Typography>
-                                                            <Typography variant="body2">
-                                                                {new Date(appointment.startTime).toLocaleString()}
-                                                            </Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="body2" color="text.secondary">Status</Typography>
-                                                            <Chip label={appointment.status} size="small" />
-                                                        </Grid>
-                                                    </Grid>
-                                                </Box>
-                                            ))}
-                                        </>
-                                    ) : (
-                                        <Box sx={{ textAlign: 'center', p: 3 }}>
-                                            <EventIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                                            <Typography color="text.secondary">No appointments found for this client</Typography>
-                                            <Button
-                                                variant="contained"
-                                                sx={{ mt: 2 }}
-                                                onClick={() => navigate('/appointments/new', { state: { clientId: client.clientId } })}
-                                            >
-                                                Schedule Appointment
-                                            </Button>
-                                        </Box>
-                                    )}
-                                </>
-                            )}
-
-                            {/* Invoices Tab */}
-                            {tabValue === 3 && (
-                                <>
-                                    {loadingRelated ? (
-                                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-                                            <CircularProgress size={30} />
-                                        </Box>
-                                    ) : invoices.length > 0 ? (
-                                        <>
-                                            {invoices.map((invoice) => (
-                                                <Box
-                                                    key={invoice.invoiceId}
-                                                    sx={{
-                                                        p: 2,
-                                                        mb: 2,
-                                                        border: '1px solid',
-                                                        borderColor: 'divider',
-                                                        borderRadius: 1,
-                                                        '&:hover': { bgcolor: 'action.hover', cursor: 'pointer' }
-                                                    }}
-                                                    onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}`)}
-                                                >
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                                        <ReceiptIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                                                        <Typography variant="subtitle1">Invoice #{invoice.invoiceNumber}</Typography>
-                                                    </Box>
-                                                    <Grid container spacing={2}>
-                                                        <Grid item xs={4}>
-                                                            <Typography variant="body2" color="text.secondary">Amount</Typography>
-                                                            <Typography variant="body2">
-                                                                ${(invoice.amount + invoice.taxAmount).toFixed(2)}
-                                                            </Typography>
-                                                        </Grid>
-                                                        <Grid item xs={4}>
-                                                            <Typography variant="body2" color="text.secondary">Date</Typography>
-                                                            <Typography variant="body2">
-                                                                {new Date(invoice.issueDate).toLocaleDateString()}
-                                                            </Typography>
-                                                        </Grid>
-                                                        <Grid item xs={4}>
-                                                            <Typography variant="body2" color="text.secondary">Status</Typography>
-                                                            <Chip
-                                                                label={invoice.status}
-                                                                color={invoice.status === 'Paid' ? 'success' :
-                                                                    invoice.status === 'Overdue' ? 'error' : 'default'}
+                            {client.cases && client.cases.length > 0 ? (
+                                <TableContainer>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>{t('cases.caseNumber')}</TableCell>
+                                                <TableCell>{t('cases.title')}</TableCell>
+                                                <TableCell>{t('cases.assignedTo')}</TableCell>
+                                                <TableCell>{t('cases.status')}</TableCell>
+                                                <TableCell align="right">{t('common.actions')}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {client.cases.map((caseItem) => (
+                                                <TableRow key={caseItem.caseId} hover>
+                                                    <TableCell>{caseItem.caseNumber}</TableCell>
+                                                    <TableCell>{caseItem.title}</TableCell>
+                                                    <TableCell>
+                                                        {caseItem.assignedLawyer && caseItem.assignedLawyer.user ?
+                                                            `${caseItem.assignedLawyer.user.firstName} ${caseItem.assignedLawyer.user.lastName}` :
+                                                            t('cases.unassigned')}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Chip
+                                                            size="small"
+                                                            label={t(`cases.status.${caseItem.status?.toLowerCase() || 'intake'}`)}
+                                                            color={caseItem.status === 'Active' ? 'primary' : 'default'}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        <Tooltip title={t('common.view')}>
+                                                            <IconButton
                                                                 size="small"
-                                                            />
-                                                        </Grid>
-                                                    </Grid>
-                                                </Box>
+                                                                onClick={() => navigate(`/cases/${caseItem.caseId}`)}
+                                                            >
+                                                                <ViewIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                </TableRow>
                                             ))}
-                                        </>
-                                    ) : (
-                                        <Box sx={{ textAlign: 'center', p: 3 }}>
-                                            <ReceiptIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
-                                            <Typography color="text.secondary">No invoices found for this client</Typography>
-                                            <Button
-                                                variant="contained"
-                                                sx={{ mt: 2 }}
-                                                onClick={() => navigate('/billing/invoices/new', { state: { clientId: client.clientId } })}
-                                            >
-                                                Create New Invoice
-                                            </Button>
-                                        </Box>
-                                    )}
-                                </>
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            ) : (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                                    <Typography variant="body1" color="textSecondary">
+                                        {t('cases.noClientsAssociated')}
+                                    </Typography>
+                                </Box>
                             )}
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
+                        </TabPanel>
+
+                        {/* Appointments Tab */}
+                        <TabPanel value={tabValue} index={1}>
+                            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<AddIcon />}
+                                    onClick={() => navigate('/appointments/new', { state: { clientId: client.clientId } })}
+                                    disabled={!isOnline}
+                                >
+                                    {t('appointments.newAppointment')}
+                                </Button>
+                            </Box>
+
+                            {client.appointments && client.appointments.length > 0 ? (
+                                <TableContainer>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>{t('appointments.date')}</TableCell>
+                                                <TableCell>{t('appointments.time')}</TableCell>
+                                                <TableCell>{t('appointments.title')}</TableCell>
+                                                <TableCell>{t('appointments.status')}</TableCell>
+                                                <TableCell align="right">{t('common.actions')}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {client.appointments.map((appointment) => (
+                                                <TableRow key={appointment.appointmentId} hover>
+                                                    <TableCell>{formatDate(appointment.startTime)}</TableCell>
+                                                    <TableCell>
+                                                        {formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}
+                                                    </TableCell>
+                                                    <TableCell>{appointment.title}</TableCell>
+                                                    <TableCell>
+                                                        <Chip
+                                                            size="small"
+                                                            label={t(`appointments.status.${appointment.status?.toLowerCase() || 'scheduled'}`)}
+                                                            color={appointment.status === 'Scheduled' ? 'primary' :
+                                                                appointment.status === 'Completed' ? 'success' :
+                                                                    appointment.status === 'Cancelled' ? 'error' : 'default'}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        <Tooltip title={t('common.view')}>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => navigate(`/appointments/${appointment.appointmentId}`)}
+                                                            >
+                                                                <ViewIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            ) : (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                                    <Typography variant="body1" color="textSecondary">
+                                        {t('appointments.noAppointmentsForDate', { date: client.firstName })}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </TabPanel>
+
+                        {/* Invoices Tab */}
+                        <TabPanel value={tabValue} index={2}>
+                            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<AddIcon />}
+                                    onClick={() => navigate('/billing/invoices/new', { state: { clientId: client.clientId } })}
+                                    disabled={!isOnline}
+                                >
+                                    {t('billing.createInvoice')}
+                                </Button>
+                            </Box>
+
+                            {client.invoices && client.invoices.length > 0 ? (
+                                <TableContainer>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>{t('billing.invoiceNumber')}</TableCell>
+                                                <TableCell>{t('billing.issueDate')}</TableCell>
+                                                <TableCell>{t('billing.dueDate')}</TableCell>
+                                                <TableCell>{t('billing.amount')}</TableCell>
+                                                <TableCell>{t('billing.status')}</TableCell>
+                                                <TableCell align="right">{t('common.actions')}</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {client.invoices.map((invoice) => (
+                                                <TableRow key={invoice.invoiceId} hover>
+                                                    <TableCell>{invoice.invoiceNumber}</TableCell>
+                                                    <TableCell>{formatDate(invoice.issueDate)}</TableCell>
+                                                    <TableCell>{formatDate(invoice.dueDate)}</TableCell>
+                                                    <TableCell>
+                                                        {new Intl.NumberFormat('en-US', {
+                                                            style: 'currency',
+                                                            currency: 'USD'
+                                                        }).format(invoice.totalAmount)}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Chip
+                                                            size="small"
+                                                            label={t(`billing.status.${invoice.status?.toLowerCase() || 'draft'}`)}
+                                                            color={
+                                                                invoice.status === 'Paid' ? 'success' :
+                                                                    invoice.status === 'Overdue' ? 'error' :
+                                                                        invoice.status === 'Sent' ? 'primary' : 'default'
+                                                            }
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        <Tooltip title={t('billing.viewInvoice')}>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}`)}
+                                                            >
+                                                                <ViewIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            ) : (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                                    <Typography variant="body1" color="textSecondary">
+                                        {t('billing.noInvoices')}
+                                    </Typography>
+                                </Box>
+                            )}
+                        </TabPanel>
+                    </Paper>
+                </>
+            )}
 
             {/* Delete Confirmation Dialog */}
             <Dialog
                 open={deleteDialogOpen}
-                onClose={() => setDeleteDialogOpen(false)}
+                onClose={handleCloseDeleteDialog}
             >
-                <DialogTitle>Delete Client</DialogTitle>
+                <DialogTitle>{t('clients.deleteClient')}</DialogTitle>
                 <DialogContent>
-                    Are you sure you want to delete client {client.firstName} {client.lastName}?
-                    This action cannot be undone.
+                    <DialogContentText>
+                        {client && t('clients.deleteConfirmation', {
+                            firstName: client.firstName,
+                            lastName: client.lastName
+                        })}
+                    </DialogContentText>
+                    <Typography variant="caption" color="error" sx={{ display: 'block', mt: 2 }}>
+                        {t('common.actionCannotBeUndone')}
+                    </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+                    <Button
+                        onClick={handleCloseDeleteDialog}
+                        disabled={deleteLoading}
+                    >
+                        {t('common.cancel')}
+                    </Button>
                     <Button
                         onClick={handleDeleteClient}
                         color="error"
                         variant="contained"
+                        disabled={deleteLoading}
+                        startIcon={deleteLoading ? <CircularProgress size={20} /> : null}
                     >
-                        Delete
+                        {deleteLoading ? t('common.deleting') : t('common.delete')}
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </Container>
     );
-}
+};
 
 export default ClientDetailsPage;
