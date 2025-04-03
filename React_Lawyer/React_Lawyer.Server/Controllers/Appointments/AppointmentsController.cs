@@ -30,7 +30,7 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Appointments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointments()
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointments()
         {
             try
             {
@@ -40,7 +40,7 @@ namespace React_Lawyer.Server.Controllers
                     .Include(a => a.Client)
                     .Include(a => a.Case)
                     .OrderBy(a => a.StartTime)
-                    .Select(x => new Appointment
+                    .Select(x => new
                     {
                         AppointmentId = x.AppointmentId,
                         LawFirmId = x.LawFirmId,
@@ -83,9 +83,9 @@ namespace React_Lawyer.Server.Controllers
                         Location = x.Location,
                         IsVirtual = x.IsVirtual,
                         MeetingLink = x.MeetingLink,
-                        Type = x.Type,
+                        Type = x.Type.ToString(),
                         Notes = x.Notes,
-                        Status = x.Status,
+                        Status = x.Status.ToString(),
                         IsBillable = x.IsBillable,
                         ReminderSent = x.ReminderSent,
                         ReminderSentAt = x.ReminderSentAt,
@@ -103,7 +103,7 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Appointments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Appointment>> GetAppointment(int id)
+        public async Task<ActionResult<object>> GetAppointment(int id)
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -113,7 +113,7 @@ namespace React_Lawyer.Server.Controllers
                 .Include(a => a.Client)
                 .Include(a => a.Case)
                 .Include(a => a.ScheduledBy)
-                .Select(x=> new Appointment
+                .Select(x => new Appointment
                 {
                     AppointmentId = x.AppointmentId,
                     LawFirmId = x.LawFirmId,
@@ -163,7 +163,7 @@ namespace React_Lawyer.Server.Controllers
                     ReminderSent = x.ReminderSent,
                     ReminderSentAt = x.ReminderSentAt,
                     BillableAmount = x.BillableAmount,
-                    
+
                 })
                 .FirstOrDefaultAsync(a => a.AppointmentId == id);
 
@@ -177,12 +177,64 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Appointments/ByFirm/{firmId}
         [HttpGet("ByFirm/{firmId}")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByFirm(int firmId)
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentsByFirm(int firmId)
         {
             return await _context.Appointments
                 .Include(a => a.Lawyer)
                     .ThenInclude(l => l.User)
                 .Include(a => a.Client)
+                    .Select(x => new
+                    {
+                        AppointmentId = x.AppointmentId,
+                        LawFirmId = x.LawFirmId,
+                        LawyerId = x.LawyerId,
+                        Lawyer = new Lawyer
+                        {
+                            LawyerId = x.Lawyer.LawyerId,
+                            UserId = x.Lawyer.UserId,
+                            User = new User
+                            {
+                                FirstName = x.Lawyer.User.FirstName,
+                                LastName = x.Lawyer.User.LastName,
+                                Email = x.Lawyer.User.Email,
+                                PhoneNumber = x.Lawyer.User.PhoneNumber
+                            }
+                        },
+                        ClientId = x.ClientId,
+                        Client = new Client
+                        {
+                            ClientId = x.Client.ClientId,
+                            FirstName = x.Client.FirstName,
+                            LastName = x.Client.LastName,
+                            Email = x.Client.Email,
+                            PhoneNumber = x.Client.PhoneNumber,
+                            Type = x.Client.Type
+                        },
+                        CaseId = x.CaseId,
+                        ScheduledById = x.ScheduledById,
+                        ScheduledBy = new User
+                        {
+                            FirstName = x.ScheduledBy.FirstName,
+                            LastName = x.ScheduledBy.LastName,
+                            Email = x.ScheduledBy.Email,
+                            PhoneNumber = x.ScheduledBy.PhoneNumber
+                        },
+                        Title = x.Title,
+                        Description = x.Description,
+                        StartTime = x.StartTime,
+                        EndTime = x.EndTime,
+                        Location = x.Location,
+                        IsVirtual = x.IsVirtual,
+                        MeetingLink = x.MeetingLink,
+                        Type = x.Type.ToString(),
+                        Notes = x.Notes,
+                        Status = x.Status.ToString(),
+                        IsBillable = x.IsBillable,
+                        ReminderSent = x.ReminderSent,
+                        ReminderSentAt = x.ReminderSentAt,
+                        BillableAmount = x.BillableAmount,
+
+                    })
                 .Where(a => a.LawFirmId == firmId)
                 .OrderBy(a => a.StartTime)
                 .ToListAsync();
@@ -190,7 +242,7 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Appointments/ByLawyer/{lawyerId}
         [HttpGet("ByLawyer/{lawyerId}")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByLawyer(int lawyerId)
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentsByLawyer(int lawyerId)
         {
             return await _context.Appointments
                 .Include(a => a.Client)
@@ -202,7 +254,7 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Appointments/ByClient/{clientId}
         [HttpGet("ByClient/{clientId}")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByClient(int clientId)
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentsByClient(int clientId)
         {
             return await _context.Appointments
                 .Include(a => a.Lawyer)
@@ -215,7 +267,7 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Appointments/ByCase/{caseId}
         [HttpGet("ByCase/{caseId}")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByCase(int caseId)
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentsByCase(int caseId)
         {
             return await _context.Appointments
                 .Include(a => a.Lawyer)
@@ -228,7 +280,7 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Appointments/Upcoming
         [HttpGet("Upcoming")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetUpcomingAppointments()
+        public async Task<ActionResult<IEnumerable<object>>> GetUpcomingAppointments()
         {
             var now = DateTime.UtcNow;
             return await _context.Appointments
@@ -238,7 +290,7 @@ namespace React_Lawyer.Server.Controllers
                 .Include(a => a.Case)
                 .Where(a => a.StartTime > now && a.Status != AppointmentStatus.Cancelled)
                 .OrderBy(a => a.StartTime)
-                    .Select(x => new Appointment
+                    .Select(x => new
                     {
                         AppointmentId = x.AppointmentId,
                         LawFirmId = x.LawFirmId,
@@ -281,9 +333,9 @@ namespace React_Lawyer.Server.Controllers
                         Location = x.Location,
                         IsVirtual = x.IsVirtual,
                         MeetingLink = x.MeetingLink,
-                        Type = x.Type,
+                        Type = x.Type.ToString(),
                         Notes = x.Notes,
-                        Status = x.Status,
+                        Status = x.Status.ToString(),
                         IsBillable = x.IsBillable,
                         ReminderSent = x.ReminderSent,
                         ReminderSentAt = x.ReminderSentAt,
@@ -295,7 +347,7 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Appointments/UpcomingByFirm/{firmId}
         [HttpGet("UpcomingByFirm/{firmId}")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetUpcomingAppointmentsByFirm(int firmId)
+        public async Task<ActionResult<IEnumerable<object>>> GetUpcomingAppointmentsByFirm(int firmId)
         {
             var now = DateTime.UtcNow;
             return await _context.Appointments
@@ -305,7 +357,7 @@ namespace React_Lawyer.Server.Controllers
                 .Include(a => a.Case)
                 .Where(a => a.LawFirmId == firmId && a.StartTime > now && a.Status != AppointmentStatus.Cancelled)
                 .OrderBy(a => a.StartTime)
-                    .Select(x => new Appointment
+                    .Select(x => new
                     {
                         AppointmentId = x.AppointmentId,
                         LawFirmId = x.LawFirmId,
@@ -348,9 +400,9 @@ namespace React_Lawyer.Server.Controllers
                         Location = x.Location,
                         IsVirtual = x.IsVirtual,
                         MeetingLink = x.MeetingLink,
-                        Type = x.Type,
+                        Type = x.Type.ToString(),
                         Notes = x.Notes,
-                        Status = x.Status,
+                        Status = x.Status.ToString(),
                         IsBillable = x.IsBillable,
                         ReminderSent = x.ReminderSent,
                         ReminderSentAt = x.ReminderSentAt,
@@ -362,7 +414,7 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Appointments/Date/{date}
         [HttpGet("Date/{date}")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointmentsByDate(DateTime date)
+        public async Task<ActionResult<IEnumerable<object>>> GetAppointmentsByDate(DateTime date)
         {
             var startDate = date.Date;
             var endDate = startDate.AddDays(1);
@@ -372,9 +424,10 @@ namespace React_Lawyer.Server.Controllers
                     .ThenInclude(l => l.User)
                 .Include(a => a.Client)
                 .Include(a => a.Case)
+                .Include(x=> x.ScheduledBy)
                 .Where(a => a.StartTime >= startDate && a.StartTime < endDate)
                 .OrderBy(a => a.StartTime)
-                    .Select(x => new Appointment
+                    .Select(x => new
                     {
                         AppointmentId = x.AppointmentId,
                         LawFirmId = x.LawFirmId,
@@ -417,9 +470,9 @@ namespace React_Lawyer.Server.Controllers
                         Location = x.Location,
                         IsVirtual = x.IsVirtual,
                         MeetingLink = x.MeetingLink,
-                        Type = x.Type,
+                        Type = x.Type.ToString(),
                         Notes = x.Notes,
-                        Status = x.Status,
+                        Status = x.Status.ToString(),
                         IsBillable = x.IsBillable,
                         ReminderSent = x.ReminderSent,
                         ReminderSentAt = x.ReminderSentAt,
@@ -430,83 +483,83 @@ namespace React_Lawyer.Server.Controllers
         }
 
 
-    // POST: api/Appointments
-    [HttpPost]
-    public async Task<ActionResult<Appointment>> CreateAppointment(Appointment_Create_Template template)
-    {
-        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (userId == null)
+        // POST: api/Appointments
+        [HttpPost]
+        public async Task<ActionResult<Appointment>> CreateAppointment(Appointment_Create_Template template)
         {
-            return Unauthorized();
-        }
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        var appointment = new Appointment
-        {
-            Title = template.Title,
-            Description = template.Description,
-            StartTime = template.StartTime,
-            EndTime = template.EndTime,
-            ClientId = template.ClientId,
-            LawyerId = template.LawyerId,
-            CaseId = template.CaseId,
-            IsVirtual = template.IsVirtual,
-            LawFirmId = template.LawFirmId,
-            Location = string.IsNullOrEmpty(template.Location) ? "" : template.Location,
-            MeetingLink = string.IsNullOrEmpty(template.MeetingLink) ? "" : template.MeetingLink,
-            Type = template.Type,
-            Notes = string.IsNullOrEmpty(template.Notes) ? "" : template.Notes,
-            ReminderSent = false,
-            ReminderSentAt = null,
-            Status = AppointmentStatus.Scheduled,
-            ScheduledById = int.Parse(userId)
-        };
-
-        appointment.Status = AppointmentStatus.Scheduled;
-        _context.Appointments.Add(appointment);
-
-        using var transaction = await _context.Database.BeginTransactionAsync();
-        try
-        {
-            await _context.SaveChangesAsync();
-
-            // Create notifications for the lawyer and client
-            if (appointment.LawyerId.HasValue)
+            if (userId == null)
             {
-                var lawyerUser = await _context.Lawyers
-                    .Where(l => l.LawyerId == appointment.LawyerId)
-                    .Select(l => l.UserId)
-                    .FirstOrDefaultAsync();
-
-                if (lawyerUser != 0)
-                {
-                    var notification = new Notification
-                    {
-                        UserId = lawyerUser,
-                        Title = "New Appointment Scheduled",
-                        Message = $"New appointment: {appointment.Title} on {appointment.StartTime.ToString("g")}",
-                        Type = NotificationType.AppointmentReminder,
-                        CreatedAt = DateTime.UtcNow,
-                        AppointmentId = appointment.AppointmentId,
-                        ActionUrl = $"/appointments/{appointment.AppointmentId}"
-                    };
-
-                    _context.Notifications.Add(notification);
-                }
+                return Unauthorized();
             }
 
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
+            var appointment = new Appointment
+            {
+                Title = template.Title,
+                Description = template.Description,
+                StartTime = template.StartTime,
+                EndTime = template.EndTime,
+                ClientId = template.ClientId,
+                LawyerId = template.LawyerId,
+                CaseId = template.CaseId,
+                IsVirtual = template.IsVirtual,
+                LawFirmId = template.LawFirmId,
+                Location = string.IsNullOrEmpty(template.Location) ? "" : template.Location,
+                MeetingLink = string.IsNullOrEmpty(template.MeetingLink) ? "" : template.MeetingLink,
+                Type = template.Type,
+                Notes = string.IsNullOrEmpty(template.Notes) ? "" : template.Notes,
+                ReminderSent = false,
+                ReminderSentAt = null,
+                Status = AppointmentStatus.Scheduled,
+                ScheduledById = int.Parse(userId)
+            };
 
-            return CreatedAtAction(nameof(GetAppointment), new { id = appointment.AppointmentId }, appointment);
+            appointment.Status = AppointmentStatus.Scheduled;
+            _context.Appointments.Add(appointment);
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+
+                // Create notifications for the lawyer and client
+                if (appointment.LawyerId.HasValue)
+                {
+                    var lawyerUser = await _context.Lawyers
+                        .Where(l => l.LawyerId == appointment.LawyerId)
+                        .Select(l => l.UserId)
+                        .FirstOrDefaultAsync();
+
+                    if (lawyerUser != 0)
+                    {
+                        var notification = new Notification
+                        {
+                            UserId = lawyerUser,
+                            Title = "New Appointment Scheduled",
+                            Message = $"New appointment: {appointment.Title} on {appointment.StartTime.ToString("g")}",
+                            Type = NotificationType.AppointmentReminder,
+                            CreatedAt = DateTime.UtcNow,
+                            AppointmentId = appointment.AppointmentId,
+                            ActionUrl = $"/appointments/{appointment.AppointmentId}"
+                        };
+
+                        _context.Notifications.Add(notification);
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return CreatedAtAction(nameof(GetAppointment), new { id = appointment.AppointmentId }, appointment);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error creating appointment");
+                return StatusCode(500, "An error occurred while creating the appointment.");
+            }
         }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            _logger.LogError(ex, "Error creating appointment");
-            return StatusCode(500, "An error occurred while creating the appointment.");
-        }
-    }
 
         // PUT: api/Appointments/5
         [HttpPut("{id}")]

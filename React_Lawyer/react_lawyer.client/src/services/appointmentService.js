@@ -187,7 +187,14 @@ class AppointmentService {
      */
     async getAppointmentsByDate(date) {
         try {
-            const formattedDate = date instanceof Date ? date.toISOString().split('T')[0] : date;
+            let formattedDate;
+            if (date instanceof Date) {
+                formattedDate = date.toISOString().split('T')[0]; // Already in UTC
+            } else {
+                const parsedDate = new Date(date);
+                formattedDate = parsedDate.toISOString().split('T')[0]; // Convert to UTC format
+            }
+
             const url = `${API_URL}/api/appointments/date/${formattedDate}`;
             console.log(`Fetching appointments for date ${formattedDate} from URL:`, url);
 
@@ -201,6 +208,7 @@ class AppointmentService {
             throw error;
         }
     }
+
 
     /**
      * Create a new appointment

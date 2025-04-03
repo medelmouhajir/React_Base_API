@@ -38,16 +38,16 @@ import AppointmentsListPage from '../pages/appointments/AppointmentsListPage';
 //import AppointmentDetailsPage from '../pages/appointments/AppointmentDetailsPage';
 import NewAppointmentPage from '../pages/appointments/NewAppointmentPage';
 
-//// Billing pages
-//import InvoicesListPage from '../pages/billing/InvoicesListPage';
+// Billing pages
+import InvoicesListPage from '../pages/billing/InvoicesListPage';
 //import InvoiceDetailsPage from '../pages/billing/InvoiceDetailsPage';
-//import NewInvoicePage from '../pages/billing/NewInvoicePage';
+import NewInvoicePage from '../pages/billing/NewInvoicePage';
 //import PaymentsPage from '../pages/billing/PaymentsPage';
 
 //// Documents pages
 import DocumentsListPage from '../pages/documents/DocumentsListPage';
 import DocumentDetailsPage from '../pages/documents/DocumentDetailsPage';
-//import DocumentEditor from '../components/documents/DocumentEditor';
+import DocumentEditor from '../pages/documents/DocumentEditor';
 
 //// Reports pages
 //import ReportsPage from '../pages/reports/ReportsPage';
@@ -96,16 +96,17 @@ const AppRoutes = () => {
                 {/*<Route path="/appointments/:id" element={<AppointmentDetailsPage />} />*/}
 
                 {/* Billing - Not for Clients */}
-                {/*<Route element={<ProtectedRoute requiredRole={["Lawyer", "Admin", "Secretary"]} />}>*/}
-                {/*    <Route path="/billing" element={<InvoicesListPage />} />*/}
-                {/*    <Route path="/billing/invoices/new" element={<NewInvoicePage />} />*/}
-                {/*    <Route path="/billing/invoices/:id" element={<InvoiceDetailsPage />} />*/}
-                {/*    <Route path="/billing/payments" element={<PaymentsPage />} />*/}
-                {/*</Route>*/}
+                <Route element={<ProtectedRoute requiredrole={["Lawyer", "Admin", "Secretary"]} />}>
+                    <Route path="/billing" element={<InvoicesListPage />} />
+                    <Route path="/billing/invoices" element={<InvoicesListPage />} />
+                    <Route path="/billing/invoices/new" element={<NewInvoicePage />} />
+                    {/*<route path="/billing/invoices/:id" element={<invoicedetailspage />} />*/}
+                    {/*<route path="/billing/payments" element={<paymentspage />} />*/}
+                </Route>
 
                 {/* Documents */}
                 <Route path="/documents" element={<DocumentsListPage />} />
-                {/*<Route path="/documents/editor" element={<DocumentEditor />} />*/}
+                <Route path="/documents/:id/edit" element={<DocumentEditor />} />
                 <Route path="/documents/:id" element={<DocumentDetailsPage />} />
 
                 {/* Reports - Only for Lawyers and Admins */}

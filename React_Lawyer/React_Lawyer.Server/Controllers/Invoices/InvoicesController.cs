@@ -22,11 +22,44 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Invoices
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
+        public async Task<ActionResult<IEnumerable<object>>> GetInvoices()
         {
             return await _context.Invoices
                 .Include(i => i.Client)
                 .Include(i => i.Case)
+                .Select( x=> new
+                {
+                    InvoiceId = x.InvoiceId,
+                    Amount = x.Amount,
+                    PaymentReference = x.PaymentReference,
+                    PaymentMethod = x.PaymentMethod,
+                    CaseId = x.CaseId,
+                    ClientId = x.ClientId,
+                    DueDate = x.DueDate,
+                    InvoiceNumber = x.InvoiceNumber,
+                    IssueDate = x.IssueDate,
+                    LawFirmId = x.LawFirmId,
+                    Notes = x.Notes,
+                    PaidAmount = x.PaidAmount,
+                    PaidDate = x.PaidDate,
+                    Status = x.Status.ToString(),
+                    TaxAmount = x.TaxAmount,
+                    Client = new Shared_Models.Clients.Client
+                    {
+                        ClientId = x.ClientId,
+                        FirstName = x.Client.FirstName,
+                        LastName = x.Client.LastName,
+                        Email = x.Client.Email,
+                        PhoneNumber = x.Client.PhoneNumber,
+                    },
+                    Case = x.CaseId == null ? null : new Shared_Models.Cases.Case
+                    {
+                        CaseId = x.Case.CaseId,
+                        CaseNumber = x.Case.CaseNumber,
+                        Title = x.Case.Title,
+                    },
+
+                } )
                 .OrderByDescending(i => i.IssueDate)
                 .ToListAsync();
         }
@@ -53,12 +86,45 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Invoices/ByFirm/{firmId}
         [HttpGet("ByFirm/{firmId}")]
-        public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoicesByFirm(int firmId)
+        public async Task<ActionResult<IEnumerable<object>>> GetInvoicesByFirm(int firmId)
         {
             return await _context.Invoices
                 .Include(i => i.Client)
                 .Include(i => i.Case)
                 .Where(i => i.LawFirmId == firmId)
+                .Select(x => new
+                {
+                    InvoiceId = x.InvoiceId,
+                    Amount = x.Amount,
+                    PaymentReference = x.PaymentReference,
+                    PaymentMethod = x.PaymentMethod,
+                    CaseId = x.CaseId,
+                    ClientId = x.ClientId,
+                    DueDate = x.DueDate,
+                    InvoiceNumber = x.InvoiceNumber,
+                    IssueDate = x.IssueDate,
+                    LawFirmId = x.LawFirmId,
+                    Notes = x.Notes,
+                    PaidAmount = x.PaidAmount,
+                    PaidDate = x.PaidDate,
+                    Status = x.Status.ToString(),
+                    TaxAmount = x.TaxAmount,
+                    Client = new Shared_Models.Clients.Client
+                    {
+                        ClientId = x.ClientId,
+                        FirstName = x.Client.FirstName,
+                        LastName = x.Client.LastName,
+                        Email = x.Client.Email,
+                        PhoneNumber = x.Client.PhoneNumber,
+                    },
+                    Case = x.CaseId == null ? null : new Shared_Models.Cases.Case
+                    {
+                        CaseId = x.Case.CaseId,
+                        CaseNumber = x.Case.CaseNumber,
+                        Title = x.Case.Title,
+                    },
+
+                })
                 .OrderByDescending(i => i.IssueDate)
                 .ToListAsync();
         }
@@ -140,7 +206,10 @@ namespace React_Lawyer.Server.Controllers
                     Amount = 0, // Will be calculated from items
                     TaxAmount = 0, // Will be calculated from items
                     Status = InvoiceStatus.Draft,
-                    Notes = model.Notes
+                    Notes = model.Notes,
+                    PaymentMethod = "",
+                    PaymentReference = "",
+                    
                 };
 
                 _context.Invoices.Add(invoice);
@@ -638,8 +707,8 @@ namespace React_Lawyer.Server.Controllers
         public int PaymentTermDays { get; set; } = 30;
         public decimal TaxRate { get; set; } = 0;
         public string Notes { get; set; }
-        public List<int> TimeEntryIds { get; set; }
-        public List<AdditionalInvoiceItemModel> AdditionalItems { get; set; }
+        public List<int>? TimeEntryIds { get; set; }
+        public List<AdditionalInvoiceItemModel>? AdditionalItems { get; set; }
     }
 
     public class AdditionalInvoiceItemModel
