@@ -580,7 +580,9 @@ namespace React_Lawyer.Server.Controllers.Cases
                         Description = model.Notes,
                         Date = DateTime.UtcNow,
                         EventType = CaseEventType.StatusChange,
-                        CreatedAt = DateTime.UtcNow
+                        CreatedAt = DateTime.UtcNow,
+                        Location = "",
+                        Outcome = "",
                     };
 
                     _context.CaseEvents.Add(caseEvent);
@@ -618,7 +620,7 @@ namespace React_Lawyer.Server.Controllers.Cases
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    return NoContent();
+                    return Ok();
                 }
                 catch (Exception ex)
                 {

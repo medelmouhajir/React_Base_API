@@ -230,8 +230,18 @@ class CaseService {
      */
     async updateCaseStatus(id, newStatus, userId, notes = '') {
         try {
+
+
             const url = `${API_URL}/api/cases/${id}/status`;
             console.log(`Updating status for case ID ${id} to "${newStatus}"`);
+
+            var dataToSend = JSON.stringify({
+                newStatus: Number.isInteger(newStatus) ? newStatus : this.stringToCaseStatus(newStatus),
+                userId,
+                notes
+            });
+
+            console.log(dataToSend);
 
             const response = await fetch(url, {
                 method: 'PATCH',
@@ -239,14 +249,12 @@ class CaseService {
                     'Content-Type': 'application/json',
                     ...this.getAuthHeader()
                 },
-                body: JSON.stringify({
-                    newStatus,
-                    userId,
-                    notes
-                })
+                body: dataToSend
             });
 
-            return await this.handleResponse(response, url);
+            if (!response.ok) {
+                throw new Error(errorMessage);
+            }
         } catch (error) {
             console.error(`Error in updateCaseStatus(${id}, "${newStatus}"):`, error);
             throw error;
@@ -317,15 +325,20 @@ class CaseService {
     async addCaseEvent(id, eventData) {
         try {
             const url = `${API_URL}/api/cases/${id}/events`;
-            console.log(`Adding event to case ID ${id}:`, eventData);
 
+            const formattedData = {
+                ...eventData,
+                createdAt: new Date(eventData.createdAt || new Date()).toISOString(),
+                date: new Date(eventData.date || new Date()).toISOString()
+            };
+            console.log(`Adding event to case ID ${id}:`, formattedData);
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     ...this.getAuthHeader()
                 },
-                body: JSON.stringify(eventData)
+                body: JSON.stringify(formattedData)
             });
 
             return await this.handleResponse(response, url);
@@ -395,6 +408,41 @@ class CaseService {
         } catch (error) {
             console.error(`Error in removeClientFromCase(${caseId}, ${clientId}):`, error);
             throw error;
+        }
+    }
+
+
+    stringToCaseStatus(str) {
+        switch (str) {
+            case "Intake": return 0;
+            case "Opened": return 1;
+            case "InProgress": return 2;
+            case "PendingCourt": return 3;
+            case "PendingClient": return 4;
+            case "PendingOpposingParty": return 5;
+            case "InNegotiation": return 6;
+            case "InMediation": return 7;
+            case "InTrial": return 8;
+            case "Settlement": return 9;
+            case "Judgment": return 10;
+            case "Appeal": return 11;
+            case "Closed": return 12;
+            case "Archived": return 13;
+        }
+    }
+
+    stringToCaseType(str) {
+        switch (str) {
+            case "FamilyLaw": return 0;
+            case "CriminalLaw": return 1;
+            case "CivilLaw": return 2;
+            case "CommercialLaw": return 3;
+            case "AdministrativeLaw": return 4;
+            case "LaborLaw": return 5;
+            case "IntellectualProperty": return 6;
+            case "RealEstate": return 7;
+            case "Immigration": return 8;
+            case "Other": return 10;
         }
     }
 }

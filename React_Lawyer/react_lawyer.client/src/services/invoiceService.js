@@ -520,6 +520,28 @@ class InvoiceService {
             throw error;
         }
     }
+
+    /**
+ * Get cases by client ID
+ * @param {number} clientId - The client ID
+ * @returns {Promise<Array>} Promise resolving to array of cases
+ */
+    async getClientCases(clientId) {
+        try {
+            const response = await fetch(`${API_URL}/api/clients/${clientId}/cases`, {
+                headers: this.getAuthHeader()
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch client cases');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error in getClientCases(${clientId}):`, error);
+            throw error;
+        }
+    }
 }
 
 export default new InvoiceService();

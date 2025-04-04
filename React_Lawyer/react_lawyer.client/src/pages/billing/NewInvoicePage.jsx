@@ -168,9 +168,10 @@ const NewInvoicePage = () => {
     };
 
     // Handle client change
+    // Handle client change
     const handleClientChange = async (event, value) => {
         setSelectedClient(value);
-
+        console.log(value);
         if (value) {
             setFormData(prev => ({
                 ...prev,
@@ -179,6 +180,17 @@ const NewInvoicePage = () => {
                 caseId: null
             }));
             setSelectedCase(null);
+
+            // Fetch client-specific cases
+            try {
+                const clientCases = await invoiceService.getClientCases(value.clientId);
+                console.log(clientCases);
+                setCases(clientCases);
+            } catch (err) {
+                console.error('Error loading client cases:', err);
+            }
+
+            // Load time entries for the client
             await loadTimeEntries(value.clientId, null);
         } else {
             setFormData(prev => ({
@@ -188,6 +200,14 @@ const NewInvoicePage = () => {
             }));
             setSelectedCase(null);
             setAvailableTimeEntries([]);
+
+            // Reset to all cases if client is deselected
+            try {
+                const allCases = await invoiceService.getCases();
+                setCases(allCases);
+            } catch (err) {
+                console.error('Error loading all cases:', err);
+            }
         }
 
         // Clear validation error
@@ -479,22 +499,22 @@ const NewInvoicePage = () => {
                                         />
                                     </Grid>
 
-                                    <Grid item xs={12} md={6}>
-                                        <Autocomplete
-                                            value={selectedCase}
-                                            onChange={handleCaseChange}
-                                            options={cases.filter(c => !formData.clientId || c.clients?.some(client => client.clientId === formData.clientId))}
-                                            getOptionLabel={(option) => `${option.caseNumber} - ${option.title}`}
-                                            isOptionEqualToValue={(option, value) => option.caseId === value.caseId}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    label={t('billing.case')}
-                                                />
-                                            )}
-                                            disabled={!formData.clientId}
-                                        />
-                                    </Grid>
+                                        <Grid item xs={12} md={6}>
+                                            <Autocomplete
+                                                value={selectedCase}
+                                                onChange={handleCaseChange}
+                                                options={cases}
+                                                getOptionLabel={(option) => `${option.caseNumber} - ${option.title}`}
+                                                isOptionEqualToValue={(option, value) => option.caseId === value.caseId}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label={t('billing.case')}
+                                                    />
+                                                )}
+                                                disabled={!formData.clientId}
+                                            />
+                                        </Grid>
 
                                     <Grid item xs={12} md={6}>
                                         <TextField
