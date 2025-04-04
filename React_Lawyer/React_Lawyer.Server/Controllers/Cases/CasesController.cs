@@ -232,6 +232,61 @@ namespace React_Lawyer.Server.Controllers.Cases
             }
         }
 
+        [HttpGet("ByClient/{clientId}")]
+        public async Task<ActionResult<IEnumerable<Case>>> GetCasesByClient(int clientId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching cases for client ID: {ClientId}", clientId);
+
+                var cases = await _context.Clients
+                    .Include(x=> x.Case_Clients)
+                    .ThenInclude(x=> x.Case)
+                    .ThenInclude(c => c.AssignedLawyer)
+                    .ThenInclude(l => l.User)
+                    .Where(c => c.ClientId == clientId)
+                    .SelectMany(x=> x.Case_Clients.Select(c=> c.Case))
+                        .Select(c => new Case
+                        {
+                            CaseId = c.CaseId,
+                            CaseNumber = c.CaseNumber,
+                            LawFirmId = c.LawFirmId,
+                            LawyerId = c.LawyerId,
+                            Title = c.Title,
+                            Description = c.Description,
+                            Type = c.Type,
+                            Status = c.Status,
+                            OpenDate = c.OpenDate,
+                            CloseDate = c.CloseDate,
+                            CourtName = c.CourtName,
+                            CourtCaseNumber = c.CourtCaseNumber,
+                            OpposingParty = c.OpposingParty,
+                            OpposingCounsel = c.OpposingCounsel,
+                            NextHearingDate = c.NextHearingDate,
+                            Notes = c.Notes,
+                            IsUrgent = c.IsUrgent,
+                            ParentCaseId = c.ParentCaseId,
+                            AssignedLawyer = new Shared_Models.Users.Lawyer
+                            {
+                                LawyerId = c.AssignedLawyer.LawyerId,
+                                User = new Shared_Models.Users.User
+                                {
+                                    FirstName = c.AssignedLawyer.User.FirstName,
+                                    LastName = c.AssignedLawyer.User.LastName,
+                                }
+                            }
+                        })
+                    .ToListAsync();
+
+                return cases;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching cases for client ID: {ClientId}", clientId);
+                return StatusCode(500, new { message = "An error occurred while fetching client cases" });
+            }
+        }
+
         // GET: api/Cases/ByLawyer/{lawyerId}
         [HttpGet("ByLawyer/{lawyerId}")]
         public async Task<ActionResult<IEnumerable<Case>>> GetCasesByLawyer(int lawyerId)

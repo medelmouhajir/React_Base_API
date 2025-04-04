@@ -66,7 +66,7 @@ namespace React_Lawyer.Server.Controllers
 
         // GET: api/Invoices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Invoice>> GetInvoice(int id)
+        public async Task<ActionResult<object>> GetInvoice(int id)
         {
             var invoice = await _context.Invoices
                 .Include(i => i.Client)
@@ -74,6 +74,84 @@ namespace React_Lawyer.Server.Controllers
                 .Include(i => i.Items)
                 .Include(i => i.Payments)
                 .Include(i => i.TimeEntries)
+                .Select(x => new
+                {
+                    InvoiceId = x.InvoiceId,
+                    Amount = x.Amount,
+                    PaymentReference = x.PaymentReference,
+                    PaymentMethod = x.PaymentMethod,
+                    CaseId = x.CaseId,
+                    ClientId = x.ClientId,
+                    DueDate = x.DueDate,
+                    InvoiceNumber = x.InvoiceNumber,
+                    IssueDate = x.IssueDate,
+                    LawFirmId = x.LawFirmId,
+                    Notes = x.Notes,
+                    PaidAmount = x.PaidAmount,
+                    PaidDate = x.PaidDate,
+                    Status = x.Status.ToString(),
+                    TaxAmount = x.TaxAmount,
+                    Client = new Shared_Models.Clients.Client
+                    {
+                        ClientId = x.ClientId,
+                        FirstName = x.Client.FirstName,
+                        LastName = x.Client.LastName,
+                        Email = x.Client.Email,
+                        PhoneNumber = x.Client.PhoneNumber,
+                    },
+                    Case = x.CaseId == null ? null : new Shared_Models.Cases.Case
+                    {
+                        CaseId = x.Case.CaseId,
+                        CaseNumber = x.Case.CaseNumber,
+                        Title = x.Case.Title,
+                    },
+                    Items = x.Items.Select( z=> new
+                    {
+                        InvoiceItemId = z.InvoiceItemId,
+                        InvoiceId = z.InvoiceId,
+                        Description = z.Description,
+                        ItemCode = z.ItemCode,
+                        ItemType = z.ItemType.ToString(),
+                        Quantity = z.Quantity,
+                        TaxRate = z.TaxRate,
+                        TimeEntryId = z.TimeEntryId,
+                        UnitPrice = z.UnitPrice,
+                        TimeEntry = z.TimeEntry == null ? null : new
+                        {
+                            TimeEntryId = z.TimeEntry.TimeEntryId,
+                            CaseId = z.TimeEntry.CaseId,
+                            CreatedAt = z.TimeEntry.CreatedAt,
+                            Date = z.TimeEntry.Date,
+                            Hours = z.TimeEntry.Hours,
+                            Category = z.TimeEntry.Category.ToString(),
+                            HourlyRate = z.TimeEntry.HourlyRate,
+                            IsBillable = z.TimeEntry.IsBillable,
+                            Description = z.Description,
+                            LastModified = z.TimeEntry.LastModified,
+                            Notes = z.TimeEntry.Notes,
+                            
+                        }
+                    }).ToList(),
+                    Payments = x.Payments.Select( p => new
+                    {
+                        InvoiceId = p.InvoiceId,
+                        CreatedAt = p.CreatedAt,
+                        Amount = p.Amount,
+                        ClientId = p.ClientId,
+                        Method = p.Method.ToString(),
+                        Notes = p.Notes,
+                        ReceivedBy = new
+                        {
+                            FirstName = p.ReceivedBy.FirstName,
+                            LastName = p.ReceivedBy.LastName,
+                            Email = p.ReceivedBy.Email,
+                            PhoneNumber = p.ReceivedBy.PhoneNumber,
+                        },
+                        PaymentDate = p.PaymentDate,
+                        ReferenceNumber = p.ReferenceNumber,
+                        Status = p.Status.ToString(),
+                    } )
+                })
                 .FirstOrDefaultAsync(i => i.InvoiceId == id);
 
             if (invoice == null)
@@ -179,7 +257,7 @@ namespace React_Lawyer.Server.Controllers
 
         // POST: api/Invoices
         [HttpPost]
-        public async Task<ActionResult<Invoice>> CreateInvoice(InvoiceCreationModel model)
+        public async Task<ActionResult<object>> CreateInvoice(InvoiceCreationModel model)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -290,7 +368,7 @@ namespace React_Lawyer.Server.Controllers
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return CreatedAtAction(nameof(GetInvoice), new { id = invoice.InvoiceId }, invoice);
+                return RedirectToAction(nameof(GetInvoice), new { id = invoice.InvoiceId });
             }
             catch (Exception ex)
             {
@@ -387,7 +465,7 @@ namespace React_Lawyer.Server.Controllers
                         LawFirmId = invoice.LawFirmId,
                         PaymentDate = DateTime.UtcNow,
                         Amount = invoice.PaidAmount,
-                        Method = model.PaymentMethodEnum,
+                        Method = model.PaymentMethodEnum.Value,
                         ReferenceNumber = model.PaymentReference,
                         Notes = model.Notes,
                         ReceivedById = model.UserId,
@@ -417,7 +495,7 @@ namespace React_Lawyer.Server.Controllers
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return NoContent();
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -625,7 +703,7 @@ namespace React_Lawyer.Server.Controllers
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return CreatedAtAction("GetInvoice", new { id = invoice.InvoiceId }, payment);
+                return RedirectToAction("GetInvoice", new { id = invoice.InvoiceId });
             }
             catch (Exception ex)
             {
@@ -725,10 +803,10 @@ namespace React_Lawyer.Server.Controllers
     {
         public InvoiceStatus NewStatus { get; set; }
         public int UserId { get; set; }
-        public string PaymentMethod { get; set; }
-        public PaymentMethod PaymentMethodEnum { get; set; }
-        public string PaymentReference { get; set; }
-        public string Notes { get; set; }
+        public string? PaymentMethod { get; set; }
+        public PaymentMethod? PaymentMethodEnum { get; set; }
+        public string? PaymentReference { get; set; }
+        public string? Notes { get; set; }
     }
 
     public class PaymentCreationModel

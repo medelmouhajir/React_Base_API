@@ -200,9 +200,44 @@ class InvoiceService {
             case "Expense": return 1;  // Expense
             case "Fee": return 2;  // Fee
             case "Discount": return 3;  // Discount
-            case "Tax": return 5;  // Tax
+            case "Tax": return 4;  // Tax
             case "Other": return 10; // Other
             default: return null; // Invalid value
+        }
+    }
+
+    stringToInvoiceStatus(str) {
+        switch (str) {
+            case "Draft": return 0;  // Service
+            case "Issued": return 1;  // Expense
+            case "Sent": return 2;  // Fee
+            case "Overdue": return 3;  // Discount
+            case "PartiallyPaid": return 4;
+            case "Paid": return 5;
+            case "Cancelled": return 6;
+            case "Disputed": return 7; // Other
+            default: return null; // Invalid value
+        }
+    }
+
+    stringToPaymentMethod(str) {
+        switch (str) {
+            case "Cash": return 0;  // Service
+            case "Check": return 1;  // Expense
+            case "CreditCard": return 2;  // Fee
+            case "BankTransfer": return 3;  // Discount
+            case "ElectronicPayment": return 4;
+            case "Other": return 10;
+            default: return null; // Invalid value
+        }
+    }
+
+    stringToPaymentStatus(str) {
+        switch (str) {
+            case "Pending": return 0;  // Service
+            case "Completed": return 1;  // Expense
+            case "Failed": return 2;  // Fee
+            case "Refunded": return 3;
         }
     }
 
@@ -245,6 +280,13 @@ class InvoiceService {
      */
     async updateInvoiceStatus(id, newStatus, additionalData = {}) {
         try {
+            var dataToSend = JSON.stringify({
+                newStatus: this.stringToInvoiceStatus(newStatus),
+                userId: JSON.parse(localStorage.getItem('user'))?.id,
+                ...additionalData
+            });
+
+            console.log(dataToSend);
             const response = await fetch(`${API_URL}/api/invoices/${id}/status`, {
                 method: 'PATCH',
                 headers: {
@@ -252,7 +294,7 @@ class InvoiceService {
                     ...this.getAuthHeader()
                 },
                 body: JSON.stringify({
-                    newStatus,
+                    newStatus : this.stringToInvoiceStatus(newStatus),
                     userId: JSON.parse(localStorage.getItem('user'))?.id,
                     ...additionalData
                 })
@@ -355,20 +397,25 @@ class InvoiceService {
      */
     async addPayment(invoiceId, paymentData) {
         try {
+            const formattedData = {
+                ...paymentData,
+                method: this.stringToPaymentMethod(paymentData.method),
+                paymentDate: new Date(paymentData.paymentDate || new Date()).toISOString(),
+                invoiceId
+            };
+
             const response = await fetch(`${API_URL}/api/invoices/${invoiceId}/payments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     ...this.getAuthHeader()
                 },
-                body: JSON.stringify({
-                    ...paymentData,
-                    invoiceId
-                })
+                body: JSON.stringify(formattedData)
             });
 
             if (!response.ok) {
-                throw new Error('Failed to add payment');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to add payment');
             }
 
             return await response.json();

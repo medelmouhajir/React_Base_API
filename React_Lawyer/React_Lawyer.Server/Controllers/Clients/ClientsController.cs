@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using React_Lawyer.Server.Data;
 using Shared_Models.Clients;
+using Shared_Models.Invoices;
 using System.ComponentModel.DataAnnotations;
 
 namespace React_Lawyer.Server.Controllers.Clients
@@ -50,7 +51,9 @@ namespace React_Lawyer.Server.Controllers.Clients
         public async Task<ActionResult<object>> GetClient(int id)
         {
             var client = await _context.Clients
-                .Include(c => c.Cases)
+                .Include(c => c.Case_Clients)
+                .ThenInclude(x=> x.Case)
+                .ThenInclude(x=> x.AssignedLawyer)
                 .Include(c => c.Appointments)
                 .ThenInclude(x=> x.ScheduledBy)
                 .Include(c => c.Invoices)
@@ -70,22 +73,23 @@ namespace React_Lawyer.Server.Controllers.Clients
                     Notes = x.Notes,
                     CreatedAt = x.CreatedAt,
                     IsActive = x.IsActive,
-                    Cases = x.Cases.Select(c=> new Shared_Models.Cases.Case
+                    Cases = x.Case_Clients.Select(c=> new
                     {
                         CaseId = c.CaseId,
-                        CaseNumber = c.CaseNumber,
-                        ActualSettlement = c.ActualSettlement,
+                        CaseNumber = c.Case.CaseNumber,
+                        ActualSettlement = c.Case.ActualSettlement,
                         AssignedLawyer = new Shared_Models.Users.Lawyer
                         {
-                            LawyerId = c.AssignedLawyer.LawyerId,
+                            LawyerId = c.Case.AssignedLawyer.LawyerId,
                             User = new Shared_Models.Users.User
                             {
-                                FirstName = c.AssignedLawyer.User.FirstName,
-                                LastName = c.AssignedLawyer.User.LastName,
-                                Email = c.AssignedLawyer.User.Email,
-                                PhoneNumber = c.AssignedLawyer.User.PhoneNumber
+                                FirstName = c.Case.AssignedLawyer.User.FirstName,
+                                LastName = c.Case.AssignedLawyer.User.LastName,
+                                Email = c.Case.AssignedLawyer.User.Email,
+                                PhoneNumber = c.Case.AssignedLawyer.User.PhoneNumber
                             }
                         },
+                        Status = c.Case.Status.ToString()
                     }).ToList(),
                     Appointments = x.Appointments
                                         .Select(x=> new
@@ -105,7 +109,26 @@ namespace React_Lawyer.Server.Controllers.Clients
                                                 PhoneNumber = x.ScheduledBy.PhoneNumber
                                             }
                                         }).ToList(),
-                    Invoices = x.Invoices.ToList()
+                    Invoices = x.Invoices
+                    .Select( z=> new
+                    {
+                        InvoiceId = z.InvoiceId,
+                        Status = z.Status.ToString(),
+                        Amount = z.Amount,
+                        CaseId = z.CaseId,
+                        ClientId = z.ClientId,
+                        DueDate = z.DueDate,
+                        InvoiceNumber = z.InvoiceNumber,
+                        IssueDate = z.IssueDate,
+                        Notes = z.Notes,
+                        PaidAmount = z.PaidAmount,
+                        PaidDate = z.PaidDate,
+                        PaymentMethod = z.PaymentMethod == null ? ""  : z.PaymentMethod.ToString(),
+                        PaymentReference = z.PaymentReference,
+                        TaxAmount = z.TaxAmount,
+                        z.TotalAmount
+                    })
+                    .ToList()
                 })
                 .FirstOrDefaultAsync(c => c.ClientId == id);
 

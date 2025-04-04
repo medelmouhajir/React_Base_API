@@ -40,7 +40,9 @@ import NewAppointmentPage from '../pages/appointments/NewAppointmentPage';
 
 // Billing pages
 import InvoicesListPage from '../pages/billing/InvoicesListPage';
-//import InvoiceDetailsPage from '../pages/billing/InvoiceDetailsPage';
+import InvoiceDetailsPage from '../pages/billing/InvoiceDetailsPage';
+import InvoicePrintPage from '../pages/billing/InvoicePrintPage';
+import InvoiceDownloadPdfPage from '../pages/billing/InvoiceDownloadPdfPage';
 import NewInvoicePage from '../pages/billing/NewInvoicePage';
 //import PaymentsPage from '../pages/billing/PaymentsPage';
 
@@ -100,7 +102,9 @@ const AppRoutes = () => {
                     <Route path="/billing" element={<InvoicesListPage />} />
                     <Route path="/billing/invoices" element={<InvoicesListPage />} />
                     <Route path="/billing/invoices/new" element={<NewInvoicePage />} />
-                    {/*<route path="/billing/invoices/:id" element={<invoicedetailspage />} />*/}
+                    <Route path="/billing/invoices/:id" element={<InvoiceDetailsPage />} />
+                    <Route path="/billing/invoices/:id/print" element={<InvoicePrintPage />} />
+                    <Route path="/billing/invoices/:id/download" element={<InvoiceDownloadPdfPage />} />
                     {/*<route path="/billing/payments" element={<paymentspage />} />*/}
                 </Route>
 
