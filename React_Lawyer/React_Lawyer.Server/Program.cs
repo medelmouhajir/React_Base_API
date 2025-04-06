@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using React_Lawyer.Server.Data;
+using React_Lawyer.Server.Services;
 using System.Text;
 
 namespace React_Lawyer.Server
@@ -26,6 +27,18 @@ namespace React_Lawyer.Server
             // Configure CORS
             ConfigureCors(builder);
 
+
+            builder.Services.AddHttpClient<DocumentGenerationClient>(client =>
+            {
+                // Configure base URL from appsettings.json
+                var docGenUrl = builder.Configuration["Services:DocumentGenerator:Url"] ?? "http://localhost:5268";
+                client.BaseAddress = new Uri(docGenUrl);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            builder.Services.AddScoped<DocumentGenerationClient>();
+
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -47,6 +60,7 @@ namespace React_Lawyer.Server
                     logger.LogError(ex, "An error occurred while migrating the database.");
                 }
             }
+
 
             app.UseDefaultFiles();
             app.UseStaticFiles();

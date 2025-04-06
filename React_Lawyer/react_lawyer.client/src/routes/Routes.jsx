@@ -35,7 +35,7 @@ import NewClientPage from '../pages/clients/NewClientPage';
 
 //// Appointments pages
 import AppointmentsListPage from '../pages/appointments/AppointmentsListPage';
-//import AppointmentDetailsPage from '../pages/appointments/AppointmentDetailsPage';
+import AppointmentDetailsPage from '../pages/appointments/AppointmentDetailsPage';
 import NewAppointmentPage from '../pages/appointments/NewAppointmentPage';
 
 // Billing pages
@@ -95,7 +95,7 @@ const AppRoutes = () => {
                 {/* Appointments */}
                 <Route path="/appointments" element={<AppointmentsListPage />} />
                 <Route path="/appointments/new" element={<NewAppointmentPage />} />
-                {/*<Route path="/appointments/:id" element={<AppointmentDetailsPage />} />*/}
+                <Route path="/appointments/:id" element={<AppointmentDetailsPage />} />
 
                 {/* Billing - Not for Clients */}
                 <Route element={<ProtectedRoute requiredrole={["Lawyer", "Admin", "Secretary"]} />}>

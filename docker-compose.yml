@@ -46,6 +46,19 @@ services:
     networks:
       - react-lawyer-network
 
+  document_generator:
+    build:
+      context: .
+      dockerfile: React_Lawyer/React_Lawyer.DocumentGenerator/Dockerfile
+    container_name: react-lawyer-document-generator
+    ports:
+      - "5268:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Gemini__ApiKey=${GEMINI_API_KEY}
+    networks:
+      - react-lawyer-network
+
   # Database service (PostgreSQL as an example)
   db:
     image: postgres:15

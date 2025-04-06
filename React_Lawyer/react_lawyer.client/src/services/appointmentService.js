@@ -299,17 +299,31 @@ class AppointmentService {
                     ...this.getAuthHeader()
                 },
                 body: JSON.stringify({
-                    newStatus
+                    newStatus : this.stringToAppointmentStatus(newStatus)
                 })
             });
 
-            return await this.handleResponse(response, url);
+            if (!response.ok) {
+                throw new Error('Failed to update invoice status');
+            }
+
+            return true;
         } catch (error) {
             console.error(`Error in updateAppointmentStatus(${id}, "${newStatus}"):`, error);
             throw error;
         }
     }
 
+    stringToAppointmentStatus(str) {
+        switch (str) {
+            case "Scheduled": return 1;  // Service
+            case "Confirmed": return 2;  // Expense
+            case "Completed": return 3;  // Fee
+            case "Cancelled": return 4;
+            case "Rescheduled": return 5;
+            case "NoShow": return 6;
+        }
+    }
     /**
      * Delete an appointment
      */

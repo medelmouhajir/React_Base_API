@@ -113,7 +113,7 @@ namespace React_Lawyer.Server.Controllers
                 .Include(a => a.Client)
                 .Include(a => a.Case)
                 .Include(a => a.ScheduledBy)
-                .Select(x => new Appointment
+                .Select(x => new
                 {
                     AppointmentId = x.AppointmentId,
                     LawFirmId = x.LawFirmId,
@@ -131,14 +131,14 @@ namespace React_Lawyer.Server.Controllers
                         }
                     },
                     ClientId = x.ClientId,
-                    Client = new Client
+                    Client = new
                     {
                         ClientId = x.Client.ClientId,
                         FirstName = x.Client.FirstName,
                         LastName = x.Client.LastName,
                         Email = x.Client.Email,
                         PhoneNumber = x.Client.PhoneNumber,
-                        Type = x.Client.Type
+                        Type = x.Client.Type.ToString()
                     },
                     CaseId = x.CaseId,
                     ScheduledById = x.ScheduledById,
@@ -156,14 +156,22 @@ namespace React_Lawyer.Server.Controllers
                     Location = x.Location,
                     IsVirtual = x.IsVirtual,
                     MeetingLink = x.MeetingLink,
-                    Type = x.Type,
+                    Type = x.Type.ToString(),
                     Notes = x.Notes,
-                    Status = x.Status,
+                    Status = x.Status.ToString(),
                     IsBillable = x.IsBillable,
                     ReminderSent = x.ReminderSent,
                     ReminderSentAt = x.ReminderSentAt,
                     BillableAmount = x.BillableAmount,
-
+                    Case = new
+                    {
+                        CaseId = x.Case.CaseId,
+                        Title = x.Case.Title,
+                        Description = x.Case.Description,
+                        CaseNumber = x.Case.CaseNumber,
+                        CourtCaseNumber = x.Case.CourtCaseNumber,
+                        Status = x.Case.Status.ToString()
+                    },
                 })
                 .FirstOrDefaultAsync(a => a.AppointmentId == id);
 
@@ -634,7 +642,7 @@ namespace React_Lawyer.Server.Controllers
             _context.Entry(appointment).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         // DELETE: api/Appointments/5

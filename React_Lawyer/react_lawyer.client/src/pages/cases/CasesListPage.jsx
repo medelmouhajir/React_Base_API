@@ -18,14 +18,13 @@ import {
     TablePagination,
     Chip,
     InputAdornment,
-    MenuItem,
     FormControl,
     InputLabel,
     Select,
+    MenuItem,
     Grid,
     Tooltip,
     CircularProgress,
-    Snackbar,
     Alert,
     Dialog,
     DialogTitle,
@@ -38,8 +37,7 @@ import {
     Visibility as ViewIcon,
     Edit as EditIcon,
     Delete as DeleteIcon,
-    Refresh as RefreshIcon,
-    FilterList as FilterIcon
+    Refresh as RefreshIcon
 } from '@mui/icons-material';
 
 // Components and Services
@@ -47,52 +45,6 @@ import PageHeader from '../../components/common/PageHeader';
 import caseService from '../../services/caseService';
 import { useAuth } from '../../features/auth/AuthContext';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
-
-// Case status color mapping
-const STATUS_COLORS = {
-    0: 'info', // Intake
-    1: 'success', // Active
-    2: 'warning', // Pending
-    3: 'default', // Closed
-    4: 'default' // Archived
-};
-
-// Get status label from numeric value
-const getStatusLabel = (statusValue) => {
-    switch (statusValue) {
-        case 0: return 'Intake';
-        case 1: return 'Active';
-        case 2: return 'Pending';
-        case 3: return 'Closed';
-        case 4: return 'Archived';
-        default: return 'Unknown';
-    }
-};
-
-// Case types
-const CASE_TYPES = [
-    { value: 'All', label: 'All Types' },
-    { value: 'Civil', label: 'Civil' },
-    { value: 'Criminal', label: 'Criminal' },
-    { value: 'Family', label: 'Family' },
-    { value: 'Immigration', label: 'Immigration' },
-    { value: 'Corporate', label: 'Corporate' },
-    { value: 'RealEstate', label: 'Real Estate' },
-    { value: 'Bankruptcy', label: 'Bankruptcy' },
-    { value: 'IntellectualProperty', label: 'Intellectual Property' },
-    { value: 'Tax', label: 'Tax' },
-    { value: 'Other', label: 'Other' }
-];
-
-// Case statuses
-const CASE_STATUSES = [
-    { value: 'All', label: 'All Statuses' },
-    { value: 'Intake', label: 'Intake' },
-    { value: 'Active', label: 'Active' },
-    { value: 'Pending', label: 'Pending' },
-    { value: 'Closed', label: 'Closed' },
-    { value: 'Archived', label: 'Archived' }
-];
 
 const CasesListPage = () => {
     const navigate = useNavigate();
@@ -113,19 +65,70 @@ const CasesListPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [caseType, setCaseType] = useState('All');
     const [caseStatus, setCaseStatus] = useState('All');
-    const [showFilters, setShowFilters] = useState(false);
 
     // Delete dialog
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [caseToDelete, setCaseToDelete] = useState(null);
     const [deleteLoading, setDeleteLoading] = useState(false);
 
+    // Case status color mapping
+    const STATUS_COLORS = {
+        0: 'info',      // Intake
+        1: 'success',   // Active
+        2: 'warning',   // Pending
+        3: 'default',   // Closed
+        4: 'default'    // Archived
+    };
+
+    // Case types
+    const CASE_TYPES = [
+        { value: 'All', label: t('common.all') },
+        { value: 'Civil', label: t('cases.types.civil') },
+        { value: 'Criminal', label: t('cases.types.criminal') },
+        { value: 'Family', label: t('cases.types.family') },
+        { value: 'Immigration', label: t('cases.types.immigration') },
+        { value: 'Corporate', label: t('cases.types.corporate') },
+        { value: 'RealEstate', label: t('cases.types.realEstate') },
+        { value: 'Bankruptcy', label: t('cases.types.bankruptcy') },
+        { value: 'IntellectualProperty', label: t('cases.types.intellectualProperty') },
+        { value: 'Tax', label: t('cases.types.tax') },
+        { value: 'Other', label: t('cases.types.other') }
+    ];
+
+    // Case statuses
+    const CASE_STATUSES = [
+        { value: 'All', label: t('common.all') },
+        { value: 'Intake', label: t('cases.status.intake') },
+        { value: 'Active', label: t('cases.status.active') },
+        { value: 'Pending', label: t('cases.status.pending') },
+        { value: 'Closed', label: t('cases.status.closed') },
+        { value: 'Archived', label: t('cases.status.archived') }
+    ];
+
+    // Get status label from numeric value
+    const getStatusLabel = (statusValue) => {
+        switch (statusValue) {
+            case 0: return t('cases.status.intake');
+            case 1: return t('cases.status.active');
+            case 2: return t('cases.status.pending');
+            case 3: return t('cases.status.closed');
+            case 4: return t('cases.status.archived');
+            default: return t('common.unknown');
+        }
+    };
+
+    // Get case type label
+    const getCaseTypeLabel = (typeValue) => {
+        const typeItem = CASE_TYPES.find(type => type.value === typeValue);
+        return typeItem ? typeItem.label : t('common.unknown');
+    };
+
     // Fetch cases
     useEffect(() => {
         const fetchCases = async () => {
             if (!isOnline) {
                 setLoading(false);
-                setError('You are currently offline. Some data may not be available.');
+                setError(t('common.offlineMode'));
                 return;
             }
 
@@ -148,7 +151,7 @@ const CasesListPage = () => {
 
                 // Filter by case type
                 if (caseType !== 'All') {
-                    // Map string type to numeric value before filtering
+                    // Find the index of the type in CASE_TYPES, subtracting 1 to account for "All"
                     const typeEnumValue = CASE_TYPES.findIndex(t => t.value === caseType) - 1;
                     if (typeEnumValue >= 0) {
                         filteredData = filteredData.filter(c => c.type === typeEnumValue);
@@ -157,7 +160,7 @@ const CasesListPage = () => {
 
                 // Filter by case status
                 if (caseStatus !== 'All') {
-                    // Map string status to numeric value before filtering
+                    // Find the index of the status in CASE_STATUSES, subtracting 1 to account for "All"
                     const statusEnumValue = CASE_STATUSES.findIndex(s => s.value === caseStatus) - 1;
                     if (statusEnumValue >= 0) {
                         filteredData = filteredData.filter(c => c.status === statusEnumValue);
@@ -171,14 +174,14 @@ const CasesListPage = () => {
                 setCases(filteredData);
             } catch (err) {
                 console.error('Error fetching cases:', err);
-                setError('Failed to load cases. ' + (err.message || ''));
+                setError(t('cases.fetchError'));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchCases();
-    }, [user, searchTerm, caseType, caseStatus, refreshTrigger, isOnline]);
+    }, [user, searchTerm, caseType, caseStatus, refreshTrigger, isOnline, t]);
 
     // Handle page change
     const handleChangePage = (event, newPage) => {
@@ -217,7 +220,7 @@ const CasesListPage = () => {
             handleCloseDeleteDialog();
         } catch (err) {
             console.error('Error deleting case:', err);
-            setError('Error deleting case: ' + (err.message || ''));
+            setError(t('cases.deleteError'));
         } finally {
             setDeleteLoading(false);
         }
@@ -231,11 +234,17 @@ const CasesListPage = () => {
         setError('');
     };
 
+    // Format date
+    const formatDate = (dateString) => {
+        if (!dateString) return t('common.notAvailable');
+        return new Date(dateString).toLocaleDateString();
+    };
+
     return (
-        <Container maxWidth="lg">
+        <Container width="lg" maxWidth="lg">
             <PageHeader
                 title={t('cases.cases')}
-                subtitle={t('cases.casesSubtitle', { count: totalCases })}
+                subtitle={t('cases.casesSubtitle')}
                 breadcrumbs={[
                     { text: t('app.dashboard'), link: '/' },
                     { text: t('cases.cases') }
@@ -397,7 +406,7 @@ const CasesListPage = () => {
                                             </Typography>
                                         </TableCell>
                                         <TableCell>
-                                            {CASE_TYPES[caseItem.type + 1]?.label || 'Unknown'}
+                                            {getCaseTypeLabel(caseItem.type)}
                                         </TableCell>
                                         <TableCell>
                                             <Chip
@@ -407,7 +416,7 @@ const CasesListPage = () => {
                                             />
                                         </TableCell>
                                         <TableCell>
-                                            {new Date(caseItem.openDate).toLocaleDateString()}
+                                            {formatDate(caseItem.openDate)}
                                         </TableCell>
                                         <TableCell>
                                             {caseItem.assignedLawyer && caseItem.assignedLawyer.user

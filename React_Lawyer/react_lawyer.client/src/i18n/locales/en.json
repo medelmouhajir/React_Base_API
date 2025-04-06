@@ -102,6 +102,7 @@
     "accountSettings": "Account Settings"
   },
 
+
   "cases": {
     "cases": "Cases",
     "case": "Case",
@@ -109,6 +110,7 @@
     "newCase": "New Case",
     "newCaseSubtitle": "Create a new case",
     "editCase": "Edit Case",
+    "editCaseSubtitle": "Update case information",
     "caseNumber": "Case Number",
     "caseNumberPlaceholder": "Auto-generated if left empty",
     "caseNumberHelp": "Leave empty for auto-generated number",
@@ -125,6 +127,7 @@
     "opposingParty": "Opposing Party",
     "opposingCounsel": "Opposing Counsel",
     "nextHearing": "Next Hearing",
+    "nextHearingDate": "Next Hearing Date",
     "lawyer": "Lawyer",
     "assignedLawyer": "Assigned Lawyer",
     "assignedTo": "Assigned To",
@@ -156,19 +159,7 @@
     "statusUpdateError": "Failed to update case status",
     "basicInfo": "Basic Information",
     "courtInfo": "Court Information",
-
-    "events": {
-      "events": "Events",
-      "title": "Event Title",
-      "date": "Event Date",
-      "description": "Event Description",
-      "addEvent": "Add Event",
-      "noEventsRecorded": "No events recorded for this case",
-      "titleRequired": "Event title is required",
-      "descriptionPlaceholder": "Describe the event details",
-      "addSuccess": "Event added successfully",
-      "addError": "Failed to add event"
-    },
+    "searchPlaceholder": "Search for cases",
 
     "types": {
       "civil": "Civil",
@@ -188,12 +179,100 @@
     "status.pending": "Pending",
     "status.closed": "Closed",
     "status.archived": "Archived",
-    "searchPlaceholder": "Search for cases",
+
+    "events": {
+      "events": "Events",
+      "event": "Event",
+      "title": "Event Title",
+      "date": "Event Date",
+      "description": "Event Description",
+      "addEvent": "Add Event",
+      "noEventsRecorded": "No events recorded for this case",
+      "eventHistory": "Event History",
+      "titleRequired": "Event title is required",
+      "descriptionPlaceholder": "Describe the event details",
+      "addSuccess": "Event added successfully",
+      "addError": "Failed to add event",
+      "important": "Important",
+      "location": "Location",
+      "outcome": "Outcome",
+      "type": "Event Type",
+      "createdBy": "Created By",
+      "system": "System"
+    },
+
+    "documents": {
+      "documents": "Documents",
+      "document": "Document",
+      "noDocuments": "No documents uploaded for this case",
+      "addDocument": "Add Document",
+      "upload": "Upload Document",
+      "download": "Download Document",
+      "preview": "Preview Document",
+      "delete": "Delete Document",
+      "documentDate": "Document Date",
+      "documentType": "Document Type"
+    },
+
+    "billing": {
+      "invoices": "Invoices",
+      "timeEntries": "Time Entries",
+      "createInvoice": "Create Invoice",
+      "noInvoices": "No invoices for this case",
+      "noTimeEntries": "No time entries recorded for this case",
+      "addTimeEntry": "Add Time Entry"
+    },
+
+    "caseDetails": {
+      "summary": "Case Summary",
+      "timeline": "Case Timeline",
+      "clientsTab": "Clients",
+      "eventsTab": "Events",
+      "documentsTab": "Documents",
+      "billingTab": "Billing",
+      "notesTab": "Notes",
+      "caseSubtitle": "Case: {caseNumber}",
+      "overviewCard": "Case Overview"
+    },
 
     "validation": {
       "titleRequired": "Case title is required",
       "descriptionRequired": "Case description is required",
-      "clientRequired": "At least one client is required"
+      "clientRequired": "At least one client is required",
+      "typeRequired": "Case type is required"
+    },
+
+    "actions": {
+      "view": "View Case",
+      "edit": "Edit Case",
+      "delete": "Delete Case",
+      "close": "Close Case",
+      "archive": "Archive Case",
+      "reopen": "Reopen Case",
+      "addClient": "Add Client",
+      "removeClient": "Remove Client",
+      "assignLawyer": "Assign Lawyer",
+      "reassign": "Reassign Case",
+      "addEvent": "Add Event",
+      "addDocument": "Add Document",
+      "createInvoice": "Create Invoice",
+      "backToList": "Back to Cases List"
+    },
+
+    "filters": {
+      "status": "Filter by Status",
+      "type": "Filter by Type",
+      "lawyer": "Filter by Lawyer",
+      "date": "Filter by Date",
+      "client": "Filter by Client",
+      "showFilters": "Show Filters",
+      "hideFilters": "Hide Filters",
+      "clearFilters": "Clear Filters",
+      "applyFilters": "Apply Filters",
+      "sortBy": "Sort By",
+      "sortOrder": "Sort Order",
+      "ascending": "Ascending",
+      "descending": "Descending"
     }
   },
 
@@ -297,23 +376,47 @@
     "dateAndTime": "Date and Time",
     "basicInfo": "Basic Information",
     "type": "Type",
+    "details": "Details",
+    "viewCase": "View Case",
+    "viewClient": "View Client",
+    "backToList": "Back to Appointments",
+    "notFound": "Appointment not found",
+    "created": "Created",
+    "scheduledBy": "Scheduled by",
+    "id": "ID",
+    "joinMeeting": "Join Meeting",
+    "joinViaLink": "Join via link",
+    "currentStatus": "Current status",
+    "selectNewStatus": "Select new status",
+    "changeStatus": "Change Status",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "search": "Search appointments",
+    "allAppointments": "All Appointments",
+    "createdByMe": "Created by me",
+    "assignedToMe": "Assigned to me",
+    "conflictWarning": "There may be a scheduling conflict",
+    "timeConflictDetails": "This lawyer already has another appointment at the selected time",
+    "noCases": "No cases available",
+    "noClientsAvailable": "No clients available",
+    "printAppointment": "Print Appointment",
 
     "types": {
-      "consultation": "Consultation",
-      "clientMeeting": "Client Meeting",
-      "courtHearing": "Court Hearing",
-      "deposition": "Deposition",
-      "mediation": "Mediation",
-      "internalMeeting": "Internal Meeting",
-      "phoneCall": "Phone Call",
-      "other": "Other"
+      "Consultation": "Consultation",
+      "ClientMeeting": "Client Meeting",
+      "CourtHearing": "Court Hearing",
+      "Deposition": "Deposition",
+      "Mediation": "Mediation",
+      "InternalMeeting": "Internal Meeting",
+      "PhoneCall": "Phone Call",
+      "Other": "Other"
     },
-    "status.scheduled": "Scheduled",
-    "status.confirmed": "Confirmed",
-    "status.inProgress": "In Progress",
-    "status.completed": "Completed",
-    "status.cancelled": "Cancelled",
-    "status.rescheduled": "Rescheduled",
+    "status.Scheduled": "Scheduled",
+    "status.Confirmed": "Confirmed",
+    "status.InProgress": "In Progress",
+    "status.Completed": "Completed",
+    "status.Cancelled": "Cancelled",
+    "status.Rescheduled": "Rescheduled",
 
     "validation": {
       "titleRequired": "Title is required",
