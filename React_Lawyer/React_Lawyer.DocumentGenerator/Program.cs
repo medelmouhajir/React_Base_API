@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using React_Lawyer.DocumentGenerator.Data.Context;
+
 namespace React_Lawyer.DocumentGenerator
 {
     public class Program
@@ -10,6 +13,11 @@ namespace React_Lawyer.DocumentGenerator
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

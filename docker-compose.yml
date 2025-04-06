@@ -55,7 +55,7 @@ services:
       - "5268:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - Gemini__ApiKey=${GEMINI_API_KEY}
+      - Gemini__ApiKey=AIzaSyDfh3IQfQtg3FuRMvX1o3npm7yJzf9ABv4
     networks:
       - react-lawyer-network
 
