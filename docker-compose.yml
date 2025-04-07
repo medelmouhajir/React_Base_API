@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Backend .NET Core API service
   react_lawyer.server:
@@ -56,6 +54,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - Gemini__ApiKey=AIzaSyDfh3IQfQtg3FuRMvX1o3npm7yJzf9ABv4
+      - MainApi__Url=http://react_lawyer.server:8080 
     networks:
       - react-lawyer-network
 

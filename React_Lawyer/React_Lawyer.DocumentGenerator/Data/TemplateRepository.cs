@@ -34,7 +34,6 @@ namespace React_Lawyer.DocumentGenerator.Data
         public async Task<Template> GetByIdAsync(string id)
         {
             return await _context.Templates
-                .Include(t => t.Variables)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
 
@@ -44,7 +43,6 @@ namespace React_Lawyer.DocumentGenerator.Data
         public async Task<IEnumerable<Template>> GetAllAsync(string category = null)
         {
             var query = _context.Templates
-                .Include(t => t.Variables)
                 .Where(t => t.IsActive);
 
             if (!string.IsNullOrEmpty(category))
@@ -61,7 +59,6 @@ namespace React_Lawyer.DocumentGenerator.Data
         public async Task<Template> SaveAsync(Template template)
         {
             var existing = await _context.Templates
-                .Include(t => t.Variables)
                 .FirstOrDefaultAsync(t => t.Id == template.Id);
 
             if (existing == null)
@@ -74,15 +71,9 @@ namespace React_Lawyer.DocumentGenerator.Data
                 // Update existing template
                 _context.Entry(existing).CurrentValues.SetValues(template);
 
-                // Handle variables collection
-                _context.TemplateVariables.RemoveRange(existing.Variables);
-                foreach (var variable in template.Variables)
-                {
-                    existing.Variables.Add(variable);
-                }
             }
 
-            template.UpdatedAt = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
             return template;
         }
@@ -99,7 +90,7 @@ namespace React_Lawyer.DocumentGenerator.Data
             }
 
             template.IsActive = false;
-            template.UpdatedAt = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -115,7 +106,6 @@ namespace React_Lawyer.DocumentGenerator.Data
             }
 
             return await _context.Templates
-                .Include(t => t.Variables)
                 .Where(t => t.IsActive &&
                            (t.Name.Contains(keyword) ||
                             t.Description.Contains(keyword) ||
@@ -132,7 +122,6 @@ namespace React_Lawyer.DocumentGenerator.Data
             // This assumes templates have a property that links them to firms
             // You may need to adjust this based on your actual data model
             return await _context.Templates
-                .Include(t => t.Variables)
                 .Where(t => t.IsActive /* && t.FirmId == firmId */)
                 .OrderBy(t => t.Name)
                 .ToListAsync();
@@ -146,9 +135,7 @@ namespace React_Lawyer.DocumentGenerator.Data
             // This assumes templates have some kind of versioning system
             // Adjust based on your actual versioning implementation
             return await _context.Templates
-                .Include(t => t.Variables)
                 .Where(t => t.Id == templateId && t.IsActive)
-                .OrderByDescending(t => t.Version)
                 .FirstOrDefaultAsync();
         }
 
@@ -172,35 +159,14 @@ namespace React_Lawyer.DocumentGenerator.Data
                 Name = latestVersion.Name,
                 Description = latestVersion.Description,
                 Category = latestVersion.Category,
-                Content = template.Content, // Use the new content
-                Version = latestVersion.Version + 1,
+                Content = template.Content,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                CreatedBy = template.CreatedBy,
                 IsFineTuned = latestVersion.IsFineTuned,
                 GenerationInstructions = template.GenerationInstructions,
                 Language = latestVersion.Language,
                 Jurisdiction = latestVersion.Jurisdiction
             };
-
-            // Copy variables
-            foreach (var variable in latestVersion.Variables)
-            {
-                newVersion.Variables.Add(new TemplateVariable
-                {
-                    Name = variable.Name,
-                    DisplayName = variable.DisplayName,
-                    Description = variable.Description,
-                    Type = variable.Type,
-                    IsRequired = variable.IsRequired,
-                    DefaultValue = variable.DefaultValue,
-                    ValidationRule = variable.ValidationRule,
-                    SampleValues = variable.SampleValues,
-                    Order = variable.Order,
-                    Group = variable.Group
-                });
-            }
 
             _context.Templates.Add(newVersion);
             await _context.SaveChangesAsync();

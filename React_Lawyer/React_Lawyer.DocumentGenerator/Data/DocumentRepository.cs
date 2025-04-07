@@ -10,12 +10,8 @@ namespace React_Lawyer.DocumentGenerator.Data
         Task<IEnumerable<Document>> GetAllAsync();
         Task<Document> SaveAsync(Document document);
         Task<bool> DeleteAsync(string id);
-        Task<IEnumerable<Document>> GetByClientAsync(int clientId);
-        Task<IEnumerable<Document>> GetByCaseAsync(int caseId);
-        Task<IEnumerable<Document>> GetByFirmAsync(int firmId);
         Task<IEnumerable<Document>> SearchAsync(string keyword);
         Task<bool> FinalizeAsync(string id);
-        Task<bool> ShareWithClientAsync(string id, bool share);
     }
 
     /// <summary>
@@ -94,38 +90,9 @@ namespace React_Lawyer.DocumentGenerator.Data
             return true;
         }
 
-        /// <summary>
-        /// Get documents by client ID
-        /// </summary>
-        public async Task<IEnumerable<Document>> GetByClientAsync(int clientId)
-        {
-            return await _context.Documents
-                .Where(d => d.ClientId == clientId && d.Status != DocumentStatus.Deleted)
-                .OrderByDescending(d => d.CreatedAt)
-                .ToListAsync();
-        }
 
-        /// <summary>
-        /// Get documents by case ID
-        /// </summary>
-        public async Task<IEnumerable<Document>> GetByCaseAsync(int caseId)
-        {
-            return await _context.Documents
-                .Where(d => d.CaseId == caseId && d.Status != DocumentStatus.Deleted)
-                .OrderByDescending(d => d.CreatedAt)
-                .ToListAsync();
-        }
 
-        /// <summary>
-        /// Get documents by firm ID
-        /// </summary>
-        public async Task<IEnumerable<Document>> GetByFirmAsync(int firmId)
-        {
-            return await _context.Documents
-                .Where(d => d.LawFirmId == firmId && d.Status != DocumentStatus.Deleted)
-                .OrderByDescending(d => d.CreatedAt)
-                .ToListAsync();
-        }
+
 
         /// <summary>
         /// Search documents by keyword
@@ -139,9 +106,7 @@ namespace React_Lawyer.DocumentGenerator.Data
 
             return await _context.Documents
                 .Where(d => d.Status != DocumentStatus.Deleted &&
-                           (d.Title.Contains(keyword) ||
-                            d.TemplateName.Contains(keyword) ||
-                            d.Tags.Any(t => t.Contains(keyword))))
+                           (d.Title.Contains(keyword)))
                 .OrderByDescending(d => d.CreatedAt)
                 .ToListAsync();
         }
@@ -163,29 +128,6 @@ namespace React_Lawyer.DocumentGenerator.Data
             return true;
         }
 
-        /// <summary>
-        /// Share a document with a client or unshare it
-        /// </summary>
-        public async Task<bool> ShareWithClientAsync(string id, bool share)
-        {
-            var document = await _context.Documents.FindAsync(id);
-            if (document == null || document.Status == DocumentStatus.Deleted)
-            {
-                return false;
-            }
 
-            document.IsSharedWithClient = share;
-            if (share)
-            {
-                document.SharedAt = DateTime.UtcNow;
-            }
-            else
-            {
-                document.SharedAt = null;
-            }
-
-            await _context.SaveChangesAsync();
-            return true;
-        }
     }
 }

@@ -44,10 +44,6 @@ namespace React_Lawyer.DocumentGenerator.Controllers
                     return BadRequest("Template ID is required");
                 }
 
-                if (request.ClientId <= 0)
-                {
-                    return BadRequest("Valid Client ID is required");
-                }
 
                 if (request.ClientData == null || request.ClientData.Count == 0)
                 {
@@ -78,6 +74,7 @@ namespace React_Lawyer.DocumentGenerator.Controllers
             }
         }
 
+
         /// <summary>
         /// Generate a document asynchronously
         /// </summary>
@@ -97,11 +94,6 @@ namespace React_Lawyer.DocumentGenerator.Controllers
                 if (string.IsNullOrEmpty(request.TemplateId))
                 {
                     return BadRequest("Template ID is required");
-                }
-
-                if (request.ClientId <= 0)
-                {
-                    return BadRequest("Valid Client ID is required");
                 }
 
                 if (request.ClientData == null || request.ClientData.Count == 0)
@@ -150,154 +142,5 @@ namespace React_Lawyer.DocumentGenerator.Controllers
             }
         }
 
-        /// <summary>
-        /// Download a generated document
-        ///// </summary>
-        //[HttpGet("{id}/download")]
-        //public async Task<IActionResult> DownloadDocument(string id)
-        //{
-        //    try
-        //    {
-        //        if (string.IsNullOrEmpty(id))
-        //        {
-        //            return BadRequest("Document ID is required");
-        //        }
-
-        //        // Retrieve the document from storage
-        //        var document = await _generationService.GetDocumentAsync(id);
-        //        if (document == null)
-        //        {
-        //            return NotFound($"Document with ID {id} not found");
-        //        }
-
-        //        var documentBytes = await _storageService.GetDocumentAsync(document.StoragePath);
-
-        //        // Determine the content type based on document format
-        //        var contentType = document.Format switch
-        //        {
-        //            DocumentFormat.PDF => "application/pdf",
-        //            DocumentFormat.DOCX => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        //            DocumentFormat.HTML => "text/html",
-        //            DocumentFormat.Markdown => "text/markdown",
-        //            DocumentFormat.RTF => "application/rtf",
-        //            DocumentFormat.TXT => "text/plain",
-        //            _ => "application/octet-stream"
-        //        };
-
-        //        // Return the file with the appropriate content type
-        //        return File(documentBytes, contentType, $"{document.Title}.{document.Format.ToString().ToLowerInvariant()}");
-        //    }
-        //    catch (FileNotFoundException)
-        //    {
-        //        return NotFound("Document file not found");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error downloading document: {DocumentId}", id);
-        //        return StatusCode(500, new { error = ex.Message });
-        //    }
-        //}
-
-        /// <summary>
-        /// Get documents by client ID
-        ///// </summary>
-        //[HttpGet("client/{clientId}")]
-        //public async Task<ActionResult<IEnumerable<Document>>> GetDocumentsByClient(int clientId)
-        //{
-        //    try
-        //    {
-        //        if (clientId <= 0)
-        //        {
-        //            return BadRequest("Valid Client ID is required");
-        //        }
-
-        //        var documents = await _generationService.GetDocumentsByClientAsync(clientId);
-        //        return Ok(documents);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error getting documents for client: {ClientId}", clientId);
-        //        return StatusCode(500, new { error = ex.Message });
-        //    }
-        //}
-
-        /// <summary>
-        /// Get documents by case ID
-        ///// </summary>
-        //[HttpGet("case/{caseId}")]
-        //public async Task<ActionResult<IEnumerable<Document>>> GetDocumentsByCase(int caseId)
-        //{
-        //    try
-        //    {
-        //        if (caseId <= 0)
-        //        {
-        //            return BadRequest("Valid Case ID is required");
-        //        }
-
-        //        var documents = await _generationService.GetDocumentsByCaseAsync(caseId);
-        //        return Ok(documents);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error getting documents for case: {CaseId}", caseId);
-        //        return StatusCode(500, new { error = ex.Message });
-        //    }
-        //}
-
-        /// <summary>
-        /// Get a document by ID
-        ///// </summary>
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<Document>> GetDocument(string id)
-        //{
-        //    try
-        //    {
-        //        if (string.IsNullOrEmpty(id))
-        //        {
-        //            return BadRequest("Document ID is required");
-        //        }
-
-        //        var document = await _generationService.GetDocumentAsync(id);
-        //        if (document == null)
-        //        {
-        //            return NotFound($"Document with ID {id} not found");
-        //        }
-
-        //        return Ok(document);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error getting document: {DocumentId}", id);
-        //        return StatusCode(500, new { error = ex.Message });
-        //    }
-        //}
-
-        /// <summary>
-        /// Delete a document
-        ///// </summary>
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteDocument(string id)
-        //{
-        //    try
-        //    {
-        //        if (string.IsNullOrEmpty(id))
-        //        {
-        //            return BadRequest("Document ID is required");
-        //        }
-
-        //        var result = await _generationService.DeleteDocumentAsync(id);
-        //        if (!result)
-        //        {
-        //            return NotFound($"Document with ID {id} not found");
-        //        }
-
-        //        return NoContent();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error deleting document: {DocumentId}", id);
-        //        return StatusCode(500, new { error = ex.Message });
-        //    }
-        //}
     }
 }

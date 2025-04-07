@@ -40,7 +40,7 @@ namespace React_Lawyer.DocumentGenerator.Services
         /// <param name="template">The document template</param>
         /// <param name="context">Document context with variables</param>
         /// <returns>Generated document content</returns>
-        public async Task<string> GenerateDocumentAsync(Template template, DocumentContext context)
+        public async Task<string> GenerateDocumentAsync(Template template, GenerationRequest context)
         {
             _logger.LogInformation("Generating document for template: {TemplateName} ({TemplateId})",
                 template.Name, template.Id);
@@ -51,7 +51,7 @@ namespace React_Lawyer.DocumentGenerator.Services
                 var prompt = BuildDocumentPrompt(template, context);
 
                 // Call the Gemini API
-                var generatedContent = await GenerateContentAsync(prompt, context.GenerationDate);
+                var generatedContent = await GenerateContentAsync(prompt, DateTime.UtcNow);
 
                 _logger.LogInformation("Document generation successful. Generated {Length} characters.",
                     generatedContent?.Length ?? 0);
@@ -167,13 +167,8 @@ namespace React_Lawyer.DocumentGenerator.Services
         /// <param name="template">The document template</param>
         /// <param name="context">Document generation context</param>
         /// <returns>Formatted prompt for Gemini</returns>
-        private string BuildDocumentPrompt(Template template, DocumentContext context)
+        private string BuildDocumentPrompt(Template template, GenerationRequest context)
         {
-            var client = context.Client;
-            var firm = context.Firm;
-            var user = context.User;
-            var caseInfo = context.Case;
-
             // Start with base instructions
             var prompt = new System.Text.StringBuilder();
             prompt.AppendLine("You are a legal document generator expert who creates professional, accurate legal documents based on templates.");
@@ -196,69 +191,11 @@ namespace React_Lawyer.DocumentGenerator.Services
             prompt.AppendLine("Do not add, remove, or modify any sections that are not explicitly indicated by placeholder variables.");
             prompt.AppendLine();
 
-            // Add context information
-            prompt.AppendLine("# Client Information");
-            prompt.AppendLine($"Client Name: {client.FullName}");
-            prompt.AppendLine($"Client Type: {(client.IsCompany ? "Company" : "Individual")}");
-            if (client.IsCompany) prompt.AppendLine($"Company Name: {client.CompanyName}");
-            prompt.AppendLine($"Address: {client.Address?.FormattedAddress ?? "N/A"}");
-            prompt.AppendLine($"Email: {client.Email}");
-            prompt.AppendLine($"Phone: {client.Phone}");
-            if (!string.IsNullOrEmpty(client.TaxId)) prompt.AppendLine($"Tax ID: {client.TaxId}");
-            prompt.AppendLine();
 
-            // Add case information if applicable
-            if (caseInfo != null)
-            {
-                prompt.AppendLine("# Case Information");
-                prompt.AppendLine($"Case Number: {caseInfo.CaseNumber}");
-                prompt.AppendLine($"Case Title: {caseInfo.Title}");
-                prompt.AppendLine($"Case Type: {caseInfo.Type}");
-                prompt.AppendLine($"Court Name: {caseInfo.CourtName ?? "N/A"}");
-                prompt.AppendLine($"Court Case Number: {caseInfo.CourtCaseNumber ?? "N/A"}");
-                prompt.AppendLine($"Filing Date: {caseInfo.FilingDate?.ToString("d") ?? "N/A"}");
-                prompt.AppendLine($"Opposing Party: {caseInfo.OpposingParty ?? "N/A"}");
-                prompt.AppendLine($"Opposing Counsel: {caseInfo.OpposingCounsel ?? "N/A"}");
-                prompt.AppendLine();
-            }
-
-            // Add law firm information
-            if (firm != null)
-            {
-                prompt.AppendLine("# Law Firm Information");
-                prompt.AppendLine($"Firm Name: {firm.Name}");
-                prompt.AppendLine($"Firm Address: {firm.Address?.FormattedAddress ?? "N/A"}");
-                prompt.AppendLine($"Firm Phone: {firm.Phone}");
-                prompt.AppendLine($"Firm Email: {firm.Email}");
-                prompt.AppendLine($"Firm Website: {firm.Website}");
-                prompt.AppendLine();
-            }
-
-            // Add lawyer/user information
-            if (user != null)
-            {
-                prompt.AppendLine("# Lawyer Information");
-                prompt.AppendLine($"Name: {user.FullName}");
-                prompt.AppendLine($"Title: {user.Title ?? "Attorney"}");
-                prompt.AppendLine($"Email: {user.Email}");
-                if (!string.IsNullOrEmpty(user.BarNumber)) prompt.AppendLine($"Bar Number: {user.BarNumber}");
-                prompt.AppendLine();
-            }
-
-            // Add custom variables
-            if (context.Variables.Count > 0)
-            {
-                prompt.AppendLine("# Custom Variables");
-                foreach (var variable in context.Variables)
-                {
-                    prompt.AppendLine($"{variable.Key}: {variable.Value}");
-                }
-                prompt.AppendLine();
-            }
 
             // Add current date information
             prompt.AppendLine("# Date Information");
-            prompt.AppendLine($"Current Date: {context.GenerationDate:MMMM d, yyyy}");
+            prompt.AppendLine("Current Date: " + DateTime.UtcNow.ToString("MMMM d, yyyy"));
             prompt.AppendLine();
 
             // Add document generation details
@@ -266,8 +203,8 @@ namespace React_Lawyer.DocumentGenerator.Services
             prompt.AppendLine($"Template Name: {template.Name}");
             prompt.AppendLine($"Template Category: {template.Category}");
             prompt.AppendLine($"Document Format: {context.Format}");
-            prompt.AppendLine($"Jurisdiction: {context.Jurisdiction ?? template.Jurisdiction ?? "N/A"}");
-            prompt.AppendLine($"Language: {context.Language ?? template.Language ?? "English"}");
+            prompt.AppendLine($"Jurisdiction: {template.Jurisdiction ?? template.Jurisdiction ?? "N/A"}");
+            prompt.AppendLine($"Language: {template.Language ?? template.Language ?? "English"}");
             prompt.AppendLine();
 
             // Add the template content
@@ -284,23 +221,5 @@ namespace React_Lawyer.DocumentGenerator.Services
             return prompt.ToString();
         }
 
-        /// <summary>
-        /// Create a training set based on sample data
-        /// </summary>
-        /// <param name="trainingData">The training data</param>
-        /// <returns>Status indicator of training request</returns>
-        public async Task<bool> FineTuneModelAsync(TrainingData trainingData)
-        {
-            // Note: This is a simplified implementation that assumes Gemini has some fine-tuning capabilities
-            // The actual implementation would depend on Google's API for fine-tuning which may differ
-            _logger.LogInformation("Fine-tuning model for training data: {TrainingDataName} ({TrainingDataId})",
-                trainingData.Name, trainingData.Id);
-
-            // Currently, Gemini doesn't support fine-tuning in the same way as some other models
-            // But we can simulate the concept for this example
-            await Task.Delay(100); // Just a placeholder for real API call
-
-            return true;
-        }
     }
 }

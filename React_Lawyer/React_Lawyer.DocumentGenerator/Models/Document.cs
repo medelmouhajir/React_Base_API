@@ -23,26 +23,6 @@ namespace React_Lawyer.DocumentGenerator.Models
         [Required]
         public string TemplateId { get; set; }
 
-        /// <summary>
-        /// Template name
-        /// </summary>
-        [StringLength(100)]
-        public string TemplateName { get; set; }
-
-        /// <summary>
-        /// ID of the client this document is for
-        /// </summary>
-        public int ClientId { get; set; }
-
-        /// <summary>
-        /// ID of the case this document is associated with (if any)
-        /// </summary>
-        public int? CaseId { get; set; }
-
-        /// <summary>
-        /// ID of the law firm
-        /// </summary>
-        public int? LawFirmId { get; set; }
 
         /// <summary>
         /// When the document was created
@@ -76,20 +56,12 @@ namespace React_Lawyer.DocumentGenerator.Models
         /// </summary>
         public string Url { get; set; }
 
-        /// <summary>
-        /// Template version used
-        /// </summary>
-        public int TemplateVersion { get; set; }
+
 
         /// <summary>
         /// Hash of the document content for versioning
         /// </summary>
         public string ContentHash { get; set; }
-
-        /// <summary>
-        /// Client data used to generate the document (serialized)
-        /// </summary>
-        public string ClientDataSnapshot { get; set; }
 
         /// <summary>
         /// Document metadata
@@ -106,25 +78,6 @@ namespace React_Lawyer.DocumentGenerator.Models
         /// </summary>
         public DocumentStatus Status { get; set; } = DocumentStatus.Draft;
 
-        /// <summary>
-        /// Whether the document has been shared with the client
-        /// </summary>
-        public bool IsSharedWithClient { get; set; } = false;
-
-        /// <summary>
-        /// When the document was shared with the client
-        /// </summary>
-        public DateTime? SharedAt { get; set; }
-
-        /// <summary>
-        /// Expiration date for document access
-        /// </summary>
-        public DateTime? ExpiresAt { get; set; }
-
-        /// <summary>
-        /// Tags for categorization
-        /// </summary>
-        public List<string> Tags { get; set; } = new List<string>();
     }
 
     /// <summary>

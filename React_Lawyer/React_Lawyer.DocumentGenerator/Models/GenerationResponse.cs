@@ -35,7 +35,7 @@
         /// <summary>
         /// Display name/title of the document
         /// </summary>
-        public string DocumentTitle { get; set; }
+        public string Content { get; set; }
 
         /// <summary>
         /// ID of the template used

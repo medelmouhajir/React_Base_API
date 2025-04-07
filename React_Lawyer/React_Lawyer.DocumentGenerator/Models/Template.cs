@@ -36,19 +36,7 @@ namespace React_Lawyer.DocumentGenerator.Models
         [Required]
         public string Content { get; set; }
 
-        /// <summary>
-        /// Metadata about the required variables/fields for this template
-        /// </summary>
-        public List<TemplateVariable> Variables { get; set; } = new List<TemplateVariable>();
 
-        /// <summary>
-        /// Version of the template
-        /// </summary>
-        public int Version { get; set; } = 1;
-
-        /// <summary>
-        /// Whether this template is active and can be used
-        /// </summary>
         public bool IsActive { get; set; } = true;
 
         /// <summary>
@@ -56,15 +44,7 @@ namespace React_Lawyer.DocumentGenerator.Models
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        /// <summary>
-        /// When the template was last updated
-        /// </summary>
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        /// <summary>
-        /// User ID who created this template
-        /// </summary>
-        public string CreatedBy { get; set; }
 
         /// <summary>
         /// Whether this template has been fine-tuned with Gemini

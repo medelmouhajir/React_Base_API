@@ -56,8 +56,6 @@ namespace React_Lawyer.DocumentGenerator.Services
                 throw new ArgumentNullException(nameof(template));
             }
 
-            ValidateTemplate(template);
-
             if (string.IsNullOrEmpty(template.Id))
             {
                 template.Id = Guid.NewGuid().ToString();
@@ -69,7 +67,6 @@ namespace React_Lawyer.DocumentGenerator.Services
                 _logger.LogInformation("Updating template: {TemplateName} ({TemplateId})", template.Name, template.Id);
             }
 
-            template.UpdatedAt = DateTime.UtcNow;
 
             return await _templateRepository.SaveAsync(template);
         }
@@ -152,39 +149,7 @@ namespace React_Lawyer.DocumentGenerator.Services
             return await _templateRepository.GetByFirmAsync(firmId);
         }
 
-        /// <summary>
-        /// Validate a template's structure and required fields
-        /// </summary>
-        private void ValidateTemplate(Template template)
-        {
-            if (string.IsNullOrEmpty(template.Name))
-            {
-                throw new ArgumentException("Template name is required");
-            }
 
-            if (string.IsNullOrEmpty(template.Category))
-            {
-                throw new ArgumentException("Template category is required");
-            }
-
-            if (string.IsNullOrEmpty(template.Content))
-            {
-                throw new ArgumentException("Template content is required");
-            }
-
-            // Validate that all variables in content have definitions
-            var contentVariables = ExtractVariablesFromContent(template.Content);
-            var definedVariables = template.Variables.Select(v => v.Name).ToHashSet();
-
-            var undefinedVariables = contentVariables.Except(definedVariables).ToList();
-            if (undefinedVariables.Any())
-            {
-                _logger.LogWarning(
-                    "Template {TemplateName} has variables in content that are not defined: {UndefinedVariables}",
-                    template.Name,
-                    string.Join(", ", undefinedVariables));
-            }
-        }
 
         /// <summary>
         /// Extract variable placeholders from template content

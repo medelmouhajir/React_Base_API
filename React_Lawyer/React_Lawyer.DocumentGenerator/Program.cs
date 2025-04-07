@@ -22,19 +22,18 @@ namespace React_Lawyer.DocumentGenerator
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+
             // Register repositories
             builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
             builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
-            builder.Services.AddScoped<ITrainingDataRepository, TrainingDataRepository>();
             builder.Services.AddScoped<IGenerationJobRepository, GenerationJobRepository>();
 
             // Register services
             builder.Services.AddScoped<TemplateService>();
             builder.Services.AddScoped<GeminiService>();
             builder.Services.AddScoped<StorageService>();
-            builder.Services.AddScoped<ClientService>();
             builder.Services.AddScoped<DocumentGenerationService>();
-            builder.Services.AddScoped<TrainingService>();
 
             // Register HttpClient
             builder.Services.AddHttpClient();
@@ -54,6 +53,25 @@ namespace React_Lawyer.DocumentGenerator
             });
 
             var app = builder.Build();
+
+
+
+            // Apply pending migrations
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<ApplicationDbContext>();
+                    context.Database.Migrate(); // This applies pending migrations
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while migrating the database.");
+                }
+            }
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

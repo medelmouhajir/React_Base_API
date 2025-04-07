@@ -16,11 +16,8 @@ namespace React_Lawyer.DocumentGenerator.Data.Context
         }
 
         public DbSet<Template> Templates { get; set; }
-        public DbSet<TemplateVariable> TemplateVariables { get; set; }
         public DbSet<Document> Documents { get; set; }
-        public DbSet<TrainingData> TrainingData { get; set; }
         public DbSet<GenerationJob> GenerationJobs { get; set; }
-        public DbSet<TemplateCollection> TemplateCollections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,9 +27,6 @@ namespace React_Lawyer.DocumentGenerator.Data.Context
             modelBuilder.Entity<Template>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.HasMany(e => e.Variables)
-                      .WithOne()
-                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Document configuration
@@ -46,94 +40,14 @@ namespace React_Lawyer.DocumentGenerator.Data.Context
                           v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
                           v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, new JsonSerializerOptions { }) ?? new Dictionary<string, string>());
 
-                entity.Property(e => e.Tags)
-                      .HasConversion(
-                          v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
-                          v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions { }) ?? new List<string>());
             });
 
-            // Training data configuration
-            modelBuilder.Entity<TrainingData>(entity =>
-            {
-                entity.HasKey(e => e.Id);
 
-                entity.HasMany(e => e.Examples)
-                      .WithOne()
-                      .OnDelete(DeleteBehavior.Cascade);
-
-                entity.OwnsOne(e => e.Metrics);
-            });
-
-            // Document example configuration
-            modelBuilder.Entity<DocumentExample>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-
-                // Configure JSON serialization for dictionaries
-                entity.Property(e => e.Variables)
-                      .HasConversion(
-                          v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
-                          v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, new JsonSerializerOptions { }) ?? new Dictionary<string, object>());
-            });
-
-            // Generation job configuration
-            modelBuilder.Entity<GenerationJob>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-
-                entity.OwnsOne(e => e.Request);
-
-                // Configure JSON serialization for collections and dictionaries
-                entity.Property(e => e.Logs)
-                      .HasConversion(
-                          v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
-                          v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions { }) ?? new List<string>());
-
-                entity.Property(e => e.Metadata)
-                      .HasConversion(
-                          v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
-                          v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, new JsonSerializerOptions { }) ?? new Dictionary<string, string>());
-            });
-
-            // Template collection configuration
-            modelBuilder.Entity<TemplateCollection>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-
-                // Configure JSON serialization for collections
-                entity.Property(e => e.TemplateIds)
-                      .HasConversion(
-                          v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
-                          v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions { }) ?? new List<string>());
-
-                entity.Property(e => e.Tags)
-                      .HasConversion(
-                          v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
-                          v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions { }) ?? new List<string>());
-            });
 
             modelBuilder.Entity<GenerationJob>(entity =>
             {
                 entity.HasKey(e => e.Id);
 
-                entity.OwnsOne(e => e.Request, request =>
-                {
-                    // Configure the ClientData dictionary to be stored as JSON
-                    request.Property(r => r.ClientData)
-                           .HasConversion(
-                               v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
-                               v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, new JsonSerializerOptions { }) ?? new Dictionary<string, object>());
-
-                    // Configure the nested Options property
-                    request.OwnsOne(r => r.Options, options =>
-                    {
-                        // Configure the FormatSettings dictionary to be stored as JSON
-                        options.Property(o => o.FormatSettings)
-                               .HasConversion(
-                                   v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
-                                   v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, new JsonSerializerOptions { }) ?? new Dictionary<string, object>());
-                    });
-                });
 
                 // Keep your existing configurations for GenerationJob
                 entity.Property(e => e.Logs)
