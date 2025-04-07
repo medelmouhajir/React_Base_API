@@ -155,43 +155,53 @@ namespace DocumentGeneratorAPI.Services
             }
         }
 
-        /// <summary>
-        /// Build the prompt for document generation
-        /// </summary>
-        /// // React_Lawyer/React_Lawyer.DocumentGenerator/Services/GeminiService.cs
+
         private string BuildDocumentPrompt(Template template, object data)
         {
             var prompt = new StringBuilder();
-            prompt.AppendLine("You are a legal document generator expert who creates professional, accurate legal documents.");
-            prompt.AppendLine("Generate a complete legal document based on the template and client data provided.");
+            prompt.AppendLine("You are a highly precise legal document generation expert.");
+            prompt.AppendLine("Your task is to generate a professional legal document based on the following guidelines:");
             prompt.AppendLine();
 
+            // Serialize the data to identify available information
+            var serializedData = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            var dataDict = JsonSerializer.Deserialize<Dictionary<string, object>>(serializedData);
+
             // Template information
-            prompt.AppendLine("# Template Information");
+            prompt.AppendLine("# Template Reference");
             prompt.AppendLine($"Template Name: {template.Name}");
             prompt.AppendLine($"Template Category: {template.Category}");
             prompt.AppendLine($"Jurisdiction: {template.Jurisdiction ?? "N/A"}");
             prompt.AppendLine();
 
-            // Template as reference
-            prompt.AppendLine("# Template Reference");
-            prompt.AppendLine("This is the reference template structure. Use this as a guide for formatting and required sections:");
+            // Original template content
+            prompt.AppendLine("# Original Template Content");
             prompt.AppendLine(template.Content);
             prompt.AppendLine();
 
-            // Client data
-            prompt.AppendLine("# Client Data");
-            prompt.AppendLine("Use this data to generate the document:");
-            prompt.AppendLine(JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true }));
+            // Available client data
+            prompt.AppendLine("# Available Client Data");
+            var availableData = new Dictionary<string, object>();
+            foreach (var entry in dataDict)
+            {
+                // Only include non-null values
+                if (entry.Value != null)
+                {
+                    availableData[entry.Key] = entry.Value;
+                }
+            }
+            prompt.AppendLine(JsonSerializer.Serialize(availableData, new JsonSerializerOptions { WriteIndented = true }));
             prompt.AppendLine();
 
-            // Instructions
-            prompt.AppendLine("# Instructions");
-            prompt.AppendLine("1. Create a complete legal document based on the template structure");
-            prompt.AppendLine("2. Incorporate all relevant information from the client data");
-            prompt.AppendLine("3. Maintain professional legal language and formatting");
-            prompt.AppendLine("4. Ensure the document is complete and ready for use");
-            prompt.AppendLine("5. Return ONLY the generated document with no additional comments");
+            // Specific generation instructions
+            prompt.AppendLine("# Generation Instructions");
+            prompt.AppendLine("1. Use the original template as a structural guide.");
+            prompt.AppendLine("2. Generate a new document based on the available data.");
+            prompt.AppendLine("3. IMPORTANT: Only include information that is explicitly present in the client data.");
+            prompt.AppendLine("4. If a field from the template is not present in the data, do NOT include a placeholder or guess the information.");
+            prompt.AppendLine("5. Maintain the professional legal tone and formatting of the original template.");
+            prompt.AppendLine("6. Ensure all included information is accurate and matches the provided data exactly.");
+            prompt.AppendLine("7. Return ONLY the generated document with no additional comments or explanations.");
 
             return prompt.ToString();
         }
