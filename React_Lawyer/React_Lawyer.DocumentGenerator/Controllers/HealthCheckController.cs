@@ -109,11 +109,6 @@ namespace DocumentGeneratorAPI.Controllers
                     TemplateId = savedTemplate.Id,
                     DocumentTitle = "Health Check Document",
                     Format = DocumentFormat.TXT,
-                    Variables = new Dictionary<string, string>
-                    {
-                        { "ClientName", "Test Client" },
-                        { "Date", DateTime.UtcNow.ToString("MMMM d, yyyy") }
-                    },
                     UserId = "healthcheck"
                 };
 
@@ -181,11 +176,6 @@ namespace DocumentGeneratorAPI.Controllers
                     TemplateId = savedTemplate.Id,
                     DocumentTitle = "Health Check Download",
                     Format = DocumentFormat.Markdown,
-                    Variables = new Dictionary<string, string>
-                    {
-                        { "Date", DateTime.UtcNow.ToString("MMMM d, yyyy") },
-                        { "Purpose", "testing the document download functionality" }
-                    },
                     UserId = "healthcheck"
                 };
 

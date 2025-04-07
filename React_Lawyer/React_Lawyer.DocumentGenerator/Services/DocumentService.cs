@@ -39,20 +39,10 @@ namespace DocumentGeneratorAPI.Services
                 // Get the template
                 var template = await _templateService.GetTemplateAsync(request.TemplateId);
 
-                // Validate variables
-                var (isValid, missingVariables) = _templateService.ValidateVariables(template.Content, request.Variables);
-                if (!isValid)
-                {
-                    var missingList = string.Join(", ", missingVariables);
-                    _logger.LogWarning("Missing variables for template {TemplateId}: {MissingVariables}", request.TemplateId, missingList);
-                    return new GenerationResponse
-                    {
-                        Error = $"Missing required variables: {missingList}"
-                    };
-                }
+                // We no longer need to validate variables since we're using Gemini more intelligently
 
                 // Generate document content using Gemini
-                string generatedContent = await _geminiService.GenerateDocumentAsync(template, request.Variables);
+                string generatedContent = await _geminiService.GenerateDocumentAsync(template, request.Data);
 
                 // Create document record
                 var document = new Document

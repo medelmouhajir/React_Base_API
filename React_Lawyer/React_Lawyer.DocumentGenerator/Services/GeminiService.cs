@@ -37,7 +37,7 @@ namespace DocumentGeneratorAPI.Services
         /// <summary>
         /// Generate a document based on a template and variables
         /// </summary>
-        public async Task<string> GenerateDocumentAsync(Template template, Dictionary<string, string> variables)
+        public async Task<string> GenerateDocumentAsync(Template template, object data)
         {
             _logger.LogInformation("Generating document for template: {TemplateName} ({TemplateId})",
                 template.Name, template.Id);
@@ -45,7 +45,7 @@ namespace DocumentGeneratorAPI.Services
             try
             {
                 // Build the prompt
-                var prompt = BuildDocumentPrompt(template, variables);
+                var prompt = BuildDocumentPrompt(template, data);
 
                 // Call the Gemini API
                 var generatedContent = await GenerateContentAsync(prompt);
@@ -158,53 +158,40 @@ namespace DocumentGeneratorAPI.Services
         /// <summary>
         /// Build the prompt for document generation
         /// </summary>
-        private string BuildDocumentPrompt(Template template, Dictionary<string, string> variables)
+        /// // React_Lawyer/React_Lawyer.DocumentGenerator/Services/GeminiService.cs
+        private string BuildDocumentPrompt(Template template, object data)
         {
-            // Start with base instructions
             var prompt = new StringBuilder();
-            prompt.AppendLine("You are a legal document generator expert who creates professional, accurate legal documents based on templates.");
-            prompt.AppendLine("Generate a complete legal document by filling in the template below with the provided client information and context.");
+            prompt.AppendLine("You are a legal document generator expert who creates professional, accurate legal documents.");
+            prompt.AppendLine("Generate a complete legal document based on the template and client data provided.");
             prompt.AppendLine();
 
-            // Explain the template format
-            prompt.AppendLine("# Template Format");
-            prompt.AppendLine("The template contains placeholder variables in the format {{VariableName}}.");
-            prompt.AppendLine("Replace each placeholder with the appropriate information from the context provided.");
-            prompt.AppendLine("Preserve all legal language, formatting, sections, and structure exactly as in the template.");
-            prompt.AppendLine("Do not add, remove, or modify any sections that are not explicitly indicated by placeholder variables.");
-            prompt.AppendLine();
-
-            // Add current date information
-            prompt.AppendLine("# Date Information");
-            prompt.AppendLine("Current Date: " + DateTime.UtcNow.ToString("MMMM d, yyyy"));
-            prompt.AppendLine();
-
-            // Add document generation details
-            prompt.AppendLine("# Document Generation Details");
+            // Template information
+            prompt.AppendLine("# Template Information");
             prompt.AppendLine($"Template Name: {template.Name}");
             prompt.AppendLine($"Template Category: {template.Category}");
             prompt.AppendLine($"Jurisdiction: {template.Jurisdiction ?? "N/A"}");
-            prompt.AppendLine($"Language: {template.Language ?? "English"}");
             prompt.AppendLine();
 
-            // Add variables to be replaced
-            prompt.AppendLine("# Variables to Replace");
-            foreach (var variable in variables)
-            {
-                prompt.AppendLine($"{{{{{variable.Key}}}}} => {variable.Value}");
-            }
-            prompt.AppendLine();
-
-            // Add the template content
-            prompt.AppendLine("# Template");
+            // Template as reference
+            prompt.AppendLine("# Template Reference");
+            prompt.AppendLine("This is the reference template structure. Use this as a guide for formatting and required sections:");
             prompt.AppendLine(template.Content);
             prompt.AppendLine();
 
-            // Add closing instructions
-            prompt.AppendLine("# Response Format");
-            prompt.AppendLine("Return ONLY the completed document with all placeholders replaced with the appropriate information.");
-            prompt.AppendLine("Do not include any explanations, comments, or additional text outside the document itself.");
-            prompt.AppendLine("Keep all paragraph breaks, indentation, and document structure intact.");
+            // Client data
+            prompt.AppendLine("# Client Data");
+            prompt.AppendLine("Use this data to generate the document:");
+            prompt.AppendLine(JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true }));
+            prompt.AppendLine();
+
+            // Instructions
+            prompt.AppendLine("# Instructions");
+            prompt.AppendLine("1. Create a complete legal document based on the template structure");
+            prompt.AppendLine("2. Incorporate all relevant information from the client data");
+            prompt.AppendLine("3. Maintain professional legal language and formatting");
+            prompt.AppendLine("4. Ensure the document is complete and ready for use");
+            prompt.AppendLine("5. Return ONLY the generated document with no additional comments");
 
             return prompt.ToString();
         }

@@ -41,11 +41,6 @@ namespace DocumentGeneratorAPI.Controllers
                     return BadRequest("Template ID is required");
                 }
 
-                if (request.Variables == null || request.Variables.Count == 0)
-                {
-                    return BadRequest("Variables are required");
-                }
-
                 if (string.IsNullOrEmpty(request.DocumentTitle))
                 {
                     return BadRequest("Document title is required");
