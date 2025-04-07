@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace React_Lawyer.DocumentGenerator.Models.Templates.Gemini
+namespace DocumentGeneratorAPI.Models.Gemini
 {
     public class GeminiRequest
     {
@@ -35,14 +35,14 @@ namespace React_Lawyer.DocumentGenerator.Models.Templates.Gemini
         public string Role { get; set; } = "user";
 
         /// <summary>
-        /// List of content parts (text, images, etc.)
+        /// List of content parts (text, etc.)
         /// </summary>
         [JsonPropertyName("parts")]
         public List<Part> Parts { get; set; } = new List<Part>();
     }
 
     /// <summary>
-    /// Part of a content (text, image, etc.)
+    /// Part of a content (text)
     /// </summary>
     public class Part
     {
@@ -101,23 +101,6 @@ namespace React_Lawyer.DocumentGenerator.Models.Templates.Gemini
         public int MaxOutputTokens { get; set; } = 8192;
     }
 
-    /// <summary>
-    /// Response from Gemini API
-    /// </summary>
-    public class GeminiResponse
-    {
-        /// <summary>
-        /// Response candidates (typically just one)
-        /// </summary>
-        [JsonPropertyName("candidates")]
-        public List<Candidate> Candidates { get; set; } = new List<Candidate>();
-
-        /// <summary>
-        /// Usage metrics for the request
-        /// </summary>
-        [JsonPropertyName("usageMetadata")]
-        public UsageMetadata UsageMetadata { get; set; }
-    }
 
     /// <summary>
     /// A response candidate from Gemini

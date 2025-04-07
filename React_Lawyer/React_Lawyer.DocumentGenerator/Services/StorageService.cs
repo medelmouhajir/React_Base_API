@@ -1,4 +1,4 @@
-﻿namespace React_Lawyer.DocumentGenerator.Services
+﻿namespace DocumentGeneratorAPI.Services
 {
     public class StorageService
     {

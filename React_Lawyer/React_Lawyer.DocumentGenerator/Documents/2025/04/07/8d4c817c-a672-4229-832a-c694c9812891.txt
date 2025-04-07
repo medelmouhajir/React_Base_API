@@ -1,0 +1,6 @@
+This is a test document.
+
+Client Name: Test Client
+Date: April 7, 2025
+
+This document was generated as part of a health check.

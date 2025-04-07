@@ -1,7 +1,7 @@
+using DocumentGeneratorAPI.Data;
+using DocumentGeneratorAPI.Data.Repositories;
+using DocumentGeneratorAPI.Services;
 using Microsoft.EntityFrameworkCore;
-using React_Lawyer.DocumentGenerator.Data;
-using React_Lawyer.DocumentGenerator.Data.Context;
-using React_Lawyer.DocumentGenerator.Services;
 
 namespace React_Lawyer.DocumentGenerator
 {
@@ -17,26 +17,24 @@ namespace React_Lawyer.DocumentGenerator
             builder.Services.AddSwaggerGen();
 
             // Configure database
-
-
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 
 
             // Register repositories
             builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
             builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
-            builder.Services.AddScoped<IGenerationJobRepository, GenerationJobRepository>();
 
             // Register services
             builder.Services.AddScoped<TemplateService>();
+            builder.Services.AddScoped<DocumentService>();
             builder.Services.AddScoped<GeminiService>();
             builder.Services.AddScoped<StorageService>();
-            builder.Services.AddScoped<DocumentGenerationService>();
 
-            // Register HttpClient
+            // Register HttpClient for API calls
             builder.Services.AddHttpClient();
+
+
 
             // Configure CORS
             var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ??
@@ -54,8 +52,6 @@ namespace React_Lawyer.DocumentGenerator
 
             var app = builder.Build();
 
-
-
             // Apply pending migrations
             using (var scope = app.Services.CreateScope())
             {
@@ -71,7 +67,6 @@ namespace React_Lawyer.DocumentGenerator
                     logger.LogError(ex, "An error occurred while migrating the database.");
                 }
             }
-
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

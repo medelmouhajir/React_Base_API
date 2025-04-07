@@ -1,11 +1,11 @@
-﻿using React_Lawyer.DocumentGenerator.Models.Templates.Gemini;
-using React_Lawyer.DocumentGenerator.Models.Templates;
-using React_Lawyer.DocumentGenerator.Models;
+﻿using DocumentGeneratorAPI.Models;
+using DocumentGeneratorAPI.Models.Gemini;
+using React_Lawyer.DocumentGenerator.Models.Gemini;
+using System.Text;
 using System.Text.Json;
 
-namespace React_Lawyer.DocumentGenerator.Services
+namespace DocumentGeneratorAPI.Services
 {
-
     public class GeminiService
     {
         private readonly HttpClient _httpClient;
@@ -35,12 +35,9 @@ namespace React_Lawyer.DocumentGenerator.Services
         }
 
         /// <summary>
-        /// Generate a document based on a template and context variables
+        /// Generate a document based on a template and variables
         /// </summary>
-        /// <param name="template">The document template</param>
-        /// <param name="context">Document context with variables</param>
-        /// <returns>Generated document content</returns>
-        public async Task<string> GenerateDocumentAsync(Template template, GenerationRequest context)
+        public async Task<string> GenerateDocumentAsync(Template template, Dictionary<string, string> variables)
         {
             _logger.LogInformation("Generating document for template: {TemplateName} ({TemplateId})",
                 template.Name, template.Id);
@@ -48,10 +45,10 @@ namespace React_Lawyer.DocumentGenerator.Services
             try
             {
                 // Build the prompt
-                var prompt = BuildDocumentPrompt(template, context);
+                var prompt = BuildDocumentPrompt(template, variables);
 
                 // Call the Gemini API
-                var generatedContent = await GenerateContentAsync(prompt, DateTime.UtcNow);
+                var generatedContent = await GenerateContentAsync(prompt);
 
                 _logger.LogInformation("Document generation successful. Generated {Length} characters.",
                     generatedContent?.Length ?? 0);
@@ -68,10 +65,7 @@ namespace React_Lawyer.DocumentGenerator.Services
         /// <summary>
         /// Call the Gemini API to generate content based on a prompt
         /// </summary>
-        /// <param name="prompt">The prompt to send to Gemini</param>
-        /// <param name="generationDate">The date of generation (for timestamp references)</param>
-        /// <returns>Generated content</returns>
-        private async Task<string> GenerateContentAsync(string prompt, DateTime generationDate)
+        private async Task<string> GenerateContentAsync(string prompt)
         {
             var url = $"{_apiBaseUrl}/{_modelName}:generateContent?key={_apiKey}";
 
@@ -164,24 +158,13 @@ namespace React_Lawyer.DocumentGenerator.Services
         /// <summary>
         /// Build the prompt for document generation
         /// </summary>
-        /// <param name="template">The document template</param>
-        /// <param name="context">Document generation context</param>
-        /// <returns>Formatted prompt for Gemini</returns>
-        private string BuildDocumentPrompt(Template template, GenerationRequest context)
+        private string BuildDocumentPrompt(Template template, Dictionary<string, string> variables)
         {
             // Start with base instructions
-            var prompt = new System.Text.StringBuilder();
+            var prompt = new StringBuilder();
             prompt.AppendLine("You are a legal document generator expert who creates professional, accurate legal documents based on templates.");
             prompt.AppendLine("Generate a complete legal document by filling in the template below with the provided client information and context.");
             prompt.AppendLine();
-
-            // Add template-specific instructions if available
-            if (!string.IsNullOrEmpty(template.GenerationInstructions))
-            {
-                prompt.AppendLine("# Template-Specific Instructions");
-                prompt.AppendLine(template.GenerationInstructions);
-                prompt.AppendLine();
-            }
 
             // Explain the template format
             prompt.AppendLine("# Template Format");
@@ -190,8 +173,6 @@ namespace React_Lawyer.DocumentGenerator.Services
             prompt.AppendLine("Preserve all legal language, formatting, sections, and structure exactly as in the template.");
             prompt.AppendLine("Do not add, remove, or modify any sections that are not explicitly indicated by placeholder variables.");
             prompt.AppendLine();
-
-
 
             // Add current date information
             prompt.AppendLine("# Date Information");
@@ -202,9 +183,16 @@ namespace React_Lawyer.DocumentGenerator.Services
             prompt.AppendLine("# Document Generation Details");
             prompt.AppendLine($"Template Name: {template.Name}");
             prompt.AppendLine($"Template Category: {template.Category}");
-            prompt.AppendLine($"Document Format: {context.Format}");
-            prompt.AppendLine($"Jurisdiction: {template.Jurisdiction ?? template.Jurisdiction ?? "N/A"}");
-            prompt.AppendLine($"Language: {template.Language ?? template.Language ?? "English"}");
+            prompt.AppendLine($"Jurisdiction: {template.Jurisdiction ?? "N/A"}");
+            prompt.AppendLine($"Language: {template.Language ?? "English"}");
+            prompt.AppendLine();
+
+            // Add variables to be replaced
+            prompt.AppendLine("# Variables to Replace");
+            foreach (var variable in variables)
+            {
+                prompt.AppendLine($"{{{{{variable.Key}}}}} => {variable.Value}");
+            }
             prompt.AppendLine();
 
             // Add the template content
@@ -220,6 +208,5 @@ namespace React_Lawyer.DocumentGenerator.Services
 
             return prompt.ToString();
         }
-
     }
 }

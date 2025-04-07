@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace React_Lawyer.DocumentGenerator.Models
+namespace DocumentGeneratorAPI.Models
 {
     public class Template
     {
@@ -36,25 +36,15 @@ namespace React_Lawyer.DocumentGenerator.Models
         [Required]
         public string Content { get; set; }
 
-
+        /// <summary>
+        /// Whether the template is active and available for use
+        /// </summary>
         public bool IsActive { get; set; } = true;
 
         /// <summary>
         /// When the template was created
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-
-
-        /// <summary>
-        /// Whether this template has been fine-tuned with Gemini
-        /// </summary>
-        public bool IsFineTuned { get; set; } = false;
-
-        /// <summary>
-        /// Instructions specific to this template for Gemini
-        /// </summary>
-        public string GenerationInstructions { get; set; }
 
         /// <summary>
         /// Default language of the template

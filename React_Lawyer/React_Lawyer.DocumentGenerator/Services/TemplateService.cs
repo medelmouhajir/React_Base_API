@@ -1,9 +1,8 @@
-﻿using React_Lawyer.DocumentGenerator.Data;
-using React_Lawyer.DocumentGenerator.Models;
+﻿using DocumentGeneratorAPI.Data.Repositories;
+using DocumentGeneratorAPI.Models;
 
-namespace React_Lawyer.DocumentGenerator.Services
+namespace DocumentGeneratorAPI.Services
 {
-
     public class TemplateService
     {
         private readonly ITemplateRepository _templateRepository;
@@ -67,6 +66,21 @@ namespace React_Lawyer.DocumentGenerator.Services
                 _logger.LogInformation("Updating template: {TemplateName} ({TemplateId})", template.Name, template.Id);
             }
 
+            // Validate the template
+            if (string.IsNullOrEmpty(template.Name))
+            {
+                throw new ArgumentException("Template name is required");
+            }
+
+            if (string.IsNullOrEmpty(template.Content))
+            {
+                throw new ArgumentException("Template content is required");
+            }
+
+            // Extract variables from the template content for validation
+            var variables = ExtractVariablesFromContent(template.Content);
+            _logger.LogInformation("Template {TemplateId} contains {VariableCount} variables: {Variables}",
+                template.Id, variables.Count(), string.Join(", ", variables));
 
             return await _templateRepository.SaveAsync(template);
         }
@@ -101,60 +115,9 @@ namespace React_Lawyer.DocumentGenerator.Services
         }
 
         /// <summary>
-        /// Create a new version of an existing template
-        /// </summary>
-        public async Task<Template> CreateTemplateVersionAsync(string templateId, Template updatedTemplate)
-        {
-            if (string.IsNullOrEmpty(templateId))
-            {
-                throw new ArgumentException("Template ID cannot be null or empty", nameof(templateId));
-            }
-
-            if (updatedTemplate == null)
-            {
-                throw new ArgumentNullException(nameof(updatedTemplate));
-            }
-
-            var existingTemplate = await _templateRepository.GetByIdAsync(templateId);
-            if (existingTemplate == null)
-            {
-                throw new KeyNotFoundException($"Template with ID {templateId} was not found");
-            }
-
-            _logger.LogInformation("Creating new version of template: {TemplateName} ({TemplateId})",
-                existingTemplate.Name, templateId);
-
-            return await _templateRepository.CreateVersionAsync(updatedTemplate);
-        }
-
-        /// <summary>
-        /// Get templates by jurisdiction
-        /// </summary>
-        public async Task<IEnumerable<Template>> GetTemplatesByJurisdictionAsync(string jurisdiction)
-        {
-            if (string.IsNullOrEmpty(jurisdiction))
-            {
-                throw new ArgumentException("Jurisdiction cannot be null or empty", nameof(jurisdiction));
-            }
-
-            var allTemplates = await _templateRepository.GetAllAsync();
-            return allTemplates.Where(t => t.Jurisdiction == jurisdiction);
-        }
-
-        /// <summary>
-        /// Get templates by law firm
-        /// </summary>
-        public async Task<IEnumerable<Template>> GetTemplatesByFirmAsync(int firmId)
-        {
-            return await _templateRepository.GetByFirmAsync(firmId);
-        }
-
-
-
-        /// <summary>
         /// Extract variable placeholders from template content
         /// </summary>
-        private IEnumerable<string> ExtractVariablesFromContent(string content)
+        public IEnumerable<string> ExtractVariablesFromContent(string content)
         {
             var variables = new HashSet<string>();
 
@@ -173,6 +136,17 @@ namespace React_Lawyer.DocumentGenerator.Services
             }
 
             return variables;
+        }
+
+        /// <summary>
+        /// Validate that all required variables have values
+        /// </summary>
+        public (bool isValid, IEnumerable<string> missingVariables) ValidateVariables(string templateContent, Dictionary<string, string> variables)
+        {
+            var requiredVariables = ExtractVariablesFromContent(templateContent);
+            var missingVariables = requiredVariables.Where(v => !variables.ContainsKey(v) || string.IsNullOrEmpty(variables[v]));
+
+            return (missingVariables.Count() == 0, missingVariables);
         }
     }
 }

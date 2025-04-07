@@ -1,30 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using React_Lawyer.DocumentGenerator.Models;
-using React_Lawyer.DocumentGenerator.Services;
+﻿using DocumentGeneratorAPI.Models;
+using DocumentGeneratorAPI.Services;
+using Microsoft.AspNetCore.Mvc;
+using React_Lawyer.DocumentGenerator.Models.Extras;
 
-namespace React_Lawyer.DocumentGenerator.Controllers
+namespace DocumentGeneratorAPI.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
     public class DocumentsController : ControllerBase
     {
-        private readonly DocumentGenerationService _generationService;
-        private readonly StorageService _storageService;
+        private readonly DocumentService _documentService;
         private readonly ILogger<DocumentsController> _logger;
 
         public DocumentsController(
-            DocumentGenerationService generationService,
-            StorageService storageService,
+            DocumentService documentService,
             ILogger<DocumentsController> logger)
         {
-            _generationService = generationService;
-            _storageService = storageService;
+            _documentService = documentService;
             _logger = logger;
         }
 
         /// <summary>
-        /// Generate a document synchronously
+        /// Generate a document from a template
         /// </summary>
         [HttpPost("generate")]
         public async Task<ActionResult<GenerationResponse>> GenerateDocument([FromBody] GenerationRequest request)
@@ -44,28 +41,25 @@ namespace React_Lawyer.DocumentGenerator.Controllers
                     return BadRequest("Template ID is required");
                 }
 
-
-                if (request.ClientData == null || request.ClientData.Count == 0)
+                if (request.Variables == null || request.Variables.Count == 0)
                 {
-                    return BadRequest("Client data is required");
+                    return BadRequest("Variables are required");
+                }
+
+                if (string.IsNullOrEmpty(request.DocumentTitle))
+                {
+                    return BadRequest("Document title is required");
                 }
 
                 // Generate the document
-                var response = await _generationService.GenerateDocumentAsync(request);
+                var response = await _documentService.GenerateDocumentAsync(request);
 
-                // Return appropriate status based on generation result
-                if (response.Status == GenerationStatus.Completed)
+                if (!string.IsNullOrEmpty(response.Error))
                 {
-                    return Ok(response);
+                    return BadRequest(response);
                 }
-                else if (response.Status == GenerationStatus.Failed)
-                {
-                    return StatusCode(500, response);
-                }
-                else
-                {
-                    return StatusCode(202, response); // Accepted but still processing
-                }
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -74,73 +68,186 @@ namespace React_Lawyer.DocumentGenerator.Controllers
             }
         }
 
-
         /// <summary>
-        /// Generate a document asynchronously
+        /// Get all documents
         /// </summary>
-        [HttpPost("generate/async")]
-        public async Task<ActionResult<string>> GenerateDocumentAsync([FromBody] GenerationRequest request)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Document>>> GetDocuments()
         {
             try
             {
-                _logger.LogInformation("Received async document generation request for template: {TemplateId}", request.TemplateId);
+                var documents = await _documentService.GetDocumentsAsync();
+                return Ok(documents);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting documents");
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
 
-                if (request == null)
+        /// <summary>
+        /// Get a document by ID
+        /// </summary>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Document>> GetDocument(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
                 {
-                    return BadRequest("Request body cannot be null");
+                    return BadRequest("Document ID is required");
                 }
 
-                // Validate required fields
-                if (string.IsNullOrEmpty(request.TemplateId))
+                var document = await _documentService.GetDocumentAsync(id);
+                return Ok(document);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"Document with ID {id} not found");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting document: {DocumentId}", id);
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Download a document
+        /// </summary>
+        [HttpGet("{id}/download")]
+        public async Task<IActionResult> DownloadDocument(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest("Document ID is required");
+                }
+
+                var (content, contentType, fileName) = await _documentService.DownloadDocumentAsync(id);
+                return File(content, contentType, fileName);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"Document with ID {id} not found");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error downloading document: {DocumentId}", id);
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Delete a document
+        /// </summary>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDocument(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest("Document ID is required");
+                }
+
+                var result = await _documentService.DeleteDocumentAsync(id);
+                if (!result)
+                {
+                    return NotFound($"Document with ID {id} not found");
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting document: {DocumentId}", id);
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Get documents by template ID
+        /// </summary>
+        [HttpGet("bytemplate/{templateId}")]
+        public async Task<ActionResult<IEnumerable<Document>>> GetDocumentsByTemplate(string templateId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(templateId))
                 {
                     return BadRequest("Template ID is required");
                 }
 
-                if (request.ClientData == null || request.ClientData.Count == 0)
-                {
-                    return BadRequest("Client data is required");
-                }
-
-                // Create a job for asynchronous processing
-                var jobId = await _generationService.CreateGenerationJobAsync(request);
-
-                // Return the job ID for status checking
-                return Accepted(new { jobId, statusUrl = $"/api/documents/status/{jobId}" });
+                var documents = await _documentService.GetDocumentsByTemplateAsync(templateId);
+                return Ok(documents);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating generation job");
+                _logger.LogError(ex, "Error getting documents by template: {TemplateId}", templateId);
                 return StatusCode(500, new { error = ex.Message });
             }
         }
 
         /// <summary>
-        /// Check the status of an asynchronous generation job
+        /// Search documents by keyword
         /// </summary>
-        [HttpGet("status/{jobId}")]
-        public async Task<ActionResult<GenerationResponse>> GetJobStatus(string jobId)
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Document>>> SearchDocuments([FromQuery] string keyword)
         {
             try
             {
-                if (string.IsNullOrEmpty(jobId))
+                if (string.IsNullOrEmpty(keyword))
                 {
-                    return BadRequest("Job ID is required");
+                    return BadRequest("Search keyword is required");
                 }
 
-                var response = await _generationService.GetJobStatusAsync(jobId);
-
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { error = $"Job with ID {jobId} not found" });
+                var documents = await _documentService.SearchDocumentsAsync(keyword);
+                return Ok(documents);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error checking job status: {JobId}", jobId);
+                _logger.LogError(ex, "Error searching documents with keyword: {Keyword}", keyword);
                 return StatusCode(500, new { error = ex.Message });
             }
         }
 
+        /// <summary>
+        /// Update document content
+        /// </summary>
+        [HttpPut("{id}/content")]
+        public async Task<ActionResult<Document>> UpdateDocumentContent(string id, [FromBody] string content)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest("Document ID is required");
+                }
+
+                if (string.IsNullOrEmpty(content))
+                {
+                    return BadRequest("Document content is required");
+                }
+
+                var updatedDocument = await _documentService.UpdateDocumentContentAsync(id, content);
+                return Ok(updatedDocument);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"Document with ID {id} not found");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating document content: {DocumentId}", id);
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
     }
 }

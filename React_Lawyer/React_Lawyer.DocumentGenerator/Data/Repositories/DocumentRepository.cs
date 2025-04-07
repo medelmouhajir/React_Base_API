@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using React_Lawyer.DocumentGenerator.Data.Context;
-using React_Lawyer.DocumentGenerator.Models;
+﻿using DocumentGeneratorAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace React_Lawyer.DocumentGenerator.Data
+namespace DocumentGeneratorAPI.Data.Repositories
 {
     public interface IDocumentRepository
     {
@@ -11,12 +10,9 @@ namespace React_Lawyer.DocumentGenerator.Data
         Task<Document> SaveAsync(Document document);
         Task<bool> DeleteAsync(string id);
         Task<IEnumerable<Document>> SearchAsync(string keyword);
-        Task<bool> FinalizeAsync(string id);
+        Task<IEnumerable<Document>> GetByTemplateIdAsync(string templateId);
     }
 
-    /// <summary>
-    /// Implementation of document repository using EF Core
-    /// </summary>
     public class DocumentRepository : IDocumentRepository
     {
         private readonly ApplicationDbContext _context;
@@ -32,7 +28,7 @@ namespace React_Lawyer.DocumentGenerator.Data
         public async Task<Document> GetByIdAsync(string id)
         {
             return await _context.Documents
-                .FirstOrDefaultAsync(d => d.Id == id && d.Status != DocumentStatus.Deleted);
+                .FirstOrDefaultAsync(d => d.Id == id);
         }
 
         /// <summary>
@@ -41,7 +37,6 @@ namespace React_Lawyer.DocumentGenerator.Data
         public async Task<IEnumerable<Document>> GetAllAsync()
         {
             return await _context.Documents
-                .Where(d => d.Status != DocumentStatus.Deleted)
                 .OrderByDescending(d => d.CreatedAt)
                 .ToListAsync();
         }
@@ -62,11 +57,6 @@ namespace React_Lawyer.DocumentGenerator.Data
             else
             {
                 // Update existing document
-                if (existing.IsFinalized)
-                {
-                    throw new InvalidOperationException("Cannot modify a finalized document");
-                }
-
                 _context.Entry(existing).CurrentValues.SetValues(document);
             }
 
@@ -75,7 +65,7 @@ namespace React_Lawyer.DocumentGenerator.Data
         }
 
         /// <summary>
-        /// Delete a document (soft delete by marking as deleted)
+        /// Delete a document
         /// </summary>
         public async Task<bool> DeleteAsync(string id)
         {
@@ -85,14 +75,10 @@ namespace React_Lawyer.DocumentGenerator.Data
                 return false;
             }
 
-            document.Status = DocumentStatus.Deleted;
+            _context.Documents.Remove(document);
             await _context.SaveChangesAsync();
             return true;
         }
-
-
-
-
 
         /// <summary>
         /// Search documents by keyword
@@ -105,29 +91,20 @@ namespace React_Lawyer.DocumentGenerator.Data
             }
 
             return await _context.Documents
-                .Where(d => d.Status != DocumentStatus.Deleted &&
-                           (d.Title.Contains(keyword)))
+                .Where(d => d.Title.Contains(keyword))
                 .OrderByDescending(d => d.CreatedAt)
                 .ToListAsync();
         }
 
         /// <summary>
-        /// Finalize a document (mark as final and prevent further modifications)
+        /// Get documents by template ID
         /// </summary>
-        public async Task<bool> FinalizeAsync(string id)
+        public async Task<IEnumerable<Document>> GetByTemplateIdAsync(string templateId)
         {
-            var document = await _context.Documents.FindAsync(id);
-            if (document == null || document.Status == DocumentStatus.Deleted)
-            {
-                return false;
-            }
-
-            document.IsFinalized = true;
-            document.Status = DocumentStatus.Final;
-            await _context.SaveChangesAsync();
-            return true;
+            return await _context.Documents
+                .Where(d => d.TemplateId == templateId)
+                .OrderByDescending(d => d.CreatedAt)
+                .ToListAsync();
         }
-
-
     }
 }

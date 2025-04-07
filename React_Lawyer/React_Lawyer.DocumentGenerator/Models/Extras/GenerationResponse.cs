@@ -1,4 +1,6 @@
-﻿namespace React_Lawyer.DocumentGenerator.Models
+﻿using DocumentGeneratorAPI.Models;
+
+namespace React_Lawyer.DocumentGenerator.Models.Extras
 {
     public class GenerationResponse
     {
@@ -6,6 +8,11 @@
         /// ID of the generated document
         /// </summary>
         public string DocumentId { get; set; }
+
+        /// <summary>
+        /// Title of the document
+        /// </summary>
+        public string Title { get; set; }
 
         /// <summary>
         /// URL to download or access the document
@@ -18,11 +25,6 @@
         public DocumentFormat Format { get; set; }
 
         /// <summary>
-        /// Status of the generation process
-        /// </summary>
-        public GenerationStatus Status { get; set; } = GenerationStatus.Completed;
-
-        /// <summary>
         /// When the document was generated
         /// </summary>
         public DateTime GeneratedAt { get; set; } = DateTime.UtcNow;
@@ -33,7 +35,7 @@
         public long Size { get; set; }
 
         /// <summary>
-        /// Display name/title of the document
+        /// Content of the document
         /// </summary>
         public string Content { get; set; }
 
@@ -48,35 +50,8 @@
         public string TemplateName { get; set; }
 
         /// <summary>
-        /// Any errors that occurred during generation
+        /// Error message if generation failed
         /// </summary>
         public string Error { get; set; }
-
-        /// <summary>
-        /// Content hash for versioning and integrity
-        /// </summary>
-        public string ContentHash { get; set; }
-
-        /// <summary>
-        /// Job ID for async generations
-        /// </summary>
-        public string JobId { get; set; }
-
-        /// <summary>
-        /// Statistics about the generation process
-        /// </summary>
-        public GenerationStats Stats { get; set; }
-    }
-
-    /// <summary>
-    /// Status of document generation
-    /// </summary>
-    public enum GenerationStatus
-    {
-        Queued,
-        Processing,
-        Completed,
-        Failed,
-        Cancelled
     }
 }

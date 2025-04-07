@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
-namespace React_Lawyer.DocumentGenerator.Models
+namespace DocumentGeneratorAPI.Models
 {
     public class Document
     {
@@ -23,6 +24,11 @@ namespace React_Lawyer.DocumentGenerator.Models
         [Required]
         public string TemplateId { get; set; }
 
+        /// <summary>
+        /// Generated content of the document
+        /// </summary>
+        [Required]
+        public string Content { get; set; }
 
         /// <summary>
         /// When the document was created
@@ -46,9 +52,8 @@ namespace React_Lawyer.DocumentGenerator.Models
         public long Size { get; set; }
 
         /// <summary>
-        /// Storage path or identifier for the document content
+        /// Storage path or identifier for the document file
         /// </summary>
-        [Required]
         public string StoragePath { get; set; }
 
         /// <summary>
@@ -56,48 +61,22 @@ namespace React_Lawyer.DocumentGenerator.Models
         /// </summary>
         public string Url { get; set; }
 
-
-
         /// <summary>
-        /// Hash of the document content for versioning
-        /// </summary>
-        public string ContentHash { get; set; }
-
-        /// <summary>
-        /// Document metadata
+        /// Additional metadata as key-value pairs
         /// </summary>
         public Dictionary<string, string> Metadata { get; set; } = new Dictionary<string, string>();
-
-        /// <summary>
-        /// Whether this document has been finalized/locked
-        /// </summary>
-        public bool IsFinalized { get; set; } = false;
-
-        /// <summary>
-        /// Document status
-        /// </summary>
-        public DocumentStatus Status { get; set; } = DocumentStatus.Draft;
-
     }
 
     /// <summary>
-    /// Document status
+    /// Document format types
     /// </summary>
-    public enum DocumentStatus
-    {
-        Draft,
-        Final,
-        Signed,
-        Archived,
-        Deleted
-    }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum DocumentFormat
     {
         PDF,
         DOCX,
         HTML,
         Markdown,
-        RTF,
         TXT
     }
 }

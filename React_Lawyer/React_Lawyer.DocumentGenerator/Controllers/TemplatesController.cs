@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using React_Lawyer.DocumentGenerator.Models;
-using React_Lawyer.DocumentGenerator.Services;
+﻿using DocumentGeneratorAPI.Models;
+using DocumentGeneratorAPI.Services;
+using Microsoft.AspNetCore.Mvc;
 
-namespace React_Lawyer.DocumentGenerator.Controllers
+namespace DocumentGeneratorAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -51,7 +51,6 @@ namespace React_Lawyer.DocumentGenerator.Controllers
                 }
 
                 var template = await _templateService.GetTemplateAsync(id);
-
                 return Ok(template);
             }
             catch (KeyNotFoundException)
@@ -197,60 +196,24 @@ namespace React_Lawyer.DocumentGenerator.Controllers
         }
 
         /// <summary>
-        /// Get templates by jurisdiction
+        /// Extract variables from a template
         /// </summary>
-        [HttpGet("jurisdiction/{jurisdiction}")]
-        public async Task<ActionResult<IEnumerable<Template>>> GetTemplatesByJurisdiction(string jurisdiction)
+        [HttpPost("extract-variables")]
+        public ActionResult<IEnumerable<string>> ExtractVariables([FromBody] string templateContent)
         {
             try
             {
-                if (string.IsNullOrEmpty(jurisdiction))
+                if (string.IsNullOrEmpty(templateContent))
                 {
-                    return BadRequest("Jurisdiction is required");
+                    return BadRequest("Template content is required");
                 }
 
-                var templates = await _templateService.GetTemplatesByJurisdictionAsync(jurisdiction);
-                return Ok(templates);
+                var variables = _templateService.ExtractVariablesFromContent(templateContent);
+                return Ok(variables);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting templates for jurisdiction: {Jurisdiction}", jurisdiction);
-                return StatusCode(500, new { error = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// Create a new version of an existing template
-        /// </summary>
-        [HttpPost("{id}/versions")]
-        public async Task<ActionResult<Template>> CreateTemplateVersion(string id, [FromBody] Template template)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(id))
-                {
-                    return BadRequest("Template ID is required");
-                }
-
-                if (template == null)
-                {
-                    return BadRequest("Template data cannot be null");
-                }
-
-                // Set the template ID to match the URL
-                template.Id = id;
-
-                var newVersion = await _templateService.CreateTemplateVersionAsync(id, template);
-
-                return CreatedAtAction(nameof(GetTemplate), new { id = newVersion.Id }, newVersion);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound($"Template with ID {id} not found");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating template version: {TemplateId}", id);
+                _logger.LogError(ex, "Error extracting variables from template content");
                 return StatusCode(500, new { error = ex.Message });
             }
         }

@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using React_Lawyer.DocumentGenerator.Data.Context;
-using React_Lawyer.DocumentGenerator.Models;
+﻿using DocumentGeneratorAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace React_Lawyer.DocumentGenerator.Data
+namespace DocumentGeneratorAPI.Data.Repositories
 {
     public interface ITemplateRepository
     {
@@ -11,14 +10,8 @@ namespace React_Lawyer.DocumentGenerator.Data
         Task<Template> SaveAsync(Template template);
         Task<bool> DeleteAsync(string id);
         Task<IEnumerable<Template>> SearchAsync(string keyword);
-        Task<IEnumerable<Template>> GetByFirmAsync(int firmId);
-        Task<Template> GetLatestVersionAsync(string templateId);
-        Task<Template> CreateVersionAsync(Template template);
     }
 
-    /// <summary>
-    /// Implementation of template repository using EF Core
-    /// </summary>
     public class TemplateRepository : ITemplateRepository
     {
         private readonly ApplicationDbContext _context;
@@ -70,9 +63,7 @@ namespace React_Lawyer.DocumentGenerator.Data
             {
                 // Update existing template
                 _context.Entry(existing).CurrentValues.SetValues(template);
-
             }
-
 
             await _context.SaveChangesAsync();
             return template;
@@ -90,7 +81,6 @@ namespace React_Lawyer.DocumentGenerator.Data
             }
 
             template.IsActive = false;
-
             await _context.SaveChangesAsync();
             return true;
         }
@@ -112,65 +102,6 @@ namespace React_Lawyer.DocumentGenerator.Data
                             t.Category.Contains(keyword)))
                 .OrderBy(t => t.Name)
                 .ToListAsync();
-        }
-
-        /// <summary>
-        /// Get templates by law firm ID
-        /// </summary>
-        public async Task<IEnumerable<Template>> GetByFirmAsync(int firmId)
-        {
-            // This assumes templates have a property that links them to firms
-            // You may need to adjust this based on your actual data model
-            return await _context.Templates
-                .Where(t => t.IsActive /* && t.FirmId == firmId */)
-                .OrderBy(t => t.Name)
-                .ToListAsync();
-        }
-
-        /// <summary>
-        /// Get the latest version of a template
-        /// </summary>
-        public async Task<Template> GetLatestVersionAsync(string templateId)
-        {
-            // This assumes templates have some kind of versioning system
-            // Adjust based on your actual versioning implementation
-            return await _context.Templates
-                .Where(t => t.Id == templateId && t.IsActive)
-                .FirstOrDefaultAsync();
-        }
-
-        /// <summary>
-        /// Create a new version of an existing template
-        /// </summary>
-        public async Task<Template> CreateVersionAsync(Template template)
-        {
-            // Get the latest version
-            var latestVersion = await GetLatestVersionAsync(template.Id);
-
-            if (latestVersion == null)
-            {
-                throw new InvalidOperationException("Template not found");
-            }
-
-            // Create a new template as a copy with incremented version
-            var newVersion = new Template
-            {
-                Id = Guid.NewGuid().ToString(), // New ID for the new version
-                Name = latestVersion.Name,
-                Description = latestVersion.Description,
-                Category = latestVersion.Category,
-                Content = template.Content,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                IsFineTuned = latestVersion.IsFineTuned,
-                GenerationInstructions = template.GenerationInstructions,
-                Language = latestVersion.Language,
-                Jurisdiction = latestVersion.Jurisdiction
-            };
-
-            _context.Templates.Add(newVersion);
-            await _context.SaveChangesAsync();
-            return newVersion;
         }
     }
 }
