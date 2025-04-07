@@ -111,6 +111,41 @@ namespace React_Lawyer.DocumentGenerator.Data.Context
                           v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
                           v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions { }) ?? new List<string>());
             });
+
+            modelBuilder.Entity<GenerationJob>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.OwnsOne(e => e.Request, request =>
+                {
+                    // Configure the ClientData dictionary to be stored as JSON
+                    request.Property(r => r.ClientData)
+                           .HasConversion(
+                               v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
+                               v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, new JsonSerializerOptions { }) ?? new Dictionary<string, object>());
+
+                    // Configure the nested Options property
+                    request.OwnsOne(r => r.Options, options =>
+                    {
+                        // Configure the FormatSettings dictionary to be stored as JSON
+                        options.Property(o => o.FormatSettings)
+                               .HasConversion(
+                                   v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
+                                   v => JsonSerializer.Deserialize<Dictionary<string, object>>(v, new JsonSerializerOptions { }) ?? new Dictionary<string, object>());
+                    });
+                });
+
+                // Keep your existing configurations for GenerationJob
+                entity.Property(e => e.Logs)
+                      .HasConversion(
+                          v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
+                          v => JsonSerializer.Deserialize<List<string>>(v, new JsonSerializerOptions { }) ?? new List<string>());
+
+                entity.Property(e => e.Metadata)
+                      .HasConversion(
+                          v => JsonSerializer.Serialize(v, new JsonSerializerOptions { WriteIndented = false }),
+                          v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, new JsonSerializerOptions { }) ?? new Dictionary<string, string>());
+            });
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     public class TrainingMetrics
     {
+        public int Id { get; set; }
         /// <summary>
         /// Accuracy measure
         /// </summary>

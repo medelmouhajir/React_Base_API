@@ -4,6 +4,7 @@ namespace React_Lawyer.DocumentGenerator.Models
 {
     public class TemplateVariable
     {
+        public int Id { get; set; }
         /// <summary>
         /// Name of the variable as it appears in the template (e.g., "{{ClientName}}")
         /// </summary>

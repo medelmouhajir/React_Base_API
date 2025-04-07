@@ -70,6 +70,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: reactlawyerdb
+      POSTGRES_MULTIPLE_DATABASES: "lawyerdocumentgeneratordb"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
