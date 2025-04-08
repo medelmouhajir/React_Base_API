@@ -560,7 +560,8 @@ namespace React_Lawyer.Server.Controllers.Documents
                     IsTemplate = model.IsTemplate,
                     IsSharedWithClient = model.IsSharedWithClient,
                     Tags = model.Tags,
-                    VersionNumber = 1 // Initial version
+                    VersionNumber = 1,
+                    LawFirmId = model.LawFirmId
                 };
 
                 _context.Documents.Add(document);
@@ -922,6 +923,7 @@ namespace React_Lawyer.Server.Controllers.Documents
         public string Title { get; set; }
         public string Description { get; set; }
         public int? CaseId { get; set; }
+        public int LawFirmId { get; set; }
         public string Category { get; set; } = "Other";
         public bool IsConfidential { get; set; } = false;
         public bool IsTemplate { get; set; } = false;

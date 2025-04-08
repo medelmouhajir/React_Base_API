@@ -347,7 +347,14 @@ const CasesListPage = () => {
 
             {/* Cases table */}
             <Paper>
-                <TableContainer>
+                <TableContainer sx={{
+                    overflowX: 'auto',
+                    '& .MuiTableCell-root': {
+                        px: { xs: 1, sm: 2 },
+                        py: { xs: 1.5, sm: 2 },
+                        whiteSpace: { xs: 'nowrap', sm: 'normal' }
+                    }
+                }}>
                     <Table aria-label="cases table">
                         <TableHead>
                             <TableRow>

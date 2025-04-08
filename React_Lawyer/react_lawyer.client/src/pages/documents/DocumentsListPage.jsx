@@ -335,6 +335,7 @@ const DocumentsListPage = () => {
             formData.append('caseId', uploadData.caseId);
             formData.append('tags', uploadData.tags);
             formData.append('uploadedById', user.id);
+            formData.append('lawFirmId', user?.lawFirmId || 0);
 
             await documentService.uploadDocument(formData);
 
