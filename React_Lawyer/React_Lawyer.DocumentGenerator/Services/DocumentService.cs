@@ -227,9 +227,24 @@ namespace DocumentGeneratorAPI.Services
             switch (format)
             {
                 case DocumentFormat.PDF:
-                    // In a real implementation, we would convert to PDF
-                    // For now, just return text
-                    fileBytes = Encoding.UTF8.GetBytes(content);
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        using (var document = new iTextSharp.text.Document())
+                        {
+                            iTextSharp.text.pdf.PdfWriter.GetInstance(document, memoryStream);
+                            document.Open();
+
+                            // Split content into paragraphs
+                            var paragraphs = content.Split('\n');
+                            foreach (var paragraph in paragraphs)
+                            {
+                                document.Add(new iTextSharp.text.Paragraph(paragraph));
+                            }
+
+                            document.Close();
+                        }
+                        fileBytes = memoryStream.ToArray();
+                    }
                     extension = "pdf";
                     break;
                 case DocumentFormat.DOCX:
