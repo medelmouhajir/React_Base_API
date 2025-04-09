@@ -136,7 +136,7 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
             roles: ['Admin', 'Lawyer', 'Secretary']
         },
         {
-            text: t('billing.timeEntries', 'Time Entries'),
+            text: t('billing.timeEntries.title', 'Time Entries'),
             path: '/billing/time-entries',
             roles: ['Admin', 'Lawyer', 'Secretary']
         },

@@ -65,6 +65,7 @@ class AuthService {
                     name: data.firstName + ' ' + data.lastName,
                     email: data.email,
                     role: data.role,
+                    roleId: data.roleId,
                     lawFirmId: data.lawFirmId,
                     token: data.token,
                     refreshToken: data.refreshToken,

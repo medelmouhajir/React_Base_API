@@ -47,6 +47,7 @@ import InvoicePrintPage from '../pages/billing/InvoicePrintPage';
 import InvoiceDownloadPdfPage from '../pages/billing/InvoiceDownloadPdfPage';
 import NewInvoicePage from '../pages/billing/NewInvoicePage';
 import PaymentsPage from '../pages/billing/PaymentsPage';
+import TimeEntriesListPage from '../pages/billing/TimeEntriesListPage';
 
 //// Documents pages
 import DocumentsListPage from '../pages/documents/DocumentsListPage';
@@ -109,6 +110,7 @@ const AppRoutes = () => {
                     <Route path="/billing/invoices/:id/print" element={<InvoicePrintPage />} />
                     <Route path="/billing/invoices/:id/download" element={<InvoiceDownloadPdfPage />} />
                     <Route path="/billing/payments" element={<PaymentsPage />} />
+                    <Route path="/billing/time-entries" element={<TimeEntriesListPage />} />
                 </Route>
 
                 {/* Documents */}

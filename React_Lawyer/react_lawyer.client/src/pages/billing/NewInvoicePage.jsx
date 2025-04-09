@@ -563,7 +563,7 @@ const NewInvoicePage = () => {
                             {/* Time Entries */}
                             <Paper sx={{ p: 3, mb: 3 }}>
                                 <Typography variant="h6" gutterBottom>
-                                    {t('billing.timeEntries')}
+                                    {t('billing.timeEntries.title')}
                                 </Typography>
 
                                 {formData.clientId ? (
@@ -575,7 +575,7 @@ const NewInvoicePage = () => {
                                                         <TableCell padding="checkbox"></TableCell>
                                                         <TableCell>{t('common.date')}</TableCell>
                                                         <TableCell>{t('common.description')}</TableCell>
-                                                        <TableCell>{t('billing.hours')}</TableCell>
+                                                        <TableCell>{t('common.minutes')}</TableCell>
                                                         <TableCell>{t('billing.rate')}</TableCell>
                                                         <TableCell align="right">{t('billing.amount')}</TableCell>
                                                     </TableRow>
@@ -583,7 +583,7 @@ const NewInvoicePage = () => {
                                                 <TableBody>
                                                     {availableTimeEntries.map((entry) => {
                                                         const isSelected = selectedTimeEntries.some(te => te.timeEntryId === entry.timeEntryId);
-                                                        const amount = entry.hours * (entry.hourlyRate || 0);
+                                                        const amount = (entry.durationMinutes / 60 ) * (entry.hourlyRate || 0);
 
                                                         return (
                                                             <TableRow
@@ -600,9 +600,9 @@ const NewInvoicePage = () => {
                                                                         color="primary"
                                                                     />
                                                                 </TableCell>
-                                                                <TableCell>{formatDate(entry.date)}</TableCell>
+                                                                <TableCell>{formatDate(entry.activityDate)}</TableCell>
                                                                 <TableCell>{entry.description}</TableCell>
-                                                                <TableCell>{entry.hours}</TableCell>
+                                                                <TableCell>{entry.durationMinutes}</TableCell>
                                                                 <TableCell>{formatCurrency(entry.hourlyRate || 0)}</TableCell>
                                                                 <TableCell align="right">{formatCurrency(amount)}</TableCell>
                                                             </TableRow>

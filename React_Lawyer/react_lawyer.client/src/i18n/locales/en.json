@@ -470,7 +470,6 @@
     "invoicesSubtitle": "Manage your invoices and payments",
     "payments": "Payments",
     "payment": "Payment",
-    "timeEntries": "Time Entries",
     "timeEntry": "Time Entry",
 
     "createInvoice": "Create Invoice",
@@ -612,7 +611,44 @@
     "receiptTitle": "Payment Receipt",
     "receiptNumber": "Receipt Number",
     "paymentDetails": "Payment Details",
-    "reference": "Reference"
+    "reference": "Reference",
+
+
+
+    "timeEntries": {
+      "title": "Time Entries",
+      "subtitle": "Manage your billable and non-billable time",
+      "addTimeEntry": "Add Time Entry",
+      "editTimeEntry": "Edit Time Entry",
+      "deleteTimeEntry": "Delete Time Entry",
+      "deleteConfirmation": "Are you sure you want to delete this time entry? This action cannot be undone.",
+      "searchPlaceholder": "Search by description, client, or case",
+      "description": "Description",
+      "duration": "Duration",
+      "durationMinutes": "Duration (minutes)",
+      "rate": "Rate",
+      "hourlyRate": "Hourly Rate",
+      "amount": "Amount",
+      "billable": "Billable",
+      "nonBillable": "Non-Billable",
+      "isBillable": "Billable to client",
+      "billed": "Billed",
+      "unbilled": "Unbilled",
+      "noEntriesFound": "No time entries found",
+      "timeTracker": "Time Tracker",
+      "startTimer": "Start Timer",
+      "stopAndSave": "Stop & Save",
+      "timerDescriptionRequired": "Please enter a description before starting the timer",
+      "timerSaveError": "Failed to save the time entry from timer",
+      "totalEntries": "Total Entries",
+      "totalHours": "Total Hours",
+      "totalAmount": "Total Amount",
+      "validationError": "Please fill in all required fields",
+      "createError": "Failed to create time entry",
+      "updateError": "Failed to update time entry",
+      "deleteError": "Failed to delete time entry",
+      "fetchError": "Failed to fetch time entries"
+    }
   },
 
 

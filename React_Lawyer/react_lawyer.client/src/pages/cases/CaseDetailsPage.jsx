@@ -847,7 +847,7 @@ const CaseDetailsPage = () => {
                     <Divider sx={{ my: 4 }} />
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                        <Typography variant="h6">{t('billing.timeEntries')}</Typography>
+                        <Typography variant="h6">{t('billing.timeEntries.title')}</Typography>
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}

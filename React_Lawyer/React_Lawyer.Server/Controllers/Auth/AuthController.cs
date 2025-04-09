@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using React_Lawyer.Server.Controllers.Users;
 using React_Lawyer.Server.Data;
+using Shared_Models.Firms;
 using Shared_Models.Users;
 using System;
 using System.Collections.Generic;
@@ -62,19 +63,32 @@ namespace React_Lawyer.Server.Controllers.Auth
 
                 // Get user's law firm ID
                 int? lawFirmId = null;
+                int? roleId = null;
                 switch (user.Role)
                 {
                     case UserRole.Lawyer:
-                        lawFirmId = await _context.Lawyers
+                        var data_lawyer = await _context.Lawyers
                             .Where(l => l.UserId == user.UserId)
-                            .Select(l => l.LawFirmId)
+                            .Select(l => new
+                            {
+                                l.LawFirmId,
+                                l.LawyerId
+                            })
                             .FirstOrDefaultAsync();
+                        lawFirmId = data_lawyer?.LawFirmId;
+                        roleId = data_lawyer?.LawyerId;
                         break;
                     case UserRole.Secretary:
-                        lawFirmId = await _context.Secretaries
+                        var data_secretary = await _context.Secretaries
                             .Where(s => s.UserId == user.UserId)
-                            .Select(s => s.LawFirmId)
+                            .Select(l => new
+                            {
+                                l.LawFirmId,
+                                l.SecretaryId
+                            })
                             .FirstOrDefaultAsync();
+                        lawFirmId = data_secretary?.LawFirmId;
+                        roleId = data_secretary?.SecretaryId;
                         break;
                     case UserRole.Admin:
                         var adminFirm = await _context.Admins
@@ -82,6 +96,7 @@ namespace React_Lawyer.Server.Controllers.Auth
                             .SelectMany(a => a.ManagedFirms)
                             .FirstOrDefaultAsync();
                         lawFirmId = adminFirm?.LawFirmId;
+                        roleId = null;
                         break;
                 }
 
@@ -108,6 +123,7 @@ namespace React_Lawyer.Server.Controllers.Auth
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Role = user.Role.ToString(),
+                    RoleId = roleId,
                     LawFirmId = lawFirmId,
                     Token = accessToken,
                     RefreshToken = refreshToken,
@@ -316,6 +332,7 @@ namespace React_Lawyer.Server.Controllers.Auth
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Role { get; set; }
+        public int? RoleId { get; set; }
         public int? LawFirmId { get; set; }
         public string Token { get; set; }
         public string RefreshToken { get; set; }

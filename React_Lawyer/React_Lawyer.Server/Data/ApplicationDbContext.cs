@@ -88,7 +88,7 @@ namespace React_Lawyer.Server.Data
                 .HasIndex(i => i.InvoiceNumber);
 
             modelBuilder.Entity<TimeEntry>()
-                .HasIndex(t => t.Date);
+                .HasIndex(t => t.ActivityDate);
 
         }
     }

@@ -132,14 +132,14 @@ namespace React_Lawyer.Server.Controllers
                             TimeEntryId = z.TimeEntry.TimeEntryId,
                             CaseId = z.TimeEntry.CaseId,
                             CreatedAt = z.TimeEntry.CreatedAt,
-                            Date = z.TimeEntry.Date,
-                            Hours = z.TimeEntry.Hours,
+                            Date = z.TimeEntry.ActivityDate,
+                            Hours = z.TimeEntry.HourlyRate,
                             Category = z.TimeEntry.Category.ToString(),
                             HourlyRate = z.TimeEntry.HourlyRate,
                             IsBillable = z.TimeEntry.IsBillable,
                             Description = z.Description,
                             LastModified = z.TimeEntry.LastModified,
-                            Notes = z.TimeEntry.Notes,
+                            Notes = z.TimeEntry.Description,
                             
                         }
                     }).ToList(),
@@ -318,15 +318,15 @@ namespace React_Lawyer.Server.Controllers
                     foreach (var entry in timeEntries)
                     {
                         // Calculate amount
-                        decimal rate = entry.HourlyRate ?? 0;
-                        decimal lineAmount = entry.Hours * rate;
+                        decimal rate = entry.HourlyRate;
+                        decimal lineAmount = entry.DurationMinutes * rate;
 
                         // Create invoice item
                         var invoiceItem = new InvoiceItem
                         {
                             InvoiceId = invoice.InvoiceId,
-                            Description = $"{entry.Description} ({entry.Date.ToString("d")})",
-                            Quantity = entry.Hours,
+                            Description = $"{entry.Description} ({entry.ActivityDate.ToString("d")})",
+                            Quantity = entry.DurationMinutes,
                             UnitPrice = rate,
                             TaxRate = model.TaxRate,
                             TimeEntryId = entry.TimeEntryId,
@@ -732,7 +732,7 @@ namespace React_Lawyer.Server.Controllers
                 .Where(te => te.ClientId == clientId &&
                            te.IsBillable &&
                            te.InvoiceId == null)
-                .OrderByDescending(te => te.Date)
+                .OrderByDescending(te => te.ActivityDate)
                 .ToListAsync();
 
             return timeEntries;
@@ -746,7 +746,7 @@ namespace React_Lawyer.Server.Controllers
                 .Where(te => te.CaseId == caseId &&
                            te.IsBillable &&
                            te.InvoiceId == null)
-                .OrderByDescending(te => te.Date)
+                .OrderByDescending(te => te.ActivityDate)
                 .ToListAsync();
 
             return timeEntries;
