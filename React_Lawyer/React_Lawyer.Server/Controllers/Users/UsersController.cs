@@ -23,16 +23,44 @@ namespace React_Lawyer.Server.Controllers.Users
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<object>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var users = await _context.Users
+                .Where(u => u.IsActive)
+                .Select(x=> new
+                {
+                    x.UserId,
+                    x.Username,
+                    x.Email,
+                    x.FirstName,
+                    x.LastName,
+                    x.PhoneNumber,
+                    x.Role,
+                    x.CreatedAt,
+                    x.LastLogin
+                })
+                .ToListAsync();
+            return users;
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<object>> GetUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users
+                .Select(x=> new
+                {
+                    x.UserId,
+                    x.Username,
+                    x.Email,
+                    x.FirstName,
+                    x.LastName,
+                    x.PhoneNumber,
+                    x.Role,
+                    x.CreatedAt,
+                    x.LastLogin
+                })
+                .FirstOrDefaultAsync(x=> x.UserId == id);
 
             if (user == null)
             {

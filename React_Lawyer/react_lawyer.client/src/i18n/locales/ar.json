@@ -756,11 +756,51 @@
     "lightMode": "الوضع الفاتح"
   },
 
+
   "notifications": {
     "notifications": "الإشعارات",
-    "markAllAsRead": "تعيين الكل كمقروء",
+    "title": "الإشعارات",
+    "subtitle": "لديك {{count}} إشعارات",
+    "loading": "جاري تحميل الإشعارات...",
+    "empty": "لا توجد إشعارات للعرض",
+    "noNotifications": "ليس لديك أي إشعارات",
+    "noUnreadNotifications": "ليس لديك أي إشعارات غير مقروءة",
     "viewAll": "عرض الكل",
-    "noNotifications": "لا توجد إشعارات"
+    "viewAllNotifications": "عرض جميع الإشعارات",
+    "markAsRead": "تعيين كمقروء",
+    "markAllAsRead": "تعيين الكل كمقروء",
+    "read": "مقروء",
+    "unread": "غير مقروء",
+    "readAt": "قُرأت في {{time}}",
+    "justNow": "الآن",
+    "minutesAgo": "منذ {{count}} دقيقة",
+    "minutesAgo_plural": "منذ {{count}} دقائق",
+    "hoursAgo": "منذ {{count}} ساعة",
+    "hoursAgo_plural": "منذ {{count}} ساعات",
+    "daysAgo": "منذ {{count}} يوم",
+    "daysAgo_plural": "منذ {{count}} أيام",
+    "types": {
+      "appointmentReminder": "تذكير بموعد",
+      "caseUpdate": "تحديث قضية",
+      "invoiceCreated": "إنشاء فاتورة",
+      "paymentReceived": "استلام دفعة",
+      "documentShared": "مشاركة مستند",
+      "systemNotification": "إشعار النظام",
+      "taskAssigned": "مهمة مسندة",
+      "messageReceived": "رسالة واردة"
+    },
+    "all": "الكل",
+    "delete": "حذف",
+    "deleteAll": "حذف الكل",
+    "deleteConfirmTitle": "حذف الإشعار",
+    "deleteConfirmMessage": "هل أنت متأكد من رغبتك في حذف هذا الإشعار؟",
+    "deleteAllConfirmTitle": "حذف جميع الإشعارات",
+    "deleteAllConfirmMessage": "هل أنت متأكد من رغبتك في حذف جميع الإشعارات؟ لا يمكن التراجع عن هذا الإجراء.",
+    "fetchError": "فشل في جلب الإشعارات",
+    "markAsReadError": "فشل في تعيين الإشعار كمقروء",
+    "markAllAsReadError": "فشل في تعيين جميع الإشعارات كمقروءة",
+    "deleteError": "فشل في حذف الإشعار",
+    "deleteAllError": "فشل في حذف جميع الإشعارات"
   },
 
 

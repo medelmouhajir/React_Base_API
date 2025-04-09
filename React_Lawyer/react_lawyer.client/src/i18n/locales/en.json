@@ -779,11 +779,51 @@
     "lightMode": "Light Mode"
   },
 
+
   "notifications": {
     "notifications": "Notifications",
+    "title": "Notifications",
+    "subtitle": "You have {{count}} notifications",
+    "loading": "Loading notifications...",
+    "empty": "No notifications to display",
+    "noNotifications": "You don't have any notifications",
+    "noUnreadNotifications": "You don't have any unread notifications",
+    "viewAll": "View all notifications",
+    "viewAllNotifications": "View all notifications",
+    "markAsRead": "Mark as read",
     "markAllAsRead": "Mark all as read",
-    "viewAll": "View all",
-    "noNotifications": "No notifications"
+    "read": "Read",
+    "unread": "Unread",
+    "readAt": "Read on {{time}}",
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} minute ago",
+    "minutesAgo_plural": "{{count}} minutes ago",
+    "hoursAgo": "{{count}} hour ago",
+    "hoursAgo_plural": "{{count}} hours ago",
+    "daysAgo": "{{count}} day ago",
+    "daysAgo_plural": "{{count}} days ago",
+    "types": {
+      "appointmentReminder": "Appointment Reminder",
+      "caseUpdate": "Case Update",
+      "invoiceCreated": "Invoice Created",
+      "paymentReceived": "Payment Received",
+      "documentShared": "Document Shared",
+      "systemNotification": "System Notification",
+      "taskAssigned": "Task Assigned",
+      "messageReceived": "Message Received"
+    },
+    "all": "All",
+    "delete": "Delete",
+    "deleteAll": "Delete All",
+    "deleteConfirmTitle": "Delete Notification",
+    "deleteConfirmMessage": "Are you sure you want to delete this notification?",
+    "deleteAllConfirmTitle": "Delete All Notifications",
+    "deleteAllConfirmMessage": "Are you sure you want to delete all notifications? This action cannot be undone.",
+    "fetchError": "Failed to fetch notifications",
+    "markAsReadError": "Failed to mark notification as read",
+    "markAllAsReadError": "Failed to mark all notifications as read",
+    "deleteError": "Failed to delete notification",
+    "deleteAllError": "Failed to delete all notifications"
   },
 
 

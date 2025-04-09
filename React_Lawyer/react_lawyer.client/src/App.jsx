@@ -6,6 +6,10 @@ import { Box, CircularProgress } from '@mui/material';
 // Auth Provider
 import { AuthProvider } from './features/auth/AuthContext';
 
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n/i18n';
+
+import NotificationProvider from './features/notifications/NotificationContext';
 // Theme Provider
 import ThemeProvider from './theme/ThemeProvider';
 
@@ -23,15 +27,17 @@ function App() {
         <BrowserRouter>
             <ThemeProvider>
                 <AuthProvider>
-                    <React.Suspense
-                        fallback={
-                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                                <CircularProgress />
-                            </Box>
-                        }
-                    >
-                        <AppRoutes />
-                    </React.Suspense>
+                    <NotificationProvider>
+                        <React.Suspense
+                            fallback={
+                                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                                     <CircularProgress />
+                                </Box>
+                            }
+                        >
+                            <AppRoutes />
+                        </React.Suspense>
+                    </NotificationProvider>
                 </AuthProvider>
             </ThemeProvider>
         </BrowserRouter>

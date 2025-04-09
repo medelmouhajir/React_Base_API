@@ -40,6 +40,7 @@ import {
 import { useAuth } from '../../features/auth/AuthContext';
 import NotificationsMenu from './NotificationsMenu';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
+import { useNotifications } from '../../features/notifications/NotificationContext';
 import { styled } from '@mui/material/styles';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
@@ -94,8 +95,8 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
     // Mobile drawer for navigation
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
-    // Mock notification count
-    const [notificationCount, setNotificationCount] = useState(3);
+    // Get notifications from context
+    const { unreadCount, fetchNotificationSummary } = useNotifications();
 
     // Handle logout
     const handleLogout = () => {
@@ -206,7 +207,7 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
                                     aria-haspopup="true"
                                     aria-expanded={Boolean(anchorElNotifications) ? 'true' : undefined}
                                 >
-                                    <Badge badgeContent={notificationCount} color="error">
+                                    <Badge badgeContent={unreadCount} color="error">
                                         <NotificationsIcon />
                                     </Badge>
                                 </IconButton>

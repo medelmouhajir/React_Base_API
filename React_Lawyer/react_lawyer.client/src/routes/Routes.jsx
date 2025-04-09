@@ -9,6 +9,9 @@ import ProtectedRoute from '../features/auth/ProtectedRoute';
 // Layout components
 import ProtectedLayout from '../components/layout/ProtectedLayout';
 
+
+import NotificationsPage from '../pages/notifications/NotificationsPage';
+
 // Auth pages
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
@@ -28,11 +31,13 @@ import NotFoundPage from '../pages/errors/NotFoundPage';
 import CasesListPage from '../pages/cases/CasesListPage';
 import CaseDetailsPage from '../pages/cases/CaseDetailsPage';
 import NewCasePage from '../pages/cases/NewCasePage';
+import EditCasePage from '../pages/cases/EditCasePage';
 
 // Clients pages
 import ClientsListPage from '../pages/clients/ClientsListPage';
 import ClientDetailsPage from '../pages/clients/ClientDetailsPage';
 import NewClientPage from '../pages/clients/NewClientPage';
+import EditClientPage from '../pages/clients/EditClientPage';
 
 //// Appointments pages
 import AppointmentsListPage from '../pages/appointments/AppointmentsListPage';
@@ -83,17 +88,24 @@ const AppRoutes = () => {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
 
+
+                {/* Notifications */}
+                <Route path="/notifications" element={<NotificationsPage />} />
+
+
                 {/* Cases - Requires Lawyer or Admin role */}
                 <Route element={<ProtectedRoute requiredRole={["Lawyer", "Admin"]} />}>
                     <Route path="/cases" element={<CasesListPage />} />
                     <Route path="/cases/new" element={<NewCasePage />} />
                     <Route path="/cases/:id" element={<CaseDetailsPage />} />
+                    <Route path="/cases/:id/edit" element={<EditCasePage />} />
                 </Route>
 
                 {/* Clients */}
                 <Route path="/clients" element={<ClientsListPage />} />
-                <Route path="/clients/new" element={<NewClientPage />} />
-                <Route path="/clients/:id" element={<ClientDetailsPage />} />
+                    <Route path="/clients/new" element={<NewClientPage />} />
+                    <Route path="/clients/:id" element={<ClientDetailsPage />} />
+                    <Route path="/clients/:id/edit" element={<EditClientPage />} />
                 
                 {/* Appointments */}
                 <Route path="/appointments" element={<AppointmentsListPage />} />

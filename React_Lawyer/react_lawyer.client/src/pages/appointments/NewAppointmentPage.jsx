@@ -698,7 +698,7 @@ const NewAppointmentPage = () => {
                                                     key={lawyer.lawyerId || `lawyer-${Math.random()}`}
                                                     value={lawyer.lawyerId || ''}
                                                 >
-                                                    {`${lawyer.user?.firstName || ''} ${lawyer.user?.lastName || ''}`}
+                                                    {`${lawyer.firstName || ''} ${lawyer.lastName || ''}`}
                                                 </MenuItem>
                                             ))
                                         ) : (
