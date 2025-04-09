@@ -27,6 +27,7 @@ namespace React_Lawyer.Server.Controllers
             return await _context.Invoices
                 .Include(i => i.Client)
                 .Include(i => i.Case)
+                .Include(i => i.Payments)
                 .Select( x=> new
                 {
                     InvoiceId = x.InvoiceId,
@@ -58,7 +59,17 @@ namespace React_Lawyer.Server.Controllers
                         CaseNumber = x.Case.CaseNumber,
                         Title = x.Case.Title,
                     },
-
+                    Payments = x.Payments.Select( p =>  new
+                    {
+                        p.PaymentId,
+                        p.PaymentDate,
+                        Method = p.Method.ToString(),
+                        p.ReferenceNumber,
+                        p.Amount,
+                        p.CreatedAt,
+                        p.Notes,
+                        Status = p.Status.ToString()
+                    })
                 } )
                 .OrderByDescending(i => i.IssueDate)
                 .ToListAsync();

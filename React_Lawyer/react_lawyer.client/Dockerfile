@@ -29,7 +29,7 @@ RUN mkdir -p src
 RUN ls -la src/
 
 RUN npm pkg set dependencies.react-router-dom="^6.22.0"
-RUN npm install --legacy-peer-deps i18next i18next-browser-languagedetector react-i18next
+RUN npm install --legacy-peer-deps i18next i18next-browser-languagedetector react-i18next react-big-calendar moment
 RUN npm install --legacy-peer-deps
 
 # Build the application with legacy peer deps

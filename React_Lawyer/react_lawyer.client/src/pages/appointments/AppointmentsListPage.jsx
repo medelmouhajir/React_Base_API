@@ -323,6 +323,7 @@ const AppointmentsListPage = () => {
                         </>
                     )}
                 </Grid>
+
             </Paper>
 
             {/* Appointments table */}

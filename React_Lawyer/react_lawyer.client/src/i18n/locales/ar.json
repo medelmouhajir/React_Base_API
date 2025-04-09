@@ -70,7 +70,11 @@
     "actionCannotBeUndone": "لا يمكن التراجع عن هذا الإجراء",
     "theme": "المظهر",
     "language": "اللغة",
-    "canceling": "جاري الإلغاء..."
+    "canceling": "جاري الإلغاء...",
+    "hour": "ساعة",
+    "hours": "ساعات",
+    "minute": "دقيقة",
+    "minutes": "دقائق"
   },
 
   "auth": {
@@ -104,6 +108,7 @@
 
 
   "cases": {
+    "new": "قضية جديدة",
     "cases": "القضايا",
     "case": "قضية",
     "casesSubtitle": "إدارة القضايا القانونية",
@@ -277,6 +282,7 @@
   },
 
   "clients": {
+    "new": "عميل جديد",
     "clients": "العملاء",
     "client": "عميل",
     "clientsSubtitle": "إدارة العملاء",
@@ -313,6 +319,10 @@
     "noClientsFound": "لم يتم العثور على عملاء",
     "noSearchResults": "لا يوجد عملاء يطابقون معايير البحث",
     "searchPlaceholder": "بحث عن عملاء حسب الاسم أو البريد الإلكتروني أو الهاتف",
+    "clientInformation": "معلومات العميل",
+    "clientType": "نوع العميل",
+    "saveClient": "حفظ العميل",
+    "phoneNumber": "رقم الهاتف",
 
     "validation": {
       "firstNameRequired": "الاسم الأول مطلوب",
@@ -324,6 +334,7 @@
   },
 
   "appointments": {
+    "new": "موعد جديد",
     "appointments": "المواعيد",
     "appointment": "موعد",
     "upcomingAppointments": "المواعيد القادمة",
@@ -429,6 +440,8 @@
   },
 
   "billing": {
+    "newInvoice": "فاتورة جديدة",
+    "newTimeEntry": "تسجيل وقت جديد",
     "billing": "الفواتير",
     "invoices": "الفواتير",
     "invoice": "فاتورة",
@@ -529,6 +542,23 @@
     "cancelError": "فشل في إلغاء الفاتورة",
     "addPaymentError": "فشل في تسجيل الدفعة",
 
+    "paymentsSubtitle": "إدارة سجلات الدفع | تم العثور على {{count}} دفعة",
+    "fetchPaymentsError": "فشل في تحميل المدفوعات. يرجى المحاولة مرة أخرى.",
+    "searchPaymentsPlaceholder": "البحث عن المدفوعات حسب المرجع أو الفاتورة أو العميل...",
+    "noPaymentsFound": "لم يتم العثور على مدفوعات تتطابق مع معايير البحث.",
+    "viewPayment": "عرض الدفعة",
+    "printReceipt": "طباعة الإيصال",
+    "emailReceipt": "إرسال الإيصال بالبريد الإلكتروني",
+    "refundPayment": "استرداد الدفعة",
+    "refundConfirmation": "هل أنت متأكد من رغبتك في استرداد الدفعة البالغة {{amount}} التي تمت في {{date}} (المرجع: {{reference}})؟",
+    "refundReason": "سبب الاسترداد",
+    "processRefund": "معالجة الاسترداد",
+    "paymentReceipt": "إيصال الدفع",
+    "receiptTitle": "إيصال الدفع",
+    "receiptNumber": "رقم الإيصال",
+    "paymentDetails": "تفاصيل الدفع",
+    "reference": "المرجع",
+
     "status": {
       "draft": "مسودة",
       "issued": "صادرة",
@@ -540,6 +570,7 @@
       "disputed": "متنازع عليها"
     },
 
+    "paymentMethods": "طريقة الدفع",
     "paymentMethod": {
       "Cash": "نقداً",
       "Check": "شيك",
@@ -547,6 +578,12 @@
       "BankTransfer": "حوالة بنكية",
       "ElectronicPayment": "دفع إلكتروني",
       "Other": "طريقة أخرى"
+    },
+    "paymentStatus": {
+      "pending": "قيد الانتظار",
+      "completed": "مكتملة",
+      "failed": "فاشلة",
+      "refunded": "مستردة"
     },
 
     "validation": {
@@ -559,6 +596,7 @@
 
 
   "documents": {
+    "new": "مستند جديد",
     "documents": "المستندات",
     "document": "مستند",
     "all": "جميع المستندات",
@@ -689,6 +727,34 @@
     "markAllAsRead": "تعيين الكل كمقروء",
     "viewAll": "عرض الكل",
     "noNotifications": "لا توجد إشعارات"
+  },
+
+
+  "dashboard": {
+    "welcomeMessage": "مرحبًا، {{name}}",
+    "subtitle": "لوحة تحكم إدارة مكتب المحاماة الخاص بك",
+    "totalCases": "إجمالي القضايا",
+    "totalClients": "إجمالي العملاء",
+    "upcomingAppointments": "المواعيد القادمة",
+    "overdueInvoices": "الفواتير المتأخرة",
+    "viewAll": "عرض الكل",
+    "todaysAppointments": "مواعيد اليوم",
+    "noAppointmentsToday": "لا توجد مواعيد مجدولة لليوم",
+    "viewAllAppointments": "عرض جميع المواعيد",
+    "recentCases": "القضايا الحديثة",
+    "noCasesFound": "لم يتم العثور على قضايا",
+    "viewAllCases": "عرض جميع القضايا",
+    "quickActions": "إجراءات سريعة",
+    "yourStats": "إحصائياتك",
+    "activeCases": "القضايا النشطة",
+    "appointmentsThisWeek": "مواعيد هذا الأسبوع",
+    "hoursThisWeek": "ساعات العمل هذا الأسبوع",
+    "pendingInvoices": "الفواتير المعلقة",
+    "reminders": "التذكيرات",
+    "reminderDeadline": "موعد نهائي للقضية",
+    "reminderDocument": "موعد استحقاق المستند",
+    "reminderInvoice": "الفواتير المعلقة",
+    "fetchError": "خطأ في تحميل بيانات لوحة التحكم"
   },
 
   "footer": {

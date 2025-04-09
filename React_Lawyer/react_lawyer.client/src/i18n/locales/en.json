@@ -70,7 +70,11 @@
     "actionCannotBeUndone": "This action cannot be undone",
     "theme": "Theme",
     "language": "Language",
-    "canceling": "Canceling..."
+    "canceling": "Canceling...",
+    "hour": "hour",
+    "hours": "hours",
+    "minute": "minute",
+    "minutes": "minutes"
   },
 
   "auth": {
@@ -104,6 +108,7 @@
 
 
   "cases": {
+    "new": "New Case",
     "cases": "Cases",
     "case": "Case",
     "casesSubtitle": "Manage your legal cases",
@@ -277,6 +282,7 @@
   },
 
   "clients": {
+    "new": "New Client",
     "clients": "Clients",
     "client": "Client",
     "clientsSubtitle": "Manage your clients",
@@ -314,6 +320,10 @@
     "noClientsFound": "No clients found",
     "noSearchResults": "No clients match your search criteria",
     "searchPlaceholder": "Search clients by name, email, or phone",
+    "clientInformation": "Client Information",
+    "clientType": "Client Type",
+    "saveClient": "Save Client",
+    "phoneNumber": "Phone Number",
 
     "validation": {
       "firstNameRequired": "First name is required",
@@ -325,6 +335,7 @@
   },
 
   "appointments": {
+    "new": "New Appointment",
     "appointments": "Appointments",
     "appointment": "Appointment",
     "upcomingAppointments": "Upcoming Appointments",
@@ -428,7 +439,31 @@
     }
   },
 
+  "calendar": {
+    "title": "Calendar",
+    "subtitle": "View and manage all your scheduled events",
+    "today": "Today",
+    "previous": "Previous",
+    "next": "Next",
+    "allDay": "All Day",
+    "date": "Date",
+    "time": "Time",
+    "event": "Event",
+    "listView": "List View",
+    "filters": "Filters",
+    "noEvents": "No events in this time range",
+    "fetchError": "Failed to fetch calendar events. Please try again.",
+    "views": {
+      "month": "Month",
+      "week": "Week",
+      "day": "Day",
+      "agenda": "Agenda"
+    }
+  },
+
   "billing": {
+    "newInvoice": "New Invoice",
+    "newTimeEntry": "New Time Entry",
     "billing": "Billing",
     "invoices": "Invoices",
     "invoice": "Invoice",
@@ -528,6 +563,7 @@
     "deleteError": "Failed to delete invoice",
     "cancelError": "Failed to cancel invoice",
     "addPaymentError": "Failed to record payment",
+    "paymentMethods": "Payment Methods",
 
     "status": {
       "draft": "Draft",
@@ -548,17 +584,40 @@
       "ElectronicPayment": "Electronic Payment",
       "Other": "Other"
     },
+    "paymentStatus": {
+      "pending": "Pending",
+      "completed": "Completed",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
 
     "validation": {
       "clientRequired": "Client is required",
       "paymentTermsInvalid": "Payment terms must be greater than 0",
       "noItems": "At least one item or time entry is required",
       "amountPositive": "Payment amount must be greater than 0"
-    }
+    },
+    "paymentsSubtitle": "Manage payment records | {{count}} payments found",
+    "fetchPaymentsError": "Failed to load payments. Please try again.",
+    "searchPaymentsPlaceholder": "Search payments by reference, invoice or client...",
+    "noPaymentsFound": "No payments found matching your criteria.",
+    "viewPayment": "View Payment",
+    "printReceipt": "Print Receipt",
+    "emailReceipt": "Email Receipt",
+    "refundPayment": "Refund Payment",
+    "refundConfirmation": "Are you sure you want to refund the payment of {{amount}} made on {{date}} (Ref: {{reference}})?",
+    "refundReason": "Reason for Refund",
+    "processRefund": "Process Refund",
+    "paymentReceipt": "Payment Receipt",
+    "receiptTitle": "Payment Receipt",
+    "receiptNumber": "Receipt Number",
+    "paymentDetails": "Payment Details",
+    "reference": "Reference"
   },
 
 
   "documents": {
+    "new": "New Document",
     "documents": "Documents",
     "document": "Document",
     "all": "All Documents",
@@ -689,6 +748,34 @@
     "markAllAsRead": "Mark all as read",
     "viewAll": "View all",
     "noNotifications": "No notifications"
+  },
+
+
+  "dashboard": {
+    "welcomeMessage": "Welcome, {{name}}",
+    "subtitle": "Your law practice management dashboard",
+    "totalCases": "Total Cases",
+    "totalClients": "Total Clients",
+    "upcomingAppointments": "Upcoming Appointments",
+    "overdueInvoices": "Overdue Invoices",
+    "viewAll": "View All",
+    "todaysAppointments": "Today's Appointments",
+    "noAppointmentsToday": "No appointments scheduled for today",
+    "viewAllAppointments": "View All Appointments",
+    "recentCases": "Recent Cases",
+    "noCasesFound": "No cases found",
+    "viewAllCases": "View All Cases",
+    "quickActions": "Quick Actions",
+    "yourStats": "Your Stats",
+    "activeCases": "Active Cases",
+    "appointmentsThisWeek": "Appointments This Week",
+    "hoursThisWeek": "Hours This Week",
+    "pendingInvoices": "Pending Invoices",
+    "reminders": "Reminders",
+    "reminderDeadline": "Case Deadline",
+    "reminderDocument": "Document Due",
+    "reminderInvoice": "Pending Invoices",
+    "fetchError": "Error loading dashboard data"
   },
 
   "footer": {

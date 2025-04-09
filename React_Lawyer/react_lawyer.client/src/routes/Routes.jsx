@@ -17,7 +17,8 @@ import FirmRegistrationPage from '../pages/auth/FirmRegistrationPage';
 //import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 
 // Main pages
-import DashboardPage from '../pages/dashboard/DashboardPage';
+import DashboardPage from '../pages/dashboard/DashboardPage'
+import HomePage from '../pages/dashboard/HomePage';
 import ProfilePage from '../pages/profile/ProfilePage';
 import SettingsPage from '../pages/settings/SettingsPage';
 import UnauthorizedPage from '../pages/errors/UnauthorizedPage';
@@ -37,6 +38,7 @@ import NewClientPage from '../pages/clients/NewClientPage';
 import AppointmentsListPage from '../pages/appointments/AppointmentsListPage';
 import AppointmentDetailsPage from '../pages/appointments/AppointmentDetailsPage';
 import NewAppointmentPage from '../pages/appointments/NewAppointmentPage';
+import CalendarPage from '../pages/appointments/CalendarPage';
 
 // Billing pages
 import InvoicesListPage from '../pages/billing/InvoicesListPage';
@@ -44,7 +46,7 @@ import InvoiceDetailsPage from '../pages/billing/InvoiceDetailsPage';
 import InvoicePrintPage from '../pages/billing/InvoicePrintPage';
 import InvoiceDownloadPdfPage from '../pages/billing/InvoiceDownloadPdfPage';
 import NewInvoicePage from '../pages/billing/NewInvoicePage';
-//import PaymentsPage from '../pages/billing/PaymentsPage';
+import PaymentsPage from '../pages/billing/PaymentsPage';
 
 //// Documents pages
 import DocumentsListPage from '../pages/documents/DocumentsListPage';
@@ -74,7 +76,7 @@ const AppRoutes = () => {
             {/* Protected routes with layout */}
             <Route element={<ProtectedLayout />}>
                 {/* Dashboard */}
-                <Route path="/" element={<DashboardPage />} />
+                <Route path="/" element={<HomePage />} />
 
                 {/* Profile and Settings */}
                 <Route path="/profile" element={<ProfilePage />} />
@@ -96,6 +98,7 @@ const AppRoutes = () => {
                 <Route path="/appointments" element={<AppointmentsListPage />} />
                 <Route path="/appointments/new" element={<NewAppointmentPage />} />
                 <Route path="/appointments/:id" element={<AppointmentDetailsPage />} />
+                <Route path="/appointments/calendar" element={<CalendarPage />} />
 
                 {/* Billing - Not for Clients */}
                 <Route element={<ProtectedRoute requiredrole={["Lawyer", "Admin", "Secretary"]} />}>
@@ -105,7 +108,7 @@ const AppRoutes = () => {
                     <Route path="/billing/invoices/:id" element={<InvoiceDetailsPage />} />
                     <Route path="/billing/invoices/:id/print" element={<InvoicePrintPage />} />
                     <Route path="/billing/invoices/:id/download" element={<InvoiceDownloadPdfPage />} />
-                    {/*<route path="/billing/payments" element={<paymentspage />} />*/}
+                    <Route path="/billing/payments" element={<PaymentsPage />} />
                 </Route>
 
                 {/* Documents */}

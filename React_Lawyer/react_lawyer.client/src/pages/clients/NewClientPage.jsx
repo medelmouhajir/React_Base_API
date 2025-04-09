@@ -20,7 +20,9 @@ import {
     Snackbar,
     Paper,
     Divider,
-    CircularProgress
+    CircularProgress,
+    useMediaQuery,
+    useTheme
 } from '@mui/material';
 import {
     Save as SaveIcon,
@@ -32,11 +34,16 @@ import PageHeader from '../../components/common/PageHeader';
 import clientService from '../../services/clientService';
 import { useAuth } from '../../features/auth/AuthContext';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
+import { useTranslation } from 'react-i18next';
 
 const NewClientPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
     const isOnline = useOnlineStatus();
+    const { t } = useTranslation();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMediumScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     // Form state
     const [formData, setFormData] = useState({
@@ -87,17 +94,17 @@ const NewClientPage = () => {
         switch (name) {
             case 'firstName':
                 if (!value.trim()) {
-                    error = 'First name is required';
+                    error = t('validation.firstNameRequired');
                 }
                 break;
             case 'lastName':
                 if (!value.trim()) {
-                    error = 'Last name is required';
+                    error = t('validation.lastNameRequired');
                 }
                 break;
             case 'email':
                 if (value && !/\S+@\S+\.\S+/.test(value)) {
-                    error = 'Please enter a valid email address';
+                    error = t('validation.invalidEmail');
                 }
                 break;
             default:
@@ -129,7 +136,7 @@ const NewClientPage = () => {
         if (formData.type === 'Corporate' && !formData.companyName.trim()) {
             setValidationErrors(prev => ({
                 ...prev,
-                companyName: 'Company name is required for corporate clients'
+                companyName: t('validation.companyNameRequired')
             }));
             isValid = false;
         }
@@ -145,7 +152,7 @@ const NewClientPage = () => {
 
         // Check if online
         if (!isOnline) {
-            setError('You are offline. Please connect to the internet to add a new client.');
+            setError(t('common.offlineAddClientError'));
             return;
         }
 
@@ -177,7 +184,7 @@ const NewClientPage = () => {
                 navigate('/clients/' + response.clientId);
             }, 1500);
         } catch (error) {
-            setError(error.message || 'Failed to create client. Please try again.');
+            setError(error.message || t('clients.createFailure'));
         } finally {
             setLoading(false);
         }
@@ -191,28 +198,28 @@ const NewClientPage = () => {
     return (
         <>
             <PageHeader
-                title="Add New Client"
-                subtitle="Create a new client record"
+                title={t('clients.newClient')}
+                subtitle={t('clients.newClientSubtitle')}
                 breadcrumbs={[
-                    { text: 'Dashboard', link: '/' },
-                    { text: 'Clients', link: '/clients' },
-                    { text: 'New Client' }
+                    { text: t('app.dashboard'), link: '/' },
+                    { text: t('clients.clients'), link: '/clients' },
+                    { text: t('clients.new') }
                 ]}
             />
 
-            <Paper sx={{ p: 3, mb: 3 }}>
+            <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3 }}>
                 <Box component="form" onSubmit={handleSubmit} noValidate>
                     <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
                         <PersonIcon sx={{ mr: 1 }} />
-                        Client Information
+                        {t('clients.clientInformation')}
                     </Typography>
                     <Divider sx={{ mb: 3 }} />
 
                     {/* Client Type Selection */}
-                    <FormControl component="fieldset" sx={{ mb: 3 }}>
-                        <FormLabel component="legend">Client Type</FormLabel>
+                    <FormControl component="fieldset" sx={{ mb: 3, width: '100%' }}>
+                        <FormLabel component="legend">{t('clients.clientType')}</FormLabel>
                         <RadioGroup
-                            row
+                            row={!isMobile}
                             name="type"
                             value={formData.type}
                             onChange={handleChange}
@@ -223,7 +230,7 @@ const NewClientPage = () => {
                                 label={
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                         <PersonIcon sx={{ mr: 0.5 }} />
-                                        Individual
+                                        {t('clients.individual')}
                                     </Box>
                                 }
                             />
@@ -233,100 +240,114 @@ const NewClientPage = () => {
                                 label={
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                         <BusinessIcon sx={{ mr: 0.5 }} />
-                                        Corporate
+                                        {t('clients.corporate')}
                                     </Box>
                                 }
                             />
-                            <FormControlLabel value="Government" control={<Radio />} label="Government" />
-                            <FormControlLabel value="NonProfit" control={<Radio />} label="Non-Profit" />
+                            <FormControlLabel
+                                value="Government"
+                                control={<Radio />}
+                                label={t('clients.government')}
+                            />
+                            <FormControlLabel
+                                value="NonProfit"
+                                control={<Radio />}
+                                label={t('clients.nonProfit')}
+                            />
                         </RadioGroup>
                     </FormControl>
 
-                    <Grid container spacing={3}>
+                    <Grid container spacing={isMobile ? 2 : 3}>
                         {/* Personal Information */}
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 required
                                 fullWidth
                                 id="firstName"
                                 name="firstName"
-                                label="First Name"
+                                label={t('clients.firstName')}
                                 value={formData.firstName}
                                 onChange={handleChange}
                                 error={!!validationErrors.firstName}
                                 helperText={validationErrors.firstName}
                                 margin="normal"
                                 autoFocus
+                                size={isMobile ? "small" : "medium"}
                             />
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 required
                                 fullWidth
                                 id="lastName"
                                 name="lastName"
-                                label="Last Name"
+                                label={t('clients.lastName')}
                                 value={formData.lastName}
                                 onChange={handleChange}
                                 error={!!validationErrors.lastName}
                                 helperText={validationErrors.lastName}
                                 margin="normal"
+                                size={isMobile ? "small" : "medium"}
                             />
                         </Grid>
 
                         {/* Contact Information */}
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
                                 id="email"
                                 name="email"
-                                label="Email"
+                                label={t('clients.email')}
                                 type="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 error={!!validationErrors.email}
                                 helperText={validationErrors.email}
                                 margin="normal"
+                                size={isMobile ? "small" : "medium"}
                             />
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 fullWidth
                                 id="phoneNumber"
                                 name="phoneNumber"
-                                label="Phone Number"
+                                label={t('clients.phoneNumber')}
                                 value={formData.phoneNumber}
                                 onChange={handleChange}
                                 margin="normal"
+                                size={isMobile ? "small" : "medium"}
                             />
                         </Grid>
 
                         {/* Corporate Information (shown only for Corporate client type) */}
                         {formData.type === 'Corporate' && (
                             <>
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} sm={6}>
                                     <TextField
                                         required
                                         fullWidth
                                         id="companyName"
                                         name="companyName"
-                                        label="Company Name"
+                                        label={t('clients.companyName')}
                                         value={formData.companyName}
                                         onChange={handleChange}
                                         error={!!validationErrors.companyName}
                                         helperText={validationErrors.companyName}
                                         margin="normal"
+                                        size={isMobile ? "small" : "medium"}
                                     />
                                 </Grid>
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} sm={6}>
                                     <TextField
                                         fullWidth
                                         id="taxId"
                                         name="taxId"
-                                        label="Tax ID / VAT Number"
+                                        label={t('clients.taxId')}
                                         value={formData.taxId}
                                         onChange={handleChange}
                                         margin="normal"
+                                        size={isMobile ? "small" : "medium"}
                                     />
                                 </Grid>
                             </>
@@ -338,26 +359,28 @@ const NewClientPage = () => {
                                 fullWidth
                                 id="address"
                                 name="address"
-                                label="Address"
+                                label={t('clients.address')}
                                 value={formData.address}
                                 onChange={handleChange}
                                 margin="normal"
                                 multiline
                                 rows={2}
+                                size={isMobile ? "small" : "medium"}
                             />
                         </Grid>
 
                         {/* ID Number - for individuals */}
                         {formData.type === 'Individual' && (
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} sm={6}>
                                 <TextField
                                     fullWidth
                                     id="idNumber"
                                     name="idNumber"
-                                    label="ID / Passport Number"
+                                    label={t('clients.idNumber')}
                                     value={formData.idNumber}
                                     onChange={handleChange}
                                     margin="normal"
+                                    size={isMobile ? "small" : "medium"}
                                 />
                             </Grid>
                         )}
@@ -368,12 +391,13 @@ const NewClientPage = () => {
                                 fullWidth
                                 id="notes"
                                 name="notes"
-                                label="Notes"
+                                label={t('clients.notes')}
                                 value={formData.notes}
                                 onChange={handleChange}
                                 margin="normal"
                                 multiline
-                                rows={4}
+                                rows={isMobile ? 3 : 4}
+                                size={isMobile ? "small" : "medium"}
                             />
                         </Grid>
                     </Grid>
@@ -388,19 +412,27 @@ const NewClientPage = () => {
                     {/* Offline warning */}
                     {!isOnline && (
                         <Alert severity="warning" sx={{ mt: 3 }}>
-                            You are currently offline. You need to be online to add a new client.
+                            {t('common.offlineWarning')}
                         </Alert>
                     )}
 
                     {/* Form actions */}
-                    <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                    <Box sx={{
+                        mt: 4,
+                        display: 'flex',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        justifyContent: isMobile ? 'center' : 'flex-end',
+                        gap: 2
+                    }}>
                         <Button
                             variant="outlined"
                             startIcon={<CancelIcon />}
                             onClick={handleCancel}
                             disabled={loading}
+                            fullWidth={isMobile}
+                            size={isMobile ? "small" : "medium"}
                         >
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             type="submit"
@@ -408,8 +440,10 @@ const NewClientPage = () => {
                             color="primary"
                             startIcon={loading ? <CircularProgress size={24} /> : <SaveIcon />}
                             disabled={loading || !isOnline}
+                            fullWidth={isMobile}
+                            size={isMobile ? "small" : "medium"}
                         >
-                            {loading ? 'Saving...' : 'Save Client'}
+                            {loading ? t('common.saving') : t('clients.saveClient')}
                         </Button>
                     </Box>
                 </Box>
@@ -423,7 +457,7 @@ const NewClientPage = () => {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
                 <Alert severity="success" sx={{ width: '100%' }}>
-                    Client created successfully! Redirecting...
+                    {t('clients.createSuccess')}
                 </Alert>
             </Snackbar>
         </>
