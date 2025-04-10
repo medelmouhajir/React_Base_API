@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using React_Lawyer.Server.Data;
 using React_Lawyer.Server.Services;
+using React_Lawyer.Server.Services.DocumentGeneration;
 using System.Text;
 
 namespace React_Lawyer.Server
@@ -28,15 +29,22 @@ namespace React_Lawyer.Server
             ConfigureCors(builder);
 
 
-            builder.Services.AddHttpClient<DocumentGenerationClient>(client =>
+            builder.Services.AddHttpClient<DocumentGenerationService>(client =>
             {
-                // Configure base URL from appsettings.json
-                var docGenUrl = builder.Configuration["Services:DocumentGenerator:Url"] ?? "http://localhost:5268";
-                client.BaseAddress = new Uri(docGenUrl);
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                string baseUrl = builder.Configuration["DocumentGenerator:BaseUrl"];
+                if (!string.IsNullOrEmpty(baseUrl))
+                {
+                    client.BaseAddress = new Uri(baseUrl);
+                }
+
+                // Set default timeout
+                client.Timeout = TimeSpan.FromSeconds(60);
+
+                // Add any other default headers here if needed
             });
 
-            builder.Services.AddScoped<DocumentGenerationClient>();
+            // Register DocumentGenerationService
+            builder.Services.AddScoped<DocumentGenerationService>();
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

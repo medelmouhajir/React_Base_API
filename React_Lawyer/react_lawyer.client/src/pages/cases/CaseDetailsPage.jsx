@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Container, Paper, Box, Typography, Button, Tabs, Tab,
-    Chip, Grid, Card, CardContent, Divider, IconButton,
+    Chip, Grid, Card, CardContent, CardHeader, Divider, IconButton,
     List, ListItem, ListItemText, ListItemIcon, ListItemSecondaryAction,
     Avatar, CircularProgress, Snackbar, Alert, Dialog,
     DialogTitle, DialogContent, DialogActions, TextField,
@@ -34,6 +34,8 @@ import PageHeader from '../../components/common/PageHeader';
 import caseService from '../../services/caseService';
 import clientService from '../../services/clientService';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
+import DocumentGenerationForm from '../../components/documents/DocumentGenerationForm';
+
 
 // Tab panel component
 const TabPanel = (props) => {
@@ -543,6 +545,23 @@ const CaseDetailsPage = () => {
                             {caseData?.description || t('common.noDescriptionProvided')}
                         </Typography>
                     </Grid>
+                </Grid>
+
+
+                <Grid item xs={12} md={6}>
+                    <Card>
+                        <CardHeader title={t('documents.documents')} />
+                        <CardContent>
+                            {/* Existing document list */}
+
+                            {/* Add the document generation form */}
+                            <DocumentGenerationForm
+                                caseId={parseInt(id)}
+                                entityType="case"
+                                onSuccess={() => fetchCaseData()}
+                            />
+                        </CardContent>
+                    </Card>
                 </Grid>
             </Paper>
 

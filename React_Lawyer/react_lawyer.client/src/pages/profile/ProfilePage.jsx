@@ -1,397 +1,749 @@
+// src/pages/profile/ProfilePage.jsx
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
+    Container,
+    Paper,
     Box,
-    Card,
-    Grid,
+    Typography,
     TextField,
     Button,
-    Typography,
+    Grid,
+    Avatar,
     Divider,
-    CircularProgress,
     Alert,
     Snackbar,
-    Avatar
+    CircularProgress,
+    Card,
+    CardContent,
+    Tabs,
+    Tab,
+    useMediaQuery,
+    useTheme
 } from '@mui/material';
 import {
+    Person as PersonIcon,
     Save as SaveIcon,
-    Person as PersonIcon
+    Edit as EditIcon,
+    AccountCircle as AccountCircleIcon,
+    VpnKey as VpnKeyIcon,
+    Notifications as NotificationsIcon
 } from '@mui/icons-material';
+
+// Components and services
 import PageHeader from '../../components/common/PageHeader';
 import { useAuth } from '../../features/auth/AuthContext';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
+import authService from '../../services/authService';
+import userService from '../../services/userService';
+
+// Tab panel component for tabbed interface
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`profile-tabpanel-${index}`}
+            aria-labelledby={`profile-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ p: 3 }}>
+                    {children}
+                </Box>
+            )}
+        </div>
+    );
+}
 
 const ProfilePage = () => {
-    const { user, logout } = useAuth();
+    const { t } = useTranslation();
+    const { user, updateUser } = useAuth();
     const isOnline = useOnlineStatus();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    // Form state
-    const [formData, setFormData] = useState({
+    // Tab state
+    const [tabValue, setTabValue] = useState(0);
+
+    // Profile form state
+    const [profile, setProfile] = useState({
         firstName: '',
         lastName: '',
         email: '',
         phoneNumber: '',
         username: '',
+        position: '',
+        biography: '',
+        title: '',
+        barNumber: '',
+        specializations: ''
+    });
+
+    // Password form state
+    const [passwordForm, setPasswordForm] = useState({
         currentPassword: '',
         newPassword: '',
-        confirmPassword: ''
+        confirmPassword: '',
+    });
+
+    // Notification preferences state
+    const [notificationPreferences, setNotificationPreferences] = useState({
+        emailNotifications: true,
+        appNotifications: true,
+        remindersBefore: 30 // minutes
     });
 
     // UI state
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+    const [loadingProfile, setLoadingProfile] = useState(false);
+    const [loadingPassword, setLoadingPassword] = useState(false);
+    const [loadingNotifications, setLoadingNotifications] = useState(false);
+    const [editing, setEditing] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [validationErrors, setValidationErrors] = useState({});
 
-    // Fetch profile data
+    // Validation state
+    const [errors, setErrors] = useState({});
+
+    // Load user profile data on component mount
     useEffect(() => {
-        const fetchProfileData = async () => {
-            if (!user?.id) return;
+        const fetchUserProfile = async () => {
+            if (!isOnline || !user?.id) {
+                setLoading(false);
+                return;
+            }
 
             try {
-                setLoading(true);
-                const response = await fetch(`/api/Users/${user.id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${user.token}`
-                    }
-                });
+                let userData = await userService.getUserProfile(user.id);
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch profile data');
-                }
 
-                const userData = await response.json();
-
-                setFormData({
+                // Initialize form with user data
+                setProfile({
                     firstName: userData.firstName || '',
                     lastName: userData.lastName || '',
                     email: userData.email || '',
                     phoneNumber: userData.phoneNumber || '',
                     username: userData.username || '',
-                    currentPassword: '',
-                    newPassword: '',
-                    confirmPassword: ''
+                    position: userData.position || '',
+                    biography: userData.biography || '',
+                    title: userData.title || '',
+                    barNumber: userData.barNumber || '',
+                    specializations: userData.specializations || ''
                 });
+
+                // Load notification preferences if available
+                if (userData.notificationPreferences) {
+                    setNotificationPreferences(userData.notificationPreferences);
+                }
             } catch (err) {
-                setError('Failed to load profile. Please try again later.');
                 console.error('Error fetching profile:', err);
+                setError(t('profile.fetchError'));
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProfileData();
-    }, [user]);
+        fetchUserProfile();
+    }, [user, isOnline, t]);
 
-    // Handle form changes
-    const handleChange = (e) => {
+    // Handle tab change
+    const handleTabChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
+
+    // Handle profile form input changes
+    const handleProfileChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setProfile(prev => ({
             ...prev,
             [name]: value
         }));
 
-        // Clear validation errors as user types
-        if (validationErrors[name]) {
-            setValidationErrors(prev => ({
+        // Clear validation errors when user types
+        if (errors[name]) {
+            setErrors(prev => ({
                 ...prev,
                 [name]: ''
             }));
         }
     };
 
-    // Validate form
-    const validateForm = () => {
-        const errors = {};
+    // Handle password form input changes
+    const handlePasswordChange = (e) => {
+        const { name, value } = e.target;
+        setPasswordForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
 
-        // Basic validation for required fields
-        if (!formData.firstName.trim()) errors.firstName = 'First name is required';
-        if (!formData.lastName.trim()) errors.lastName = 'Last name is required';
-        if (!formData.email.trim()) errors.email = 'Email is required';
-        if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
-            errors.email = 'Please enter a valid email address';
+        // Clear validation errors when user types
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: ''
+            }));
         }
-
-        // Password validation (only if user is trying to change password)
-        if (formData.newPassword) {
-            if (!formData.currentPassword) {
-                errors.currentPassword = 'Current password is required to set new password';
-            }
-            if (formData.newPassword.length < 6) {
-                errors.newPassword = 'Password must be at least 6 characters';
-            }
-            if (formData.newPassword !== formData.confirmPassword) {
-                errors.confirmPassword = 'Passwords do not match';
-            }
-        }
-
-        setValidationErrors(errors);
-        return Object.keys(errors).length === 0;
     };
 
-    // Handle form submission
-    const handleSubmit = async (e) => {
+    // Handle notification preferences changes
+    const handleNotificationChange = (e) => {
+        const { name, value, checked, type } = e.target;
+        setNotificationPreferences(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    // Enable profile editing
+    const handleEnableEditing = () => {
+        setEditing(true);
+    };
+
+    // Validate profile form
+    const validateProfileForm = () => {
+        const newErrors = {};
+
+        if (!profile.firstName.trim()) {
+            newErrors.firstName = t('validation.firstNameRequired');
+        }
+
+        if (!profile.lastName.trim()) {
+            newErrors.lastName = t('validation.lastNameRequired');
+        }
+
+        if (!profile.email.trim()) {
+            newErrors.email = t('validation.emailRequired');
+        } else if (!/\S+@\S+\.\S+/.test(profile.email)) {
+            newErrors.email = t('validation.invalidEmail');
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Validate password form
+    const validatePasswordForm = () => {
+        const newErrors = {};
+
+        if (!passwordForm.currentPassword) {
+            newErrors.currentPassword = t('validation.currentPasswordRequired');
+        }
+
+        if (!passwordForm.newPassword) {
+            newErrors.newPassword = t('validation.newPasswordRequired');
+        } else if (passwordForm.newPassword.length < 8) {
+            newErrors.newPassword = t('validation.passwordTooShort');
+        }
+
+        if (!passwordForm.confirmPassword) {
+            newErrors.confirmPassword = t('validation.confirmPasswordRequired');
+        } else if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+            newErrors.confirmPassword = t('validation.passwordsDoNotMatch');
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Submit profile form
+    const handleSubmitProfile = async (e) => {
         e.preventDefault();
 
         if (!isOnline) {
-            setError('You are offline. Please check your connection and try again.');
+            setError(t('common.offlineError'));
             return;
         }
 
-        if (!validateForm()) {
+        if (!validateProfileForm()) {
             return;
         }
 
-        setSaving(true);
+        setLoadingProfile(true);
         setError('');
+        setSuccess('');
 
         try {
-            // Prepare data for API
-            const updateData = {
+            // Prepare profile data
+            const profileData = {
                 userId: user.id,
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                email: formData.email,
-                phoneNumber: formData.phoneNumber,
-                username: formData.username,
-                // Only include password fields if user is changing password
-                ...(formData.newPassword && {
-                    passwordHash: formData.newPassword // Backend will hash this
-                })
+                firstName: profile.firstName,
+                lastName: profile.lastName,
+                email: profile.email,
+                phoneNumber: profile.phoneNumber,
             };
 
-            const response = await fetch(`/api/Users/${user.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.token}`
-                },
-                body: JSON.stringify(updateData)
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to update profile');
+            // Add role-specific data
+            if (user.role === 'Lawyer') {
+                profileData.title = profile.title;
+                profileData.biography = profile.biography;
+                profileData.barNumber = profile.barNumber;
+                profileData.specializations = profile.specializations;
+            } else if (user.role === 'Secretary' || user.role === 'Admin') {
+                profileData.position = profile.position;
             }
 
-            setSuccess('Profile updated successfully!');
+            // Update profile
+            await userService.updateUserProfile(user.id, profileData);
 
-            // Clear password fields
-            setFormData(prev => ({
-                ...prev,
-                currentPassword: '',
-                newPassword: '',
-                confirmPassword: ''
-            }));
+            // Update local user context
+            updateUser({
+                ...user,
+                name: `${profile.firstName} ${profile.lastName}`,
+                email: profile.email
+            });
+
+            setSuccess(t('profile.updateSuccess'));
+            setEditing(false);
         } catch (err) {
             console.error('Error updating profile:', err);
-            setError('Failed to update profile. Please try again.');
+            setError(t('profile.updateError'));
         } finally {
-            setSaving(false);
+            setLoadingProfile(false);
         }
     };
 
+    // Submit password form
+    const handleSubmitPassword = async (e) => {
+        e.preventDefault();
+
+        if (!isOnline) {
+            setError(t('common.offlineError'));
+            return;
+        }
+
+        if (!validatePasswordForm()) {
+            return;
+        }
+
+        setLoadingPassword(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            // Change password
+            await userService.changePassword(user.id, {
+                currentPassword: passwordForm.currentPassword,
+                newPassword: passwordForm.newPassword
+            });
+
+            setSuccess(t('profile.passwordChangeSuccess'));
+            setPasswordForm({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            });
+        } catch (err) {
+            console.error('Error changing password:', err);
+            setError(err.message || t('profile.passwordChangeError'));
+        } finally {
+            setLoadingPassword(false);
+        }
+    };
+
+    // Submit notification preferences
+    const handleSubmitNotifications = async (e) => {
+        e.preventDefault();
+
+        if (!isOnline) {
+            setError(t('common.offlineError'));
+            return;
+        }
+
+        setLoadingNotifications(true);
+        setError('');
+        setSuccess('');
+
+        try {
+            // Update notification preferences
+            await userService.updateNotificationPreferences(user.id, notificationPreferences);
+            setSuccess(t('profile.notificationPrefsUpdated'));
+        } catch (err) {
+            console.error('Error updating notification preferences:', err);
+            setError(t('profile.notificationUpdateError'));
+        } finally {
+            setLoadingNotifications(false);
+        }
+    };
+
+    // Loading indicator
+    if (loading) {
+        return (
+            <Container maxWidth="lg">
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh' }}>
+                    <CircularProgress />
+                </Box>
+            </Container>
+        );
+    }
+
+    // User avatar and name display
+    const getInitials = () => {
+        return `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`.toUpperCase();
+    };
+
+    const getUserAvatar = () => {
+        // This could be replaced with an actual avatar URL if available
+        return null;
+    };
+
     return (
-        <>
+        <Container maxWidth="lg">
             <PageHeader
-                title="My Profile"
-                subtitle="View and update your account information"
+                title={t('profile.myProfile')}
+                subtitle={t('profile.manageYourAccount')}
                 breadcrumbs={[
-                    { text: 'Dashboard', link: '/' },
-                    { text: 'Profile' }
+                    { text: t('app.dashboard'), link: '/' },
+                    { text: t('profile.profile') }
                 ]}
             />
 
-            {loading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                    <CircularProgress />
-                </Box>
-            ) : (
-                <Card sx={{ p: 3, mt: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                        <Avatar
-                            sx={{ width: 80, height: 80, mr: 2, bgcolor: 'primary.main' }}
-                        >
-                            <PersonIcon sx={{ fontSize: 40 }} />
-                        </Avatar>
-                        <Box>
-                            <Typography variant="h5">
-                                {formData.firstName} {formData.lastName}
-                            </Typography>
-                            <Typography variant="body1" color="text.secondary">
-                                {user?.role || 'User'}
-                            </Typography>
-                        </Box>
-                    </Box>
-
-                    <Divider sx={{ mb: 3 }} />
-
-                    <Box component="form" onSubmit={handleSubmit}>
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
-                                <Typography variant="h6" gutterBottom>
-                                    Personal Information
-                                </Typography>
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    required
-                                    label="First Name"
-                                    name="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                    error={!!validationErrors.firstName}
-                                    helperText={validationErrors.firstName}
-                                    disabled={saving}
-                                />
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    required
-                                    label="Last Name"
-                                    name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                    error={!!validationErrors.lastName}
-                                    helperText={validationErrors.lastName}
-                                    disabled={saving}
-                                />
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    required
-                                    label="Email"
-                                    name="email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    error={!!validationErrors.email}
-                                    helperText={validationErrors.email}
-                                    disabled={saving}
-                                />
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Phone Number"
-                                    name="phoneNumber"
-                                    value={formData.phoneNumber}
-                                    onChange={handleChange}
-                                    disabled={saving}
-                                />
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Username"
-                                    name="username"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                    disabled={true} // Username typically can't be changed
-                                />
-                            </Grid>
-
-                            <Grid item xs={12}>
-                                <Divider sx={{ my: 2 }} />
-                                <Typography variant="h6" gutterBottom>
-                                    Change Password
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                    Leave blank to keep your current password
-                                </Typography>
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Current Password"
-                                    name="currentPassword"
-                                    type="password"
-                                    value={formData.currentPassword}
-                                    onChange={handleChange}
-                                    error={!!validationErrors.currentPassword}
-                                    helperText={validationErrors.currentPassword}
-                                    disabled={saving}
-                                />
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="New Password"
-                                    name="newPassword"
-                                    type="password"
-                                    value={formData.newPassword}
-                                    onChange={handleChange}
-                                    error={!!validationErrors.newPassword}
-                                    helperText={validationErrors.newPassword}
-                                    disabled={saving}
-                                />
-                            </Grid>
-
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Confirm New Password"
-                                    name="confirmPassword"
-                                    type="password"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    error={!!validationErrors.confirmPassword}
-                                    helperText={validationErrors.confirmPassword}
-                                    disabled={saving}
-                                />
-                            </Grid>
-
-                            <Grid item xs={12}>
-                                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button
-                                        type="submit"
-                                        variant="contained"
-                                        color="primary"
-                                        disabled={saving || !isOnline}
-                                        startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-                                    >
-                                        {saving ? 'Saving...' : 'Save Changes'}
-                                    </Button>
-                                </Box>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Card>
+            {/* Error or success message */}
+            {error && (
+                <Alert severity="error" sx={{ mb: 3 }}>
+                    {error}
+                </Alert>
             )}
 
-            {/* Success message */}
+            {/* Main content */}
+            <Paper sx={{ mb: 4, overflow: 'hidden' }}>
+                {/* Profile header */}
+                <Box
+                    sx={{
+                        p: 3,
+                        background: theme.palette.primary.main,
+                        color: 'white',
+                        display: 'flex',
+                        flexDirection: isMobile ? 'column' : 'row',
+                        alignItems: isMobile ? 'center' : 'flex-start',
+                        gap: 3
+                    }}
+                >
+                    <Avatar
+                        src={getUserAvatar()}
+                        sx={{
+                            width: 100,
+                            height: 100,
+                            bgcolor: theme.palette.secondary.main,
+                            fontSize: '2rem'
+                        }}
+                    >
+                        {getInitials()}
+                    </Avatar>
+
+                    <Box sx={{ flexGrow: 1 }}>
+                        <Typography variant="h4" sx={{ fontWeight: 500 }}>
+                            {profile.firstName} {profile.lastName}
+                        </Typography>
+                        <Typography variant="subtitle1">
+                            {profile.email}
+                        </Typography>
+                        <Typography variant="body1" sx={{ mt: 1 }}>
+                            {user?.role === 'Lawyer' ? profile.title : profile.position}
+                        </Typography>
+                    </Box>
+                </Box>
+
+                {/* Tabs */}
+                <Tabs
+                    value={tabValue}
+                    onChange={handleTabChange}
+                    variant={isMobile ? "fullWidth" : "standard"}
+                    sx={{ borderBottom: 1, borderColor: 'divider' }}
+                >
+                    <Tab
+                        icon={<AccountCircleIcon />}
+                        label={t('profile.personalInfo')}
+                        id="profile-tab-0"
+                        aria-controls="profile-tabpanel-0"
+                    />
+                    <Tab
+                        icon={<VpnKeyIcon />}
+                        label={t('profile.changePassword')}
+                        id="profile-tab-1"
+                        aria-controls="profile-tabpanel-1"
+                    />
+                    <Tab
+                        icon={<NotificationsIcon />}
+                        label={t('profile.notifications')}
+                        id="profile-tab-2"
+                        aria-controls="profile-tabpanel-2"
+                    />
+                </Tabs>
+
+                {/* Personal Info Tab */}
+                <TabPanel value={tabValue} index={0}>
+                    <form onSubmit={handleSubmitProfile}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label={t('profile.firstName')}
+                                    name="firstName"
+                                    value={profile.firstName}
+                                    onChange={handleProfileChange}
+                                    required
+                                    error={!!errors.firstName}
+                                    helperText={errors.firstName}
+                                    disabled={!editing}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label={t('profile.lastName')}
+                                    name="lastName"
+                                    value={profile.lastName}
+                                    onChange={handleProfileChange}
+                                    required
+                                    error={!!errors.lastName}
+                                    helperText={errors.lastName}
+                                    disabled={!editing}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label={t('profile.email')}
+                                    name="email"
+                                    type="email"
+                                    value={profile.email}
+                                    onChange={handleProfileChange}
+                                    required
+                                    error={!!errors.email}
+                                    helperText={errors.email}
+                                    disabled={!editing}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    fullWidth
+                                    label={t('profile.phoneNumber')}
+                                    name="phoneNumber"
+                                    value={profile.phoneNumber}
+                                    onChange={handleProfileChange}
+                                    disabled={!editing}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label={t('profile.username')}
+                                    name="username"
+                                    value={profile.username}
+                                    disabled={true} // Username cannot be changed
+                                />
+                            </Grid>
+
+                            {/* Role-specific fields */}
+                            {user?.role === 'Lawyer' && (
+                                <>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            label={t('profile.title')}
+                                            name="title"
+                                            value={profile.title}
+                                            onChange={handleProfileChange}
+                                            disabled={!editing}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            label={t('profile.barNumber')}
+                                            name="barNumber"
+                                            value={profile.barNumber}
+                                            onChange={handleProfileChange}
+                                            disabled={!editing}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label={t('profile.specializations')}
+                                            name="specializations"
+                                            value={profile.specializations}
+                                            onChange={handleProfileChange}
+                                            disabled={!editing}
+                                            helperText={t('profile.specializationsHelp')}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label={t('profile.biography')}
+                                            name="biography"
+                                            value={profile.biography}
+                                            onChange={handleProfileChange}
+                                            multiline
+                                            rows={4}
+                                            disabled={!editing}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+
+                            {(user?.role === 'Secretary' || user?.role === 'Admin') && (
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label={t('profile.position')}
+                                        name="position"
+                                        value={profile.position}
+                                        onChange={handleProfileChange}
+                                        disabled={!editing}
+                                    />
+                                </Grid>
+                            )}
+
+                            {/* Action buttons */}
+                            <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2}>
+                                {!editing ? (
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<EditIcon />}
+                                        onClick={handleEnableEditing}
+                                    >
+                                        {t('profile.editProfile')}
+                                    </Button>
+                                ) : (
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => setEditing(false)}
+                                            disabled={loadingProfile}
+                                        >
+                                            {t('common.cancel')}
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            variant="contained"
+                                            color="primary"
+                                            startIcon={loadingProfile ? <CircularProgress size={20} /> : <SaveIcon />}
+                                            disabled={loadingProfile || !isOnline}
+                                        >
+                                            {loadingProfile ? t('common.saving') : t('common.save')}
+                                        </Button>
+                                    </>
+                                )}
+                            </Grid>
+                        </Grid>
+                    </form>
+                </TabPanel>
+
+                {/* Change Password Tab */}
+                <TabPanel value={tabValue} index={1}>
+                    <form onSubmit={handleSubmitPassword}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label={t('profile.currentPassword')}
+                                    name="currentPassword"
+                                    type="password"
+                                    value={passwordForm.currentPassword}
+                                    onChange={handlePasswordChange}
+                                    required
+                                    error={!!errors.currentPassword}
+                                    helperText={errors.currentPassword}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label={t('profile.newPassword')}
+                                    name="newPassword"
+                                    type="password"
+                                    value={passwordForm.newPassword}
+                                    onChange={handlePasswordChange}
+                                    required
+                                    error={!!errors.newPassword}
+                                    helperText={errors.newPassword || t('profile.passwordRequirements')}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    label={t('profile.confirmPassword')}
+                                    name="confirmPassword"
+                                    type="password"
+                                    value={passwordForm.confirmPassword}
+                                    onChange={handlePasswordChange}
+                                    required
+                                    error={!!errors.confirmPassword}
+                                    helperText={errors.confirmPassword}
+                                />
+                            </Grid>
+
+                            {/* Action button */}
+                            <Grid item xs={12} display="flex" justifyContent="flex-end">
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={loadingPassword ? <CircularProgress size={20} /> : <SaveIcon />}
+                                    disabled={loadingPassword || !isOnline}
+                                >
+                                    {loadingPassword ? t('common.updating') : t('profile.changePassword')}
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </form>
+                </TabPanel>
+
+                {/* Notification Settings Tab */}
+                <TabPanel value={tabValue} index={2}>
+                    <form onSubmit={handleSubmitNotifications}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Typography variant="subtitle1" gutterBottom>
+                                    {t('profile.notificationChannels')}
+                                </Typography>
+                            </Grid>
+
+                            {/* Notification preferences would be implemented here */}
+                            {/* This is a placeholder for future implementation */}
+                            <Grid item xs={12}>
+                                <Alert severity="info">
+                                    {t('profile.notificationSettingsFeature')}
+                                </Alert>
+                            </Grid>
+
+                            {/* Action button */}
+                            <Grid item xs={12} display="flex" justifyContent="flex-end">
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={loadingNotifications ? <CircularProgress size={20} /> : <SaveIcon />}
+                                    disabled={loadingNotifications || !isOnline}
+                                >
+                                    {loadingNotifications ? t('common.saving') : t('common.saveChanges')}
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </form>
+                </TabPanel>
+            </Paper>
+
+            {/* Success notification */}
             <Snackbar
                 open={!!success}
-                autoHideDuration={6000}
+                autoHideDuration={5000}
                 onClose={() => setSuccess('')}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
-                <Alert severity="success" onClose={() => setSuccess('')}>
+                <Alert onClose={() => setSuccess('')} severity="success" sx={{ width: '100%' }}>
                     {success}
                 </Alert>
             </Snackbar>
-
-            {/* Error message */}
-            <Snackbar
-                open={!!error}
-                autoHideDuration={6000}
-                onClose={() => setError('')}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            >
-                <Alert severity="error" onClose={() => setError('')}>
-                    {error}
-                </Alert>
-            </Snackbar>
-        </>
+        </Container>
     );
 };
 
