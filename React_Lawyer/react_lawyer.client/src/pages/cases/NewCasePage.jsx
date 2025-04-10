@@ -55,7 +55,7 @@ const NewCasePage = () => {
     const [formData, setFormData] = useState({
         caseNumber: '',
         lawFirmId: user?.lawFirmId || 0,
-        lawyerId: user?.role === 'Lawyer' ? user.id : null,
+        lawyerId: user?.role === 'Lawyer' ? user.roleId : null,
         title: '',
         description: '',
         type: 'Civil', // Default case type

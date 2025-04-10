@@ -195,7 +195,10 @@ class CaseService {
                 body: JSON.stringify(sanitizedData)
             });
 
-            return await this.handleResponse(response, url);
+            if (!response.ok)
+                throw error;
+
+            return true;
         } catch (error) {
             console.error('Error in createCase:', error);
             throw error;

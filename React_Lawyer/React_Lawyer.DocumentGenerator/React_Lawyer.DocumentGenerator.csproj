@@ -10,6 +10,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Fonts\Amiri\Amiri-Bold.ttf" />
+    <None Remove="Fonts\Amiri\Amiri-BoldItalic.ttf" />
+    <None Remove="Fonts\Amiri\Amiri-Italic.ttf" />
+    <None Remove="Fonts\Amiri\Amiri-Regular.ttf" />
+    <None Remove="Fonts\Amiri\AmiriQuran.ttf" />
+    <None Remove="Fonts\Amiri\AmiriQuranColored.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Fonts\Amiri\Amiri-Bold.ttf" />
+    <EmbeddedResource Include="Fonts\Amiri\Amiri-BoldItalic.ttf" />
+    <EmbeddedResource Include="Fonts\Amiri\Amiri-Italic.ttf" />
+    <EmbeddedResource Include="Fonts\Amiri\Amiri-Regular.ttf" />
+    <EmbeddedResource Include="Fonts\Amiri\AmiriQuran.ttf" />
+    <EmbeddedResource Include="Fonts\Amiri\AmiriQuranColored.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="iTextSharp" Version="5.5.13.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
@@ -19,6 +37,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
