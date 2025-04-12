@@ -13,7 +13,7 @@ namespace React_Lawyer.DocumentGenerator.Models.Extras
         public object Data { get; set; }
 
         [Required]
-        public DocumentFormat Format { get; set; } = DocumentFormat.PDF;
+        public DocumentGeneratorAPI.Models.DocumentFormat Format { get; set; } = DocumentGeneratorAPI.Models.DocumentFormat.PDF;
 
         [Required]
         public string DocumentTitle { get; set; }

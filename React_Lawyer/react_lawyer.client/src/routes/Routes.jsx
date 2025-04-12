@@ -16,8 +16,8 @@ import NotificationsPage from '../pages/notifications/NotificationsPage';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 import FirmRegistrationPage from '../pages/auth/FirmRegistrationPage';
-//import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
-//import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 
 // Main pages
 import DashboardPage from '../pages/dashboard/DashboardPage'
@@ -75,8 +75,18 @@ const AppRoutes = () => {
             <Route path="/login" element={
                 !isAuthenticated() ? <LoginPage /> : <Navigate to="/" replace />
             } />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/register-firm" element={<FirmRegistrationPage />} />
+            <Route path="/register" element={
+                !isAuthenticated() ? <RegisterPage /> : <Navigate to="/" replace />
+            } />
+            <Route path="/register-firm" element={
+                !isAuthenticated() ? <FirmRegistrationPage /> : <Navigate to="/" replace />
+            } />
+            <Route path="/forgotPassword" element={
+                !isAuthenticated() ? <ForgotPasswordPage /> : <Navigate to="/" replace />
+            } />
+            <Route path="/resetPassword" element={
+                !isAuthenticated() ? <ResetPasswordPage /> : <Navigate to="/" replace />
+            } />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
             {/* Protected routes with layout */}

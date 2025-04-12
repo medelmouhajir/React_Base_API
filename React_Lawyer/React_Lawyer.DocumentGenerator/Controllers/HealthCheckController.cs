@@ -108,7 +108,7 @@ namespace DocumentGeneratorAPI.Controllers
                 {
                     TemplateId = savedTemplate.Id,
                     DocumentTitle = "Health Check Document",
-                    Format = DocumentFormat.TXT,
+                    Format = DocumentGeneratorAPI.Models.DocumentFormat.TXT,
                     UserId = "healthcheck"
                 };
 
@@ -175,7 +175,7 @@ namespace DocumentGeneratorAPI.Controllers
                 {
                     TemplateId = savedTemplate.Id,
                     DocumentTitle = "Health Check Download",
-                    Format = DocumentFormat.Markdown,
+                    Format = DocumentGeneratorAPI.Models.DocumentFormat.Markdown,
                     UserId = "healthcheck"
                 };
 

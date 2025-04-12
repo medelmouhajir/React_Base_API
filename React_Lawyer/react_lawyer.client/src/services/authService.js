@@ -340,6 +340,88 @@ class AuthService {
 
         return user.role === requiredRole;
     }
+
+
+    /**
+     * Request a password reset link
+     * @param {string} email - User's email address
+     * @returns {Promise} Promise with reset request response
+     */
+    async requestPasswordReset(email) {
+        try {
+            const response = await fetch(`${API_URL}/api/auth/forgot-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to request password reset');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Password reset request error:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * Validate a reset token
+     * @param {string} token - Reset token to validate
+     * @returns {Promise<boolean>} Promise resolving to true if token is valid
+     */
+    async validateResetToken(token) {
+        try {
+            const response = await fetch(`${API_URL}/api/auth/validate-reset-token`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token }),
+            });
+
+            if (!response.ok) {
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Token validation error:", error);
+            return false;
+        }
+    }
+
+    /**
+     * Reset password with token
+     * @param {string} token - Reset token
+     * @param {string} newPassword - New password
+     * @returns {Promise} Promise with reset response
+     */
+    async resetPassword(token, newPassword) {
+        try {
+            const response = await fetch(`${API_URL}/api/auth/reset-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token, newPassword }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to reset password');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Password reset error:", error);
+            throw error;
+        }
+    }
 }
 
 export default new AuthService();

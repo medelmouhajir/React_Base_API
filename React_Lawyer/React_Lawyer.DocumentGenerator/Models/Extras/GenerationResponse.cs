@@ -22,7 +22,7 @@ namespace React_Lawyer.DocumentGenerator.Models.Extras
         /// <summary>
         /// Format of the generated document
         /// </summary>
-        public DocumentFormat Format { get; set; }
+        public DocumentGeneratorAPI.Models.DocumentFormat Format { get; set; }
 
         /// <summary>
         /// When the document was generated

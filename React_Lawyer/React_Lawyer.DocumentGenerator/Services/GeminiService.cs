@@ -26,7 +26,7 @@ namespace DocumentGeneratorAPI.Services
 
             _apiKey = _configuration["Gemini:ApiKey"];
             _apiBaseUrl = _configuration["Gemini:ApiUrl"] ?? "https://generativelanguage.googleapis.com/v1beta";
-            _modelName = _configuration["Gemini:ModelName"] ?? "models/gemini-1.5-pro";
+            _modelName = _configuration["Gemini:ModelName"] ?? "models/gemini-2.5-pro-preview-03-25";
 
             if (string.IsNullOrEmpty(_apiKey))
             {

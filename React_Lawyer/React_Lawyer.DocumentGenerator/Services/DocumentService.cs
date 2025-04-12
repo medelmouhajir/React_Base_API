@@ -217,24 +217,29 @@ namespace DocumentGeneratorAPI.Services
         /// <summary>
         /// Convert document content to the requested format
         /// </summary>
-        private (byte[] FileBytes, string Extension) FormatDocument(string content, DocumentFormat format)
+        private (byte[] FileBytes, string Extension) FormatDocument(string content, DocumentGeneratorAPI.Models.DocumentFormat format)
         {
             // In a real implementation, this would handle conversion to different formats
             // For simplicity, we'll just return the raw text for all formats
-            byte[] fileBytes;
-            string extension;
+            byte[] fileBytes = Array.Empty<byte>();
+            string extension = "txt";
 
             try
             {
                 switch (format)
                 {
-                    case DocumentFormat.PDF:
+                    // Modified portion of the FormatDocument method in DocumentService.cs
+
+                    case DocumentGeneratorAPI.Models.DocumentFormat.PDF:
                         using (var memoryStream = new MemoryStream())
                         {
                             using (var document = new iTextSharp.text.Document())
                             {
                                 try
                                 {
+                                    // Register encoding provider BEFORE any font operations
+                                    System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
                                     var writer = iTextSharp.text.pdf.PdfWriter.GetInstance(document, memoryStream);
                                     document.Open();
 
@@ -249,57 +254,76 @@ namespace DocumentGeneratorAPI.Services
                                     {
                                         using (var fontStream = assembly.GetManifestResourceStream(resourceName))
                                         {
-                                            byte[] fontData = new byte[fontStream.Length];
-                                            fontStream.Read(fontData, 0, fontData.Length);
-
-                                            // This is the part that needs fixing - make sure we use the correct encoding parameters
-                                            var baseFont = iTextSharp.text.pdf.BaseFont.CreateFont(
-                                                "Amiri-Regular.ttf",
-                                                iTextSharp.text.pdf.BaseFont.IDENTITY_H, // Use IDENTITY_H for Unicode
-                                                iTextSharp.text.pdf.BaseFont.EMBEDDED,
-                                                false, fontData, null);
-
-                                            var arabicFont = new iTextSharp.text.Font(baseFont, 12);
-
-                                            // Register the encoding provider
-                                            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-
-                                            // Create a table with RTL support
-                                            var table = new iTextSharp.text.pdf.PdfPTable(1);
-                                            table.WidthPercentage = 100;
-                                            table.RunDirection = iTextSharp.text.pdf.PdfWriter.RUN_DIRECTION_RTL;
-
-                                            // Split content into paragraphs
-                                            var paragraphs = content.Split('\n');
-                                            foreach (var paragraph in paragraphs)
+                                            if (fontStream != null)
                                             {
-                                                if (string.IsNullOrWhiteSpace(paragraph))
+                                                byte[] fontData = new byte[fontStream.Length];
+                                                fontStream.Read(fontData, 0, fontData.Length);
+
+                                                // Create temporary file to load the font
+                                                string tempFontPath = Path.Combine(Path.GetTempPath(), $"temp-amiri-{Guid.NewGuid()}.ttf");
+                                                File.WriteAllBytes(tempFontPath, fontData);
+
+                                                try
                                                 {
-                                                    // Add empty cell for line breaks
-                                                    var emptyCell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(" ", arabicFont));
-                                                    emptyCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-                                                    table.AddCell(emptyCell);
-                                                    continue;
+                                                    // Create the base font with the temporary file
+                                                    var baseFont = iTextSharp.text.pdf.BaseFont.CreateFont(
+                                                        tempFontPath,
+                                                        iTextSharp.text.pdf.BaseFont.IDENTITY_H,
+                                                        iTextSharp.text.pdf.BaseFont.EMBEDDED);
+
+                                                    var arabicFont = new iTextSharp.text.Font(baseFont, 12);
+
+                                                    // Create a table with RTL support
+                                                    var table = new iTextSharp.text.pdf.PdfPTable(1);
+                                                    table.WidthPercentage = 100;
+                                                    table.RunDirection = iTextSharp.text.pdf.PdfWriter.RUN_DIRECTION_RTL;
+
+                                                    // Split content into paragraphs
+                                                    var paragraphs = content.Split('\n');
+                                                    foreach (var paragraph in paragraphs)
+                                                    {
+                                                        if (string.IsNullOrWhiteSpace(paragraph))
+                                                        {
+                                                            // Add empty cell for line breaks
+                                                            var emptyCell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(" ", arabicFont));
+                                                            emptyCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                                                            table.AddCell(emptyCell);
+                                                            continue;
+                                                        }
+
+                                                        // Create a cell with RTL text
+                                                        var cell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(paragraph, arabicFont));
+                                                        cell.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                                                        cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                                                        cell.PaddingBottom = 5f;
+
+                                                        // Add cell to table
+                                                        table.AddCell(cell);
+                                                    }
+
+                                                    // Add the table to the document
+                                                    document.Add(table);
                                                 }
-
-                                                // Create a cell with RTL text
-                                                var cell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(paragraph, arabicFont));
-                                                cell.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
-                                                cell.Border = iTextSharp.text.Rectangle.NO_BORDER;
-                                                cell.PaddingBottom = 5f;
-
-                                                // Add cell to table
-                                                table.AddCell(cell);
+                                                finally
+                                                {
+                                                    // Always clean up the temporary file
+                                                    if (File.Exists(tempFontPath))
+                                                    {
+                                                        try { File.Delete(tempFontPath); } catch { /* ignore cleanup errors */ }
+                                                    }
+                                                }
                                             }
-
-                                            // Add the table to the document
-                                            document.Add(table);
+                                            else
+                                            {
+                                                _logger.LogWarning("Font stream is null for resource: {ResourceName}", resourceName);
+                                                document.Add(new iTextSharp.text.Paragraph(content));
+                                            }
                                         }
                                     }
                                     else
                                     {
-                                        // Font resource not found, try a simple approach with UTF-8 encoding
-                                        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+                                        // Font resource not found, use a simple approach
+                                        _logger.LogWarning("Font resource not found, using default font");
                                         document.Add(new iTextSharp.text.Paragraph(content));
                                     }
 
@@ -316,6 +340,7 @@ namespace DocumentGeneratorAPI.Services
                                     // Ensure at least one page exists
                                     if (document.PageNumber == 0)
                                     {
+                                        document.NewPage();
                                         document.Add(new iTextSharp.text.Paragraph("Error: " + ex.Message));
                                     }
                                 }
@@ -326,20 +351,73 @@ namespace DocumentGeneratorAPI.Services
                         }
                         extension = "pdf";
                         break;
-                    case DocumentFormat.DOCX:
-                        // In a real implementation, we would convert to DOCX
-                        fileBytes = Encoding.UTF8.GetBytes(content);
+
+
+                    case DocumentGeneratorAPI.Models.DocumentFormat.DOCX:
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            try
+                            {
+                                // Register encoding provider
+                                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+                                using (var wordDoc = DocumentFormat.OpenXml.Packaging.WordprocessingDocument.Create(memoryStream, DocumentFormat.OpenXml.WordprocessingDocumentType.Document, true))
+                                {
+                                    // Add main document part
+                                    var mainPart = wordDoc.AddMainDocumentPart();
+                                    mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document();
+                                    var body = new DocumentFormat.OpenXml.Wordprocessing.Body();
+
+                                    // Split content into lines
+                                    var paragraphs = content.Split('\n');
+                                    foreach (var line in paragraphs)
+                                    {
+                                        var para = new DocumentFormat.OpenXml.Wordprocessing.Paragraph();
+
+                                        // Apply basic formatting (e.g., right-to-left, font)
+                                        var run = new DocumentFormat.OpenXml.Wordprocessing.Run(new DocumentFormat.OpenXml.Wordprocessing.Text(line ?? string.Empty));
+
+                                        var runProps = new DocumentFormat.OpenXml.Wordprocessing.RunProperties(
+                                            new DocumentFormat.OpenXml.Wordprocessing.RunFonts() { Ascii = "Arial", HighAnsi = "Arial", ComplexScript = "Arial" },
+                                            new DocumentFormat.OpenXml.Wordprocessing.FontSize() { Val = "24" }, // 12pt = 24 half-points
+                                            new DocumentFormat.OpenXml.Wordprocessing.RightToLeftText());
+
+                                        run.PrependChild(runProps);
+
+                                        para.Append(run);
+
+                                        // Set paragraph properties for RTL
+                                        para.ParagraphProperties = new DocumentFormat.OpenXml.Wordprocessing.ParagraphProperties(
+                                            new DocumentFormat.OpenXml.Wordprocessing.RightToLeftText(),
+                                            new DocumentFormat.OpenXml.Wordprocessing.Justification() { Val = DocumentFormat.OpenXml.Wordprocessing.JustificationValues.Right });
+
+                                        body.Append(para);
+                                    }
+
+                                    mainPart.Document.Append(body);
+                                    mainPart.Document.Save();
+                                }
+
+                                fileBytes = memoryStream.ToArray();
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, "Error generating DOCX document");
+                            }
+                        }
                         extension = "docx";
                         break;
-                    case DocumentFormat.HTML:
+
+
+                    case DocumentGeneratorAPI.Models.DocumentFormat.HTML:
                         fileBytes = Encoding.UTF8.GetBytes(content);
                         extension = "html";
                         break;
-                    case DocumentFormat.Markdown:
+                    case DocumentGeneratorAPI.Models.DocumentFormat.Markdown:
                         fileBytes = Encoding.UTF8.GetBytes(content);
                         extension = "md";
                         break;
-                    case DocumentFormat.TXT:
+                    case DocumentGeneratorAPI.Models.DocumentFormat.TXT:
                     default:
                         fileBytes = Encoding.UTF8.GetBytes(content);
                         extension = "txt";
@@ -359,15 +437,15 @@ namespace DocumentGeneratorAPI.Services
         /// <summary>
         /// Get the content type for a document format
         /// </summary>
-        private string GetContentType(DocumentFormat format)
+        private string GetContentType(DocumentGeneratorAPI.Models.DocumentFormat format)
         {
             return format switch
             {
-                DocumentFormat.PDF => "application/pdf",
-                DocumentFormat.DOCX => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                DocumentFormat.HTML => "text/html",
-                DocumentFormat.Markdown => "text/markdown",
-                DocumentFormat.TXT => "text/plain",
+                DocumentGeneratorAPI.Models.DocumentFormat.PDF => "application/pdf",
+                DocumentGeneratorAPI.Models.DocumentFormat.DOCX => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                DocumentGeneratorAPI.Models.DocumentFormat.HTML => "text/html",
+                DocumentGeneratorAPI.Models.DocumentFormat.Markdown => "text/markdown",
+                DocumentGeneratorAPI.Models.DocumentFormat.TXT => "text/plain",
                 _ => "application/octet-stream",
             };
         }
@@ -375,15 +453,15 @@ namespace DocumentGeneratorAPI.Services
         /// <summary>
         /// Get the file extension for a document format
         /// </summary>
-        private string GetFileExtension(DocumentFormat format)
+        private string GetFileExtension(DocumentGeneratorAPI.Models.DocumentFormat format)
         {
             return format switch
             {
-                DocumentFormat.PDF => "pdf",
-                DocumentFormat.DOCX => "docx",
-                DocumentFormat.HTML => "html",
-                DocumentFormat.Markdown => "md",
-                DocumentFormat.TXT => "txt",
+                DocumentGeneratorAPI.Models.DocumentFormat.PDF => "pdf",
+                DocumentGeneratorAPI.Models.DocumentFormat.DOCX => "docx",
+                DocumentGeneratorAPI.Models.DocumentFormat.HTML => "html",
+                DocumentGeneratorAPI.Models.DocumentFormat.Markdown => "md",
+                DocumentGeneratorAPI.Models.DocumentFormat.TXT => "txt",
                 _ => "bin",
             };
         }
