@@ -440,7 +440,7 @@ const ClientDetailsPage = () => {
                                                     <TableCell>
                                                         <Chip
                                                             size="small"
-                                                            label={t(`appointments.status.${appointment.status?.toLowerCase() || 'scheduled'}`)}
+                                                            label={t(`appointments.status.${appointment.status || 'Scheduled'}`)}
                                                             color={appointment.status === 'Scheduled' ? 'primary' :
                                                                 appointment.status === 'Completed' ? 'success' :
                                                                     appointment.status === 'Cancelled' ? 'error' : 'default'}
@@ -492,7 +492,7 @@ const ClientDetailsPage = () => {
                                                 <TableCell>{t('billing.issueDate')}</TableCell>
                                                 <TableCell>{t('billing.dueDate')}</TableCell>
                                                 <TableCell>{t('billing.amount')}</TableCell>
-                                                <TableCell>{t('billing.status')}</TableCell>
+                                                <TableCell>{t('billing.status.title')}</TableCell>
                                                 <TableCell align="right">{t('common.actions')}</TableCell>
                                             </TableRow>
                                         </TableHead>

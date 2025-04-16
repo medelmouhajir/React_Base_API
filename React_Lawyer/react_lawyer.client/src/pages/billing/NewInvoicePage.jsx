@@ -780,7 +780,7 @@ const NewInvoicePage = () => {
                                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                 <TimeIcon color="primary" fontSize="small" sx={{ mr: 1 }} />
                                                 <Typography variant="body2">
-                                                    {selectedTimeEntries.length} {t('billing.timeEntries')}
+                                                    {selectedTimeEntries.length} {t('billing.timeEntries.title')}
                                                 </Typography>
                                             </Box>
                                             <Box sx={{ display: 'flex', alignItems: 'center' }}>

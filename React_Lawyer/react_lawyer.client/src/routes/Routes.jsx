@@ -61,7 +61,7 @@ import DocumentEditor from '../pages/documents/DocumentEditor';
 import DocumentGenerationPage from '../pages/documents/DocumentGenerationPage';
 
 //// Reports pages
-//import ReportsPage from '../pages/reports/ReportsPage';
+import ReportsPage from '../pages/reports/ReportsPage';
 
 // Firm pages
 import FirmManagementPage from '../pages/firms/FirmManagementPage';
@@ -143,9 +143,9 @@ const AppRoutes = () => {
                 <Route path="/documents/:id" element={<DocumentDetailsPage />} />
 
                 {/* Reports - Only for Lawyers and Admins */}
-                {/*<Route element={<ProtectedRoute requiredRole={["Lawyer", "Admin"]} />}>*/}
-                {/*    <Route path="/reports" element={<ReportsPage />} />*/}
-                {/*</Route>*/}
+                <Route element={<ProtectedRoute requiredRole={["Lawyer", "Admin"]} />}>
+                    <Route path="/reports" element={<ReportsPage />} />
+                </Route>
 
                 {/* Firm Management - Only for Admins */}
                 <Route element={<ProtectedRoute requiredRole="Admin" />}>

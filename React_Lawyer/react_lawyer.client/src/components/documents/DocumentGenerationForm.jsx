@@ -282,7 +282,7 @@ const DocumentGenerationForm = ({ caseId, clientId, entityType, onSuccess }) => 
                                 startIcon={loading ? <CircularProgress size={24} /> : null}
                                 fullWidth
                             >
-                                {loading ? t('common.generating') : t('documents.generate')}
+                                {loading ? t('common.generating') : t('documents.generateAndDownload')}
                             </Button>
                         </Grid>
                     </Grid>

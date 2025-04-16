@@ -133,7 +133,7 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
             roles: ['Admin', 'Lawyer', 'Secretary']
         },
         {
-            text: t('appointments.calendar', 'Calendar'),
+            text: t('calendar.title', 'Calendar'),
             icon: <AppointmentsIcon />,
             path: '/appointments/calendar',
             roles: ['Admin', 'Lawyer', 'Secretary']

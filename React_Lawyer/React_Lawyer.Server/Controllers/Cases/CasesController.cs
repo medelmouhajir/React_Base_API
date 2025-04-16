@@ -220,7 +220,7 @@ namespace React_Lawyer.Server.Controllers.Cases
                                 }
                             }
                         })
-                    .Where(c => c.LawFirmId == firmId)
+                    .Where(c => c.LawFirmId == firmId && c.Status != CaseStatus.Archived)
                     .ToListAsync();
 
                 return cases;
@@ -670,14 +670,16 @@ namespace React_Lawyer.Server.Controllers.Cases
                     Description = "Case has been archived by user.",
                     Date = DateTime.UtcNow,
                     EventType = CaseEventType.StatusChange,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    Location = "",
+                    Outcome = "",
                 };
 
                 _context.CaseEvents.Add(caseEvent);
                 _context.Entry(@case).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
-                return NoContent();
+                return Ok( new object());
             }
             catch (Exception ex)
             {

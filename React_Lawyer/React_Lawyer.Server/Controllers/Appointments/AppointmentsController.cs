@@ -424,70 +424,76 @@ namespace React_Lawyer.Server.Controllers
         [HttpGet("Date/{date}")]
         public async Task<ActionResult<IEnumerable<object>>> GetAppointmentsByDate(DateTime date)
         {
-            var startDate = date.Date;
-            var endDate = startDate.AddDays(1);
-
-            return await _context.Appointments
-                .Include(a => a.Lawyer)
-                    .ThenInclude(l => l.User)
-                .Include(a => a.Client)
-                .Include(a => a.Case)
-                .Include(x=> x.ScheduledBy)
-                .Where(a => a.StartTime >= startDate && a.StartTime < endDate)
-                .OrderBy(a => a.StartTime)
-                    .Select(x => new
-                    {
-                        AppointmentId = x.AppointmentId,
-                        LawFirmId = x.LawFirmId,
-                        LawyerId = x.LawyerId,
-                        Lawyer = new Lawyer
+            try
+            {
+                return await _context.Appointments
+                    .Include(a => a.Lawyer)
+                        .ThenInclude(l => l.User)
+                    .Include(a => a.Client)
+                    .Include(a => a.Case)
+                    .Include(x => x.ScheduledBy)
+                    .Where(a => a.StartTime.Month == date.Month && a.StartTime.Year == date.Year && a.StartTime.Day == date.Day)
+                    .OrderBy(a => a.StartTime)
+                        .Select(x => new
                         {
-                            LawyerId = x.Lawyer.LawyerId,
-                            UserId = x.Lawyer.UserId,
-                            User = new User
+                            AppointmentId = x.AppointmentId,
+                            LawFirmId = x.LawFirmId,
+                            LawyerId = x.LawyerId,
+                            Lawyer = new Lawyer
                             {
-                                FirstName = x.Lawyer.User.FirstName,
-                                LastName = x.Lawyer.User.LastName,
-                                Email = x.Lawyer.User.Email,
-                                PhoneNumber = x.Lawyer.User.PhoneNumber
-                            }
-                        },
-                        ClientId = x.ClientId,
-                        Client = new Client
-                        {
-                            ClientId = x.Client.ClientId,
-                            FirstName = x.Client.FirstName,
-                            LastName = x.Client.LastName,
-                            Email = x.Client.Email,
-                            PhoneNumber = x.Client.PhoneNumber,
-                            Type = x.Client.Type
-                        },
-                        CaseId = x.CaseId,
-                        ScheduledById = x.ScheduledById,
-                        ScheduledBy = new User
-                        {
-                            FirstName = x.ScheduledBy.FirstName,
-                            LastName = x.ScheduledBy.LastName,
-                            Email = x.ScheduledBy.Email,
-                            PhoneNumber = x.ScheduledBy.PhoneNumber
-                        },
-                        Title = x.Title,
-                        Description = x.Description,
-                        StartTime = x.StartTime,
-                        EndTime = x.EndTime,
-                        Location = x.Location,
-                        IsVirtual = x.IsVirtual,
-                        MeetingLink = x.MeetingLink,
-                        Type = x.Type.ToString(),
-                        Notes = x.Notes,
-                        Status = x.Status.ToString(),
-                        IsBillable = x.IsBillable,
-                        ReminderSent = x.ReminderSent,
-                        ReminderSentAt = x.ReminderSentAt,
-                        BillableAmount = x.BillableAmount,
+                                LawyerId = x.Lawyer.LawyerId,
+                                UserId = x.Lawyer.UserId,
+                                User = new User
+                                {
+                                    FirstName = x.Lawyer.User.FirstName,
+                                    LastName = x.Lawyer.User.LastName,
+                                    Email = x.Lawyer.User.Email,
+                                    PhoneNumber = x.Lawyer.User.PhoneNumber
+                                }
+                            },
+                            ClientId = x.ClientId,
+                            Client = new Client
+                            {
+                                ClientId = x.Client.ClientId,
+                                FirstName = x.Client.FirstName,
+                                LastName = x.Client.LastName,
+                                Email = x.Client.Email,
+                                PhoneNumber = x.Client.PhoneNumber,
+                                Type = x.Client.Type
+                            },
+                            CaseId = x.CaseId,
+                            ScheduledById = x.ScheduledById,
+                            ScheduledBy = new User
+                            {
+                                FirstName = x.ScheduledBy.FirstName,
+                                LastName = x.ScheduledBy.LastName,
+                                Email = x.ScheduledBy.Email,
+                                PhoneNumber = x.ScheduledBy.PhoneNumber
+                            },
+                            Title = x.Title,
+                            Description = x.Description,
+                            StartTime = x.StartTime,
+                            EndTime = x.EndTime,
+                            Location = x.Location,
+                            IsVirtual = x.IsVirtual,
+                            MeetingLink = x.MeetingLink,
+                            Type = x.Type.ToString(),
+                            Notes = x.Notes,
+                            Status = x.Status.ToString(),
+                            IsBillable = x.IsBillable,
+                            ReminderSent = x.ReminderSent,
+                            ReminderSentAt = x.ReminderSentAt,
+                            BillableAmount = x.BillableAmount,
 
-                    })
-                .ToListAsync();
+                        })
+                    .ToListAsync();
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
         }
 
 

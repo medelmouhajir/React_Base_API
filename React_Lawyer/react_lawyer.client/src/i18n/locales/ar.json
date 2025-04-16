@@ -205,6 +205,7 @@
       "other": "أخرى"
     },
 
+    "status.opened": "مفتوحة",
     "status.intake": "استقبال",
     "status.active": "نشطة",
     "status.pending": "معلقة",
@@ -524,6 +525,7 @@
     "noTimeEntries": "لم يتم العثور على تسجيلات وقت",
     "noUnbilledTimeEntries": "لا توجد تسجيلات وقت غير مفوترة لهذا العميل",
     "selectClientFirst": "يرجى تحديد عميل لعرض تسجيلات الوقت غير المفوترة",
+    "selectedItems": "العناصر المحددة",
 
     "addTimeEntry": "إضافة تسجيل وقت",
     "viewInvoice": "عرض الفاتورة",
@@ -585,10 +587,11 @@
     "reference": "المرجع",
 
     "status": {
+      "title": "الحالة",
       "draft": "مسودة",
       "issued": "صادرة",
       "sent": "مرسلة",
-      "partiallyPaid": "مدفوعة جزئياً",
+      "partiallypaid": "مدفوعة جزئياً",
       "paid": "مدفوعة",
       "overdue": "متأخرة",
       "cancelled": "ملغاة",
@@ -654,6 +657,27 @@
     }
   },
 
+  "calendar": {
+    "title": "التقويم",
+    "subtitle": "عرض وإدارة جميع الأحداث المجدولة",
+    "today": "اليوم",
+    "previous": "السابق",
+    "next": "التالي",
+    "allDay": "اليوم كامل",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "event": "الحدث",
+    "listView": "عرض القائمة",
+    "filters": "التصفية",
+    "noEvents": "لا توجد أحداث في هذه الفترة الزمنية",
+    "fetchError": "فشل في جلب أحداث التقويم. الرجاء المحاولة مرة أخرى.",
+    "views": {
+      "month": "الشهر",
+      "week": "الأسبوع",
+      "day": "اليوم",
+      "agenda": "جدول الأعمال"
+    }
+  },
 
   "documents": {
     "new": "مستند جديد",
@@ -786,6 +810,8 @@
 
   "reports": {
     "reports": "التقارير",
+    "pageTitle": "التقارير",
+    "pageDescription": "الوصول وإنشاء تقارير شاملة لممارستك القانونية",
     "caseReports": "تقارير القضايا",
     "billingReports": "تقارير الفواتير",
     "clientReports": "تقارير العملاء",
@@ -793,9 +819,54 @@
     "generate": "إنشاء تقرير",
     "exportPdf": "تصدير كملف PDF",
     "exportCsv": "تصدير كملف CSV",
-    "dateRange": "الفترة الزمنية",
+    "dateRange": "النطاق الزمني",
     "startDate": "تاريخ البدء",
-    "endDate": "تاريخ الانتهاء"
+    "endDate": "تاريخ الانتهاء",
+    "searchPlaceholder": "البحث في التقارير...",
+    "searchAriaLabel": "البحث في التقارير",
+    "featuredReports": "التقارير المميزة",
+    "allReports": "جميع التقارير",
+    "categoryReports": "تقارير {category}",
+    "noReportsFound": "لم يتم العثور على تقارير تطابق معاييرك",
+    "categories": {
+      "all": "الكل",
+      "financial": "مالية",
+      "cases": "قضايا",
+      "clients": "عملاء",
+      "performance": "أداء"
+    },
+    "revenue": {
+      "title": "نظرة عامة على الإيرادات",
+      "description": "تحليل مصادر إيرادات مكتبك وأدائه المالي"
+    },
+    "caseStatus": {
+      "title": "توزيع حالة القضايا",
+      "description": "تفصيل القضايا حسب الحالة الحالية والتقدم"
+    },
+    "clientAcquisition": {
+      "title": "اكتساب العملاء",
+      "description": "تتبع اكتساب عملاء جدد ومصادر الإحالة"
+    },
+    "billingSummary": {
+      "title": "ملخص الفواتير",
+      "description": "ملخص الفواتير والمدفوعات والأرصدة المستحقة"
+    },
+    "caseTypes": {
+      "title": "تحليل أنواع القضايا",
+      "description": "توزيع القضايا حسب مجال الممارسة القانونية"
+    },
+    "timeTracking": {
+      "title": "تحليل تتبع الوقت",
+      "description": "تحليل الساعات القابلة للفوترة وتخصيص الوقت"
+    },
+    "documentAnalytics": {
+      "title": "تحليلات المستندات",
+      "description": "إحصائيات إنشاء المستندات واستخدامها"
+    },
+    "lawyerPerformance": {
+      "title": "أداء المحامين",
+      "description": "مقاييس الأداء للمحامين بما في ذلك عبء القضايا والفواتير"
+    }
   },
 
   "settings": {

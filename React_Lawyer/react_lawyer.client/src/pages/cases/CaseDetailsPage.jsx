@@ -101,15 +101,15 @@ const CaseDetailsPage = () => {
 
     // Case type options - mapped from the backend enum
     const CASE_TYPES = [
-        { value: 0, label: t('cases.type.civil') },
-        { value: 1, label: t('cases.type.criminal') },
-        { value: 2, label: t('cases.type.family') },
-        { value: 3, label: t('cases.type.immigration') },
-        { value: 4, label: t('cases.type.corporate') },
-        { value: 5, label: t('cases.type.realEstate') },
-        { value: 6, label: t('cases.type.bankruptcy') },
-        { value: 7, label: t('cases.type.intellectualProperty') },
-        { value: 8, label: t('cases.type.tax') },
+        { value: 0, label: t('cases.types.civil') },
+        { value: 1, label: t('cases.types.criminal') },
+        { value: 2, label: t('cases.types.family') },
+        { value: 3, label: t('cases.types.immigration') },
+        { value: 4, label: t('cases.types.corporate') },
+        { value: 5, label: t('cases.types.realEstate') },
+        { value: 6, label: t('cases.types.bankruptcy') },
+        { value: 7, label: t('cases.types.intellectualProperty') },
+        { value: 8, label: t('cases.types.tax') },
         { value: 9, label: t('cases.type.other') }
     ];
 
@@ -831,7 +831,7 @@ const CaseDetailsPage = () => {
                                                 <Chip
                                                     label={invoice.status === 0 ? t('billing.status.draft') :
                                                         invoice.status === 1 ? t('billing.status.sent') :
-                                                            invoice.status === 2 ? t('billing.status.partiallyPaid') :
+                                                            invoice.status === 2 ? t('billing.status.partiallypaid') :
                                                                 invoice.status === 3 ? t('billing.status.paid') :
                                                                     invoice.status === 4 ? t('billing.status.overdue') :
                                                                         t('billing.status.cancelled')}

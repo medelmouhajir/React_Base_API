@@ -73,7 +73,7 @@ namespace React_Lawyer.Server.Controllers.Clients
                     Notes = x.Notes,
                     CreatedAt = x.CreatedAt,
                     IsActive = x.IsActive,
-                    Cases = x.Case_Clients.Select(c=> new
+                    Cases = x.Case_Clients.Where(b=> b.Case.Status != Shared_Models.Cases.CaseStatus.Archived).Select(c=> new
                     {
                         CaseId = c.CaseId,
                         CaseNumber = c.Case.CaseNumber,
@@ -92,6 +92,7 @@ namespace React_Lawyer.Server.Controllers.Clients
                         Status = c.Case.Status.ToString()
                     }).ToList(),
                     Appointments = x.Appointments
+                                        .Where(c=> c.Status != Shared_Models.Appointments.AppointmentStatus.Archived)
                                         .Select(x=> new
                                         {
                                             AppointmentId = x.AppointmentId,

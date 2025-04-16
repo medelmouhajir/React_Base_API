@@ -204,6 +204,7 @@
       "other": "Other"
     },
 
+    "status.opened": "Opened",
     "status.intake": "Intake",
     "status.active": "Active",
     "status.pending": "Pending",
@@ -545,6 +546,7 @@
     "noTimeEntries": "No time entries found",
     "noUnbilledTimeEntries": "No unbilled time entries found for this client",
     "selectClientFirst": "Please select a client to view unbilled time entries",
+    "selectedItems": "Selected items",
 
     "addTimeEntry": "Add Time Entry",
     "viewInvoice": "View Invoice",
@@ -590,10 +592,11 @@
     "paymentMethods": "Payment Methods",
 
     "status": {
+      "title": "Status",
       "draft": "Draft",
       "issued": "Issued",
       "sent": "Sent",
-      "partiallyPaid": "Partially Paid",
+      "partiallypaid": "Partially Paid",
       "paid": "Paid",
       "overdue": "Overdue",
       "cancelled": "Cancelled",
@@ -807,6 +810,8 @@
 
   "reports": {
     "reports": "Reports",
+    "pageTitle": "Reports",
+    "pageDescription": "Access and generate comprehensive reports for your law practice",
     "caseReports": "Case Reports",
     "billingReports": "Billing Reports",
     "clientReports": "Client Reports",
@@ -816,7 +821,52 @@
     "exportCsv": "Export as CSV",
     "dateRange": "Date Range",
     "startDate": "Start Date",
-    "endDate": "End Date"
+    "endDate": "End Date",
+    "searchPlaceholder": "Search reports...",
+    "searchAriaLabel": "Search reports",
+    "featuredReports": "Featured Reports",
+    "allReports": "All Reports",
+    "categoryReports": "{category} Reports",
+    "noReportsFound": "No reports found matching your criteria",
+    "categories": {
+      "all": "All",
+      "financial": "Financial",
+      "cases": "Cases",
+      "clients": "Clients",
+      "performance": "Performance"
+    },
+    "revenue": {
+      "title": "Revenue Overview",
+      "description": "Analyze your firm's revenue streams and financial performance"
+    },
+    "caseStatus": {
+      "title": "Case Status Distribution",
+      "description": "Breakdown of cases by current status and progress"
+    },
+    "clientAcquisition": {
+      "title": "Client Acquisition",
+      "description": "Track new client acquisition and referral sources"
+    },
+    "billingSummary": {
+      "title": "Billing Summary",
+      "description": "Summary of invoices, payments, and outstanding balances"
+    },
+    "caseTypes": {
+      "title": "Case Type Analysis",
+      "description": "Distribution of cases by legal practice area"
+    },
+    "timeTracking": {
+      "title": "Time Tracking Analysis",
+      "description": "Analysis of billable hours and time allocation"
+    },
+    "documentAnalytics": {
+      "title": "Document Analytics",
+      "description": "Document creation and usage statistics"
+    },
+    "lawyerPerformance": {
+      "title": "Attorney Performance",
+      "description": "Performance metrics for attorneys including case load and billing"
+    }
   },
 
   "settings": {
