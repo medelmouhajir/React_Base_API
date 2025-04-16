@@ -278,7 +278,7 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
                                 aria-controls={Boolean(anchorElNotifications) ? 'notifications-menu' : undefined}
                                 aria-haspopup="true"
                             >
-                                <Badge badgeContent={notificationCount} color="error">
+                                    <Badge badgeContent={unreadCount} color="error">
                                     <NotificationsIcon />
                                 </Badge>
                             </IconButton>

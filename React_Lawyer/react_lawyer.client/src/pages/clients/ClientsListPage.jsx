@@ -311,7 +311,6 @@ const ClientsListPage = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell>{t('clients.client')}</TableCell>
-                                <TableCell>{t('clients.email')}</TableCell>
                                 <TableCell>{t('clients.phone')}</TableCell>
                                 <TableCell>{t('clients.type')}</TableCell>
                                 <TableCell align="right">{t('common.actions')}</TableCell>
@@ -352,7 +351,6 @@ const ClientsListPage = () => {
                                                 </Box>
                                             </Box>
                                         </TableCell>
-                                        <TableCell>{client.email || '-'}</TableCell>
                                         <TableCell>{client.phoneNumber || '-'}</TableCell>
                                         <TableCell>
                                             <Chip
