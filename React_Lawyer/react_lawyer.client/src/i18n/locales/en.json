@@ -773,7 +773,36 @@
     "deleteError": "Failed to delete document",
     "versionUploadError": "Failed to upload new version",
     "shareError": "Failed to update document sharing",
-    "fetchError": "Failed to load documents"
+    "fetchError": "Failed to load documents",
+
+
+    "generateDocument": "Generate Document",
+    "generateDocumentSubtitle": "Create legal documents using templates",
+    "loadingError": "Error loading reference data",
+    "templateInfo": "Template Information",
+    "noTemplatesAvailable": "No templates available",
+    "format": "Format",
+    "documentTitle": "Document Title",
+    "clientInfo": "Client Information",
+    "selectClients": "Select Clients",
+    "clientDesignations": "Client Designations",
+    "designation": "Designation",
+    "designationPlaceholder": "e.g., Plaintiff, Defendant, Petitioner",
+    "caseInfo": "Case Information",
+    "selectCase": "Select Case (Optional)",
+    "caseSelectionOptional": "You can associate this document with a case",
+    "additionalInfo": "Additional Information",
+    "additionalInformation": "Additional Information",
+    "additionalInfoPlaceholder": "Enter any additional information needed for the document...",
+    "generating": "Generating...",
+    "generateAndDownload": "Generate and Download",
+    "generationSuccess": "Document generated successfully",
+    "generationError": "Error generating document",
+    "errors": {
+      "templateRequired": "Template selection is required",
+      "titleRequired": "Document title is required",
+      "clientRequired": "At least one client is required"
+    }
   },
 
   "reports": {

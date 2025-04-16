@@ -18,15 +18,26 @@ const tabletDrawerWidth = 64; // Minimized on tablet
 const openDrawerWidth = 240;
 
 // Styled component for main content area
-const Main = styled('main')(({ theme, drawerOpen, mobileView, tabletView }) => {
-    let marginLeft = mobileView ? 0 : tabletView ? tabletDrawerWidth : (drawerOpen ? openDrawerWidth : tabletDrawerWidth);
-    let width = mobileView ? '100%' : `calc(100% - ${marginLeft}px)`;
+const Main = styled('main')(({ theme, drawerOpen, mobileView, tabletView, direction }) => {
+    const isRtl = direction === 'rtl';
+    let marginLeft = 0;
+    let marginRight = 0;
+
+    if (!mobileView) {
+        const sidebarWidth = tabletView ? tabletDrawerWidth : (drawerOpen ? openDrawerWidth : tabletDrawerWidth);
+        if (isRtl) {
+            marginRight = sidebarWidth;
+        } else {
+            marginLeft = sidebarWidth;
+        }
+    }
 
     return {
         flexGrow: 1,
         padding: theme.spacing(mobileView ? 2 : 3),
-        width: width,
+        width: `calc(100% - ${(marginLeft + marginRight)}px)`,
         marginLeft: marginLeft,
+        marginRight: marginRight,
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -41,9 +52,10 @@ const ProtectedLayout = () => {
     const { isAuthenticated, loading } = useAuth();
     const navigate = useNavigate();
     const isOnline = useOnlineStatus();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const theme = useTheme();
     const { isMobile, isTablet } = useThemeMode();
+    const direction = i18n.dir(); // Get the current language direction
 
     // Initialize sidebar state based on screen size
     const [open, setOpen] = useState(() => {
@@ -93,7 +105,13 @@ const ProtectedLayout = () => {
     }
 
     return (
-        <Box sx={{ display: 'flex', minHeight: '100vh', width: '100%', overflow: 'hidden' }}>
+        <Box sx={{
+            display: 'flex',
+            minHeight: '100vh',
+            width: '100%',
+            overflow: 'hidden',
+            flexDirection: direction === 'rtl' ? 'row-reverse' : 'row' // Reverse flex direction for RTL
+        }}>
             {/* Top Navigation Bar */}
             <Navigation
                 toggleDrawer={handleDrawerToggle}
@@ -115,6 +133,7 @@ const ProtectedLayout = () => {
                 drawerOpen={open}
                 mobileView={isMobile}
                 tabletView={isTablet}
+                direction={direction}
             >
                 {/* Toolbar spacer */}
                 <Box sx={{

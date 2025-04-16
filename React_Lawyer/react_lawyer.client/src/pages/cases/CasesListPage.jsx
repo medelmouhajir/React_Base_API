@@ -1,4 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿// src/pages/cases/CasesListPage.jsx - Fixed version with responsive table
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -29,7 +30,12 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions
+    DialogActions,
+    useMediaQuery,
+    useTheme,
+    Card,
+    CardContent,
+    CardActions
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -51,6 +57,8 @@ const CasesListPage = () => {
     const { user } = useAuth();
     const isOnline = useOnlineStatus();
     const { t } = useTranslation();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     // State
     const [cases, setCases] = useState([]);
@@ -240,6 +248,219 @@ const CasesListPage = () => {
         return new Date(dateString).toLocaleDateString();
     };
 
+    // Render mobile card view for each case
+    const renderMobileCard = (caseItem) => (
+        <Card
+            key={caseItem.caseId}
+            sx={{
+                mb: 2,
+                backgroundColor: caseItem.isUrgent ? 'rgba(255, 0, 0, 0.03)' : 'inherit',
+                border: caseItem.isUrgent ? '1px solid rgba(255, 0, 0, 0.1)' : '1px solid rgba(0, 0, 0, 0.12)'
+            }}
+        >
+            <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                    <Box>
+                        <Typography variant="subtitle1" fontWeight={caseItem.isUrgent ? 'bold' : 'medium'}>
+                            {caseItem.title}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            {caseItem.caseNumber}
+                        </Typography>
+                    </Box>
+                    <Chip
+                        color={STATUS_COLORS[caseItem.status] || 'default'}
+                        size="small"
+                        label={getStatusLabel(caseItem.status)}
+                    />
+                </Box>
+
+                <Grid container spacing={1} sx={{ mt: 1 }}>
+                    <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                            {t('cases.type')}:
+                        </Typography>
+                        <Typography variant="body2">
+                            {getCaseTypeLabel(caseItem.type)}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                            {t('cases.openDate')}:
+                        </Typography>
+                        <Typography variant="body2">
+                            {formatDate(caseItem.openDate)}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography variant="body2" color="text.secondary">
+                            {t('cases.assignedTo')}:
+                        </Typography>
+                        <Typography variant="body2">
+                            {caseItem.assignedLawyer && caseItem.assignedLawyer.user
+                                ? `${caseItem.assignedLawyer.user.firstName} ${caseItem.assignedLawyer.user.lastName}`
+                                : t('cases.unassigned')}
+                        </Typography>
+                    </Grid>
+                </Grid>
+            </CardContent>
+            <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
+                <Button
+                    size="small"
+                    startIcon={<ViewIcon />}
+                    onClick={() => navigate(`/cases/${caseItem.caseId}`)}
+                >
+                    {t('common.view')}
+                </Button>
+                <Button
+                    size="small"
+                    startIcon={<EditIcon />}
+                    onClick={() => navigate(`/cases/${caseItem.caseId}/edit`)}
+                    disabled={!isOnline}
+                >
+                    {t('common.edit')}
+                </Button>
+                <Button
+                    size="small"
+                    color="error"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => handleOpenDeleteDialog(caseItem)}
+                    disabled={!isOnline}
+                >
+                    {t('common.delete')}
+                </Button>
+            </CardActions>
+        </Card>
+    );
+
+    // Desktop table view
+    const renderDesktopTable = () => (
+        <Paper>
+            <TableContainer>
+                <Table aria-label="cases table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>{t('cases.caseNumber')}</TableCell>
+                            <TableCell>{t('cases.title')}</TableCell>
+                            <TableCell>{t('cases.type')}</TableCell>
+                            <TableCell>{t('cases.status')}</TableCell>
+                            <TableCell>{t('cases.openDate')}</TableCell>
+                            <TableCell>{t('cases.assignedTo')}</TableCell>
+                            <TableCell align="right">{t('common.actions')}</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {loading ? (
+                            <TableRow>
+                                <TableCell colSpan={7} align="center" height={200}>
+                                    <CircularProgress />
+                                </TableCell>
+                            </TableRow>
+                        ) : pagedCases.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={7} align="center" height={100}>
+                                    <Typography variant="body1" color="textSecondary">
+                                        {searchTerm
+                                            ? t('cases.noSearchResults')
+                                            : t('cases.noCasesFound')}
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            pagedCases.map((caseItem) => (
+                                <TableRow key={caseItem.caseId} hover>
+                                    <TableCell>{caseItem.caseNumber}</TableCell>
+                                    <TableCell>
+                                        <Typography
+                                            fontWeight={caseItem.isUrgent ? 'bold' : 'normal'}
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            {caseItem.isUrgent && (
+                                                <Box
+                                                    component="span"
+                                                    sx={{
+                                                        width: 8,
+                                                        height: 8,
+                                                        bgcolor: 'error.main',
+                                                        borderRadius: '50%',
+                                                        display: 'inline-block',
+                                                        mr: 1
+                                                    }}
+                                                />
+                                            )}
+                                            {caseItem.title}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        {getCaseTypeLabel(caseItem.type)}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Chip
+                                            color={STATUS_COLORS[caseItem.status] || 'default'}
+                                            size="small"
+                                            label={getStatusLabel(caseItem.status)}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        {formatDate(caseItem.openDate)}
+                                    </TableCell>
+                                    <TableCell>
+                                        {caseItem.assignedLawyer && caseItem.assignedLawyer.user
+                                            ? `${caseItem.assignedLawyer.user.firstName} ${caseItem.assignedLawyer.user.lastName}`
+                                            : t('cases.unassigned')}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Tooltip title={t('common.view')}>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => navigate(`/cases/${caseItem.caseId}`)}
+                                            >
+                                                <ViewIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title={t('common.edit')}>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => navigate(`/cases/${caseItem.caseId}/edit`)}
+                                                disabled={!isOnline}
+                                            >
+                                                <EditIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title={t('common.delete')}>
+                                            <IconButton
+                                                size="small"
+                                                color="error"
+                                                onClick={() => handleOpenDeleteDialog(caseItem)}
+                                                disabled={!isOnline}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            <TablePagination
+                rowsPerPageOptions={[5, 10, 25, 50]}
+                component="div"
+                count={totalCases}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                labelRowsPerPage={t('common.rowsPerPage')}
+            />
+        </Paper>
+    );
+
     return (
         <Container width="lg" maxWidth="lg">
             <PageHeader
@@ -345,138 +566,40 @@ const CasesListPage = () => {
                 </Grid>
             </Paper>
 
-            {/* Cases table */}
-            <Paper>
-                <TableContainer sx={{
-                    overflowX: 'auto',
-                    '& .MuiTableCell-root': {
-                        px: { xs: 1, sm: 2 },
-                        py: { xs: 1.5, sm: 2 },
-                        whiteSpace: { xs: 'nowrap', sm: 'normal' }
-                    }
-                }}>
-                    <Table aria-label="cases table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>{t('cases.caseNumber')}</TableCell>
-                                <TableCell>{t('cases.title')}</TableCell>
-                                <TableCell>{t('cases.type')}</TableCell>
-                                <TableCell>{t('cases.status')}</TableCell>
-                                <TableCell>{t('cases.openDate')}</TableCell>
-                                <TableCell>{t('cases.assignedTo')}</TableCell>
-                                <TableCell align="right">{t('common.actions')}</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {loading ? (
-                                <TableRow>
-                                    <TableCell colSpan={7} align="center" height={200}>
-                                        <CircularProgress />
-                                    </TableCell>
-                                </TableRow>
-                            ) : pagedCases.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={7} align="center" height={100}>
-                                        <Typography variant="body1" color="textSecondary">
-                                            {searchTerm
-                                                ? t('cases.noSearchResults')
-                                                : t('cases.noCasesFound')}
-                                        </Typography>
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                pagedCases.map((caseItem) => (
-                                    <TableRow key={caseItem.caseId} hover>
-                                        <TableCell>{caseItem.caseNumber}</TableCell>
-                                        <TableCell>
-                                            <Typography
-                                                fontWeight={caseItem.isUrgent ? 'bold' : 'normal'}
-                                                sx={{
-                                                    display: 'flex',
-                                                    alignItems: 'center'
-                                                }}
-                                            >
-                                                {caseItem.isUrgent && (
-                                                    <Box
-                                                        component="span"
-                                                        sx={{
-                                                            width: 8,
-                                                            height: 8,
-                                                            bgcolor: 'error.main',
-                                                            borderRadius: '50%',
-                                                            display: 'inline-block',
-                                                            mr: 1
-                                                        }}
-                                                    />
-                                                )}
-                                                {caseItem.title}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell>
-                                            {getCaseTypeLabel(caseItem.type)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                color={STATUS_COLORS[caseItem.status] || 'default'}
-                                                size="small"
-                                                label={getStatusLabel(caseItem.status)}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            {formatDate(caseItem.openDate)}
-                                        </TableCell>
-                                        <TableCell>
-                                            {caseItem.assignedLawyer && caseItem.assignedLawyer.user
-                                                ? `${caseItem.assignedLawyer.user.firstName} ${caseItem.assignedLawyer.user.lastName}`
-                                                : t('cases.unassigned')}
-                                        </TableCell>
-                                        <TableCell align="right">
-                                            <Tooltip title={t('common.view')}>
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => navigate(`/cases/${caseItem.caseId}`)}
-                                                >
-                                                    <ViewIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title={t('common.edit')}>
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => navigate(`/cases/${caseItem.caseId}/edit`)}
-                                                    disabled={!isOnline}
-                                                >
-                                                    <EditIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title={t('common.delete')}>
-                                                <IconButton
-                                                    size="small"
-                                                    color="error"
-                                                    onClick={() => handleOpenDeleteDialog(caseItem)}
-                                                    disabled={!isOnline}
-                                                >
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25, 50]}
-                    component="div"
-                    count={totalCases}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    labelRowsPerPage={t('common.rowsPerPage')}
-                />
-            </Paper>
+            {/* Conditional render based on screen size */}
+            {loading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                    <CircularProgress />
+                </Box>
+            ) : pagedCases.length === 0 ? (
+                <Paper sx={{ p: 4, textAlign: 'center' }}>
+                    <Typography variant="body1" color="textSecondary">
+                        {searchTerm
+                            ? t('cases.noSearchResults')
+                            : t('cases.noCasesFound')}
+                    </Typography>
+                </Paper>
+            ) : (
+                isMobile ? (
+                    // Mobile card view
+                    <Box>
+                        {pagedCases.map(caseItem => renderMobileCard(caseItem))}
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={totalCases}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                            labelRowsPerPage={t('common.rowsPerPage')}
+                        />
+                    </Box>
+                ) : (
+                    // Desktop table view
+                    renderDesktopTable()
+                )
+            )}
 
             {/* Delete Confirmation Dialog */}
             <Dialog

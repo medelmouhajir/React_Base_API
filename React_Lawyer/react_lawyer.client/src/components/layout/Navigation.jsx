@@ -84,7 +84,8 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
     const location = useLocation();
     const isOnline = useOnlineStatus();
     const theme = useTheme();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const isRtl = i18n.dir() === 'rtl';
 
     // User profile menu
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -168,6 +169,7 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
         { text: t('cases.cases', 'Cases'), icon: <CasesIcon />, path: '/cases' },
         { text: t('clients.clients', 'Clients'), icon: <ClientsIcon />, path: '/clients' },
         { text: t('appointments.appointments', 'Appointments'), icon: <AppointmentsIcon />, path: '/appointments' },
+        { text: t('appointments.calendar', 'Calendar'), icon: <AppointmentsIcon />, path: '/appointments/calendar' },
         { text: t('billing.billing', 'Billing'), icon: <BillingIcon />, path: '/billing' },
         { text: t('documents.documents', 'Documents'), icon: <DocumentsIcon />, path: '/documents' },
         { text: t('reports.reports', 'Reports'), icon: <ReportsIcon />, path: '/reports' },
@@ -182,15 +184,19 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
                         color="inherit"
                         aria-label={open ? "close drawer" : "open drawer"}
                         onClick={isMobile ? toggleMobileDrawer : toggleDrawer}
-                        edge="start"
-                        sx={{ mr: 2 }}
+                        edge={isRtl ? "end" : "start"}
+                        sx={{
+                            mr: isRtl ? 0 : 2,
+                            ml: isRtl ? 2 : 0
+                        }}
                     >
                         <MenuIcon />
                     </IconButton>
 
                     <Typography variant="h6" noWrap component="div" sx={{
                         flexGrow: 1,
-                        fontSize: { xs: '1rem', sm: '1.25rem' }
+                        fontSize: { xs: '1rem', sm: '1.25rem' },
+                        textAlign: isRtl ? 'right' : 'left'
                     }}>
                         {getPageTitle()}
                     </Typography>
@@ -278,7 +284,7 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
                                 aria-controls={Boolean(anchorElNotifications) ? 'notifications-menu' : undefined}
                                 aria-haspopup="true"
                             >
-                                    <Badge badgeContent={unreadCount} color="error">
+                                <Badge badgeContent={unreadCount} color="error">
                                     <NotificationsIcon />
                                 </Badge>
                             </IconButton>
@@ -308,22 +314,22 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
                         anchorEl={anchorElUser}
                         anchorOrigin={{
                             vertical: 'bottom',
-                            horizontal: 'right',
+                            horizontal: isRtl ? 'left' : 'right',
                         }}
                         keepMounted
                         transformOrigin={{
                             vertical: 'top',
-                            horizontal: 'right',
+                            horizontal: isRtl ? 'left' : 'right',
                         }}
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
                     >
                         <MenuItem onClick={handleNavigateToProfile}>
-                            <AccountCircle sx={{ mr: 1 }} />
+                            <AccountCircle sx={{ mr: isRtl ? 0 : 1, ml: isRtl ? 1 : 0 }} />
                             {t('profile.profile', 'Profile')}
                         </MenuItem>
                         <MenuItem onClick={handleLogout}>
-                            <LogoutIcon sx={{ mr: 1 }} />
+                            <LogoutIcon sx={{ mr: isRtl ? 0 : 1, ml: isRtl ? 1 : 0 }} />
                             {t('auth.logout', 'Logout')}
                         </MenuItem>
                     </Menu>
@@ -334,12 +340,12 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
                         anchorEl={anchorElMobile}
                         anchorOrigin={{
                             vertical: 'bottom',
-                            horizontal: 'right',
+                            horizontal: isRtl ? 'left' : 'right',
                         }}
                         keepMounted
                         transformOrigin={{
                             vertical: 'top',
-                            horizontal: 'right',
+                            horizontal: isRtl ? 'left' : 'right',
                         }}
                         open={Boolean(anchorElMobile)}
                         onClose={handleCloseMobileMenu}
@@ -396,6 +402,7 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
                         maxWidth: 280
                     },
                 }}
+                anchor={isRtl ? 'right' : 'left'}
             >
                 <Toolbar />
                 <Box sx={{ overflow: 'auto' }}>
@@ -409,8 +416,16 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
                                     toggleMobileDrawer();
                                 }}
                                 selected={location.pathname === item.path}
+                                sx={{
+                                    textAlign: isRtl ? 'right' : 'left',
+                                    direction: isRtl ? 'rtl' : 'ltr'
+                                }}
                             >
-                                <ListItemIcon>
+                                <ListItemIcon sx={{
+                                    minWidth: 40,
+                                    mr: isRtl ? 0 : 1,
+                                    ml: isRtl ? 1 : 0
+                                }}>
                                     {item.icon}
                                 </ListItemIcon>
                                 <ListItemText primary={item.text} />
@@ -419,14 +434,28 @@ const Navigation = ({ toggleDrawer, open, isMobile, isTablet }) => {
                     </List>
                     <Divider />
                     <List>
-                        <ListItem button onClick={handleNavigateToProfile}>
-                            <ListItemIcon>
+                        <ListItem button onClick={handleNavigateToProfile} sx={{
+                            textAlign: isRtl ? 'right' : 'left',
+                            direction: isRtl ? 'rtl' : 'ltr'
+                        }}>
+                            <ListItemIcon sx={{
+                                minWidth: 40,
+                                mr: isRtl ? 0 : 1,
+                                ml: isRtl ? 1 : 0
+                            }}>
                                 <AccountCircle />
                             </ListItemIcon>
                             <ListItemText primary={t('profile.profile', 'Profile')} />
                         </ListItem>
-                        <ListItem button onClick={handleLogout}>
-                            <ListItemIcon>
+                        <ListItem button onClick={handleLogout} sx={{
+                            textAlign: isRtl ? 'right' : 'left',
+                            direction: isRtl ? 'rtl' : 'ltr'
+                        }}>
+                            <ListItemIcon sx={{
+                                minWidth: 40,
+                                mr: isRtl ? 0 : 1,
+                                ml: isRtl ? 1 : 0
+                            }}>
                                 <LogoutIcon />
                             </ListItemIcon>
                             <ListItemText primary={t('auth.logout', 'Logout')} />

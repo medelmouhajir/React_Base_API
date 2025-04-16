@@ -572,27 +572,42 @@ const DocumentsListPage = () => {
 
             {/* Documents table */}
             <Paper>
-                <TableContainer>
+
+                <TableContainer sx={{
+                    overflowX: 'auto',
+                    '&::-webkit-scrollbar': {
+                        height: '8px',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: theme => theme.palette.divider,
+                        borderRadius: '4px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                        backgroundColor: theme => theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.05)'
+                            : 'rgba(0, 0, 0, 0.05)',
+                    }
+                }}>
                     <Table aria-label="documents table">
                         <TableHead>
                             <TableRow>
                                 <TableCell>{t('documents.title')}</TableCell>
                                 <TableCell>{t('documents.category')}</TableCell>
                                 <TableCell>{t('documents.uploadDate')}</TableCell>
-                                <TableCell>{t('documents.uploadedBy')}</TableCell>
+                                {!isMobile && <TableCell>{t('documents.uploadedBy')}</TableCell>}
                                 <TableCell align="right">{t('common.actions')}</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} align="center" height={200}>
+                                    <TableCell colSpan={isMobile ? 4 : 5} align="center" height={200}>
                                         <CircularProgress />
                                     </TableCell>
                                 </TableRow>
                             ) : pagedDocuments.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} align="center" height={100}>
+                                    <TableCell colSpan={isMobile ? 4 : 5} align="center" height={100}>
                                         <Typography variant="body1" color="textSecondary">
                                             {viewMode === 'Templates'
                                                 ? t('documents.noTemplatesUploaded')
@@ -604,7 +619,7 @@ const DocumentsListPage = () => {
                                 pagedDocuments.map((document) => (
                                     <TableRow key={document.documentId} hover>
                                         <TableCell>
-                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
                                                 {getFileTypeIcon(document.fileType)}
                                                 <Box sx={{ ml: 2 }}>
                                                     <Typography fontWeight={document.isConfidential ? 'bold' : 'normal'}>
@@ -612,9 +627,15 @@ const DocumentsListPage = () => {
                                                     </Typography>
                                                     {document.description && (
                                                         <Typography variant="body2" color="textSecondary" noWrap>
-                                                            {document.description.length > 50
-                                                                ? `${document.description.substring(0, 50)}...`
+                                                            {document.description.length > (isMobile ? 30 : 50)
+                                                                ? `${document.description.substring(0, isMobile ? 30 : 50)}...`
                                                                 : document.description}
+                                                        </Typography>
+                                                    )}
+                                                    {/* Show uploader on mobile inline here since we hide that column */}
+                                                    {isMobile && document.uploadedBy && (
+                                                        <Typography variant="caption" color="textSecondary" display="block">
+                                                            {t('documents.by')}: {document.uploadedBy.firstName} {document.uploadedBy.lastName}
                                                         </Typography>
                                                     )}
                                                     <Box sx={{ mt: 1, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
@@ -661,48 +682,57 @@ const DocumentsListPage = () => {
                                                 </Typography>
                                             )}
                                         </TableCell>
-                                        <TableCell>
-                                            {document.uploadedBy
-                                                ? `${document.uploadedBy.firstName} ${document.uploadedBy.lastName}`
-                                                : t('common.unknown')}
-                                        </TableCell>
+                                        {!isMobile && (
+                                            <TableCell>
+                                                {document.uploadedBy
+                                                    ? `${document.uploadedBy.firstName} ${document.uploadedBy.lastName}`
+                                                    : t('common.unknown')}
+                                            </TableCell>
+                                        )}
                                         <TableCell align="right">
-                                            <Tooltip title={t('common.view')}>
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => navigate(`/documents/${document.documentId}`)}
-                                                >
-                                                    <ViewIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title={t('documents.download')}>
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => handleDownload(document)}
-                                                    disabled={!isOnline}
-                                                >
-                                                    <DownloadIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title={t('common.edit')}>
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={() => navigate(`/documents/${document.documentId}/edit`)}
-                                                    disabled={!isOnline}
-                                                >
-                                                    <EditIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            <Tooltip title={t('common.delete')}>
-                                                <IconButton
-                                                    size="small"
-                                                    color="error"
-                                                    onClick={() => handleOpenDeleteDialog(document)}
-                                                    disabled={!isOnline}
-                                                >
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </Tooltip>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                justifyContent: 'flex-end',
+                                                flexWrap: isMobile ? 'wrap' : 'nowrap',
+                                                gap: isMobile ? 1 : 0
+                                            }}>
+                                                <Tooltip title={t('common.view')}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => navigate(`/documents/${document.documentId}`)}
+                                                    >
+                                                        <ViewIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title={t('documents.download')}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => handleDownload(document)}
+                                                        disabled={!isOnline}
+                                                    >
+                                                        <DownloadIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title={t('common.edit')}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={() => navigate(`/documents/${document.documentId}/edit`)}
+                                                        disabled={!isOnline}
+                                                    >
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title={t('common.delete')}>
+                                                    <IconButton
+                                                        size="small"
+                                                        color="error"
+                                                        onClick={() => handleOpenDeleteDialog(document)}
+                                                        disabled={!isOnline}
+                                                    >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </Box>
                                         </TableCell>
                                     </TableRow>
                                 ))

@@ -32,6 +32,11 @@ import {
     DialogContent,
     DialogActions,
     DialogContentText,
+    useMediaQuery,
+    Card,
+    CardContent,
+    Divider,
+    useTheme
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -52,6 +57,7 @@ import { useAuth } from '../../features/auth/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
 import invoiceService from '../../services/invoiceService';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
+import { useThemeMode } from '../../theme/ThemeProvider';
 
 // Invoice status color mapping
 const STATUS_COLORS = {
@@ -70,6 +76,8 @@ const InvoicesListPage = () => {
     const { user } = useAuth();
     const isOnline = useOnlineStatus();
     const { t } = useTranslation();
+    const theme = useTheme();
+    const { isMobile } = useThemeMode();
 
     // State
     const [invoices, setInvoices] = useState([]);
@@ -303,6 +311,158 @@ const InvoicesListPage = () => {
     // Calculate paged data
     const pagedInvoices = invoices.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
+    // Mobile card view for invoices
+    const MobileInvoiceCard = ({ invoice }) => {
+        const total = calculateTotal(invoice);
+        const outstanding = calculateOutstanding(invoice);
+
+        return (
+            <Card sx={{ mb: 2, position: 'relative' }}>
+                <CardContent sx={{ pb: 1 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <ReceiptIcon sx={{ mr: 1, opacity: 0.7, fontSize: 20 }} />
+                            <Typography variant="subtitle1" fontWeight="medium">
+                                {invoice.invoiceNumber}
+                            </Typography>
+                        </Box>
+                        <Chip
+                            size="small"
+                            label={t(`billing.status.${invoice.status.charAt(0).toLowerCase() + invoice.status.slice(1)}`)}
+                            color={STATUS_COLORS[invoice.status] || 'default'}
+                        />
+                    </Box>
+
+                    <Divider sx={{ my: 1 }} />
+
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                        <strong>{t('billing.client')}:</strong> {invoice.client ?
+                            (invoice.client.companyName || `${invoice.client.firstName} ${invoice.client.lastName}`) :
+                            t('common.notAvailable')}
+                    </Typography>
+
+                    {invoice.case && (
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                            <strong>{t('cases.case')}:</strong> {invoice.case.caseNumber}
+                        </Typography>
+                    )}
+
+                    <Grid container spacing={1} sx={{ mt: 1 }}>
+                        <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">
+                                {t('billing.issueDate')}
+                            </Typography>
+                            <Typography variant="body2">
+                                {formatDate(invoice.issueDate)}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">
+                                {t('billing.dueDate')}
+                            </Typography>
+                            <Typography variant="body2">
+                                {formatDate(invoice.dueDate)}
+                                {invoice.status === 'Overdue' && (
+                                    <Typography component="span" variant="caption" color="error.main" sx={{ ml: 1 }}>
+                                        {t('billing.overdue')}
+                                    </Typography>
+                                )}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">
+                                {t('billing.amount')}
+                            </Typography>
+                            <Typography variant="body2" fontWeight="medium">
+                                {formatCurrency(total)}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">
+                                {t('billing.outstanding')}
+                            </Typography>
+                            <Typography variant="body2" color={outstanding > 0 ? 'error' : 'success'} fontWeight="medium">
+                                {formatCurrency(outstanding)}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+
+                    <Divider sx={{ my: 1 }} />
+
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 1 }}>
+                        <Tooltip title={t('common.view')}>
+                            <IconButton
+                                size="small"
+                                onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}`)}
+                            >
+                                <ViewIcon />
+                            </IconButton>
+                        </Tooltip>
+
+                        {invoice.status === 'Draft' && (
+                            <>
+                                <Tooltip title={t('common.edit')}>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}/edit`)}
+                                        disabled={!isOnline}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title={t('billing.markAsSent')}>
+                                    <IconButton
+                                        size="small"
+                                        color="primary"
+                                        onClick={() => handleUpdateStatus(invoice, 'Sent')}
+                                        disabled={!isOnline}
+                                    >
+                                        <SendIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </>
+                        )}
+
+                        {(invoice.status === 'Sent' || invoice.status === 'Overdue' || invoice.status === 'PartiallyPaid') && (
+                            <Tooltip title={t('billing.recordPayment')}>
+                                <IconButton
+                                    size="small"
+                                    color="success"
+                                    onClick={() => handleOpenPaymentDialog(invoice)}
+                                    disabled={!isOnline}
+                                >
+                                    <PaymentIcon />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+
+                        <Tooltip title={t('billing.print')}>
+                            <IconButton
+                                size="small"
+                                onClick={() => window.print()}
+                            >
+                                <PrintIcon />
+                            </IconButton>
+                        </Tooltip>
+
+                        {invoice.status === 'Draft' && (
+                            <Tooltip title={t('common.delete')}>
+                                <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleOpenDeleteDialog(invoice)}
+                                    disabled={!isOnline}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                    </Box>
+                </CardContent>
+            </Card>
+        );
+    };
+
     return (
         <Container maxWidth="lg">
             <PageHeader
@@ -372,14 +532,21 @@ const InvoicesListPage = () => {
                                 variant="outlined"
                                 startIcon={<FilterIcon />}
                                 onClick={() => setShowFilters(!showFilters)}
+                                sx={{ display: { xs: 'none', sm: 'flex' } }}
                             >
                                 {showFilters ? t('common.hideFilters') : t('common.showFilters')}
                             </Button>
+                            <IconButton
+                                onClick={() => setShowFilters(!showFilters)}
+                                sx={{ display: { xs: 'flex', sm: 'none' } }}
+                            >
+                                <FilterIcon />
+                            </IconButton>
                         </Box>
                     </Grid>
 
                     <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <FormControl variant="outlined" size="small" sx={{ minWidth: 150, mr: 1 }}>
+                        <FormControl variant="outlined" size="small" sx={{ minWidth: { xs: 120, sm: 150 }, mr: 1 }}>
                             <InputLabel id="status-filter-label">{t('common.status')}</InputLabel>
                             <Select
                                 labelId="status-filter-label"
@@ -406,7 +573,7 @@ const InvoicesListPage = () => {
                             onClick={() => setRefreshTrigger(prev => prev + 1)}
                             disabled={!isOnline || loading}
                         >
-                            {t('common.refresh')}
+                            {isMobile ? '' : t('common.refresh')}
                         </Button>
                     </Grid>
 
@@ -417,7 +584,7 @@ const InvoicesListPage = () => {
                                 <Typography variant="subtitle2" gutterBottom>
                                     {t('reports.dateRange')}
                                 </Typography>
-                                <Box sx={{ display: 'flex', gap: 2 }}>
+                                <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
                                     <TextField
                                         label={t('reports.startDate')}
                                         type="date"
@@ -448,183 +615,204 @@ const InvoicesListPage = () => {
                                     </Button>
                                 </Box>
                             </Grid>
-
-                            <Grid item xs={12} md={6}>
-                                {/* Additional filters can be added here */}
-                            </Grid>
                         </>
                     )}
                 </Grid>
             </Paper>
 
-            {/* Invoices table */}
+            {/* Invoices display (table for desktop, cards for mobile) */}
             <Paper>
-                <TableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>{t('billing.invoiceNumber')}</TableCell>
-                                <TableCell>{t('billing.client')}</TableCell>
-                                <TableCell>{t('billing.issueDate')}</TableCell>
-                                <TableCell>{t('billing.dueDate')}</TableCell>
-                                <TableCell align="right">{t('billing.amount')}</TableCell>
-                                <TableCell align="right">{t('billing.outstanding')}</TableCell>
-                                <TableCell>{t('common.status')}</TableCell>
-                                <TableCell align="right">{t('common.actions')}</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {loading ? (
+                {isMobile ? (
+                    // Mobile card view
+                    <Box sx={{ p: 2 }}>
+                        {loading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                                <CircularProgress />
+                            </Box>
+                        ) : pagedInvoices.length === 0 ? (
+                            <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', py: 4 }}>
+                                {t('billing.noInvoicesFound')}
+                            </Typography>
+                        ) : (
+                            <>
+                                {pagedInvoices.map(invoice => (
+                                    <MobileInvoiceCard
+                                        key={invoice.invoiceId}
+                                        invoice={invoice}
+                                    />
+                                ))}
+                            </>
+                        )}
+                    </Box>
+                ) : (
+                    // Desktop table view
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={8} align="center" sx={{ py: 5 }}>
-                                        <CircularProgress />
-                                    </TableCell>
+                                    <TableCell>{t('billing.invoiceNumber')}</TableCell>
+                                    <TableCell>{t('billing.client')}</TableCell>
+                                    <TableCell>{t('billing.issueDate')}</TableCell>
+                                    <TableCell>{t('billing.dueDate')}</TableCell>
+                                    <TableCell align="right">{t('billing.amount')}</TableCell>
+                                    <TableCell align="right">{t('billing.outstanding')}</TableCell>
+                                    <TableCell>{t('common.status')}</TableCell>
+                                    <TableCell align="right">{t('common.actions')}</TableCell>
                                 </TableRow>
-                            ) : pagedInvoices.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={8} align="center" sx={{ py: 5 }}>
-                                        <Typography variant="body1" color="textSecondary">
-                                            {t('billing.noInvoicesFound')}
-                                        </Typography>
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                pagedInvoices.map((invoice) => {
-                                    const total = calculateTotal(invoice);
-                                    const outstanding = calculateOutstanding(invoice);
-                                    return (
-                                        <TableRow key={invoice.invoiceId} hover>
-                                            <TableCell>
-                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                    <ReceiptIcon
-                                                        fontSize="small"
-                                                        color="inherit"
-                                                        sx={{ mr: 1, opacity: 0.7 }}
-                                                    />
-                                                    {invoice.invoiceNumber}
-                                                </Box>
-                                            </TableCell>
-                                            <TableCell>
-                                                {invoice.client ? (
-                                                    <Typography variant="body2">
-                                                        {invoice.client.companyName || `${invoice.client.firstName} ${invoice.client.lastName}`}
-                                                    </Typography>
-                                                ) : (
-                                                    <Typography variant="body2" color="textSecondary">
-                                                        {t('common.notAvailable')}
-                                                    </Typography>
-                                                )}
-                                                {invoice.case && (
-                                                    <Typography variant="caption" color="textSecondary">
-                                                        {invoice.case.caseNumber}: {invoice.case.title}
-                                                    </Typography>
-                                                )}
-                                            </TableCell>
-                                            <TableCell>{formatDate(invoice.issueDate)}</TableCell>
-                                            <TableCell>
-                                                <Box>
-                                                    {formatDate(invoice.dueDate)}
-                                                    {invoice.status === 'Overdue' && (
-                                                        <Typography variant="caption" color="error">
-                                                            {t('billing.overdue')}
+                            </TableHead>
+                            <TableBody>
+                                {loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={8} align="center" sx={{ py: 5 }}>
+                                            <CircularProgress />
+                                        </TableCell>
+                                    </TableRow>
+                                ) : pagedInvoices.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={8} align="center" sx={{ py: 5 }}>
+                                            <Typography variant="body1" color="textSecondary">
+                                                {t('billing.noInvoicesFound')}
+                                            </Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    pagedInvoices.map((invoice) => {
+                                        const total = calculateTotal(invoice);
+                                        const outstanding = calculateOutstanding(invoice);
+                                        return (
+                                            <TableRow key={invoice.invoiceId} hover>
+                                                <TableCell>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                        <ReceiptIcon
+                                                            fontSize="small"
+                                                            color="inherit"
+                                                            sx={{ mr: 1, opacity: 0.7 }}
+                                                        />
+                                                        {invoice.invoiceNumber}
+                                                    </Box>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {invoice.client ? (
+                                                        <Typography variant="body2">
+                                                            {invoice.client.companyName || `${invoice.client.firstName} ${invoice.client.lastName}`}
+                                                        </Typography>
+                                                    ) : (
+                                                        <Typography variant="body2" color="textSecondary">
+                                                            {t('common.notAvailable')}
                                                         </Typography>
                                                     )}
-                                                </Box>
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                {formatCurrency(total)}
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <Typography
-                                                    variant="body2"
-                                                    color={outstanding > 0 ? 'error' : 'success'}
-                                                >
-                                                    {formatCurrency(outstanding)}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Chip
-                                                    color={STATUS_COLORS[invoice.status] || 'default'}
-                                                    size="small"
-                                                    label={t(`billing.status.${invoice.status.charAt(0).toLowerCase() + invoice.status.slice(1)}`)}
-                                                />
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <Tooltip title={t('common.view')}>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}`)}
+                                                    {invoice.case && (
+                                                        <Typography variant="caption" color="textSecondary">
+                                                            {invoice.case.caseNumber}: {invoice.case.title}
+                                                        </Typography>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>{formatDate(invoice.issueDate)}</TableCell>
+                                                <TableCell>
+                                                    <Box>
+                                                        {formatDate(invoice.dueDate)}
+                                                        {invoice.status === 'Overdue' && (
+                                                            <Typography variant="caption" color="error">
+                                                                {t('billing.overdue')}
+                                                            </Typography>
+                                                        )}
+                                                    </Box>
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    {formatCurrency(total)}
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    <Typography
+                                                        variant="body2"
+                                                        color={outstanding > 0 ? 'error' : 'success'}
                                                     >
-                                                        <ViewIcon />
-                                                    </IconButton>
-                                                </Tooltip>
-
-                                                {invoice.status === 'Draft' && (
-                                                    <>
-                                                        <Tooltip title={t('common.edit')}>
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}/edit`)}
-                                                                disabled={!isOnline}
-                                                            >
-                                                                <EditIcon />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                        <Tooltip title={t('billing.markAsSent')}>
-                                                            <IconButton
-                                                                size="small"
-                                                                color="primary"
-                                                                onClick={() => handleUpdateStatus(invoice, 'Sent')}
-                                                                disabled={!isOnline}
-                                                            >
-                                                                <SendIcon />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                    </>
-                                                )}
-
-                                                {(invoice.status === 'Sent' || invoice.status === 'Overdue' || invoice.status === 'PartiallyPaid') && (
-                                                    <Tooltip title={t('billing.recordPayment')}>
+                                                        {formatCurrency(outstanding)}
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Chip
+                                                        color={STATUS_COLORS[invoice.status] || 'default'}
+                                                        size="small"
+                                                        label={t(`billing.status.${invoice.status.charAt(0).toLowerCase() + invoice.status.slice(1)}`)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    <Tooltip title={t('common.view')}>
                                                         <IconButton
                                                             size="small"
-                                                            color="success"
-                                                            onClick={() => handleOpenPaymentDialog(invoice)}
-                                                            disabled={!isOnline}
+                                                            onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}`)}
                                                         >
-                                                            <PaymentIcon />
+                                                            <ViewIcon />
                                                         </IconButton>
                                                     </Tooltip>
-                                                )}
 
-                                                <Tooltip title={t('billing.print')}>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => window.print()}
-                                                    >
-                                                        <PrintIcon />
-                                                    </IconButton>
-                                                </Tooltip>
+                                                    {invoice.status === 'Draft' && (
+                                                        <>
+                                                            <Tooltip title={t('common.edit')}>
+                                                                <IconButton
+                                                                    size="small"
+                                                                    onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}/edit`)}
+                                                                    disabled={!isOnline}
+                                                                >
+                                                                    <EditIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                            <Tooltip title={t('billing.markAsSent')}>
+                                                                <IconButton
+                                                                    size="small"
+                                                                    color="primary"
+                                                                    onClick={() => handleUpdateStatus(invoice, 'Sent')}
+                                                                    disabled={!isOnline}
+                                                                >
+                                                                    <SendIcon />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </>
+                                                    )}
 
-                                                {invoice.status === 'Draft' && (
-                                                    <Tooltip title={t('common.delete')}>
+                                                    {(invoice.status === 'Sent' || invoice.status === 'Overdue' || invoice.status === 'PartiallyPaid') && (
+                                                        <Tooltip title={t('billing.recordPayment')}>
+                                                            <IconButton
+                                                                size="small"
+                                                                color="success"
+                                                                onClick={() => handleOpenPaymentDialog(invoice)}
+                                                                disabled={!isOnline}
+                                                            >
+                                                                <PaymentIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    )}
+
+                                                    <Tooltip title={t('billing.print')}>
                                                         <IconButton
                                                             size="small"
-                                                            color="error"
-                                                            onClick={() => handleOpenDeleteDialog(invoice)}
-                                                            disabled={!isOnline}
+                                                            onClick={() => window.print()}
                                                         >
-                                                            <DeleteIcon />
+                                                            <PrintIcon />
                                                         </IconButton>
                                                     </Tooltip>
-                                                )}
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+
+                                                    {invoice.status === 'Draft' && (
+                                                        <Tooltip title={t('common.delete')}>
+                                                            <IconButton
+                                                                size="small"
+                                                                color="error"
+                                                                onClick={() => handleOpenDeleteDialog(invoice)}
+                                                                disabled={!isOnline}
+                                                            >
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
 
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25, 50]}

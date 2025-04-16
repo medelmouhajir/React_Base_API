@@ -751,7 +751,37 @@
     "deleteError": "فشل في حذف المستند",
     "versionUploadError": "فشل في رفع الإصدار الجديد",
     "shareError": "فشل في تحديث مشاركة المستند",
-    "fetchError": "فشل في تحميل المستندات"
+    "fetchError": "فشل في تحميل المستندات",
+
+
+
+    "generateDocument": "إنشاء وثيقة",
+    "generateDocumentSubtitle": "إنشاء وثائق قانونية باستخدام القوالب",
+    "loadingError": "خطأ في تحميل البيانات المرجعية",
+    "templateInfo": "معلومات القالب",
+    "noTemplatesAvailable": "لا توجد قوالب متاحة",
+    "format": "التنسيق",
+    "documentTitle": "عنوان الوثيقة",
+    "clientInfo": "معلومات العميل",
+    "selectClients": "اختر العملاء",
+    "clientDesignations": "تعيينات العملاء",
+    "designation": "التعيين",
+    "designationPlaceholder": "مثال: مدعي، مدعى عليه، ملتمس",
+    "caseInfo": "معلومات القضية",
+    "selectCase": "اختر قضية (اختياري)",
+    "caseSelectionOptional": "يمكنك ربط هذه الوثيقة بقضية",
+    "additionalInfo": "معلومات إضافية",
+    "additionalInformation": "معلومات إضافية",
+    "additionalInfoPlaceholder": "أدخل أي معلومات إضافية مطلوبة للوثيقة...",
+    "generating": "جاري الإنشاء...",
+    "generateAndDownload": "إنشاء وتحميل",
+    "generationSuccess": "تم إنشاء الوثيقة بنجاح",
+    "generationError": "خطأ في إنشاء الوثيقة",
+    "errors": {
+      "templateRequired": "اختيار القالب مطلوب",
+      "titleRequired": "عنوان الوثيقة مطلوب",
+      "clientRequired": "مطلوب عميل واحد على الأقل"
+    }
   },
 
   "reports": {

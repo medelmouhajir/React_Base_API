@@ -39,7 +39,7 @@ import { styled } from '@mui/material/styles';
 const drawerWidth = 240;
 const miniDrawerWidth = 64;
 
-const OpenedDrawer = styled(Drawer)(({ theme }) => ({
+const OpenedDrawer = styled(Drawer)(({ theme, direction }) => ({
     width: drawerWidth,
     flexShrink: 0,
     whiteSpace: 'nowrap',
@@ -51,10 +51,15 @@ const OpenedDrawer = styled(Drawer)(({ theme }) => ({
             duration: theme.transitions.duration.enteringScreen,
         }),
         overflowX: 'hidden',
+        // Adjust for RTL
+        ...(direction === 'rtl' && {
+            borderLeft: `1px solid ${theme.palette.divider}`,
+            borderRight: 'none',
+        }),
     },
 }));
 
-const ClosedDrawer = styled(Drawer)(({ theme }) => ({
+const ClosedDrawer = styled(Drawer)(({ theme, direction }) => ({
     width: miniDrawerWidth,
     flexShrink: 0,
     whiteSpace: 'nowrap',
@@ -66,15 +71,26 @@ const ClosedDrawer = styled(Drawer)(({ theme }) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         overflowX: 'hidden',
+        // Adjust for RTL
+        ...(direction === 'rtl' && {
+            borderLeft: `1px solid ${theme.palette.divider}`,
+            borderRight: 'none',
+        }),
     },
 }));
 
 const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
     const { user, hasRole } = useAuth();
     const theme = useTheme();
+
+    // Determine if we're using RTL layout
+    const isRtl = i18n.dir() === 'rtl';
+
+    // Adjust drawer close icon based on language direction
+    const closeIcon = isRtl ? <ChevronRightIcon /> : <ChevronLeftIcon />;
 
     // Collapsible menu states
     const [billingOpen, setBillingOpen] = React.useState(false);
@@ -114,6 +130,12 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
             text: t('clients.clients', 'Clients'),
             icon: <ClientsIcon />,
             path: '/clients',
+            roles: ['Admin', 'Lawyer', 'Secretary']
+        },
+        {
+            text: t('appointments.calendar', 'Calendar'),
+            icon: <AppointmentsIcon />,
+            path: '/appointments/calendar',
             roles: ['Admin', 'Lawyer', 'Secretary']
         },
         {
@@ -180,7 +202,7 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
             <Toolbar sx={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'flex-end',
+                justifyContent: isRtl ? 'flex-start' : 'flex-end', // Adjust for RTL
                 px: [1],
                 minHeight: theme => theme.spacing(7),
                 [theme.breakpoints.up('sm')]: {
@@ -189,7 +211,7 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
             }}>
                 {open && (
                     <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                        {closeIcon}
                     </IconButton>
                 )}
             </Toolbar>
@@ -204,18 +226,19 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                         <ListItemButton
                             sx={{
                                 minHeight: 48,
-                                justifyContent: open ? 'initial' : 'center',
+                                justifyContent: open ? (isRtl ? 'flex-end' : 'initial') : 'center',
                                 px: 2.5,
                                 bgcolor: location.pathname === item.path ?
                                     `rgba(25, 118, 210, 0.08)` : 'transparent',
                             }}
                             onClick={() => handleNavigate(item.path)}
                         >
-                            <Tooltip title={open ? '' : item.text} placement="right">
+                            <Tooltip title={open ? '' : item.text} placement={isRtl ? "left" : "right"}>
                                 <ListItemIcon
                                     sx={{
                                         minWidth: 0,
-                                        mr: open ? 3 : 'auto',
+                                        mr: open ? (isRtl ? 0 : 3) : 'auto',
+                                        ml: open ? (isRtl ? 3 : 0) : 'auto',
                                         justifyContent: 'center',
                                         color: location.pathname === item.path ?
                                             'primary.main' : 'inherit',
@@ -230,6 +253,8 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                                     opacity: open ? 1 : 0,
                                     color: location.pathname === item.path ?
                                         'primary.main' : 'inherit',
+                                    // For RTL, align text right
+                                    textAlign: isRtl ? 'right' : 'left',
                                 }}
                             />
                         </ListItemButton>
@@ -245,18 +270,19 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                     <ListItemButton
                         sx={{
                             minHeight: 48,
-                            justifyContent: open ? 'initial' : 'center',
+                            justifyContent: open ? (isRtl ? 'flex-end' : 'initial') : 'center',
                             px: 2.5,
                             bgcolor: location.pathname.startsWith('/billing') ?
                                 `rgba(25, 118, 210, 0.08)` : 'transparent',
                         }}
                         onClick={open ? handleBillingClick : () => handleNavigate('/billing')}
                     >
-                        <Tooltip title={open ? '' : t('billing.billing', 'Billing')} placement="right">
+                        <Tooltip title={open ? '' : t('billing.billing', 'Billing')} placement={isRtl ? "left" : "right"}>
                             <ListItemIcon
                                 sx={{
                                     minWidth: 0,
-                                    mr: open ? 3 : 'auto',
+                                    mr: open ? (isRtl ? 0 : 3) : 'auto',
+                                    ml: open ? (isRtl ? 3 : 0) : 'auto',
                                     justifyContent: 'center',
                                     color: location.pathname.startsWith('/billing') ?
                                         'primary.main' : 'inherit',
@@ -271,6 +297,7 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                                 opacity: open ? 1 : 0,
                                 color: location.pathname.startsWith('/billing') ?
                                     'primary.main' : 'inherit',
+                                textAlign: isRtl ? 'right' : 'left',
                             }}
                         />
                         {open && (billingOpen ? <ExpandLess /> : <ExpandMore />)}
@@ -285,7 +312,12 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                                     (item.roles && user?.role && item.roles.includes(user.role)) &&
                                     <ListItemButton
                                         key={item.text}
-                                        sx={{ pl: 4 }}
+                                        sx={{
+                                            pl: isRtl ? 2 : 4,
+                                            pr: isRtl ? 4 : 2,
+                                            paddingInlineStart: isRtl ? '16px' : '32px',
+                                            paddingInlineEnd: isRtl ? '32px' : '16px',
+                                        }}
                                         onClick={() => handleNavigate(item.path)}
                                         selected={location.pathname === item.path}
                                     >
@@ -294,7 +326,8 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                                             primaryTypographyProps={{
                                                 fontSize: '0.875rem',
                                                 fontWeight: location.pathname === item.path ?
-                                                    'medium' : 'normal'
+                                                    'medium' : 'normal',
+                                                textAlign: isRtl ? 'right' : 'left',
                                             }}
                                         />
                                     </ListItemButton>
@@ -309,18 +342,19 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                     <ListItemButton
                         sx={{
                             minHeight: 48,
-                            justifyContent: open ? 'initial' : 'center',
+                            justifyContent: open ? (isRtl ? 'flex-end' : 'initial') : 'center',
                             px: 2.5,
                             bgcolor: location.pathname.startsWith('/documents') ?
                                 `rgba(25, 118, 210, 0.08)` : 'transparent',
                         }}
                         onClick={open ? handleDocumentsClick : () => handleNavigate('/documents')}
                     >
-                        <Tooltip title={open ? '' : t('documents.documents', 'Documents')} placement="right">
+                        <Tooltip title={open ? '' : t('documents.documents', 'Documents')} placement={isRtl ? "left" : "right"}>
                             <ListItemIcon
                                 sx={{
                                     minWidth: 0,
-                                    mr: open ? 3 : 'auto',
+                                    mr: open ? (isRtl ? 0 : 3) : 'auto',
+                                    ml: open ? (isRtl ? 3 : 0) : 'auto',
                                     justifyContent: 'center',
                                     color: location.pathname.startsWith('/documents') ?
                                         'primary.main' : 'inherit',
@@ -335,6 +369,7 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                                 opacity: open ? 1 : 0,
                                 color: location.pathname.startsWith('/documents') ?
                                     'primary.main' : 'inherit',
+                                textAlign: isRtl ? 'right' : 'left',
                             }}
                         />
                         {open && (documentsOpen ? <ExpandLess /> : <ExpandMore />)}
@@ -349,7 +384,12 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                                     (item.roles && user?.role && item.roles.includes(user.role)) &&
                                     <ListItemButton
                                         key={item.text}
-                                        sx={{ pl: 4 }}
+                                        sx={{
+                                            pl: isRtl ? 2 : 4,
+                                            pr: isRtl ? 4 : 2,
+                                            paddingInlineStart: isRtl ? '16px' : '32px',
+                                            paddingInlineEnd: isRtl ? '32px' : '16px',
+                                        }}
                                         onClick={() => handleNavigate(item.path)}
                                         selected={location.pathname === item.path}
                                     >
@@ -358,7 +398,8 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                                             primaryTypographyProps={{
                                                 fontSize: '0.875rem',
                                                 fontWeight: location.pathname === item.path ?
-                                                    'medium' : 'normal'
+                                                    'medium' : 'normal',
+                                                textAlign: isRtl ? 'right' : 'left',
                                             }}
                                         />
                                     </ListItemButton>
@@ -380,18 +421,19 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                         <ListItemButton
                             sx={{
                                 minHeight: 48,
-                                justifyContent: open ? 'initial' : 'center',
+                                justifyContent: open ? (isRtl ? 'flex-end' : 'initial') : 'center',
                                 px: 2.5,
                                 bgcolor: location.pathname === item.path ?
                                     `rgba(25, 118, 210, 0.08)` : 'transparent',
                             }}
                             onClick={() => handleNavigate(item.path)}
                         >
-                            <Tooltip title={open ? '' : item.text} placement="right">
+                            <Tooltip title={open ? '' : item.text} placement={isRtl ? "left" : "right"}>
                                 <ListItemIcon
                                     sx={{
                                         minWidth: 0,
-                                        mr: open ? 3 : 'auto',
+                                        mr: open ? (isRtl ? 0 : 3) : 'auto',
+                                        ml: open ? (isRtl ? 3 : 0) : 'auto',
                                         justifyContent: 'center',
                                         color: location.pathname === item.path ?
                                             'primary.main' : 'inherit',
@@ -406,6 +448,7 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
                                     opacity: open ? 1 : 0,
                                     color: location.pathname === item.path ?
                                         'primary.main' : 'inherit',
+                                    textAlign: isRtl ? 'right' : 'left',
                                 }}
                             />
                         </ListItemButton>
@@ -427,18 +470,26 @@ const SidebarMenu = ({ open, handleDrawerClose, isMobile, isTablet }) => {
         </>
     );
 
+    // Set appropriate anchor for RTL/LTR
+    const anchor = isRtl ? 'right' : 'left';
+    const drawerProps = {
+        variant: "permanent",
+        direction: isRtl ? 'rtl' : 'ltr',
+        anchor: anchor
+    };
+
     // Choose between open and closed drawer
     return isTablet ? (
-        <ClosedDrawer variant="permanent">
+        <ClosedDrawer {...drawerProps}>
             {drawerContent}
         </ClosedDrawer>
     ) : (
         open ? (
-            <OpenedDrawer variant="permanent">
+            <OpenedDrawer {...drawerProps}>
                 {drawerContent}
             </OpenedDrawer>
         ) : (
-            <ClosedDrawer variant="permanent">
+            <ClosedDrawer {...drawerProps}>
                 {drawerContent}
             </ClosedDrawer>
         )
