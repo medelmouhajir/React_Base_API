@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
     Box,
     Card,
@@ -13,7 +13,9 @@ import {
     FormControl,
     InputLabel,
     Button,
-    Alert
+    Alert,
+    Snackbar,
+    CircularProgress
 } from '@mui/material';
 import {
     DarkMode as DarkModeIcon,
@@ -25,14 +27,24 @@ import {
 } from '@mui/icons-material';
 import PageHeader from '../../components/common/PageHeader';
 import { useThemeMode } from '../../theme/ThemeProvider';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../i18n/i18n';
+import userService from '../../services/userService';
+import { useAuth } from '../../features/auth/AuthContext';
 
 const SettingsPage = () => {
     const { mode, toggleMode } = useThemeMode();
+    const { t } = useTranslation();
+    const { currentUser } = useAuth();
 
-    // Mock state for settings
+    const [loading, setLoading] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [saveError, setSaveError] = useState(null);
+
+    // Settings state
     const [settings, setSettings] = useState({
         // App preferences
-        language: 'en',
+        language: i18n.language || 'en',
         autoSave: true,
 
         // Notifications
@@ -49,6 +61,35 @@ const SettingsPage = () => {
         sessionTimeout: 30
     });
 
+    // Load user settings from API
+    useEffect(() => {
+        const loadUserSettings = async () => {
+            if (!currentUser) return;
+
+            setLoading(true);
+            try {
+                // Fetch user profile which contains settings
+                const userProfile = await userService.getUserProfile(currentUser.id);
+
+                // If we have settings data, update the state
+                if (userProfile && userProfile.settings) {
+                    setSettings(prevSettings => ({
+                        ...prevSettings,
+                        ...userProfile.settings,
+                        language: userProfile.settings.language || i18n.language || 'en'
+                    }));
+                }
+            } catch (error) {
+                console.error('Error loading user settings:', error);
+                setSaveError(t('settings.errors.loadFailed'));
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadUserSettings();
+    }, [currentUser, t]);
+
     // Handle setting changes
     const handleChange = (event) => {
         const { name, value, checked } = event.target;
@@ -58,22 +99,72 @@ const SettingsPage = () => {
         });
     };
 
-    // Mock submit function
-    const handleSubmit = (e) => {
+    // Handle language change
+    const handleLanguageChange = (event) => {
+        const newLanguage = event.target.value;
+        setSettings({
+            ...settings,
+            language: newLanguage
+        });
+
+        // Change the application language
+        i18n.changeLanguage(newLanguage);
+    };
+
+    // Close success message
+    const handleCloseSuccess = () => {
+        setSaveSuccess(false);
+    };
+
+    // Close error message
+    const handleCloseError = () => {
+        setSaveError(null);
+    };
+
+    // Save settings
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // In a real app, this would save settings to the server
-        console.log('Settings saved:', settings);
-        // Show success message
+        setLoading(true);
+        setSaveError(null);
+
+        try {
+            if (currentUser) {
+                // Prepare settings data for API
+                const settingsData = {
+                    settings: {
+                        ...settings
+                    }
+                };
+
+                // Update user profile with new settings
+                await userService.updateUserProfile(currentUser.id, settingsData);
+
+                // Update notification preferences separately if needed
+                await userService.updateNotificationPreferences(currentUser.id, {
+                    emailNotifications: settings.emailNotifications,
+                    appointmentReminders: settings.appointmentReminders,
+                    caseUpdates: settings.caseUpdates
+                });
+
+                // Show success message
+                setSaveSuccess(true);
+            }
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            setSaveError(t('settings.errors.saveFailed'));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <>
             <PageHeader
-                title="Settings"
-                subtitle="Customize your application preferences"
+                title={t('settings.title')}
+                subtitle={t('settings.subtitle')}
                 breadcrumbs={[
-                    { text: 'Dashboard', link: '/' },
-                    { text: 'Settings' }
+                    { text: t('dashboard.title'), link: '/' },
+                    { text: t('settings.title') }
                 ]}
             />
 
@@ -82,25 +173,25 @@ const SettingsPage = () => {
                 <Card sx={{ p: 3, mb: 3 }}>
                     <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                         <LanguageIcon sx={{ mr: 1 }} />
-                        Application Preferences
+                        {t('settings.appPreferences.title')}
                     </Typography>
                     <Divider sx={{ mb: 3 }} />
 
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
-                                <InputLabel id="language-label">Language</InputLabel>
+                                <InputLabel id="language-label">{t('settings.appPreferences.language')}</InputLabel>
                                 <Select
                                     labelId="language-label"
                                     id="language"
                                     name="language"
                                     value={settings.language}
-                                    label="Language"
-                                    onChange={handleChange}
+                                    label={t('settings.appPreferences.language')}
+                                    onChange={handleLanguageChange}
                                 >
                                     <MenuItem value="en">English</MenuItem>
-                                    <MenuItem value="es">Spanish</MenuItem>
-                                    <MenuItem value="fr">French</MenuItem>
+                                    <MenuItem value="fr">Français</MenuItem>
+                                    <MenuItem value="ar">العربية</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -117,7 +208,7 @@ const SettingsPage = () => {
                                 label={
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                         <DarkModeIcon sx={{ mr: 1 }} />
-                                        <Typography>Dark Mode</Typography>
+                                        <Typography>{t('settings.appPreferences.darkMode')}</Typography>
                                     </Box>
                                 }
                             />
@@ -132,7 +223,7 @@ const SettingsPage = () => {
                                         name="autoSave"
                                     />
                                 }
-                                label="Auto-save documents while editing"
+                                label={t('settings.appPreferences.autoSave')}
                             />
                         </Grid>
                     </Grid>
@@ -142,7 +233,7 @@ const SettingsPage = () => {
                 <Card sx={{ p: 3, mb: 3 }}>
                     <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                         <NotificationsIcon sx={{ mr: 1 }} />
-                        Notifications
+                        {t('settings.notifications.title')}
                     </Typography>
                     <Divider sx={{ mb: 3 }} />
 
@@ -155,7 +246,7 @@ const SettingsPage = () => {
                                     name="emailNotifications"
                                 />
                             }
-                            label="Email notifications"
+                            label={t('settings.notifications.emailNotifications')}
                         />
                         <FormControlLabel
                             control={
@@ -165,7 +256,7 @@ const SettingsPage = () => {
                                     name="appointmentReminders"
                                 />
                             }
-                            label="Appointment reminders"
+                            label={t('settings.notifications.appointmentReminders')}
                         />
                         <FormControlLabel
                             control={
@@ -175,7 +266,7 @@ const SettingsPage = () => {
                                     name="caseUpdates"
                                 />
                             }
-                            label="Case status updates"
+                            label={t('settings.notifications.caseUpdates')}
                         />
                     </FormGroup>
                 </Card>
@@ -184,7 +275,7 @@ const SettingsPage = () => {
                 <Card sx={{ p: 3, mb: 3 }}>
                     <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                         <BackupIcon sx={{ mr: 1 }} />
-                        Data & Privacy
+                        {t('settings.dataPrivacy.title')}
                     </Typography>
                     <Divider sx={{ mb: 3 }} />
 
@@ -197,7 +288,7 @@ const SettingsPage = () => {
                                     name="shareUsageData"
                                 />
                             }
-                            label="Share anonymous usage data to improve the application"
+                            label={t('settings.dataPrivacy.shareUsageData')}
                         />
                         <FormControlLabel
                             control={
@@ -207,16 +298,16 @@ const SettingsPage = () => {
                                     name="storeDocumentsLocally"
                                 />
                             }
-                            label="Store documents locally for offline access"
+                            label={t('settings.dataPrivacy.storeDocumentsLocally')}
                         />
                     </FormGroup>
 
                     <Box sx={{ mt: 2 }}>
                         <Button variant="outlined" color="primary" sx={{ mr: 2 }}>
-                            Export My Data
+                            {t('settings.dataPrivacy.exportData')}
                         </Button>
                         <Button variant="outlined" color="error">
-                            Delete Account
+                            {t('settings.dataPrivacy.deleteAccount')}
                         </Button>
                     </Box>
                 </Card>
@@ -225,7 +316,7 @@ const SettingsPage = () => {
                 <Card sx={{ p: 3, mb: 3 }}>
                     <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                         <SecurityIcon sx={{ mr: 1 }} />
-                        Security
+                        {t('settings.security.title')}
                     </Typography>
                     <Divider sx={{ mb: 3 }} />
 
@@ -239,32 +330,32 @@ const SettingsPage = () => {
                                         name="twoFactorAuth"
                                     />
                                 }
-                                label="Enable two-factor authentication"
+                                label={t('settings.security.twoFactorAuth')}
                             />
                         </Grid>
 
                         <Grid item xs={12} md={6}>
                             <FormControl fullWidth>
-                                <InputLabel id="timeout-label">Session Timeout (minutes)</InputLabel>
+                                <InputLabel id="timeout-label">{t('settings.security.sessionTimeout')}</InputLabel>
                                 <Select
                                     labelId="timeout-label"
                                     id="sessionTimeout"
                                     name="sessionTimeout"
                                     value={settings.sessionTimeout}
-                                    label="Session Timeout (minutes)"
+                                    label={t('settings.security.sessionTimeout')}
                                     onChange={handleChange}
                                 >
-                                    <MenuItem value={15}>15 minutes</MenuItem>
-                                    <MenuItem value={30}>30 minutes</MenuItem>
-                                    <MenuItem value={60}>60 minutes</MenuItem>
-                                    <MenuItem value={120}>2 hours</MenuItem>
+                                    <MenuItem value={15}>{t('settings.security.timeoutOptions.15min')}</MenuItem>
+                                    <MenuItem value={30}>{t('settings.security.timeoutOptions.30min')}</MenuItem>
+                                    <MenuItem value={60}>{t('settings.security.timeoutOptions.60min')}</MenuItem>
+                                    <MenuItem value={120}>{t('settings.security.timeoutOptions.120min')}</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
 
                         <Grid item xs={12}>
                             <Button variant="outlined">
-                                Change Password
+                                {t('settings.security.changePassword')}
                             </Button>
                         </Grid>
                     </Grid>
@@ -276,16 +367,41 @@ const SettingsPage = () => {
                         type="submit"
                         variant="contained"
                         color="primary"
-                        startIcon={<SaveIcon />}
+                        startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                        disabled={loading}
                     >
-                        Save Settings
+                        {t('settings.saveButton')}
                     </Button>
                 </Box>
 
                 <Alert severity="info" sx={{ mb: 3 }}>
-                    This is a mock-up page. In a real application, these settings would be saved to your account.
+                    {t('settings.note')}
                 </Alert>
             </form>
+
+            {/* Success Snackbar */}
+            <Snackbar
+                open={saveSuccess}
+                autoHideDuration={6000}
+                onClose={handleCloseSuccess}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseSuccess} severity="success" sx={{ width: '100%' }}>
+                    {t('settings.successMessage')}
+                </Alert>
+            </Snackbar>
+
+            {/* Error Snackbar */}
+            <Snackbar
+                open={!!saveError}
+                autoHideDuration={6000}
+                onClose={handleCloseError}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseError} severity="error" sx={{ width: '100%' }}>
+                    {saveError}
+                </Alert>
+            </Snackbar>
         </>
     );
 };

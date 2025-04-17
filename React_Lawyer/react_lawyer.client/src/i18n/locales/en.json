@@ -875,12 +875,51 @@
     "profile": "Profile Settings",
     "preferences": "Preferences",
     "notifications": "Notifications",
-    "security": "Security",
     "appearance": "Appearance",
     "language": "Language",
     "theme": "Theme",
     "darkMode": "Dark Mode",
-    "lightMode": "Light Mode"
+    "lightMode": "Light Mode",
+
+    "title": "Settings",
+    "subtitle": "Customize your application preferences",
+    "saveButton": "Save Settings",
+    "successMessage": "Settings saved successfully",
+    "note": "These settings are stored in your user profile and will be applied across all your devices.",
+    "errors": {
+      "loadFailed": "Failed to load settings. Please try again.",
+      "saveFailed": "Failed to save settings. Please try again."
+    },
+    "appPreferences": {
+      "title": "Application Preferences",
+      "language": "Language",
+      "darkMode": "Dark Mode",
+      "autoSave": "Auto-save documents while editing"
+    },
+    "notifications.title": "Notifications",
+    "notifications.emailNotifications": "Email notifications",
+    "notifications.appointmentReminders": "Appointment reminders",
+    "notifications.caseUpdates": "Case status updates",
+
+    "dataPrivacy": {
+      "title": "Data & Privacy",
+      "shareUsageData": "Share anonymous usage data to improve the application",
+      "storeDocumentsLocally": "Store documents locally for offline access",
+      "exportData": "Export My Data",
+      "deleteAccount": "Delete Account"
+    },
+    "security": {
+      "title": "Security",
+      "twoFactorAuth": "Enable two-factor authentication",
+      "sessionTimeout": "Session Timeout (minutes)",
+      "changePassword": "Change Password",
+      "timeoutOptions": {
+        "15min": "15 minutes",
+        "30min": "30 minutes",
+        "60min": "60 minutes",
+        "120min": "2 hours"
+      }
+    }
   },
 
 

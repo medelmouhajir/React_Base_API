@@ -59,6 +59,7 @@ import DocumentsListPage from '../pages/documents/DocumentsListPage';
 import DocumentDetailsPage from '../pages/documents/DocumentDetailsPage';
 import DocumentEditor from '../pages/documents/DocumentEditor';
 import DocumentGenerationPage from '../pages/documents/DocumentGenerationPage';
+import SmartEditorPage from '../pages/documents/SmartEditorPage';
 
 //// Reports pages
 import ReportsPage from '../pages/reports/ReportsPage';
@@ -139,6 +140,7 @@ const AppRoutes = () => {
                 {/* Documents */}
                 <Route path="/documents" element={<DocumentsListPage />} />
                 <Route path="/documents/generator" element={<DocumentGenerationPage />} />
+                <Route path="/documents/smarteditor" element={<SmartEditorPage />} />
                 <Route path="/documents/:id/edit" element={<DocumentEditor />} />
                 <Route path="/documents/:id" element={<DocumentDetailsPage />} />
 

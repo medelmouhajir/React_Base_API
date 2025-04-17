@@ -875,12 +875,50 @@
     "profile": "إعدادات الملف الشخصي",
     "preferences": "التفضيلات",
     "notifications": "الإشعارات",
-    "security": "الأمان",
     "appearance": "المظهر",
     "language": "اللغة",
     "theme": "السمة",
     "darkMode": "الوضع الداكن",
-    "lightMode": "الوضع الفاتح"
+    "lightMode": "الوضع الفاتح",
+
+    "title": "الإعدادات",
+    "subtitle": "تخصيص تفضيلات التطبيق",
+    "saveButton": "حفظ الإعدادات",
+    "successMessage": "تم حفظ الإعدادات بنجاح",
+    "note": "يتم تخزين هذه الإعدادات في ملف تعريف المستخدم الخاص بك وسيتم تطبيقها على جميع أجهزتك.",
+    "errors": {
+      "loadFailed": "فشل تحميل الإعدادات. يرجى المحاولة مرة أخرى.",
+      "saveFailed": "فشل حفظ الإعدادات. يرجى المحاولة مرة أخرى."
+    },
+    "appPreferences": {
+      "title": "تفضيلات التطبيق",
+      "language": "اللغة",
+      "darkMode": "الوضع الداكن",
+      "autoSave": "حفظ المستندات تلقائيًا أثناء التحرير"
+    },
+    "notifications.title": "الإشعارات",
+    "notifications.emailNotifications": "إشعارات البريد الإلكتروني",
+    "notifications.appointmentReminders": "تذكيرات المواعيد",
+    "notifications.caseUpdates": "تحديثات حالة القضية",
+    "dataPrivacy": {
+      "title": "البيانات والخصوصية",
+      "shareUsageData": "مشاركة بيانات الاستخدام المجهولة لتحسين التطبيق",
+      "storeDocumentsLocally": "تخزين المستندات محليًا للوصول دون اتصال",
+      "exportData": "تصدير بياناتي",
+      "deleteAccount": "حذف الحساب"
+    },
+    "security": {
+      "title": "الأمان",
+      "twoFactorAuth": "تفعيل المصادقة الثنائية",
+      "sessionTimeout": "مهلة الجلسة (بالدقائق)",
+      "changePassword": "تغيير كلمة المرور",
+      "timeoutOptions": {
+        "15min": "15 دقيقة",
+        "30min": "30 دقيقة",
+        "60min": "60 دقيقة",
+        "120min": "ساعتان"
+      }
+    }
   },
 
 
