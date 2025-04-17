@@ -1,23 +1,10 @@
 // src/pages/documents/SmartEditorPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    Box,
-    Paper,
-    Typography,
-    TextField,
-    Button,
-    IconButton,
-    Menu,
-    MenuItem,
-    Divider,
-    CircularProgress,
-    Alert,
-    AppBar,
-    Toolbar,
-    Tooltip,
-    Snackbar
+    Box, Paper, TextField, Button, IconButton, Menu, MenuItem,
+    Divider, CircularProgress, Alert, AppBar, Toolbar, Tooltip, Snackbar
 } from '@mui/material';
 import {
     Save as SaveIcon,
@@ -40,16 +27,17 @@ import AIAssistantPanel from './components/AIAssistantPanel';
 import documentGenerationService from '../../services/documentGenerationService';
 import smartEditorService from '../../services/smartEditorService';
 
-// Import ReactQuill directly into this component
+// Import ReactQuill
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 const SmartEditorPage = () => {
     const { t } = useTranslation();
-    const { templateId } = useParams();
+    const { templateId, documentId: docId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const { isMobile, mode } = useThemeMode();
-    const { user } = useAuth(); // Get currentUser from the auth context
+    const { user } = useAuth();
     const editorRef = useRef(null);
 
     // State
@@ -63,53 +51,10 @@ const SmartEditorPage = () => {
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
     const [error, setError] = useState(null);
     const [notification, setNotification] = useState(null);
-    const [documentId, setDocumentId] = useState(null);
+    const [documentId, setDocumentId] = useState(docId || null);
     const [hasChanges, setHasChanges] = useState(false);
 
-    // Add custom buttons to toolbar instead of built-in undo/redo
-    useEffect(() => {
-        // Add custom undo and redo buttons after component mounts
-        const handleUndo = () => {
-            if (editorRef.current) {
-                const quill = editorRef.current.getEditor();
-                quill.history.undo();
-            }
-        };
-
-        const handleRedo = () => {
-            if (editorRef.current) {
-                const quill = editorRef.current.getEditor();
-                quill.history.redo();
-            }
-        };
-
-        // Add buttons to the document
-        const undoButton = document.createElement('button');
-        undoButton.innerHTML = '<i class="material-icons" style="font-size: 18px;">undo</i>';
-        undoButton.onclick = handleUndo;
-        undoButton.className = 'ql-custom-undo';
-        undoButton.title = 'Undo';
-
-        const redoButton = document.createElement('button');
-        redoButton.innerHTML = '<i class="material-icons" style="font-size: 18px;">redo</i>';
-        redoButton.onclick = handleRedo;
-        redoButton.className = 'ql-custom-redo';
-        redoButton.title = 'Redo';
-
-        // Add to toolbar after editor is mounted
-        setTimeout(() => {
-            const toolbar = document.querySelector('.ql-toolbar');
-            if (toolbar) {
-                const span = document.createElement('span');
-                span.className = 'ql-formats';
-                span.appendChild(undoButton);
-                span.appendChild(redoButton);
-                toolbar.appendChild(span);
-            }
-        }, 100);
-    }, []);
-
-    // Configure Quill modules with default toolbar
+    // Quill editor modules configuration
     const modules = {
         toolbar: [
             [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
@@ -123,41 +68,55 @@ const SmartEditorPage = () => {
             [{ 'align': [] }],
             ['clean']
         ],
-        history: {
-            delay: 500,
-            maxStack: 100,
-            userOnly: true
-        }
+        history: { delay: 500, maxStack: 100, userOnly: true }
     };
 
-    // Create a Quill formats configuration
+    // Quill formats
     const formats = [
-        'header', 'font', 'size',
-        'bold', 'italic', 'underline', 'strike', 'blockquote',
-        'list', 'bullet', 'indent',
-        'link', 'image', 'video',
-        'color', 'background',
-        'align', 'script'
+        'header', 'font', 'size', 'bold', 'italic', 'underline', 'strike',
+        'blockquote', 'list', 'bullet', 'indent', 'link', 'image',
+        'color', 'background', 'align', 'script'
     ];
 
-    // Load template on mount if templateId is provided
+    // Load document or template on mount
     useEffect(() => {
-        if (templateId) {
+        console.log("documentId : " + documentId);
+        if (documentId) {
+            loadExistingDocument(documentId);
+        } else if (templateId) {
             loadTemplate(templateId);
-        } else {
+        } else if (!location.state?.skipTemplateDialog) {
             setShowTemplateDialog(true);
         }
 
-        // Auto-save functionality
+        // Auto-save every minute if there are changes
         const autoSaveInterval = setInterval(() => {
-            if (hasChanges && documentId) {
-                handleAutoSave();
-            }
-        }, 60000); // Auto-save every minute if there are changes
+            if (hasChanges && documentId) handleAutoSave();
+        }, 60000);
 
         return () => clearInterval(autoSaveInterval);
-    }, [templateId, hasChanges, documentId]);
+    }, [templateId, documentId]);
 
+    // Load existing document
+    const loadExistingDocument = async (id) => {
+        console.log("loadExistingDocument : " + id)
+        setLoading(true);
+        setError(null);
+        try {
+            const doc = await smartEditorService.getDocumentById(id);
+            setDocumentId(id);
+            setDocumentTitle(doc.title);
+            setDocumentContent(doc.content);
+            setHasChanges(false);
+        } catch (error) {
+            console.error('Error loading document:', error);
+            setError(t('smartEditor.errors.documentLoad'));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Load template
     const loadTemplate = async (id) => {
         setLoading(true);
         setError(null);
@@ -174,6 +133,7 @@ const SmartEditorPage = () => {
         }
     };
 
+    // Template selection handler
     const handleSelectTemplate = (template) => {
         setTemplate(template);
         setDocumentTitle(template.name);
@@ -181,26 +141,45 @@ const SmartEditorPage = () => {
         setShowTemplateDialog(false);
     };
 
+    // Content change handler
     const handleContentChange = (content) => {
         setDocumentContent(content);
         setHasChanges(true);
     };
 
+    // Save document
     const handleSaveDocument = async () => {
+        if (!documentTitle.trim()) {
+            setNotification({
+                type: 'error',
+                message: t('smartEditor.errors.titleRequired')
+            });
+            return;
+        }
+
         setSaving(true);
         try {
-            // Save document to the API
-            const result = await smartEditorService.saveDocument({
-                templateId: template?.id,
-                title: documentTitle,
-                content: documentContent,
-                userId: user?.id,
-                lawFirmId: user?.lawFirmId
-            });
+            let result;
 
-            setDocumentId(result.id);
+            if (documentId) {
+                // Update existing document
+                result = await smartEditorService.updateDocument(documentId, {
+                    title: documentTitle,
+                    content: documentContent
+                });
+            } else {
+                // Create new document
+                result = await smartEditorService.saveDocument({
+                    templateId: template?.id,
+                    title: documentTitle,
+                    content: documentContent,
+                    lawFirmId: user?.lawFirmId,
+                    caseId: location.state?.caseId
+                });
+                setDocumentId(result.documentId);
+            }
+
             setHasChanges(false);
-
             setNotification({
                 type: 'success',
                 message: t('smartEditor.notifications.saved')
@@ -216,34 +195,34 @@ const SmartEditorPage = () => {
         }
     };
 
+    // Auto-save document
     const handleAutoSave = async () => {
-        try {
-            if (!documentId) return;
+        if (!documentId || !hasChanges) return;
 
-            // Update existing document
+        try {
             await smartEditorService.updateDocument(documentId, {
                 content: documentContent,
                 title: documentTitle
             });
-
             setHasChanges(false);
-            console.log('Document auto-saved successfully');
+            console.log('Document auto-saved');
         } catch (error) {
-            console.error('Error auto-saving document:', error);
+            console.error('Error auto-saving:', error);
         }
     };
 
+    // Export document
     const handleExportDocument = async (format = 'pdf') => {
         try {
-            // First save any unsaved changes
-            if (hasChanges) {
-                await handleSaveDocument();
-            }
+            // Save any unsaved changes first
+            if (hasChanges) await handleSaveDocument();
 
-            // Export the document
+            // Export document
             const result = await smartEditorService.exportDocument({
-                documentId: documentId,
-                format: format
+                documentId,
+                content: documentContent, // Include content for direct export
+                title: documentTitle,
+                format
             });
 
             // Create download link
@@ -272,51 +251,43 @@ const SmartEditorPage = () => {
         }
     };
 
+    // Print document
     const handlePrintDocument = () => {
-        if (editorRef.current) {
-            const content = editorRef.current.getEditor().root.innerHTML;
-            const printWindow = window.open('', '_blank');
+        if (!editorRef.current) return;
 
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>${documentTitle || 'Document'}</title>
-                    <style>
-                        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; }
-                        .document { max-width: 8.5in; margin: 0 auto; }
-                    </style>
-                </head>
-                <body>
-                    <div class="document">
-                        ${content}
-                    </div>
-                </body>
-                </html>
-            `);
+        const content = editorRef.current.getEditor().root.innerHTML;
+        const printWindow = window.open('', '_blank');
 
-            printWindow.document.close();
-            printWindow.focus();
+        printWindow.document.write(`
+            <html>
+            <head>
+                <title>${documentTitle || 'Document'}</title>
+                <style>
+                    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; }
+                    .document { max-width: 8.5in; margin: 0 auto; }
+                </style>
+            </head>
+            <body>
+                <div class="document">${content}</div>
+            </body>
+            </html>
+        `);
 
-            // Print after styles are loaded
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 250);
-        }
+        printWindow.document.close();
+        printWindow.focus();
+
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 250);
     };
 
+    // Create new document
     const handleCreateNewDocument = () => {
-        // Check for unsaved changes
-        if (hasChanges) {
-            if (window.confirm(t('smartEditor.unsavedChanges'))) {
-                resetEditor();
-            }
-        } else {
-            resetEditor();
+        if (hasChanges && !window.confirm(t('smartEditor.unsavedChanges'))) {
+            return;
         }
-    };
 
-    const resetEditor = () => {
         setTemplate(null);
         setDocumentTitle('');
         setDocumentContent('');
@@ -325,45 +296,37 @@ const SmartEditorPage = () => {
         setShowTemplateDialog(true);
     };
 
-    const openMenu = (event) => {
-        setMenuAnchorEl(event.currentTarget);
-    };
-
-    const closeMenu = () => {
-        setMenuAnchorEl(null);
-    };
-
-    const handleNavBack = () => {
-        // Check for unsaved changes before navigating away
-        if (hasChanges) {
-            if (window.confirm(t('smartEditor.unsavedChanges'))) {
-                navigate('/documents');
-            }
-        } else {
-            navigate('/documents');
-        }
-    };
-
+    // Handle application of AI suggestions
     const handleApplyAISuggestion = (suggestion) => {
-        if (editorRef.current) {
-            const editor = editorRef.current.getEditor();
-            const text = editor.getText();
-            const index = text.indexOf(suggestion.original);
+        if (!editorRef.current) return;
 
-            if (index !== -1) {
-                editor.deleteText(index, suggestion.original.length);
-                editor.insertText(index, suggestion.suggested);
-                setHasChanges(true);
-            }
+        const editor = editorRef.current.getEditor();
+        const text = editor.getText();
+        const index = text.indexOf(suggestion.original);
+
+        if (index !== -1) {
+            editor.deleteText(index, suggestion.original.length);
+            editor.insertText(index, suggestion.suggested);
+            setHasChanges(true);
         }
     };
 
-    // Handle notifications
-    const handleCloseNotification = () => {
-        setNotification(null);
+    // Navigate back with confirmation if needed
+    const handleNavBack = () => {
+        if (hasChanges && !window.confirm(t('smartEditor.unsavedChanges'))) {
+            return;
+        }
+        navigate('/documents');
     };
 
-    // Render loading state
+    // Menu handlers
+    const openMenu = (event) => setMenuAnchorEl(event.currentTarget);
+    const closeMenu = () => setMenuAnchorEl(null);
+
+    // Handle notification dismissal
+    const handleCloseNotification = () => setNotification(null);
+
+    // Show loading indicator
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
@@ -413,7 +376,7 @@ const SmartEditorPage = () => {
                             onClick={handleSaveDocument}
                             disabled={saving || !hasChanges}
                         >
-                            {saving ? t('common.saving') : t('common.save')}
+                            {saving ? t('common.saving') : documentId ? t('common.update') : t('common.save')}
                         </Button>
 
                         <Tooltip title={t('smartEditor.aiAssistant')}>
@@ -495,7 +458,7 @@ const SmartEditorPage = () => {
                     </Paper>
                 </Box>
 
-                {/* AI Assistant Panel (conditionally rendered) */}
+                {/* AI Assistant Panel */}
                 {showAIPanel && (
                     <Paper
                         sx={{

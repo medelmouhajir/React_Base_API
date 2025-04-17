@@ -141,6 +141,7 @@ const AppRoutes = () => {
                 <Route path="/documents" element={<DocumentsListPage />} />
                 <Route path="/documents/generator" element={<DocumentGenerationPage />} />
                 <Route path="/documents/smarteditor" element={<SmartEditorPage />} />
+                <Route path="/documents/smarteditor/:documentId" element={<SmartEditorPage />} />
                 <Route path="/documents/:id/edit" element={<DocumentEditor />} />
                 <Route path="/documents/:id" element={<DocumentDetailsPage />} />
 

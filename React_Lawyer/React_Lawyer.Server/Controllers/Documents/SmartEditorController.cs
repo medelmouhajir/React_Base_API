@@ -258,7 +258,7 @@ namespace React_Lawyer.Server.Controllers
 
         // PUT: api/smart-editor/documents/{id}
         [HttpPut("documents/{id}")]
-        public async Task<IActionResult> UpdateDocument(int id, [FromBody] SmartEditorDocumentModel model)
+        public async Task<IActionResult> UpdateDocument(int id, [FromBody] SmartEditorDocumentUpdateModel model)
         {
             try
             {
@@ -311,7 +311,7 @@ namespace React_Lawyer.Server.Controllers
                 _logger.LogInformation("Updated smart editor document: {DocumentId} by user {UserId}",
                     document.DocumentId, currentUserId);
 
-                return NoContent();
+                return Ok(new object());
             }
             catch (Exception ex)
             {
@@ -495,6 +495,13 @@ namespace React_Lawyer.Server.Controllers
         public string Content { get; set; }
         public string templateId { get; set; }
         public int lawFirmId { get; set; }
+        public int? CaseId { get; set; }
+        public int? ClientId { get; set; }
+    }
+    public class SmartEditorDocumentUpdateModel
+    {
+        public string Title { get; set; }
+        public string Content { get; set; }
         public int? CaseId { get; set; }
         public int? ClientId { get; set; }
     }
