@@ -27,7 +27,7 @@ const DocumentEditor = forwardRef(({ content, onChange }, ref) => {
 
     // Create a Quill modules configuration
     const modules = {
-        toolbar: false, // We're using our custom toolbar
+        toolbar: true, // We're using our custom toolbar
         history: {
             delay: 500,
             maxStack: 100,
@@ -92,11 +92,13 @@ const DocumentEditor = forwardRef(({ content, onChange }, ref) => {
 
         // Apply a format to the current selection
         applyFormat: (format, value) => {
-            console.log('Applying format:', format, value);
             if (editor) {
-                const range = editor.getSelection();
-                if (range) {
-                    editor.formatText(range.index, range.length, format, value);
+                const range = editor.getSelection() || { index: 0, length: 0 };
+                // For alignment, we need to use the 'align' format on block level
+                if (format === 'align') {
+                    editor.format('align', value);
+                } else {
+                    editor.formatText(range.index, range.length || 1, format, value);
                 }
             }
         },

@@ -35,18 +35,20 @@ import { useAuth } from '../../features/auth/AuthContext';
 // Import components
 import TemplateSelectionDialog from './components/TemplateSelectionDialog';
 import AIAssistantPanel from './components/AIAssistantPanel';
-import DocumentEditor from './components/DocumentEditor';
-import EditorToolbar from './components/EditorToolbar';
 
 // Import services
 import documentGenerationService from '../../services/documentGenerationService';
 import smartEditorService from '../../services/smartEditorService';
 
+// Import ReactQuill directly into this component
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 const SmartEditorPage = () => {
     const { t } = useTranslation();
     const { templateId } = useParams();
     const navigate = useNavigate();
-    const { isMobile } = useThemeMode();
+    const { isMobile, mode } = useThemeMode();
     const { currentUser } = useAuth(); // Get currentUser from the auth context
     const editorRef = useRef(null);
 
@@ -63,6 +65,38 @@ const SmartEditorPage = () => {
     const [notification, setNotification] = useState(null);
     const [documentId, setDocumentId] = useState(null);
     const [hasChanges, setHasChanges] = useState(false);
+
+    // Configure Quill modules with default toolbar
+    const modules = {
+        toolbar: [
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'font': [] }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],
+            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            [{ 'script': 'sub' }, { 'script': 'super' }],
+            [{ 'indent': '-1' }, { 'indent': '+1' }],
+            [{ 'align': [] }],
+            ['clean'],
+            ['undo', 'redo']
+        ],
+        history: {
+            delay: 500,
+            maxStack: 100,
+            userOnly: true
+        }
+    };
+
+    // Create a Quill formats configuration
+    const formats = [
+        'header', 'font', 'size',
+        'bold', 'italic', 'underline', 'strike', 'blockquote',
+        'list', 'bullet', 'indent',
+        'link', 'image', 'video',
+        'color', 'background',
+        'align', 'script'
+    ];
 
     // Load template on mount if templateId is provided
     useEffect(() => {
@@ -99,7 +133,6 @@ const SmartEditorPage = () => {
     };
 
     const handleSelectTemplate = (template) => {
-        console.log(template);
         setTemplate(template);
         setDocumentTitle(template.name);
         setDocumentContent(template.content || '');
@@ -198,7 +231,7 @@ const SmartEditorPage = () => {
 
     const handlePrintDocument = () => {
         if (editorRef.current) {
-            const content = editorRef.current.getEditorContents();
+            const content = editorRef.current.getEditor().root.innerHTML;
             const printWindow = window.open('', '_blank');
 
             printWindow.document.write(`
@@ -270,8 +303,15 @@ const SmartEditorPage = () => {
 
     const handleApplyAISuggestion = (suggestion) => {
         if (editorRef.current) {
-            editorRef.current.applyTextReplacement(suggestion.original, suggestion.suggested);
-            setHasChanges(true);
+            const editor = editorRef.current.getEditor();
+            const text = editor.getText();
+            const index = text.indexOf(suggestion.original);
+
+            if (index !== -1) {
+                editor.deleteText(index, suggestion.original.length);
+                editor.insertText(index, suggestion.suggested);
+                setHasChanges(true);
+            }
         }
     };
 
@@ -352,9 +392,6 @@ const SmartEditorPage = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* Editor Toolbar */}
-            <EditorToolbar editorRef={editorRef} />
-
             {/* Main Content Area */}
             <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
                 {/* Document Editor */}
@@ -369,15 +406,48 @@ const SmartEditorPage = () => {
                             maxWidth: '8.5in',
                             minHeight: '11in',
                             mx: 'auto',
-                            p: 4,
                             backgroundColor: 'background.paper',
-                            boxShadow: 3
+                            boxShadow: 3,
+                            '& .ql-container': {
+                                borderBottom: 'none',
+                                borderLeft: 'none',
+                                borderRight: 'none',
+                                fontFamily: 'Georgia, Times New Roman, serif',
+                                fontSize: '12pt'
+                            },
+                            '& .ql-toolbar': {
+                                borderTop: 'none',
+                                borderLeft: 'none',
+                                borderRight: 'none',
+                                borderBottom: '1px solid',
+                                borderColor: 'divider'
+                            },
+                            '& .ql-editor': {
+                                minHeight: '10in',
+                                padding: '0.5in',
+                                color: mode === 'dark' ? '#e0e0e0' : '#333',
+                            },
+                            '& .ql-toolbar button, & .ql-toolbar .ql-picker': {
+                                color: mode === 'dark' ? '#ffffff' : 'inherit',
+                            },
+                            '& .ql-toolbar .ql-stroke': {
+                                stroke: mode === 'dark' ? '#ffffff' : 'currentColor',
+                            },
+                            '& .ql-toolbar .ql-fill': {
+                                fill: mode === 'dark' ? '#ffffff' : 'currentColor',
+                            },
+                            '& .ql-toolbar .ql-picker-options': {
+                                backgroundColor: mode === 'dark' ? '#333' : '#fff',
+                            }
                         }}
                     >
-                        <DocumentEditor
+                        <ReactQuill
                             ref={editorRef}
-                            content={documentContent}
+                            theme="snow"
+                            value={documentContent}
                             onChange={handleContentChange}
+                            modules={modules}
+                            formats={formats}
                         />
                     </Paper>
                 </Box>
