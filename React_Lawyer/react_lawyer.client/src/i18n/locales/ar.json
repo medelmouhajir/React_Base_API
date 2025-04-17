@@ -922,6 +922,104 @@
   },
 
 
+  "smartEditor": {
+    "untitledDocument": "مستند بدون عنوان",
+    "newDocument": "مستند جديد",
+    "aiAssistant": "مساعد الذكاء الاصطناعي",
+    "unsavedChanges": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد المتابعة؟",
+    "notifications": {
+      "saved": "تم حفظ المستند بنجاح",
+      "exported": "تم تصدير المستند بتنسيق {{format}} بنجاح"
+    },
+    "errors": {
+      "templateLoad": "فشل تحميل القالب",
+      "save": "فشل حفظ المستند",
+      "export": "فشل تصدير المستند"
+    },
+    "menu": {
+      "selectTemplate": "اختيار قالب",
+      "print": "طباعة",
+      "exportWord": "تصدير كمستند وورد",
+      "exportPdf": "تصدير كملف PDF",
+      "exportHtml": "تصدير كملف HTML"
+    }
+  },
+  "templates": {
+    "select": "اختر قالبًا",
+    "search": "بحث في القوالب...",
+    "allCategories": "جميع الفئات",
+    "noDescription": "لا يوجد وصف متاح",
+    "uncategorized": "غير مصنف",
+    "noSearchResults": "لا توجد قوالب تطابق بحثك",
+    "noCategoryResults": "لا توجد قوالب في هذه الفئة",
+    "noTemplates": "لا توجد قوالب متاحة",
+    "refresh": "تحديث القوالب",
+    "errors": {
+      "loadFailed": "فشل تحميل القوالب"
+    }
+  },
+  "editor": {
+    "undo": "تراجع",
+    "redo": "إعادة",
+    "bold": "غامق",
+    "italic": "مائل",
+    "underline": "تسطير",
+    "strikethrough": "يتوسطه خط",
+    "textColor": "لون النص",
+    "backgroundColor": "لون الخلفية",
+    "clearFormatting": "مسح التنسيق",
+    "bulletList": "قائمة نقطية",
+    "numberedList": "قائمة رقمية",
+    "indent": "زيادة المسافة البادئة",
+    "outdent": "تقليل المسافة البادئة",
+    "link": "إدراج رابط",
+    "table": "إدراج جدول",
+    "quote": "اقتباس",
+    "code": "كتلة برمجية",
+    "linkUrl": "رابط URL",
+    "linkText": "النص",
+    "insertLink": "إدراج الرابط",
+    "rows": "صفوف",
+    "columns": "أعمدة",
+    "insertTable": "إدراج جدول"
+  },
+  "ai": {
+    "title": "مساعد الذكاء الاصطناعي",
+    "tabs": {
+      "suggestions": "اقتراحات",
+      "assistant": "مساعد"
+    },
+    "searchSuggestions": "بحث في الاقتراحات...",
+    "refreshSuggestions": "تحديث الاقتراحات",
+    "noSearchResults": "لا توجد اقتراحات تطابق بحثك",
+    "noSuggestions": "لا توجد اقتراحات متاحة",
+    "original": "الأصلي",
+    "suggested": "المقترح",
+    "apply": "تطبيق",
+    "suggestionTypes": {
+      "clarity": "وضوح",
+      "legal": "قانوني",
+      "grammar": "نحوي",
+      "style": "أسلوب"
+    },
+    "promptPlaceholder": "اسأل مساعد الذكاء الاصطناعي...",
+    "completion": "المحتوى المُنشأ",
+    "clear": "مسح",
+    "insert": "إدراج",
+    "promptHint": "أدخل طلبًا لإنشاء محتوى",
+    "promptExamples": "أمثلة",
+    "examples": {
+      "summarize": "تلخيص هذا المستند",
+      "clause": "صياغة بند القوة القاهرة",
+      "simplify": "تبسيط هذه اللغة القانونية",
+      "proofread": "تدقيق هذا المستند"
+    },
+    "errors": {
+      "suggestionsFailed": "فشل تحميل الاقتراحات",
+      "completionFailed": "فشل إنشاء المحتوى"
+    }
+  },
+
   "notifications": {
     "notifications": "الإشعارات",
     "title": "الإشعارات",

@@ -78,6 +78,7 @@ class SmartEditorService {
      */
     async saveDocument(documentData) {
         try {
+            console.log('Saving document data:', documentData); // Debugging line
             const response = await this.fetchWithAuth(`${API_URL}/api/smart-editor/documents`, {
                 method: 'POST',
                 headers: {

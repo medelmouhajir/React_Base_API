@@ -923,6 +923,110 @@
   },
 
 
+  "smartEditor": {
+    "untitledDocument": "Untitled Document",
+    "newDocument": "New Document",
+    "aiAssistant": "AI Assistant",
+    "unsavedChanges": "You have unsaved changes. Are you sure you want to continue?",
+    "notifications": {
+      "saved": "Document saved successfully",
+      "exported": "Document exported as {{format}} successfully"
+    },
+    "errors": {
+      "templateLoad": "Failed to load template",
+      "save": "Failed to save document",
+      "export": "Failed to export document"
+    },
+    "menu": {
+      "selectTemplate": "Select Template",
+      "print": "Print",
+      "exportWord": "Export as Word Document",
+      "exportPdf": "Export as PDF",
+      "exportHtml": "Export as HTML"
+    }
+  },
+
+
+  "templates": {
+    "select": "Select a Template",
+    "search": "Search templates...",
+    "allCategories": "All Categories",
+    "noDescription": "No description available",
+    "uncategorized": "Uncategorized",
+    "noSearchResults": "No templates match your search",
+    "noCategoryResults": "No templates in this category",
+    "noTemplates": "No templates available",
+    "refresh": "Refresh Templates",
+    "errors": {
+      "loadFailed": "Failed to load templates"
+    }
+  },
+
+
+  "editor": {
+    "undo": "Undo",
+    "redo": "Redo",
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "strikethrough": "Strikethrough",
+    "textColor": "Text Color",
+    "backgroundColor": "Background Color",
+    "clearFormatting": "Clear Formatting",
+    "bulletList": "Bullet List",
+    "numberedList": "Numbered List",
+    "indent": "Indent",
+    "outdent": "Outdent",
+    "link": "Insert Link",
+    "table": "Insert Table",
+    "quote": "Quote",
+    "code": "Code Block",
+    "linkUrl": "URL",
+    "linkText": "Text",
+    "insertLink": "Insert Link",
+    "rows": "Rows",
+    "columns": "Columns",
+    "insertTable": "Insert Table"
+  },
+
+
+  "ai": {
+    "title": "AI Assistant",
+    "tabs": {
+      "suggestions": "Suggestions",
+      "assistant": "Assistant"
+    },
+    "searchSuggestions": "Search suggestions...",
+    "refreshSuggestions": "Refresh Suggestions",
+    "noSearchResults": "No suggestions match your search",
+    "noSuggestions": "No suggestions available",
+    "original": "Original",
+    "suggested": "Suggested",
+    "apply": "Apply",
+    "suggestionTypes": {
+      "clarity": "Clarity",
+      "legal": "Legal",
+      "grammar": "Grammar",
+      "style": "Style"
+    },
+    "promptPlaceholder": "Ask the AI assistant...",
+    "completion": "Generated Content",
+    "clear": "Clear",
+    "insert": "Insert",
+    "promptHint": "Enter a prompt to generate content",
+    "promptExamples": "Examples",
+    "examples": {
+      "summarize": "Summarize this document",
+      "clause": "Draft a force majeure clause",
+      "simplify": "Simplify this legal language",
+      "proofread": "Proofread this document"
+    },
+    "errors": {
+      "suggestionsFailed": "Failed to load suggestions",
+      "completionFailed": "Failed to generate completion"
+    }
+  },
+
   "notifications": {
     "notifications": "Notifications",
     "title": "Notifications",

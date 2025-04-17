@@ -49,7 +49,7 @@ const SmartEditorPage = () => {
     const { templateId } = useParams();
     const navigate = useNavigate();
     const { isMobile, mode } = useThemeMode();
-    const { currentUser } = useAuth(); // Get currentUser from the auth context
+    const { user } = useAuth(); // Get currentUser from the auth context
     const editorRef = useRef(null);
 
     // State
@@ -66,6 +66,49 @@ const SmartEditorPage = () => {
     const [documentId, setDocumentId] = useState(null);
     const [hasChanges, setHasChanges] = useState(false);
 
+    // Add custom buttons to toolbar instead of built-in undo/redo
+    useEffect(() => {
+        // Add custom undo and redo buttons after component mounts
+        const handleUndo = () => {
+            if (editorRef.current) {
+                const quill = editorRef.current.getEditor();
+                quill.history.undo();
+            }
+        };
+
+        const handleRedo = () => {
+            if (editorRef.current) {
+                const quill = editorRef.current.getEditor();
+                quill.history.redo();
+            }
+        };
+
+        // Add buttons to the document
+        const undoButton = document.createElement('button');
+        undoButton.innerHTML = '<i class="material-icons" style="font-size: 18px;">undo</i>';
+        undoButton.onclick = handleUndo;
+        undoButton.className = 'ql-custom-undo';
+        undoButton.title = 'Undo';
+
+        const redoButton = document.createElement('button');
+        redoButton.innerHTML = '<i class="material-icons" style="font-size: 18px;">redo</i>';
+        redoButton.onclick = handleRedo;
+        redoButton.className = 'ql-custom-redo';
+        redoButton.title = 'Redo';
+
+        // Add to toolbar after editor is mounted
+        setTimeout(() => {
+            const toolbar = document.querySelector('.ql-toolbar');
+            if (toolbar) {
+                const span = document.createElement('span');
+                span.className = 'ql-formats';
+                span.appendChild(undoButton);
+                span.appendChild(redoButton);
+                toolbar.appendChild(span);
+            }
+        }, 100);
+    }, []);
+
     // Configure Quill modules with default toolbar
     const modules = {
         toolbar: [
@@ -78,8 +121,7 @@ const SmartEditorPage = () => {
             [{ 'script': 'sub' }, { 'script': 'super' }],
             [{ 'indent': '-1' }, { 'indent': '+1' }],
             [{ 'align': [] }],
-            ['clean'],
-            ['undo', 'redo']
+            ['clean']
         ],
         history: {
             delay: 500,
@@ -152,7 +194,8 @@ const SmartEditorPage = () => {
                 templateId: template?.id,
                 title: documentTitle,
                 content: documentContent,
-                userId: currentUser?.id
+                userId: user?.id,
+                lawFirmId: user?.lawFirmId
             });
 
             setDocumentId(result.id);

@@ -217,18 +217,19 @@ namespace React_Lawyer.Server.Controllers
                     CaseId = model.CaseId.Value,
                     UploadedById = currentUserId,
                     Title = model.Title,
-                    Description = model.Description ?? "Created with Smart Editor",
+                    Description = "Created with Smart Editor",
                     FilePath = filePath,
                     FileType = "text/html",
                     FileSize = Encoding.UTF8.GetByteCount(model.Content),
                     UploadDate = DateTime.UtcNow,
                     LastModified = DateTime.UtcNow,
                     Category = DocumentCategory.Other,
-                    IsConfidential = model.IsConfidential,
-                    IsTemplate = model.IsTemplate,
+                    IsConfidential = false,
+                    IsTemplate = false,
                     IsSharedWithClient = false,
-                    Tags = model.Tags,
-                    VersionNumber = 1
+                    Tags = "",
+                    VersionNumber = 1,
+                    LawFirmId = model.lawFirmId,
                 };
 
                 _context.Documents.Add(document);
@@ -296,15 +297,8 @@ namespace React_Lawyer.Server.Controllers
                     document.Title = model.Title;
                 }
 
-                if (model.Description != null)
-                {
-                    document.Description = model.Description;
-                }
 
                 document.LastModified = DateTime.UtcNow;
-                document.IsConfidential = model.IsConfidential;
-                document.IsTemplate = model.IsTemplate;
-                document.Tags = model.Tags;
                 document.FileSize = Encoding.UTF8.GetByteCount(model.Content);
 
                 // Save updated content to file
@@ -498,12 +492,11 @@ namespace React_Lawyer.Server.Controllers
     public class SmartEditorDocumentModel
     {
         public string Title { get; set; }
-        public string Description { get; set; }
         public string Content { get; set; }
+        public string templateId { get; set; }
+        public int lawFirmId { get; set; }
         public int? CaseId { get; set; }
-        public bool IsConfidential { get; set; }
-        public bool IsTemplate { get; set; }
-        public string Tags { get; set; }
+        public int? ClientId { get; set; }
     }
 
     public class DocumentExportModel
