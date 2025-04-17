@@ -51,29 +51,6 @@ class SmartEditorService {
     }
 
     /**
-     * Get templates by category
-     * @param {string} category - Category to filter by
-     * @returns {Promise<Array>} - Promise resolving to array of templates
-     */
-    async getTemplatesByCategory(category) {
-        try {
-            const response = await this.fetchWithAuth(
-                `${API_URL}/api/smart-editor/templates/category/${encodeURIComponent(category)}`
-            );
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to fetch templates by category');
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error(`Error fetching templates for category ${category}:`, error);
-            throw error;
-        }
-    }
-
-    /**
      * Get a specific template by ID
      * @param {string} id - Template ID
      * @returns {Promise<Object>} - Promise resolving to template object
@@ -95,7 +72,7 @@ class SmartEditorService {
     }
 
     /**
-     * Save a document draft
+     * Save a document 
      * @param {Object} documentData - Document data to save
      * @returns {Promise<Object>} - Promise resolving to saved document
      */
@@ -117,6 +94,34 @@ class SmartEditorService {
             return await response.json();
         } catch (error) {
             console.error('Error saving document:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Update an existing document
+     * @param {string} id - Document ID
+     * @param {Object} documentData - Updated document data
+     * @returns {Promise<Object>} - Promise resolving to updated document
+     */
+    async updateDocument(id, documentData) {
+        try {
+            const response = await this.fetchWithAuth(`${API_URL}/api/smart-editor/documents/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(documentData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update document');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error updating document ${id}:`, error);
             throw error;
         }
     }
@@ -174,10 +179,10 @@ class SmartEditorService {
 
     /**
      * Get AI suggestions for document content
-     * @param {Object} documentData - Document data to analyze
+     * @param {string} content - Document content to analyze
      * @returns {Promise<Array>} - Promise resolving to array of suggestions
      */
-    async getAISuggestions(documentData) {
+    async getAISuggestions(content) {
         try {
             const response = await this.fetchWithAuth(
                 `${API_URL}/api/smart-editor/ai/suggestions`,
@@ -186,7 +191,7 @@ class SmartEditorService {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(documentData)
+                    body: JSON.stringify({ content })
                 }
             );
 
@@ -203,11 +208,11 @@ class SmartEditorService {
     }
 
     /**
-     * Get specialized legal document generation using AI
-     * @param {Object} generationData - Document generation data
-     * @returns {Promise<Object>} - Promise resolving to generated document
+     * Generate text from prompt using AI
+     * @param {string} prompt - Prompt for AI generation
+     * @returns {Promise<string>} - Promise resolving to generated text
      */
-    async generateDocumentWithAI(generationData) {
+    async generateCompletion(prompt) {
         try {
             const response = await this.fetchWithAuth(
                 `${API_URL}/api/smart-editor/ai/generate`,
@@ -216,72 +221,19 @@ class SmartEditorService {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(generationData)
+                    body: JSON.stringify({ prompt })
                 }
             );
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to generate document with AI');
+                throw new Error(errorData.message || 'Failed to generate AI completion');
             }
 
-            return await response.json();
+            const result = await response.json();
+            return result.completion;
         } catch (error) {
-            console.error('Error generating document with AI:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Save document version
-     * @param {string} documentId - Document ID
-     * @param {Object} versionData - Version data
-     * @returns {Promise<Object>} - Promise resolving to saved version
-     */
-    async saveDocumentVersion(documentId, versionData) {
-        try {
-            const response = await this.fetchWithAuth(
-                `${API_URL}/api/smart-editor/documents/${documentId}/versions`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(versionData)
-                }
-            );
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to save document version');
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error(`Error saving version for document ${documentId}:`, error);
-            throw error;
-        }
-    }
-
-    /**
-     * Get document versions
-     * @param {string} documentId - Document ID
-     * @returns {Promise<Array>} - Promise resolving to array of versions
-     */
-    async getDocumentVersions(documentId) {
-        try {
-            const response = await this.fetchWithAuth(
-                `${API_URL}/api/smart-editor/documents/${documentId}/versions`
-            );
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to fetch document versions');
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error(`Error fetching versions for document ${documentId}:`, error);
+            console.error('Error generating AI completion:', error);
             throw error;
         }
     }

@@ -1,356 +1,55 @@
 // src/pages/documents/SmartEditorPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Box,
-    Container,
     Paper,
     Typography,
-    Grid,
     TextField,
     Button,
-    Chip,
-    Divider,
-    Card,
-    CardContent,
     IconButton,
     Menu,
     MenuItem,
-    Tooltip,
+    Divider,
     CircularProgress,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
     Alert,
-    Tabs,
-    Tab,
     AppBar,
-    Toolbar
+    Toolbar,
+    Tooltip,
+    Snackbar
 } from '@mui/material';
 import {
     Save as SaveIcon,
     CloudDownload as ExportIcon,
-    FormatBold as BoldIcon,
-    FormatItalic as ItalicIcon,
-    FormatUnderlined as UnderlineIcon,
-    FormatListBulleted as BulletListIcon,
-    FormatListNumbered as NumberedListIcon,
-    FormatIndentIncrease as IndentIcon,
-    FormatIndentDecrease as OutdentIcon,
-    Undo as UndoIcon,
-    Redo as RedoIcon,
     ArrowBack as BackIcon,
-    Search as SearchIcon,
-    Add as AddIcon,
-    Check as CheckIcon,
-    Code as CodeIcon,
-    Settings as SettingsIcon,
-    FindReplace as FindReplaceIcon,
     Psychology as AIIcon,
-    FormatAlignLeft as AlignLeftIcon,
-    FormatAlignCenter as AlignCenterIcon,
-    FormatAlignRight as AlignRightIcon,
-    FormatAlignJustify as AlignJustifyIcon,
-    MoreVert as MoreIcon
+    MoreVert as MoreIcon,
+    FileCopy as FileIcon,
+    InsertDriveFile as NewDocIcon,
+    Print as PrintIcon
 } from '@mui/icons-material';
 import { useThemeMode } from '../../theme/ThemeProvider';
 import { useAuth } from '../../features/auth/AuthContext';
 
-// This would be imported from your services
+// Import components
+import TemplateSelectionDialog from './components/TemplateSelectionDialog';
+import AIAssistantPanel from './components/AIAssistantPanel';
+import DocumentEditor from './components/DocumentEditor';
+import EditorToolbar from './components/EditorToolbar';
+
+// Import services
 import documentGenerationService from '../../services/documentGenerationService';
+import smartEditorService from '../../services/smartEditorService';
 
-// Template selection dialog component
-const TemplateSelectionDialog = ({ open, onClose, onSelect }) => {
-    const { t } = useTranslation();
-    const [templates, setTemplates] = useState([]);
-    const [filteredTemplates, setFilteredTemplates] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const [loading, setLoading] = useState(false);
-
-    // Categories from templates
-    const categories = ['all', ...new Set(templates.map(template => template.category))];
-
-    useEffect(() => {
-        const fetchTemplates = async () => {
-            setLoading(true);
-            try {
-                const result = await documentGenerationService.getTemplates();
-                setTemplates(result);
-                setFilteredTemplates(result);
-            } catch (error) {
-                console.error('Error fetching templates:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchTemplates();
-    }, []);
-
-    // Filter templates based on search term and category
-    useEffect(() => {
-        let filtered = templates;
-
-        if (selectedCategory !== 'all') {
-            filtered = filtered.filter(template => template.category === selectedCategory);
-        }
-
-        if (searchTerm) {
-            const term = searchTerm.toLowerCase();
-            filtered = filtered.filter(template =>
-                template.name.toLowerCase().includes(term) ||
-                template.description.toLowerCase().includes(term)
-            );
-        }
-
-        setFilteredTemplates(filtered);
-    }, [searchTerm, selectedCategory, templates]);
-
-    return (
-        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle>{t('templates.select')}</DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            label={t('common.search')}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            InputProps={{
-                                startAdornment: <SearchIcon color="action" />
-                            }}
-                            margin="normal"
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-                            {categories.map(category => (
-                                <Chip
-                                    key={category}
-                                    label={t(`templates.categories.${category}`)}
-                                    onClick={() => setSelectedCategory(category)}
-                                    color={selectedCategory === category ? 'primary' : 'default'}
-                                    variant={selectedCategory === category ? 'filled' : 'outlined'}
-                                />
-                            ))}
-                        </Box>
-                    </Grid>
-
-                    {loading ? (
-                        <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-                            <CircularProgress />
-                        </Grid>
-                    ) : (
-                        <Grid item xs={12}>
-                            <Grid container spacing={2}>
-                                {filteredTemplates.length === 0 ? (
-                                    <Grid item xs={12}>
-                                        <Alert severity="info">{t('templates.noTemplatesFound')}</Alert>
-                                    </Grid>
-                                ) : (
-                                    filteredTemplates.map(template => (
-                                        <Grid item xs={12} sm={6} md={4} key={template.id}>
-                                            <Card
-                                                sx={{
-                                                    cursor: 'pointer',
-                                                    '&:hover': { boxShadow: 6 }
-                                                }}
-                                                onClick={() => onSelect(template)}
-                                            >
-                                                <CardContent>
-                                                    <Typography variant="h6" gutterBottom>{template.name}</Typography>
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        {template.description}
-                                                    </Typography>
-                                                    <Chip
-                                                        size="small"
-                                                        label={t(`templates.categories.${template.category}`)}
-                                                        sx={{ mt: 1 }}
-                                                    />
-                                                </CardContent>
-                                            </Card>
-                                        </Grid>
-                                    ))
-                                )}
-                            </Grid>
-                        </Grid>
-                    )}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose}>{t('common.cancel')}</Button>
-            </DialogActions>
-        </Dialog>
-    );
-};
-
-// AI Assistant dialog component
-const AIAssistantDialog = ({ open, onClose, onApplySuggestion, documentText }) => {
-    const { t } = useTranslation();
-    const [loading, setLoading] = useState(false);
-    const [suggestions, setSuggestions] = useState([]);
-    const [activeTab, setActiveTab] = useState(0);
-
-    useEffect(() => {
-        if (open && documentText) {
-            generateSuggestions();
-        }
-    }, [open, documentText]);
-
-    const generateSuggestions = async () => {
-        setLoading(true);
-        try {
-            // In a real implementation, you would call an API to generate AI suggestions
-            // For this example, we'll use mock data
-            setTimeout(() => {
-                setSuggestions([
-                    {
-                        type: 'clarity',
-                        original: 'The party of the first part shall hereafter be referred to as the seller.',
-                        suggested: 'The seller agrees to the following terms.',
-                        explanation: 'Simplified language for better readability.'
-                    },
-                    {
-                        type: 'legal',
-                        original: 'The buyer will pay within 30 days.',
-                        suggested: 'The buyer shall make payment in full within thirty (30) days of receipt of invoice.',
-                        explanation: 'Added legal precision and clarity to payment terms.'
-                    },
-                    {
-                        type: 'grammar',
-                        original: 'Both party\'s responsibilities are defined herein.',
-                        suggested: 'Both parties\' responsibilities are defined herein.',
-                        explanation: 'Corrected plural possessive form.'
-                    }
-                ]);
-                setLoading(false);
-            }, 1500);
-        } catch (error) {
-            console.error('Error generating AI suggestions:', error);
-            setLoading(false);
-        }
-    };
-
-    const tabOptions = [
-        { label: t('smartEditor.ai.allSuggestions'), filter: () => true },
-        { label: t('smartEditor.ai.clarityImprovements'), filter: (s) => s.type === 'clarity' },
-        { label: t('smartEditor.ai.legalPrecision'), filter: (s) => s.type === 'legal' },
-        { label: t('smartEditor.ai.grammarStyle'), filter: (s) => s.type === 'grammar' }
-    ];
-
-    const filteredSuggestions = suggestions.filter(tabOptions[activeTab].filter);
-
-    return (
-        <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-            <DialogTitle>{t('smartEditor.ai.assistantTitle')}</DialogTitle>
-            <DialogContent>
-                <Tabs
-                    value={activeTab}
-                    onChange={(e, newValue) => setActiveTab(newValue)}
-                    variant="scrollable"
-                    scrollButtons="auto"
-                >
-                    {tabOptions.map((option, index) => (
-                        <Tab key={index} label={option.label} />
-                    ))}
-                </Tabs>
-
-                <Box sx={{ mt: 2 }}>
-                    {loading ? (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-                            <CircularProgress />
-                        </Box>
-                    ) : filteredSuggestions.length === 0 ? (
-                        <Alert severity="info">{t('smartEditor.ai.noSuggestions')}</Alert>
-                    ) : (
-                        filteredSuggestions.map((suggestion, index) => (
-                            <Card key={index} sx={{ mb: 2 }}>
-                                <CardContent>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                        <Box>
-                                            <Chip
-                                                size="small"
-                                                label={t(`smartEditor.ai.types.${suggestion.type}`)}
-                                                color={
-                                                    suggestion.type === 'clarity' ? 'info' :
-                                                        suggestion.type === 'legal' ? 'primary' :
-                                                            'secondary'
-                                                }
-                                                sx={{ mb: 1 }}
-                                            />
-                                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                                                {t('smartEditor.ai.original')}:
-                                            </Typography>
-                                            <Typography variant="body1" paragraph sx={{
-                                                bgcolor: 'background.paper',
-                                                p: 1,
-                                                borderRadius: 1,
-                                                borderLeft: '3px solid',
-                                                borderColor: 'divider'
-                                            }}>
-                                                {suggestion.original}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                                                {t('smartEditor.ai.suggested')}:
-                                            </Typography>
-                                            <Typography variant="body1" paragraph sx={{
-                                                bgcolor: 'background.paper',
-                                                p: 1,
-                                                borderRadius: 1,
-                                                borderLeft: '3px solid',
-                                                borderColor: 'primary.main'
-                                            }}>
-                                                {suggestion.suggested}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {suggestion.explanation}
-                                            </Typography>
-                                        </Box>
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => onApplySuggestion(suggestion)}
-                                            startIcon={<CheckIcon />}
-                                        >
-                                            {t('smartEditor.ai.apply')}
-                                        </Button>
-                                    </Box>
-                                </CardContent>
-                            </Card>
-                        ))
-                    )}
-                </Box>
-
-                <Box sx={{ mt: 2 }}>
-                    <Button
-                        variant="outlined"
-                        startIcon={<SearchIcon />}
-                        disabled={loading}
-                        onClick={generateSuggestions}
-                    >
-                        {t('smartEditor.ai.regenerate')}
-                    </Button>
-                </Box>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose}>{t('common.close')}</Button>
-            </DialogActions>
-        </Dialog>
-    );
-};
-
-// Main SmartEditor component
 const SmartEditorPage = () => {
     const { t } = useTranslation();
     const { templateId } = useParams();
     const navigate = useNavigate();
-    const { isMobile, isTablet } = useThemeMode();
+    const { isMobile } = useThemeMode();
     const { getCurrentUser } = useAuth();
     const user = getCurrentUser();
+    const editorRef = useRef(null);
 
     // State
     const [loading, setLoading] = useState(false);
@@ -359,11 +58,12 @@ const SmartEditorPage = () => {
     const [documentTitle, setDocumentTitle] = useState('');
     const [documentContent, setDocumentContent] = useState('');
     const [showTemplateDialog, setShowTemplateDialog] = useState(false);
-    const [showAIDialog, setShowAIDialog] = useState(false);
+    const [showAIPanel, setShowAIPanel] = useState(false);
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-    const [formatMenuAnchorEl, setFormatMenuAnchorEl] = useState(null);
     const [error, setError] = useState(null);
     const [notification, setNotification] = useState(null);
+    const [documentId, setDocumentId] = useState(null);
+    const [hasChanges, setHasChanges] = useState(false);
 
     // Load template on mount if templateId is provided
     useEffect(() => {
@@ -372,13 +72,21 @@ const SmartEditorPage = () => {
         } else {
             setShowTemplateDialog(true);
         }
-    }, [templateId]);
+
+        // Auto-save functionality
+        const autoSaveInterval = setInterval(() => {
+            if (hasChanges && documentId) {
+                handleAutoSave();
+            }
+        }, 60000); // Auto-save every minute if there are changes
+
+        return () => clearInterval(autoSaveInterval);
+    }, [templateId, hasChanges, documentId]);
 
     const loadTemplate = async (id) => {
         setLoading(true);
         setError(null);
         try {
-            // In a real implementation, fetch the template from your API
             const templateData = await documentGenerationService.getTemplateById(id);
             setTemplate(templateData);
             setDocumentTitle(templateData.name);
@@ -398,21 +106,29 @@ const SmartEditorPage = () => {
         setShowTemplateDialog(false);
     };
 
+    const handleContentChange = (content) => {
+        setDocumentContent(content);
+        setHasChanges(true);
+    };
+
     const handleSaveDocument = async () => {
         setSaving(true);
         try {
-            // In a real implementation, save the document to your API
-            // await documentGenerationService.saveDocument({
-            //     templateId: template?.id,
-            //     title: documentTitle,
-            //     content: documentContent,
-            //     userId: user.id
-            // });
+            // Save document to the API
+            const result = await smartEditorService.saveDocument({
+                templateId: template?.id,
+                title: documentTitle,
+                content: documentContent,
+                userId: user.id
+            });
+
+            setDocumentId(result.id);
+            setHasChanges(false);
+
             setNotification({
                 type: 'success',
                 message: t('smartEditor.notifications.saved')
             });
-            setTimeout(() => setNotification(null), 3000);
         } catch (error) {
             console.error('Error saving document:', error);
             setNotification({
@@ -424,21 +140,53 @@ const SmartEditorPage = () => {
         }
     };
 
+    const handleAutoSave = async () => {
+        try {
+            if (!documentId) return;
+
+            // Update existing document
+            await smartEditorService.updateDocument(documentId, {
+                content: documentContent,
+                title: documentTitle
+            });
+
+            setHasChanges(false);
+            console.log('Document auto-saved successfully');
+        } catch (error) {
+            console.error('Error auto-saving document:', error);
+        }
+    };
+
     const handleExportDocument = async (format = 'pdf') => {
         try {
-            // In a real implementation, export the document via API
-            // const result = await documentGenerationService.exportDocument({
-            //     content: documentContent,
-            //     title: documentTitle,
-            //     format: format
-            // });
+            // First save any unsaved changes
+            if (hasChanges) {
+                await handleSaveDocument();
+            }
 
-            // Create a mock download
+            // Export the document
+            const result = await smartEditorService.exportDocument({
+                documentId: documentId,
+                format: format
+            });
+
+            // Create download link
+            const url = window.URL.createObjectURL(result);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `${documentTitle}.${format}`;
+            document.body.appendChild(a);
+            a.click();
+
+            // Cleanup
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
             setNotification({
                 type: 'success',
                 message: t('smartEditor.notifications.exported', { format: format.toUpperCase() })
             });
-            setTimeout(() => setNotification(null), 3000);
         } catch (error) {
             console.error('Error exporting document:', error);
             setNotification({
@@ -448,16 +196,57 @@ const SmartEditorPage = () => {
         }
     };
 
-    const handleApplySuggestion = (suggestion) => {
-        // In a real implementation, you would find and replace text in the editor
-        // For this example, we'll just log the suggestion
-        console.log('Applying suggestion:', suggestion);
-        setShowAIDialog(false);
-        setNotification({
-            type: 'success',
-            message: t('smartEditor.notifications.suggestionApplied')
-        });
-        setTimeout(() => setNotification(null), 3000);
+    const handlePrintDocument = () => {
+        if (editorRef.current) {
+            const content = editorRef.current.getEditorContents();
+            const printWindow = window.open('', '_blank');
+
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>${documentTitle || 'Document'}</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; }
+                        .document { max-width: 8.5in; margin: 0 auto; }
+                    </style>
+                </head>
+                <body>
+                    <div class="document">
+                        ${content}
+                    </div>
+                </body>
+                </html>
+            `);
+
+            printWindow.document.close();
+            printWindow.focus();
+
+            // Print after styles are loaded
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+        }
+    };
+
+    const handleCreateNewDocument = () => {
+        // Check for unsaved changes
+        if (hasChanges) {
+            if (window.confirm(t('smartEditor.unsavedChanges'))) {
+                resetEditor();
+            }
+        } else {
+            resetEditor();
+        }
+    };
+
+    const resetEditor = () => {
+        setTemplate(null);
+        setDocumentTitle('');
+        setDocumentContent('');
+        setDocumentId(null);
+        setHasChanges(false);
+        setShowTemplateDialog(true);
     };
 
     const openMenu = (event) => {
@@ -468,22 +257,27 @@ const SmartEditorPage = () => {
         setMenuAnchorEl(null);
     };
 
-    const openFormatMenu = (event) => {
-        setFormatMenuAnchorEl(event.currentTarget);
-    };
-
-    const closeFormatMenu = () => {
-        setFormatMenuAnchorEl(null);
-    };
-
     const handleNavBack = () => {
-        navigate('/documents');
+        // Check for unsaved changes before navigating away
+        if (hasChanges) {
+            if (window.confirm(t('smartEditor.unsavedChanges'))) {
+                navigate('/documents');
+            }
+        } else {
+            navigate('/documents');
+        }
     };
 
-    // Demo formatting functions (would be implemented with the actual editor)
-    const formatText = (format) => {
-        console.log('Format text:', format);
-        closeFormatMenu();
+    const handleApplyAISuggestion = (suggestion) => {
+        if (editorRef.current) {
+            editorRef.current.applyTextReplacement(suggestion.original, suggestion.suggested);
+            setHasChanges(true);
+        }
+    };
+
+    // Handle notifications
+    const handleCloseNotification = () => {
+        setNotification(null);
     };
 
     // Render loading state
@@ -498,39 +292,59 @@ const SmartEditorPage = () => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             {/* Top App Bar */}
-            <AppBar position="static" color="default" elevation={0}>
-                <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={handleNavBack}>
+            <AppBar position="static" color="default" elevation={1}>
+                <Toolbar variant="dense">
+                    <IconButton edge="start" color="inherit" onClick={handleNavBack} sx={{ mr: 1 }}>
                         <BackIcon />
                     </IconButton>
-                    <TextField
-                        value={documentTitle}
-                        onChange={(e) => setDocumentTitle(e.target.value)}
-                        variant="standard"
-                        placeholder={t('smartEditor.untitledDocument')}
-                        sx={{ ml: 2, flexGrow: 1 }}
-                        InputProps={{
-                            disableUnderline: true,
-                            sx: { fontSize: '1.2rem', fontWeight: 500 }
-                        }}
-                    />
+
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Tooltip title={t('smartEditor.newDocument')}>
+                            <IconButton color="inherit" onClick={handleCreateNewDocument} sx={{ mr: 1 }}>
+                                <NewDocIcon />
+                            </IconButton>
+                        </Tooltip>
+
+                        <TextField
+                            value={documentTitle}
+                            onChange={(e) => {
+                                setDocumentTitle(e.target.value);
+                                setHasChanges(true);
+                            }}
+                            variant="standard"
+                            placeholder={t('smartEditor.untitledDocument')}
+                            InputProps={{
+                                disableUnderline: true,
+                                sx: { fontSize: '1.2rem', fontWeight: 500 }
+                            }}
+                        />
+                    </Box>
+
+                    <Box sx={{ flexGrow: 1 }} />
+
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <Button
                             variant="contained"
                             color="primary"
-                            startIcon={<SaveIcon />}
+                            startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
                             onClick={handleSaveDocument}
-                            disabled={saving}
+                            disabled={saving || !hasChanges}
                         >
                             {saving ? t('common.saving') : t('common.save')}
                         </Button>
-                        <Button
-                            variant="outlined"
-                            startIcon={<ExportIcon />}
-                            onClick={() => handleExportDocument('pdf')}
-                        >
-                            {t('smartEditor.export')}
-                        </Button>
+
+                        <Tooltip title={t('smartEditor.aiAssistant')}>
+                            <IconButton
+                                color="secondary"
+                                onClick={() => setShowAIPanel(!showAIPanel)}
+                                sx={{
+                                    bgcolor: showAIPanel ? 'action.selected' : 'transparent'
+                                }}
+                            >
+                                <AIIcon />
+                            </IconButton>
+                        </Tooltip>
+
                         <IconButton onClick={openMenu}>
                             <MoreIcon />
                         </IconButton>
@@ -538,111 +352,54 @@ const SmartEditorPage = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* Formatting Toolbar */}
-            <Paper
-                elevation={0}
-                sx={{
-                    borderBottom: 1,
-                    borderColor: 'divider',
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    p: 1,
-                    gap: 0.5
-                }}
-            >
-                <IconButton size="small" onClick={() => formatText('bold')}>
-                    <BoldIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" onClick={() => formatText('italic')}>
-                    <ItalicIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" onClick={() => formatText('underline')}>
-                    <UnderlineIcon fontSize="small" />
-                </IconButton>
-                <Divider orientation="vertical" flexItem />
-                <IconButton size="small" onClick={() => formatText('align-left')}>
-                    <AlignLeftIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" onClick={() => formatText('align-center')}>
-                    <AlignCenterIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" onClick={() => formatText('align-right')}>
-                    <AlignRightIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" onClick={() => formatText('align-justify')}>
-                    <AlignJustifyIcon fontSize="small" />
-                </IconButton>
-                <Divider orientation="vertical" flexItem />
-                <IconButton size="small" onClick={() => formatText('bullet-list')}>
-                    <BulletListIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" onClick={() => formatText('numbered-list')}>
-                    <NumberedListIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" onClick={() => formatText('indent')}>
-                    <IndentIcon fontSize="small" />
-                </IconButton>
-                <IconButton size="small" onClick={() => formatText('outdent')}>
-                    <OutdentIcon fontSize="small" />
-                </IconButton>
-                <Divider orientation="vertical" flexItem />
-                <Button
-                    size="small"
-                    startIcon={<AIIcon />}
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => setShowAIDialog(true)}
-                >
-                    {t('smartEditor.ai.suggest')}
-                </Button>
-                <Button
-                    size="small"
-                    startIcon={<FindReplaceIcon />}
-                    variant="outlined"
-                    onClick={openFormatMenu}
-                >
-                    {t('smartEditor.moreFormatting')}
-                </Button>
-            </Paper>
+            {/* Editor Toolbar */}
+            <EditorToolbar editorRef={editorRef} />
 
-            {/* Editor Area */}
-            <Box
-                sx={{
-                    flexGrow: 1,
-                    overflow: 'auto',
-                    p: 2,
-                    backgroundColor: 'background.default'
-                }}
-            >
-                {error && (
-                    <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
-                )}
+            {/* Main Content Area */}
+            <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
+                {/* Document Editor */}
+                <Box sx={{ flexGrow: 1, overflow: 'auto', p: 2, backgroundColor: 'background.default' }}>
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+                    )}
 
-                <Paper
-                    elevation={2}
-                    sx={{
-                        maxWidth: '8.5in',
-                        minHeight: '11in',
-                        mx: 'auto',
-                        p: 4,
-                        backgroundColor: 'background.paper',
-                        boxShadow: 3
-                    }}
-                >
-                    {/* This would be replaced with an actual rich text editor component */}
-                    <TextField
-                        multiline
-                        fullWidth
-                        value={documentContent}
-                        onChange={(e) => setDocumentContent(e.target.value)}
-                        variant="outlined"
-                        placeholder={t('smartEditor.startTyping')}
-                        minRows={20}
-                        InputProps={{
-                            sx: { fontFamily: 'Georgia, serif' }
+                    <Paper
+                        elevation={2}
+                        sx={{
+                            maxWidth: '8.5in',
+                            minHeight: '11in',
+                            mx: 'auto',
+                            p: 4,
+                            backgroundColor: 'background.paper',
+                            boxShadow: 3
                         }}
-                    />
-                </Paper>
+                    >
+                        <DocumentEditor
+                            ref={editorRef}
+                            content={documentContent}
+                            onChange={handleContentChange}
+                        />
+                    </Paper>
+                </Box>
+
+                {/* AI Assistant Panel (conditionally rendered) */}
+                {showAIPanel && (
+                    <Paper
+                        sx={{
+                            width: 350,
+                            maxWidth: isMobile ? '100%' : 350,
+                            overflowY: 'auto',
+                            borderLeft: 1,
+                            borderColor: 'divider'
+                        }}
+                    >
+                        <AIAssistantPanel
+                            documentContent={documentContent}
+                            onApplySuggestion={handleApplyAISuggestion}
+                            onClose={() => setShowAIPanel(false)}
+                        />
+                    </Paper>
+                )}
             </Box>
 
             {/* Template Selection Dialog */}
@@ -652,14 +409,6 @@ const SmartEditorPage = () => {
                 onSelect={handleSelectTemplate}
             />
 
-            {/* AI Assistant Dialog */}
-            <AIAssistantDialog
-                open={showAIDialog}
-                onClose={() => setShowAIDialog(false)}
-                onApplySuggestion={handleApplySuggestion}
-                documentText={documentContent}
-            />
-
             {/* Document Options Menu */}
             <Menu
                 anchorEl={menuAnchorEl}
@@ -667,62 +416,38 @@ const SmartEditorPage = () => {
                 onClose={closeMenu}
             >
                 <MenuItem onClick={() => { setShowTemplateDialog(true); closeMenu(); }}>
+                    <FileIcon fontSize="small" sx={{ mr: 1 }} />
                     {t('smartEditor.menu.selectTemplate')}
                 </MenuItem>
+                <MenuItem onClick={() => { handlePrintDocument(); closeMenu(); }}>
+                    <PrintIcon fontSize="small" sx={{ mr: 1 }} />
+                    {t('smartEditor.menu.print')}
+                </MenuItem>
+                <Divider />
                 <MenuItem onClick={() => { handleExportDocument('docx'); closeMenu(); }}>
                     {t('smartEditor.menu.exportWord')}
                 </MenuItem>
                 <MenuItem onClick={() => { handleExportDocument('pdf'); closeMenu(); }}>
                     {t('smartEditor.menu.exportPdf')}
                 </MenuItem>
-                <Divider />
-                <MenuItem onClick={() => { closeMenu(); }}>
-                    {t('smartEditor.menu.documentSettings')}
+                <MenuItem onClick={() => { handleExportDocument('html'); closeMenu(); }}>
+                    {t('smartEditor.menu.exportHtml')}
                 </MenuItem>
             </Menu>
 
-            {/* Format Menu */}
-            <Menu
-                anchorEl={formatMenuAnchorEl}
-                open={Boolean(formatMenuAnchorEl)}
-                onClose={closeFormatMenu}
+            {/* Notification Snackbar */}
+            <Snackbar
+                open={!!notification}
+                autoHideDuration={6000}
+                onClose={handleCloseNotification}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
-                <MenuItem onClick={() => { formatText('heading1'); closeFormatMenu(); }}>
-                    {t('smartEditor.format.heading1')}
-                </MenuItem>
-                <MenuItem onClick={() => { formatText('heading2'); closeFormatMenu(); }}>
-                    {t('smartEditor.format.heading2')}
-                </MenuItem>
-                <MenuItem onClick={() => { formatText('heading3'); closeFormatMenu(); }}>
-                    {t('smartEditor.format.heading3')}
-                </MenuItem>
-                <Divider />
-                <MenuItem onClick={() => { formatText('insert-table'); closeFormatMenu(); }}>
-                    {t('smartEditor.format.insertTable')}
-                </MenuItem>
-                <MenuItem onClick={() => { formatText('insert-image'); closeFormatMenu(); }}>
-                    {t('smartEditor.format.insertImage')}
-                </MenuItem>
-                <MenuItem onClick={() => { formatText('insert-link'); closeFormatMenu(); }}>
-                    {t('smartEditor.format.insertLink')}
-                </MenuItem>
-            </Menu>
-
-            {/* Notification */}
-            {notification && (
-                <Box
-                    sx={{
-                        position: 'fixed',
-                        bottom: 16,
-                        right: 16,
-                        zIndex: 2000
-                    }}
-                >
-                    <Alert severity={notification.type}>
+                {notification && (
+                    <Alert onClose={handleCloseNotification} severity={notification.type} sx={{ width: '100%' }}>
                         {notification.message}
                     </Alert>
-                </Box>
-            )}
+                )}
+            </Snackbar>
         </Box>
     );
 };
