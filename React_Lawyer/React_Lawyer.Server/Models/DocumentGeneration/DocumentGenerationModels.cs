@@ -131,6 +131,7 @@ namespace React_Lawyer.Server.Models.DocumentGeneration
         /// Preview or sample of the template content
         /// </summary>
         public string ContentPreview { get; set; }
+        public string Content { get; set; }
 
         /// <summary>
         /// Default language of the template

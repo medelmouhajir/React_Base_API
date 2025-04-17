@@ -47,8 +47,7 @@ const SmartEditorPage = () => {
     const { templateId } = useParams();
     const navigate = useNavigate();
     const { isMobile } = useThemeMode();
-    const { getCurrentUser } = useAuth();
-    const user = getCurrentUser();
+    const { currentUser } = useAuth(); // Get currentUser from the auth context
     const editorRef = useRef(null);
 
     // State
@@ -100,6 +99,7 @@ const SmartEditorPage = () => {
     };
 
     const handleSelectTemplate = (template) => {
+        console.log(template);
         setTemplate(template);
         setDocumentTitle(template.name);
         setDocumentContent(template.content || '');
@@ -119,7 +119,7 @@ const SmartEditorPage = () => {
                 templateId: template?.id,
                 title: documentTitle,
                 content: documentContent,
-                userId: user.id
+                userId: currentUser?.id
             });
 
             setDocumentId(result.id);

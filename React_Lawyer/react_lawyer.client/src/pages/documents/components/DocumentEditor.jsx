@@ -33,7 +33,6 @@ const DocumentEditor = forwardRef(({ content, onChange }, ref) => {
             maxStack: 100,
             userOnly: true
         },
-        syntax: true, // Enable syntax highlighting
         clipboard: {
             matchVisual: false
         }
@@ -93,6 +92,7 @@ const DocumentEditor = forwardRef(({ content, onChange }, ref) => {
 
         // Apply a format to the current selection
         applyFormat: (format, value) => {
+            console.log('Applying format:', format, value);
             if (editor) {
                 const range = editor.getSelection();
                 if (range) {

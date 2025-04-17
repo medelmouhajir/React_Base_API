@@ -1,18 +1,18 @@
 // src/pages/documents/components/EditorToolbar.jsx
 import React, { useState } from 'react';
-import { 
-        Paper,
-        Box,
-        Divider,
-        IconButton,
-        Tooltip,
-        Select,
-        MenuItem,
-        Popover,
-        ToggleButton,
-        ToggleButtonGroup,
-        InputBase
-    } from '@mui/material';
+import {
+    Paper,
+    Box,
+    Divider,
+    IconButton,
+    Tooltip,
+    Select,
+    MenuItem,
+    Popover,
+    ToggleButton,
+    ToggleButtonGroup,
+    InputBase
+} from '@mui/material';
 import {
     FormatBold as BoldIcon,
     FormatItalic as ItalicIcon,
@@ -30,7 +30,7 @@ import {
     FormatAlignJustify as AlignJustifyIcon,
     Link as LinkIcon,
     InsertPhoto as ImageIcon,
-    InsertTable as TableIcon,
+    TableChart as TableIcon,
     Undo as UndoIcon,
     Redo as RedoIcon,
     Code as CodeIcon,
@@ -134,6 +134,7 @@ const EditorToolbar = ({ editorRef }) => {
 
     // Handle text alignment change
     const handleAlignChange = (event, newAlignment) => {
+        console.log('Alignment changed:', newAlignment);
         if (newAlignment !== null) {
             applyFormat('align', newAlignment);
             setFormats(prev => ({ ...prev, align: newAlignment }));
@@ -678,3 +679,6 @@ const EditorToolbar = ({ editorRef }) => {
         </Paper>
     );
 };
+
+// Add default export
+export default EditorToolbar;
