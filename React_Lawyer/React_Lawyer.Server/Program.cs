@@ -43,8 +43,20 @@ namespace React_Lawyer.Server
                 // Add any other default headers here if needed
             });
 
-            // Register DocumentGenerationService
+            builder.Services.AddHttpClient<EnhancedGeminiService>(client =>
+            {
+                string baseUrl = builder.Configuration["DocumentGenerator:BaseUrl"];
+                if (!string.IsNullOrEmpty(baseUrl))
+                {
+                    client.BaseAddress = new Uri(baseUrl);
+                }
+                // Set default timeout
+                client.Timeout = TimeSpan.FromSeconds(120); // Longer timeout for AI operations
+            });
+
+            // Register DocumentGenerationService & EnhancedGeminiService
             builder.Services.AddScoped<DocumentGenerationService>();
+            builder.Services.AddScoped<EnhancedGeminiService>();
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

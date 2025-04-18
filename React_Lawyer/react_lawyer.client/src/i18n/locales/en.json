@@ -990,41 +990,91 @@
   },
 
 
+
   "ai": {
     "title": "AI Assistant",
     "tabs": {
-      "suggestions": "Suggestions",
-      "assistant": "Assistant"
+      "suggestions": "Elegant Phrasing",
+      "spelling": "Spelling & Grammar",
+      "translate": "Translate",
+      "summary": "Summarize",
+      "clientInfo": "Client Info",
+      "assistant": "AI Assistant"
     },
-    "searchSuggestions": "Search suggestions...",
-    "refreshSuggestions": "Refresh Suggestions",
-    "noSearchResults": "No suggestions match your search",
-    "noSuggestions": "No suggestions available",
     "original": "Original",
     "suggested": "Suggested",
     "apply": "Apply",
-    "suggestionTypes": {
-      "clarity": "Clarity",
-      "legal": "Legal",
-      "grammar": "Grammar",
-      "style": "Style"
-    },
-    "promptPlaceholder": "Ask the AI assistant...",
-    "completion": "Generated Content",
-    "clear": "Clear",
     "insert": "Insert",
-    "promptHint": "Enter a prompt to generate content",
-    "promptExamples": "Examples",
+    "clear": "Clear",
+    "searchSuggestions": "Search suggestions...",
+    "searchSpellingResults": "Search results...",
+    "noSuggestions": "No suggestions available. Try generating suggestions first.",
+    "noSearchResults": "No results match your search criteria.",
+    "noSpellingResults": "No spelling or grammar issues found, or click Check Spelling to begin.",
+    "refreshSuggestions": "Refresh Suggestions",
+    "completion": "AI Completion",
+    "promptPlaceholder": "Ask for specific legal content or help...",
+    "promptHint": "Enter a prompt to generate legal content for your document.",
     "examples": {
-      "summarize": "Summarize this document",
+      "summarize": "Summarize this contract",
       "clause": "Draft a force majeure clause",
-      "simplify": "Simplify this legal language",
-      "proofread": "Proofread this document"
+      "simplify": "Simplify this paragraph for better readability",
+      "proofread": "Proofread this section for legal accuracy"
     },
+    "promptExamples": "Example prompts",
+    "checkSpelling": "Check Spelling & Grammar",
+    "translateInfo": "Select a target language and click Translate to convert your document.",
+    "targetLanguage": "Target Language",
+    "translate": "Translate",
+    "translationResult": "Translation to {language}",
+    "applyTranslation": "Apply Translation",
+    "summarize": "Summarize Document",
+    "summary": "Document Summary",
+    "summaryHint": "Click Summarize to generate a concise summary of your document.",
+    "saveAsSeparateDocument": "Save as New Document",
+    "selectClientCase": "Select client and/or case to generate suggestions",
+    "selectClient": "Select Client",
+    "selectCase": "Select Case",
+    "generateClientInfoSuggestions": "Generate Suggestions",
+    "clientInfoSuggestions": "Entity Information Suggestions",
+    "noClientInfoSuggestions": "No suggestions generated. Try selecting different client or case.",
+    "selectClientCaseFirst": "Please select a client or case first.",
     "errors": {
-      "suggestionsFailed": "Failed to load suggestions",
-      "completionFailed": "Failed to generate completion"
+      "suggestionsFailed": "Failed to generate suggestions. Please try again.",
+      "spellingCheckFailed": "Failed to check spelling and grammar. Please try again.",
+      "translationFailed": "Failed to translate the document. Please try again.",
+      "summarizationFailed": "Failed to summarize the document. Please try again.",
+      "clientInfoFailed": "Failed to generate client information suggestions. Please try again.",
+      "completionFailed": "Failed to generate AI completion. Please try again.",
+      "clientsLoadFailed": "Failed to load clients. Please try again.",
+      "casesLoadFailed": "Failed to load cases. Please try again."
+    },
+    "suggestionTypes": {
+      "spelling": "Spelling",
+      "grammar": "Grammar",
+      "syntax": "Syntax",
+      "elegance": "Elegance",
+      "legal": "Legal Precision",
+      "style": "Style",
+      "clarity": "Clarity",
+      "info_integration": "Client Info"
     }
+  },
+
+
+  "languages": {
+    "arabic": "Arabic",
+    "chinese": "Chinese",
+    "english": "English",
+    "french": "French",
+    "german": "German",
+    "hindi": "Hindi",
+    "italian": "Italian",
+    "japanese": "Japanese",
+    "korean": "Korean",
+    "portuguese": "Portuguese",
+    "russian": "Russian",
+    "spanish": "Spanish"
   },
 
   "notifications": {

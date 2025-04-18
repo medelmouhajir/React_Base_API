@@ -462,8 +462,8 @@ const SmartEditorPage = () => {
                 {showAIPanel && (
                     <Paper
                         sx={{
-                            width: 350,
-                            maxWidth: isMobile ? '100%' : 350,
+                            width: 550,
+                            maxWidth: isMobile ? '100%' : 550,
                             overflowY: 'auto',
                             borderLeft: 1,
                             borderColor: 'divider'

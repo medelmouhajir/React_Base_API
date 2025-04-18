@@ -944,6 +944,7 @@
       "exportHtml": "تصدير كملف HTML"
     }
   },
+
   "templates": {
     "select": "اختر قالبًا",
     "search": "بحث في القوالب...",
@@ -958,6 +959,7 @@
       "loadFailed": "فشل تحميل القوالب"
     }
   },
+
   "editor": {
     "undo": "تراجع",
     "redo": "إعادة",
@@ -983,41 +985,91 @@
     "columns": "أعمدة",
     "insertTable": "إدراج جدول"
   },
+
+
   "ai": {
-    "title": "مساعد الذكاء الاصطناعي",
+    "title": "المساعد الذكي",
     "tabs": {
-      "suggestions": "اقتراحات",
-      "assistant": "مساعد"
+      "suggestions": "عبارات أنيقة",
+      "spelling": "الإملاء والنحو",
+      "translate": "ترجمة",
+      "summary": "تلخيص",
+      "clientInfo": "معلومات العميل",
+      "assistant": "المساعد الذكي"
     },
-    "searchSuggestions": "بحث في الاقتراحات...",
-    "refreshSuggestions": "تحديث الاقتراحات",
-    "noSearchResults": "لا توجد اقتراحات تطابق بحثك",
-    "noSuggestions": "لا توجد اقتراحات متاحة",
-    "original": "الأصلي",
+    "original": "النص الأصلي",
     "suggested": "المقترح",
     "apply": "تطبيق",
-    "suggestionTypes": {
-      "clarity": "وضوح",
-      "legal": "قانوني",
-      "grammar": "نحوي",
-      "style": "أسلوب"
-    },
-    "promptPlaceholder": "اسأل مساعد الذكاء الاصطناعي...",
-    "completion": "المحتوى المُنشأ",
-    "clear": "مسح",
     "insert": "إدراج",
-    "promptHint": "أدخل طلبًا لإنشاء محتوى",
-    "promptExamples": "أمثلة",
+    "clear": "مسح",
+    "searchSuggestions": "البحث في الاقتراحات...",
+    "searchSpellingResults": "نتائج البحث...",
+    "noSuggestions": "لا توجد اقتراحات متاحة. حاول توليد اقتراحات أولاً.",
+    "noSearchResults": "لا توجد نتائج تطابق معايير البحث.",
+    "noSpellingResults": "لم يتم العثور على أخطاء إملائية أو نحوية، أو انقر على 'فحص الإملاء' للبدء.",
+    "refreshSuggestions": "تحديث الاقتراحات",
+    "completion": "إكمال بالذكاء الاصطناعي",
+    "promptPlaceholder": "اطلب محتوى قانوني معين أو مساعدة...",
+    "promptHint": "أدخل طلبًا لتوليد محتوى قانوني لوثيقتك.",
     "examples": {
-      "summarize": "تلخيص هذا المستند",
-      "clause": "صياغة بند القوة القاهرة",
-      "simplify": "تبسيط هذه اللغة القانونية",
-      "proofread": "تدقيق هذا المستند"
+      "summarize": "لخص هذا العقد",
+      "clause": "صغ بند القوة القاهرة",
+      "simplify": "بسّط هذا الفقرة لسهولة القراءة",
+      "proofread": "دقّق هذا القسم للتأكد من الدقة القانونية"
     },
+    "promptExamples": "أمثلة للطلبات",
+    "checkSpelling": "فحص الإملاء والنحو",
+    "translateInfo": "اختر اللغة المستهدفة وانقر على ترجمة لتحويل مستندك.",
+    "targetLanguage": "اللغة المستهدفة",
+    "translate": "ترجمة",
+    "translationResult": "الترجمة إلى {language}",
+    "applyTranslation": "تطبيق الترجمة",
+    "summarize": "تلخيص المستند",
+    "summary": "ملخص المستند",
+    "summaryHint": "انقر على تلخيص لتوليد ملخص موجز لمستندك.",
+    "saveAsSeparateDocument": "حفظ كمستند جديد",
+    "selectClientCase": "اختر عميل و/أو قضية لتوليد الاقتراحات",
+    "selectClient": "اختر العميل",
+    "selectCase": "اختر القضية",
+    "generateClientInfoSuggestions": "توليد الاقتراحات",
+    "clientInfoSuggestions": "اقتراحات معلومات الكيان",
+    "noClientInfoSuggestions": "لم يتم توليد اقتراحات. جرّب اختيار عميل أو قضية مختلفين.",
+    "selectClientCaseFirst": "يرجى اختيار عميل أو قضية أولاً.",
     "errors": {
-      "suggestionsFailed": "فشل تحميل الاقتراحات",
-      "completionFailed": "فشل إنشاء المحتوى"
+      "suggestionsFailed": "فشل في توليد الاقتراحات. الرجاء المحاولة مرة أخرى.",
+      "spellingCheckFailed": "فشل في فحص الإملاء والنحو. الرجاء المحاولة مرة أخرى.",
+      "translationFailed": "فشل في ترجمة المستند. الرجاء المحاولة مرة أخرى.",
+      "summarizationFailed": "فشل في تلخيص المستند. الرجاء المحاولة مرة أخرى.",
+      "clientInfoFailed": "فشل في توليد اقتراحات معلومات العميل. الرجاء المحاولة مرة أخرى.",
+      "completionFailed": "فشل في الإكمال الذكي. الرجاء المحاولة مرة أخرى.",
+      "clientsLoadFailed": "فشل في تحميل العملاء. الرجاء المحاولة مرة أخرى.",
+      "casesLoadFailed": "فشل في تحميل القضايا. الرجاء المحاولة مرة أخرى."
+    },
+    "suggestionTypes": {
+      "spelling": "إملاء",
+      "grammar": "نحو",
+      "syntax": "بنية",
+      "elegance": "أناقة",
+      "legal": "دقة قانونية",
+      "style": "أسلوب",
+      "clarity": "وضوح",
+      "info_integration": "معلومات العميل"
     }
+  },
+
+  "languages": {
+    "arabic": "العربية",
+    "chinese": "الصينية",
+    "english": "الإنجليزية",
+    "french": "الفرنسية",
+    "german": "الألمانية",
+    "hindi": "الهندية",
+    "italian": "الإيطالية",
+    "japanese": "اليابانية",
+    "korean": "الكورية",
+    "portuguese": "البرتغالية",
+    "russian": "الروسية",
+    "spanish": "الإسبانية"
   },
 
   "notifications": {

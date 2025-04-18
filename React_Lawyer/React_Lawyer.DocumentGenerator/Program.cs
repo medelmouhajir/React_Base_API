@@ -30,6 +30,7 @@ namespace React_Lawyer.DocumentGenerator
             builder.Services.AddScoped<DocumentService>();
             builder.Services.AddScoped<GeminiService>();
             builder.Services.AddScoped<StorageService>();
+            builder.Services.AddScoped<EnhancedGeminiService>();
 
             // Register HttpClient for API calls
             builder.Services.AddHttpClient();
