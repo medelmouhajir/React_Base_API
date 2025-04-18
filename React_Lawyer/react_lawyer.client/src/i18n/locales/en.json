@@ -994,6 +994,7 @@
   "ai": {
     "title": "AI Assistant",
     "tabs": {
+      "welcome": "Welcome",
       "suggestions": "Elegant Phrasing",
       "spelling": "Spelling & Grammar",
       "translate": "Translate",
@@ -1058,6 +1059,19 @@
       "style": "Style",
       "clarity": "Clarity",
       "info_integration": "Client Info"
+    },
+
+
+    "welcomeTitle": "AI Document Assistant",
+    "welcomeDescription": "Select one of the tools below to enhance your document with AI assistance.",
+
+    "tabDescriptions": {
+      "suggestions": "Get suggestions for more elegant and professional phrasing",
+      "spelling": "Check your document for spelling and grammar errors",
+      "translate": "Translate your document to another language",
+      "summary": "Create a concise summary of your document",
+      "client-info": "Integrate client and case information into your document",
+      "assistant": "Get AI-powered assistance for customized needs"
     }
   },
 

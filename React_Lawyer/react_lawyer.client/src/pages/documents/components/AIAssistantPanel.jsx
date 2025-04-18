@@ -11,6 +11,7 @@ import {
     Card,
     CardContent,
     CardActions,
+    CardActionArea,
     Chip,
     Alert,
     Tooltip,
@@ -26,7 +27,8 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions
+    DialogActions,
+    Grid
 } from '@mui/material';
 import {
     Close as CloseIcon,
@@ -42,7 +44,8 @@ import {
     Article as SummaryIcon,
     Person as ClientIcon,
     Gavel as CaseIcon,
-    Save as SaveIcon
+    Save as SaveIcon,
+    Home as HomeIcon
 } from '@mui/icons-material';
 
 // Import services
@@ -86,8 +89,65 @@ const AIAssistantPanel = ({ documentContent, onApplySuggestion, onClose }) => {
     const [clientsLoading, setClientsLoading] = useState(false);
     const [casesLoading, setCasesLoading] = useState(false);
 
+    // This is a new helper function to render the welcome tab content
+    const renderWelcomeTab = () => (
+        <Box sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>
+                {t('ai.welcomeTitle')}
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary" paragraph>
+                {t('ai.welcomeDescription')}
+            </Typography>
+
+            <Grid container spacing={2} sx={{ mt: 2 }}>
+                {tabs.filter(tab => tab.id !== 'welcome').map((tab) => (
+                    <Grid item xs={6} sm={4} key={tab.id}>
+                        <Card
+                            elevation={2}
+                            sx={{
+                                height: '100%',
+                                transition: 'transform 0.2s',
+                                '&:hover': {
+                                    transform: 'translateY(-4px)',
+                                    boxShadow: 6
+                                }
+                            }}
+                        >
+                            <CardActionArea
+                                onClick={() => setActiveTab(tabs.findIndex(t => t.id === tab.id))}
+                                sx={{ height: '100%', p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                            >
+                                <Box sx={{
+                                    fontSize: '2rem',
+                                    color: 'primary.main',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    mb: 1
+                                }}>
+                                    {tab.icon}
+                                </Box>
+                                <Typography variant="subtitle1" align="center">
+                                    {tab.label}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+                                    {t(`ai.tabDescriptions.${tab.id}`)}
+                                </Typography>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
+    );
+
     // Tab definitions
     const tabs = [
+        {
+            id: 'welcome',
+            label: t('ai.tabs.welcome'),
+            icon: <HomeIcon fontSize="small" />
+        },
         {
             id: 'suggestions',
             label: t('ai.tabs.suggestions'),
@@ -990,12 +1050,13 @@ const AIAssistantPanel = ({ documentContent, onApplySuggestion, onClose }) => {
             </Box>
 
             <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-                {activeTab === 0 && renderSuggestionsTab()}
-                {activeTab === 1 && renderSpellingTab()}
-                {activeTab === 2 && renderTranslateTab()}
-                {activeTab === 3 && renderSummaryTab()}
-                {activeTab === 4 && renderClientInfoTab()}
-                {activeTab === 5 && renderAssistantTab()}
+                {activeTab === 0 && renderWelcomeTab()}
+                {activeTab === 1 && renderSuggestionsTab()}
+                {activeTab === 2 && renderSpellingTab()}
+                {activeTab === 3 && renderTranslateTab()}
+                {activeTab === 4 && renderSummaryTab()}
+                {activeTab === 5 && renderClientInfoTab()}
+                {activeTab === 6 && renderAssistantTab()}
             </Box>
         </Box>
     );

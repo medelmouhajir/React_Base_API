@@ -104,6 +104,7 @@ const SmartEditorPage = () => {
         setError(null);
         try {
             const doc = await smartEditorService.getDocumentById(id);
+            console.log(doc);
             setDocumentId(id);
             setDocumentTitle(doc.title);
             setDocumentContent(doc.content);
@@ -301,13 +302,33 @@ const SmartEditorPage = () => {
         if (!editorRef.current) return;
 
         const editor = editorRef.current.getEditor();
-        const text = editor.getText();
-        const index = text.indexOf(suggestion.original);
 
-        if (index !== -1) {
-            editor.deleteText(index, suggestion.original.length);
-            editor.insertText(index, suggestion.suggested);
+        // For translations or other full document replacements
+        if (suggestion.original.length > 100 && suggestion.original.trim() === documentContent.trim()) {
+            // Replace entire document content
+            editor.deleteText(0, editor.getLength());
+            editor.insertText(0, suggestion.suggested);
             setHasChanges(true);
+            return;
+        }
+
+        // For partial document replacements, try a smarter approach
+        try {
+            const text = editor.getText();
+            const index = text.indexOf(suggestion.original);
+
+            if (index !== -1) {
+                editor.deleteText(index, suggestion.original.length);
+                editor.insertText(index, suggestion.suggested);
+                setHasChanges(true);
+            } else {
+                // Fallback for HTML content - replace everything
+                editor.deleteText(0, editor.getLength());
+                editor.insertText(0, suggestion.suggested);
+                setHasChanges(true);
+            }
+        } catch (error) {
+            console.error("Error applying suggestion:", error);
         }
     };
 

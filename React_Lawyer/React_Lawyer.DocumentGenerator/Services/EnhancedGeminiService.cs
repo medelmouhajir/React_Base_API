@@ -44,7 +44,7 @@ namespace DocumentGeneratorAPI.Services
             _logger.LogInformation("Checking spelling and syntax for document in {Language}", language);
 
             var prompt = new StringBuilder();
-            prompt.AppendLine("You are a precise legal proofreader with expertise in legal terminology and documentation.");
+            prompt.AppendLine("You are a precise legal proofreader with expertise in legal terminology and documentation and an expert in Arabic language. ");
             prompt.AppendLine("Please analyze the following legal document for spelling, grammar, and syntax errors.");
             prompt.AppendLine();
             prompt.AppendLine("# Document Content");
@@ -55,7 +55,7 @@ namespace DocumentGeneratorAPI.Services
             prompt.AppendLine("2. For each issue found, provide:");
             prompt.AppendLine("   - The original text containing the error");
             prompt.AppendLine("   - The suggested correction");
-            prompt.AppendLine("   - A brief explanation of the issue");
+            prompt.AppendLine("   - A brief explanation of the issue using the content's language");
             prompt.AppendLine("3. Categorize each suggestion as 'spelling', 'grammar', or 'syntax'");
             prompt.AppendLine("4. Format your response as a JSON array with the following structure for each suggestion:");
             prompt.AppendLine("   ```json");
@@ -97,7 +97,7 @@ namespace DocumentGeneratorAPI.Services
             _logger.LogInformation("Generating elegant phrasing suggestions for document in {Language}", language);
 
             var prompt = new StringBuilder();
-            prompt.AppendLine("You are an expert legal writing consultant specializing in elegant and precise language for legal documents.");
+            prompt.AppendLine("You are an expert legal writing consultant specializing in elegant and precise language for legal documents and an expert in the Arabic language.");
             prompt.AppendLine("Please analyze the following legal document and suggest improvements to make the language more elegant, professional, and precise.");
             prompt.AppendLine();
             prompt.AppendLine("# Document Content");
@@ -109,7 +109,7 @@ namespace DocumentGeneratorAPI.Services
             prompt.AppendLine("3. For each suggestion, provide:");
             prompt.AppendLine("   - The original text");
             prompt.AppendLine("   - Your suggested improvement");
-            prompt.AppendLine("   - A brief explanation of why your suggestion improves the text");
+            prompt.AppendLine("   - A brief explanation of the issue using the content's language");
             prompt.AppendLine("4. Format your response as a JSON array with the following structure for each suggestion:");
             prompt.AppendLine("   ```json");
             prompt.AppendLine("   {");
@@ -201,16 +201,18 @@ namespace DocumentGeneratorAPI.Services
         /// <param name="clientData">Client data in JSON format</param>
         /// <param name="caseData">Case data in JSON format</param>
         /// <returns>A list of suggestions for integrating client/case information</returns>
+
         public async Task<List<object>> SuggestEntityInfoIntegrationAsync(
-            string content,
-            object clientData = null,
-            object caseData = null)
+    string content,
+    object clientData = null,
+    object caseData = null)
         {
             _logger.LogInformation("Generating suggestions for client/case information integration");
 
             var prompt = new StringBuilder();
-            prompt.AppendLine("You are a specialized legal assistant with expertise in personalizing legal documents with client and case information.");
-            prompt.AppendLine("Please analyze the following legal document and identify opportunities to integrate client and case information.");
+            prompt.AppendLine("# Today date UTC : " + DateTime.UtcNow.ToString());
+            prompt.AppendLine("You are a specialized legal assistant who helps fill in empty fields in legal documents using client and case information.");
+            prompt.AppendLine("Please analyze the following legal document and identify all empty fields or placeholders that need to be filled.");
             prompt.AppendLine();
             prompt.AppendLine("# Document Content");
             prompt.AppendLine(content);
@@ -231,20 +233,27 @@ namespace DocumentGeneratorAPI.Services
             }
 
             prompt.AppendLine("# Instructions");
-            prompt.AppendLine("1. Identify places in the document where client or case information could be integrated");
-            prompt.AppendLine("2. For each suggestion, provide:");
-            prompt.AppendLine("   - The original text that could be replaced or enhanced");
-            prompt.AppendLine("   - The suggested text with integrated information");
-            prompt.AppendLine("   - A brief explanation of the suggested change");
-            prompt.AppendLine("3. Format your response as a JSON array with the following structure for each suggestion:");
+            prompt.AppendLine("1. Identify specific empty fields, placeholders, or generic terms in the document that should be filled with client or case information.");
+            prompt.AppendLine("2. Look for patterns like [Client Name], ____, <name>, XXXX, or any blank spaces preceded by labels like 'Name:', 'Address:', etc.");
+            prompt.AppendLine("3. Also identify generic references like 'the client', 'the buyer', 'the seller', 'the property owner', etc., that could be replaced with specific names.");
+            prompt.AppendLine("4. For roles like 'buyer', 'seller', 'owner', etc., suggest appropriate client information if available.");
+            prompt.AppendLine("5. Be precise - match the exact client/case field to the appropriate document placeholder.");
+            prompt.AppendLine("6. For each suggestion, provide:");
+            prompt.AppendLine("   - The exact original text to be replaced (including placeholders or generic terms)");
+            prompt.AppendLine("   - The suggested text with properly formatted and integrated client or case information");
+            prompt.AppendLine("   - A brief explanation of what information was added and why, using the document's original language");
+            prompt.AppendLine("7. Format your response as a JSON array with the following structure for each suggestion:");
             prompt.AppendLine("   ```json");
             prompt.AppendLine("   {");
             prompt.AppendLine("     \"type\": \"info_integration\",");
-            prompt.AppendLine("     \"original\": \"original text\",");
-            prompt.AppendLine("     \"suggested\": \"text with integrated information\",");
-            prompt.AppendLine("     \"explanation\": \"explanation of the integration\"");
+            prompt.AppendLine("     \"original\": \"original text with placeholder or generic term\",");
+            prompt.AppendLine("     \"suggested\": \"text with integrated specific information\",");
+            prompt.AppendLine("     \"explanation\": \"explanation of what was integrated\"");
             prompt.AppendLine("   }");
             prompt.AppendLine("   ```");
+            prompt.AppendLine();
+            prompt.AppendLine("8. If the document appears to be in Arabic or another language, ensure your explanations are also in that language.");
+            prompt.AppendLine("9. Only suggest replacements where you have the exact matching information - don't make assumptions about missing data.");
             prompt.AppendLine();
             prompt.AppendLine("Return ONLY the JSON array with no additional text or explanations.");
 

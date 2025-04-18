@@ -328,7 +328,7 @@ const InvoicesListPage = () => {
                         </Box>
                         <Chip
                             size="small"
-                            label={t(`billing.status.${invoice.status.charAt(0).toLowerCase() + invoice.status.slice(1)}`)}
+                            label={t(`billing.status.${invoice.status.toLowerCase()}`)}
                             color={STATUS_COLORS[invoice.status] || 'default'}
                         />
                     </Box>
@@ -560,7 +560,7 @@ const InvoicesListPage = () => {
                                 <MenuItem value="Issued">{t('billing.status.issued')}</MenuItem>
                                 <MenuItem value="Sent">{t('billing.status.sent')}</MenuItem>
                                 <MenuItem value="Overdue">{t('billing.status.overdue')}</MenuItem>
-                                <MenuItem value="PartiallyPaid">{t('billing.status.partiallyPaid')}</MenuItem>
+                                <MenuItem value="PartiallyPaid">{t('billing.status.partiallypaid')}</MenuItem>
                                 <MenuItem value="Paid">{t('billing.status.paid')}</MenuItem>
                                 <MenuItem value="Cancelled">{t('billing.status.cancelled')}</MenuItem>
                                 <MenuItem value="Disputed">{t('billing.status.disputed')}</MenuItem>
@@ -733,7 +733,7 @@ const InvoicesListPage = () => {
                                                     <Chip
                                                         color={STATUS_COLORS[invoice.status] || 'default'}
                                                         size="small"
-                                                        label={t(`billing.status.${invoice.status.charAt(0).toLowerCase() + invoice.status.slice(1)}`)}
+                                                        label={t(`billing.status.${invoice.status.toLowerCase()}`)}
                                                     />
                                                 </TableCell>
                                                 <TableCell align="right">

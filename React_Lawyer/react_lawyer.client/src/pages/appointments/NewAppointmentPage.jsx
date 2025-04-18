@@ -465,14 +465,14 @@ const NewAppointmentPage = () => {
 
     // Get appointment type options
     const appointmentTypeOptions = [
-        { value: 'Consultation', label: t('appointments.types.consultation') },
-        { value: 'ClientMeeting', label: t('appointments.types.clientMeeting') },
-        { value: 'CourtHearing', label: t('appointments.types.courtHearing') },
-        { value: 'Deposition', label: t('appointments.types.deposition') },
-        { value: 'Mediation', label: t('appointments.types.mediation') },
-        { value: 'InternalMeeting', label: t('appointments.types.internalMeeting') },
-        { value: 'PhoneCall', label: t('appointments.types.phoneCall') },
-        { value: 'Other', label: t('appointments.types.other') }
+        { value: 'Consultation', label: t('appointments.types.Consultation') },
+        { value: 'ClientMeeting', label: t('appointments.types.ClientMeeting') },
+        { value: 'CourtHearing', label: t('appointments.types.CourtHearing') },
+        { value: 'Deposition', label: t('appointments.types.Deposition') },
+        { value: 'Mediation', label: t('appointments.types.Mediation') },
+        { value: 'InternalMeeting', label: t('appointments.types.InternalMeeting') },
+        { value: 'PhoneCall', label: t('appointments.types.PhoneCall') },
+        { value: 'Other', label: t('appointments.types.Other') }
     ];
 
     return (
