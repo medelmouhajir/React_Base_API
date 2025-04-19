@@ -193,24 +193,32 @@
     "searchPlaceholder": "البحث عن القضايا",
 
     "types": {
-      "civil": "مدني",
-      "criminal": "جنائي",
-      "family": "عائلي",
-      "immigration": "هجرة",
-      "corporate": "شركات",
-      "realEstate": "عقاري",
-      "bankruptcy": "إفلاس",
-      "intellectualProperty": "ملكية فكرية",
-      "tax": "ضرائب",
-      "other": "أخرى"
+      "CivilLaw": "القانون المدني",
+      "CriminalLaw": "القانون الجنائي",
+      "FamilyLaw": "قانون الأسرة",
+      "Immigration": "قانون الهجرة",
+      "CommercialLaw": "القانون التجاري",
+      "AdministrativeLaw": "القانون الإداري",
+      "RealEstate": "العقارات",
+      "LaborLaw": "قانون الشغل",
+      "IntellectualProperty": "الملكية الفكرية",
+      "Other": "أخرى"
     },
 
-    "status.opened": "مفتوحة",
-    "status.intake": "استقبال",
-    "status.active": "نشطة",
-    "status.pending": "معلقة",
-    "status.closed": "مغلقة",
-    "status.archived": "مؤرشفة",
+    "status.Opened": "مفتوح",
+    "status.Intake": "تم الاستلام",
+    "status.InProgress": "قيد المعالجة",
+    "status.PendingCourt": "في انتظار المحكمة",
+    "status.PendingClient": "في انتظار العميل",
+    "status.PendingOpposingParty": "قيد المعالجة",
+    "status.InNegotiation": "في انتظار المحكمة",
+    "status.InMediation": "في انتظار العميل",
+    "status.InTrial": "قيد المعالجة",
+    "status.Settlement": "في انتظار المحكمة",
+    "status.Judgment": "في انتظار العميل",
+    "status.Appeal": "قيد المعالجة",
+    "status.Closed": "في انتظار المحكمة",
+    "status.Archived": "مؤرشف",
 
     "events": {
       "events": "الأحداث",
@@ -923,26 +931,77 @@
 
 
   "smartEditor": {
-    "untitledDocument": "مستند بدون عنوان",
     "newDocument": "مستند جديد",
     "aiAssistant": "مساعد الذكاء الاصطناعي",
     "unsavedChanges": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد المتابعة؟",
+    "newTab": "علامة تبويب جديدة",
+    "untitledDocument": "مستند بدون عنوان",
+    "closeUnsaved": "هذا المستند يحتوي على تغييرات غير محفوظة. هل أنت متأكد من أنك تريد إغلاقه؟",
+    "noDocumentOpen": "لا يوجد مستند مفتوح حاليًا",
+    "createNew": "إنشاء مستند جديد",
+    "recentDocuments": "المستندات الأخيرة",
+    "noRecentDocuments": "لا توجد مستندات حديثة",
+    "refreshHistory": "تحديث السجل",
+    "documentContext": "سياق المستند",
+    "caseInformation": "معلومات القضية",
+    "noCaseAssociated": "لا توجد قضية مرتبطة",
+    "caseNumber": "رقم القضية",
+    "caseStatus": "حالة القضية",
+    "clientInformation": "معلومات العميل",
+    "noClientAssociated": "لا يوجد عميل مرتبط",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "documentOutline": "مخطط المستند",
+    "noHeadings": "لا توجد عناوين",
+    "relatedDocuments": "المستندات ذات الصلة",
+    "noRelatedDocuments": "لا توجد مستندات ذات صلة",
+    "documents": "المستندات",
+    "documentHistory": "سجل المستندات",
+    "compareDocuments": "مقارنة المستندات",
+    "selectDocumentToCompare": "اختر مستندًا للمقارنة مع المستند الحالي",
+    "selectDocument": "اختر مستندًا",
+    "compare": "مقارنة",
+    "notImplemented": "هذه الميزة غير مفعلة بالكامل بعد",
+    "errors": {
+      "documentLoad": "فشل في تحميل المستند",
+      "templateLoad": "فشل في تحميل القالب",
+      "titleRequired": "عنوان المستند مطلوب",
+      "save": "فشل في حفظ المستند",
+      "export": "فشل في تصدير المستند",
+      "compareDocuments": "فشل في مقارنة المستندات",
+      "clientsLoadFailed": "فشل في تحميل العملاء",
+      "casesLoadFailed": "فشل في تحميل القضايا"
+    },
     "notifications": {
       "saved": "تم حفظ المستند بنجاح",
-      "exported": "تم تصدير المستند بتنسيق {{format}} بنجاح"
-    },
-    "errors": {
-      "templateLoad": "فشل تحميل القالب",
-      "save": "فشل حفظ المستند",
-      "export": "فشل تصدير المستند"
+      "exported": "تم تصدير المستند بصيغة {format} بنجاح"
     },
     "menu": {
       "selectTemplate": "اختيار قالب",
       "print": "طباعة",
-      "exportWord": "تصدير كمستند وورد",
-      "exportPdf": "تصدير كملف PDF",
-      "exportHtml": "تصدير كملف HTML"
-    }
+      "compareDocuments": "مقارنة المستندات",
+      "exportWord": "تصدير إلى وورد",
+      "exportPdf": "تصدير إلى PDF",
+      "exportHtml": "تصدير إلى HTML"
+    },
+    "tabs": {
+      "welcome": "مرحبًا",
+      "suggestions": "اقتراحات",
+      "spelling": "تدقيق إملائي",
+      "translate": "ترجمة",
+      "summary": "ملخص",
+      "clientInfo": "معلومات العميل",
+      "assistant": "المساعد"
+    },
+    "tabDescriptions": {
+      "suggestions": "الحصول على اقتراحات صياغة أنيقة",
+      "spelling": "تدقيق الإملاء والقواعد",
+      "translate": "ترجمة المستند",
+      "summary": "إنشاء ملخص للمستند",
+      "clientInfo": "إدخال معلومات العميل",
+      "assistant": "سؤال المساعد الذكي"
+    },
+    "saveAsSeparateDocument": "حفظ كمستند منفصل"
   },
 
   "templates": {

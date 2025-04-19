@@ -91,39 +91,37 @@ const CasesListPage = () => {
     // Case types
     const CASE_TYPES = [
         { value: 'All', label: t('common.all') },
-        { value: 'Civil', label: t('cases.types.civil') },
-        { value: 'Criminal', label: t('cases.types.criminal') },
-        { value: 'Family', label: t('cases.types.family') },
-        { value: 'Immigration', label: t('cases.types.immigration') },
-        { value: 'Corporate', label: t('cases.types.corporate') },
-        { value: 'RealEstate', label: t('cases.types.realEstate') },
-        { value: 'Bankruptcy', label: t('cases.types.bankruptcy') },
-        { value: 'IntellectualProperty', label: t('cases.types.intellectualProperty') },
-        { value: 'Tax', label: t('cases.types.tax') },
-        { value: 'Other', label: t('cases.types.other') }
+        { value: 'CivilLaw', label: t('cases.types.CivilLaw') },
+        { value: 'CriminalLaw', label: t('cases.types.CriminalLaw') },
+        { value: 'FamilyLaw', label: t('cases.types.FamilyLaw') },
+        { value: 'CommercialLaw', label: t('cases.types.CommercialLaw') },
+        { value: 'AdministrativeLaw', label: t('cases.types.AdministrativeLaw') },
+        { value: 'LaborLaw', label: t('cases.types.LaborLaw') },
+        { value: 'IntellectualProperty', label: t('cases.types.IntellectualProperty') },
+        { value: 'RealEstate', label: t('cases.types.RealEstate') },
+        { value: 'Immigration', label: t('cases.types.Immigration') },
+        { value: 'Other', label: t('cases.types.Other') }
     ];
 
     // Case statuses
     const CASE_STATUSES = [
         { value: 'All', label: t('common.all') },
-        { value: 'Intake', label: t('cases.status.intake') },
-        { value: 'Active', label: t('cases.status.active') },
-        { value: 'Pending', label: t('cases.status.pending') },
-        { value: 'Closed', label: t('cases.status.closed') },
-        { value: 'Archived', label: t('cases.status.archived') }
+        { value: 'Intake', label: t('cases.status.Intake') },
+        { value: 'Opened', label: t('cases.status.Opened') },
+        { value: 'InProgress', label: t('cases.status.InProgress') },
+        { value: 'PendingCourt', label: t('cases.status.PendingCourt') },
+        { value: 'PendingClient', label: t('cases.status.PendingClient') },
+        { value: 'PendingOpposingParty', label: t('cases.status.PendingOpposingParty') },
+        { value: 'InNegotiation', label: t('cases.status.InNegotiation') },
+        { value: 'InMediation', label: t('cases.status.InMediation') },
+        { value: 'InTrial', label: t('cases.status.InTrial') },
+        { value: 'Settlement', label: t('cases.status.Settlement') },
+        { value: 'Judgment', label: t('cases.status.Judgment') },
+        { value: 'Appeal', label: t('cases.status.Appeal') },
+        { value: 'Closed', label: t('cases.status.Closed') },
+        { value: 'Archived', label: t('cases.status.Archived') }
     ];
 
-    // Get status label from numeric value
-    const getStatusLabel = (statusValue) => {
-        switch (statusValue) {
-            case 0: return t('cases.status.intake');
-            case 1: return t('cases.status.active');
-            case 2: return t('cases.status.pending');
-            case 3: return t('cases.status.closed');
-            case 4: return t('cases.status.archived');
-            default: return t('common.unknown');
-        }
-    };
 
     // Get case type label
     const getCaseTypeLabel = (typeValue) => {
@@ -168,11 +166,7 @@ const CasesListPage = () => {
 
                 // Filter by case status
                 if (caseStatus !== 'All') {
-                    // Find the index of the status in CASE_STATUSES, subtracting 1 to account for "All"
-                    const statusEnumValue = CASE_STATUSES.findIndex(s => s.value === caseStatus) - 1;
-                    if (statusEnumValue >= 0) {
-                        filteredData = filteredData.filter(c => c.status === statusEnumValue);
-                    }
+                    filteredData = filteredData.filter(c => c.status === caseStatus);
                 }
 
                 // Sort by case creation date (newest first)
@@ -271,7 +265,7 @@ const CasesListPage = () => {
                     <Chip
                         color={STATUS_COLORS[caseItem.status] || 'default'}
                         size="small"
-                        label={getStatusLabel(caseItem.status)}
+                        label={t(caseItem.status)}
                     />
                 </Box>
 
@@ -401,7 +395,7 @@ const CasesListPage = () => {
                                         <Chip
                                             color={STATUS_COLORS[caseItem.status] || 'default'}
                                             size="small"
-                                            label={getStatusLabel(caseItem.status)}
+                                            label={t("cases.status." +caseItem.status)}
                                         />
                                     </TableCell>
                                     <TableCell>

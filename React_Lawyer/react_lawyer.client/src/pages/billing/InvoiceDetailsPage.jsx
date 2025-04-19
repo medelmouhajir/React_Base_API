@@ -346,8 +346,8 @@ const InvoiceDetailsPage = () => {
     const formatCurrency = (amount) => {
         return amount?.toLocaleString('en-US', {
             style: 'currency',
-            currency: 'USD'
-        }) || '$0.00';
+            currency: 'MAD'
+        }) || 'MAD 0.00';
     };
 
     const formatDate = (dateString) => {

@@ -817,7 +817,7 @@ namespace React_Lawyer.Server.Controllers.Documents
                 int currentUserId = int.Parse( User.FindFirst(ClaimTypes.NameIdentifier)?.Value );
                 _logger.LogInformation("Document updated: {DocumentId} by User {UserId}", id, currentUserId);
 
-                return NoContent();
+                return Ok(new object());
             }
             catch (DbUpdateConcurrencyException)
             {

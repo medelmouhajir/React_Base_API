@@ -27,7 +27,7 @@ const DocumentEditor = forwardRef(({ content, onChange }, ref) => {
 
     // Create a Quill modules configuration
     const modules = {
-        toolbar: true, // We're using our custom toolbar
+        toolbar: false, // We're using our custom toolbar
         history: {
             delay: 500,
             maxStack: 100,
@@ -35,7 +35,8 @@ const DocumentEditor = forwardRef(({ content, onChange }, ref) => {
         },
         clipboard: {
             matchVisual: false
-        }
+        },
+        // Track changes and collaboration modules would be added here in a real implementation
     };
 
     // Create a Quill formats configuration
@@ -59,6 +60,11 @@ const DocumentEditor = forwardRef(({ content, onChange }, ref) => {
         // Get the editor text content (plain text)
         getEditorText: () => {
             return editor ? editor.getText() : '';
+        },
+
+        // Get the editor HTML
+        getHTML: () => {
+            return editor ? editor.root.innerHTML : '';
         },
 
         // Insert text at the current cursor position
@@ -111,6 +117,69 @@ const DocumentEditor = forwardRef(({ content, onChange }, ref) => {
                     editor.removeFormat(range.index, range.length);
                 }
             }
+        },
+
+        // Insert an image
+        insertImage: (url, alt = '') => {
+            if (editor) {
+                const range = editor.getSelection();
+                if (range) {
+                    editor.insertEmbed(range.index, 'image', url);
+                }
+            }
+        },
+
+        // Insert a table
+        insertTable: (rows, cols) => {
+            if (editor) {
+                const range = editor.getSelection();
+                if (range) {
+                    // Create HTML table
+                    let tableHTML = '<table style="width: 100%; border-collapse: collapse;">';
+                    for (let r = 0; r < rows; r++) {
+                        tableHTML += '<tr>';
+                        for (let c = 0; c < cols; c++) {
+                            tableHTML += '<td style="border: 1px solid #ccc; padding: 8px; min-width: 50px; height: 20px;"></td>';
+                        }
+                        tableHTML += '</tr>';
+                    }
+                    tableHTML += '</table><p><br></p>';
+
+                    // Insert at cursor position
+                    editor.clipboard.dangerouslyPasteHTML(range.index, tableHTML);
+                }
+            }
+        },
+
+        // Set focus to the editor
+        focus: () => {
+            if (editor) {
+                editor.focus();
+            }
+        },
+
+        // Get current selection
+        getSelection: () => {
+            if (editor) {
+                return editor.getSelection();
+            }
+            return null;
+        },
+
+        // Find and select text
+        findAndSelect: (text) => {
+            if (editor && text) {
+                const editorText = editor.getText();
+                const index = editorText.indexOf(text);
+
+                if (index !== -1) {
+                    editor.focus();
+                    editor.setSelection(index, text.length);
+                    return true;
+                }
+                return false;
+            }
+            return false;
         }
     }));
 

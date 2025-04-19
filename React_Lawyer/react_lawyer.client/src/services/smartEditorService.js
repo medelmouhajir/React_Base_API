@@ -179,6 +179,101 @@ class SmartEditorService {
     }
 
     /**
+     * Get recent documents
+     * @param {number} limit - Maximum number of documents to return (default: 10)
+     * @returns {Promise<Array>} - Promise resolving to array of recent documents
+     */
+    async getRecentDocuments(limit = 10) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/recent?limit=${limit}`
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch recent documents');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching recent documents:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get document versions
+     * @param {string} id - Document ID
+     * @returns {Promise<Array>} - Promise resolving to array of document versions
+     */
+    async getDocumentVersions(id) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/${id}/versions`
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch document versions');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error fetching versions for document ${id}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get a specific document version
+     * @param {string} id - Document ID
+     * @param {string} versionId - Version ID
+     * @returns {Promise<Object>} - Promise resolving to document version
+     */
+    async getDocumentVersion(id, versionId) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/${id}/versions/${versionId}`
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch document version');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error fetching version ${versionId} for document ${id}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Compare two document versions
+     * @param {string} id - Document ID
+     * @param {string} version1 - First version ID
+     * @param {string} version2 - Second version ID (optional, defaults to latest)
+     * @returns {Promise<Object>} - Promise resolving to comparison result
+     */
+    async compareDocumentVersions(id, version1, version2 = 'latest') {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/${id}/compare?v1=${version1}&v2=${version2}`
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to compare document versions');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error comparing versions for document ${id}:`, error);
+            throw error;
+        }
+    }
+
+    /**
      * Get AI suggestions for document content
      * @param {string} content - Document content to analyze
      * @returns {Promise<Array>} - Promise resolving to array of suggestions
@@ -237,6 +332,272 @@ class SmartEditorService {
             console.error('Error generating AI completion:', error);
             throw error;
         }
+    }
+
+    /**
+     * Star or unstar a document (bookmark)
+     * @param {string} id - Document ID
+     * @param {boolean} starred - Whether to star or unstar
+     * @returns {Promise<boolean>} - Promise resolving to success boolean
+     */
+    async toggleDocumentStar(id, starred) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/${id}/star`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ starred })
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update star status');
+            }
+
+            return true;
+        } catch (error) {
+            console.error(`Error updating star status for document ${id}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get starred documents
+     * @returns {Promise<Array>} - Promise resolving to array of starred documents
+     */
+    async getStarredDocuments() {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/starred`
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch starred documents');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching starred documents:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get documents by case ID
+     * @param {number} caseId - Case ID
+     * @returns {Promise<Array>} - Promise resolving to array of documents
+     */
+    async getDocumentsByCase(caseId) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/bycase/${caseId}`
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch case documents');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error fetching documents for case ${caseId}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get documents by client ID
+     * @param {number} clientId - Client ID
+     * @returns {Promise<Array>} - Promise resolving to array of documents
+     */
+    async getDocumentsByClient(clientId) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/byclient/${clientId}`
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch client documents');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error fetching documents for client ${clientId}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Search documents
+     * @param {string} query - Search query
+     * @returns {Promise<Array>} - Promise resolving to array of documents
+     */
+    async searchDocuments(query) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/search?q=${encodeURIComponent(query)}`
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to search documents');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error searching documents with query "${query}":`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Create a copy of a document
+     * @param {string} id - Document ID to copy
+     * @param {string} newTitle - Title for the new document
+     * @returns {Promise<Object>} - Promise resolving to the new document
+     */
+    async copyDocument(id, newTitle) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/${id}/copy`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title: newTitle })
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to copy document');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error copying document ${id}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Move document to a different case
+     * @param {string} id - Document ID
+     * @param {number} caseId - New case ID
+     * @returns {Promise<Object>} - Promise resolving to updated document
+     */
+    async moveDocumentToCase(id, caseId) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/${id}/move`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ caseId })
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to move document');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error moving document ${id} to case ${caseId}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Share document with specific users
+     * @param {string} id - Document ID
+     * @param {Array<number>} userIds - Array of user IDs to share with
+     * @returns {Promise<boolean>} - Promise resolving to success boolean
+     */
+    async shareDocumentWithUsers(id, userIds) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/${id}/share`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userIds })
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to share document');
+            }
+
+            return true;
+        } catch (error) {
+            console.error(`Error sharing document ${id}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get document collaborators
+     * @param {string} id - Document ID
+     * @returns {Promise<Array>} - Promise resolving to array of collaborators
+     */
+    async getDocumentCollaborators(id) {
+        try {
+            const response = await this.fetchWithAuth(
+                `${API_URL}/api/smart-editor/documents/${id}/collaborators`
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch collaborators');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Error fetching collaborators for document ${id}:`, error);
+            throw error;
+        }
+    }
+
+    /**
+     * Generate document outline from content
+     * @param {string} content - Document HTML content
+     * @returns {Array} - Array of headings with level and text
+     */
+    generateDocumentOutline(content) {
+        if (!content) return [];
+
+        // Create a DOM parser to extract headings
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(content, 'text/html');
+
+        // Find all heading elements
+        const headings = [];
+        const headingElements = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+        headingElements.forEach((heading, index) => {
+            const level = parseInt(heading.tagName.substring(1));
+            headings.push({
+                id: `heading-${index}`,
+                text: heading.textContent,
+                level: level
+            });
+        });
+
+        return headings;
     }
 }
 

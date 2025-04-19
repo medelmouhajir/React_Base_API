@@ -91,6 +91,11 @@ const AppRoutes = () => {
             } />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
+
+            <Route element={<ProtectedRoute />}>
+                <Route path="/billing/invoices/:id/print" element={<InvoicePrintPage />} />
+            </Route>
+
             {/* Protected routes with layout */}
             <Route element={<ProtectedLayout />}>
                 {/* Dashboard */}
@@ -131,7 +136,6 @@ const AppRoutes = () => {
                     <Route path="/billing/invoices" element={<InvoicesListPage />} />
                     <Route path="/billing/invoices/new" element={<NewInvoicePage />} />
                     <Route path="/billing/invoices/:id" element={<InvoiceDetailsPage />} />
-                    <Route path="/billing/invoices/:id/print" element={<InvoicePrintPage />} />
                     <Route path="/billing/invoices/:id/download" element={<InvoiceDownloadPdfPage />} />
                     <Route path="/billing/payments" element={<PaymentsPage />} />
                     <Route path="/billing/time-entries" element={<TimeEntriesListPage />} />

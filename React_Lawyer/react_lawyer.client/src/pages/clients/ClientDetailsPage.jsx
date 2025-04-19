@@ -376,8 +376,8 @@ const ClientDetailsPage = () => {
                                                     <TableCell>
                                                         <Chip
                                                             size="small"
-                                                            label={t(`cases.status.${caseItem.status?.toLowerCase() || 'intake'}`)}
-                                                            color={caseItem.status === 'Active' ? 'primary' : 'default'}
+                                                            label={t(`cases.status.${caseItem.status || 'Intake'}`)}
+                                                            color={caseItem.status === 'Opened' ? 'primary' : 'default'}
                                                         />
                                                     </TableCell>
                                                     <TableCell align="right">
@@ -505,7 +505,7 @@ const ClientDetailsPage = () => {
                                                     <TableCell>
                                                         {new Intl.NumberFormat('en-US', {
                                                             style: 'currency',
-                                                            currency: 'USD'
+                                                            currency: 'MAD'
                                                         }).format(invoice.totalAmount)}
                                                     </TableCell>
                                                     <TableCell>

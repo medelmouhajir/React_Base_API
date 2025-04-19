@@ -192,24 +192,32 @@
     "searchPlaceholder": "Search for cases",
 
     "types": {
-      "civil": "Civil",
-      "criminal": "Criminal",
-      "family": "Family",
-      "immigration": "Immigration",
-      "corporate": "Corporate",
-      "realEstate": "Real Estate",
-      "bankruptcy": "Bankruptcy",
-      "intellectualProperty": "Intellectual Property",
-      "tax": "Tax",
-      "other": "Other"
+      "CivilLaw": "Civil",
+      "CriminalLaw": "Criminal",
+      "FamilyLaw": "Family",
+      "Immigration": "Immigration",
+      "CommercialLaw": "Commercial Law",
+      "AdministrativeLaw": "Administrative Law",
+      "RealEstate": "Real Estate",
+      "LaborLaw": "Labor Law",
+      "IntellectualProperty": "Intellectual Property",
+      "Other": "Other"
     },
 
-    "status.opened": "Opened",
-    "status.intake": "Intake",
-    "status.active": "Active",
-    "status.pending": "Pending",
-    "status.closed": "Closed",
-    "status.archived": "Archived",
+    "status.Opened": "Opened",
+    "status.Intake": "Intake",
+    "status.InProgress": "In progress",
+    "status.PendingCourt": "Pending Court",
+    "status.PendingClient": "Pending Client",
+    "status.PendingOpposingParty": "In progress",
+    "status.InNegotiation": "Pending Court",
+    "status.InMediation": "Pending Client",
+    "status.InTrial": "In progress",
+    "status.Settlement": "Pending Court",
+    "status.Judgment": "Pending Client",
+    "status.Appeal": "In progress",
+    "status.Closed": "Pending Court",
+    "status.Archived": "Archived",
 
     "events": {
       "events": "Events",
@@ -924,26 +932,79 @@
 
 
   "smartEditor": {
-    "untitledDocument": "Untitled Document",
     "newDocument": "New Document",
     "aiAssistant": "AI Assistant",
     "unsavedChanges": "You have unsaved changes. Are you sure you want to continue?",
+
+
+    "newTab": "New Tab",
+    "untitledDocument": "Untitled Document",
+    "closeUnsaved": "This document has unsaved changes. Are you sure you want to close it?",
+    "noDocumentOpen": "No document is currently open",
+    "createNew": "Create New Document",
+    "recentDocuments": "Recent Documents",
+    "noRecentDocuments": "No recent documents found",
+    "refreshHistory": "Refresh History",
+    "documentContext": "Document Context",
+    "caseInformation": "Case Information",
+    "noCaseAssociated": "No case associated",
+    "caseNumber": "Case Number",
+    "caseStatus": "Status",
+    "clientInformation": "Client Information",
+    "noClientAssociated": "No client associated",
+    "email": "Email",
+    "phone": "Phone",
+    "documentOutline": "Document Outline",
+    "noHeadings": "No headings found",
+    "relatedDocuments": "Related Documents",
+    "noRelatedDocuments": "No related documents found",
+    "documents": "Documents",
+    "documentHistory": "Document History",
+    "compareDocuments": "Compare Documents",
+    "selectDocumentToCompare": "Select a document to compare with the current document",
+    "selectDocument": "Select Document",
+    "compare": "Compare",
+    "notImplemented": "This feature is not fully implemented yet",
+    "errors": {
+      "documentLoad": "Failed to load document",
+      "templateLoad": "Failed to load template",
+      "titleRequired": "Document title is required",
+      "save": "Failed to save document",
+      "export": "Failed to export document",
+      "compareDocuments": "Failed to compare documents",
+      "clientsLoadFailed": "Failed to load clients",
+      "casesLoadFailed": "Failed to load cases"
+    },
     "notifications": {
       "saved": "Document saved successfully",
-      "exported": "Document exported as {{format}} successfully"
-    },
-    "errors": {
-      "templateLoad": "Failed to load template",
-      "save": "Failed to save document",
-      "export": "Failed to export document"
+      "exported": "Document exported as {format} successfully"
     },
     "menu": {
       "selectTemplate": "Select Template",
       "print": "Print",
-      "exportWord": "Export as Word Document",
-      "exportPdf": "Export as PDF",
-      "exportHtml": "Export as HTML"
-    }
+      "compareDocuments": "Compare Documents",
+      "exportWord": "Export to Word",
+      "exportPdf": "Export to PDF",
+      "exportHtml": "Export to HTML"
+    },
+    "tabs": {
+      "welcome": "Welcome",
+      "suggestions": "Suggestions",
+      "spelling": "Spelling",
+      "translate": "Translate",
+      "summary": "Summary",
+      "clientInfo": "Client Info",
+      "assistant": "Assistant"
+    },
+    "tabDescriptions": {
+      "suggestions": "Get elegant phrasing suggestions",
+      "spelling": "Check spelling and grammar",
+      "translate": "Translate your document",
+      "summary": "Generate document summary",
+      "clientInfo": "Insert client information",
+      "assistant": "Ask the AI assistant"
+    },
+    "saveAsSeparateDocument": "Save as Separate Document"
   },
 
 

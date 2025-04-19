@@ -92,25 +92,34 @@ const CaseDetailsPage = () => {
 
     // Case status options - mapped from the backend enum
     const CASE_STATUSES = [
-        { value: 0, label: t('cases.status.intake'), color: 'info' },
-        { value: 1, label: t('cases.status.active'), color: 'success' },
-        { value: 2, label: t('cases.status.pending'), color: 'warning' },
-        { value: 3, label: t('cases.status.closed'), color: 'default' },
-        { value: 4, label: t('cases.status.archived'), color: 'default' }
+        { value: 0, label: t('cases.status.Intake'), color: 'info' },
+        { value: 1, label: t('cases.status.Opened'), color: 'success' },
+        { value: 2, label: t('cases.status.InProgress'), color: 'success' },
+        { value: 3, label: t('cases.status.PendingCourt'), color: 'warning' },
+        { value: 4, label: t('cases.status.PendingClient'), color: 'warning' },
+        { value: 5, label: t('cases.status.PendingOpposingParty'), color: 'warning' },
+        { value: 6, label: t('cases.status.InNegotiation'), color: 'info' },
+        { value: 7, label: t('cases.status.InMediation'), color: 'info' },
+        { value: 8, label: t('cases.status.InTrial'), color: 'info' },
+        { value: 9, label: t('cases.status.Settlement'), color: 'light' },
+        { value: 10, label: t('cases.status.Judgment'), color: 'light' },
+        { value: 11, label: t('cases.status.Appeal'), color: 'light' },
+        { value: 12, label: t('cases.status.Closed'), color: 'default' },
+        { value: 13, label: t('cases.status.Archived'), color: 'default' }
     ];
 
     // Case type options - mapped from the backend enum
     const CASE_TYPES = [
-        { value: 0, label: t('cases.types.civil') },
-        { value: 1, label: t('cases.types.criminal') },
-        { value: 2, label: t('cases.types.family') },
-        { value: 3, label: t('cases.types.immigration') },
-        { value: 4, label: t('cases.types.corporate') },
-        { value: 5, label: t('cases.types.realEstate') },
-        { value: 6, label: t('cases.types.bankruptcy') },
-        { value: 7, label: t('cases.types.intellectualProperty') },
-        { value: 8, label: t('cases.types.tax') },
-        { value: 9, label: t('cases.type.other') }
+        { value: 0, label: t('cases.types.FamilyLaw') },
+        { value: 1, label: t('cases.types.CriminalLaw') },
+        { value: 2, label: t('cases.types.CivilLaw') },
+        { value: 3, label: t('cases.types.CommercialLaw') },
+        { value: 4, label: t('cases.types.AdministrativeLaw') },
+        { value: 5, label: t('cases.types.LaborLaw') },
+        { value: 6, label: t('cases.types.IntellectualProperty') },
+        { value: 7, label: t('cases.types.RealEstate') },
+        { value: 8, label: t('cases.types.Immigration') },
+        { value: 10, label: t('cases.type.Other') }
     ];
 
     // Fetch case data

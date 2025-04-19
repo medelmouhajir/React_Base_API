@@ -181,7 +181,7 @@ namespace React_Lawyer.Server.Controllers.Cases
 
         // GET: api/Cases/ByFirm/{firmId}
         [HttpGet("ByFirm/{firmId}")]
-        public async Task<ActionResult<IEnumerable<Case>>> GetCasesByFirm(int firmId)
+        public async Task<ActionResult<IEnumerable<object>>> GetCasesByFirm(int firmId)
         {
             try
             {
@@ -190,7 +190,8 @@ namespace React_Lawyer.Server.Controllers.Cases
                 var cases = await _context.Cases
                     .Include(c => c.AssignedLawyer)
                         .ThenInclude(l => l.User)
-                        .Select(c => new Case
+                        .Where(c => c.LawFirmId == firmId && c.Status != CaseStatus.Archived)
+                        .Select(c => new
                         {
                             CaseId = c.CaseId,
                             CaseNumber = c.CaseNumber,
@@ -198,8 +199,8 @@ namespace React_Lawyer.Server.Controllers.Cases
                             LawyerId = c.LawyerId,
                             Title = c.Title,
                             Description = c.Description,
-                            Type = c.Type,
-                            Status = c.Status,
+                            Type = c.Type.ToString(),
+                            Status = c.Status.ToString(),
                             OpenDate = c.OpenDate,
                             CloseDate = c.CloseDate,
                             CourtName = c.CourtName,
@@ -220,7 +221,6 @@ namespace React_Lawyer.Server.Controllers.Cases
                                 }
                             }
                         })
-                    .Where(c => c.LawFirmId == firmId && c.Status != CaseStatus.Archived)
                     .ToListAsync();
 
                 return cases;
@@ -486,12 +486,8 @@ namespace React_Lawyer.Server.Controllers.Cases
 
         // PUT: api/Cases/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCase(int id, Case @case)
+        public async Task<IActionResult> UpdateCase(int id, CaseCreateModel @case)
         {
-            if (id != @case.CaseId)
-            {
-                return BadRequest(new { message = "ID mismatch" });
-            }
 
             try
             {
@@ -505,18 +501,18 @@ namespace React_Lawyer.Server.Controllers.Cases
                 }
 
                 // Update allowed fields
-                existingCase.Title = @case.Title;
-                existingCase.Description = @case.Description;
-                existingCase.LawyerId = @case.LawyerId;
-                existingCase.Type = @case.Type;
-                existingCase.CourtName = @case.CourtName;
-                existingCase.CourtCaseNumber = @case.CourtCaseNumber;
-                existingCase.OpposingParty = @case.OpposingParty;
-                existingCase.OpposingCounsel = @case.OpposingCounsel;
-                existingCase.NextHearingDate = @case.NextHearingDate;
-                existingCase.Notes = @case.Notes;
-                existingCase.IsUrgent = @case.IsUrgent;
-                existingCase.ParentCaseId = @case.ParentCaseId;
+                existingCase.Title = @case.title;
+                existingCase.Description = @case.description;
+                existingCase.LawyerId = @case.lawyerId;
+                existingCase.Type = @case.type;
+                existingCase.CourtName = @case.courtName;
+                existingCase.CourtCaseNumber = @case.courtCaseNumber;
+                existingCase.OpposingParty = @case.opposingParty;
+                existingCase.OpposingCounsel = @case.opposingCounsel;
+                existingCase.NextHearingDate = @case.nextHearingDate;
+                existingCase.Notes = @case.notes;
+                existingCase.IsUrgent = @case.isUrgent;
+                existingCase.ParentCaseId = @case.parentCaseId;
 
                 // Don't update sensitive fields like Status directly
                 // Those should be updated through dedicated endpoints
@@ -540,7 +536,7 @@ namespace React_Lawyer.Server.Controllers.Cases
                     }
                 }
 
-                return NoContent();
+                return Ok(new object());
             }
             catch (Exception ex)
             {

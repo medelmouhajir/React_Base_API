@@ -161,7 +161,16 @@ namespace React_Lawyer.Server.Controllers
                         PaymentDate = p.PaymentDate,
                         ReferenceNumber = p.ReferenceNumber,
                         Status = p.Status.ToString(),
-                    } )
+                    } ),
+                    LawFirm = new
+                    {
+                        LawFirmId = x.LawFirm.LawFirmId,
+                        Name = x.LawFirm.Name,
+                        Address = x.LawFirm.Address,
+                        PhoneNumber = x.LawFirm.PhoneNumber,
+                        Email = x.LawFirm.Email,
+                        Website = x.LawFirm.Website,
+                    }
                 })
                 .FirstOrDefaultAsync(i => i.InvoiceId == id);
 

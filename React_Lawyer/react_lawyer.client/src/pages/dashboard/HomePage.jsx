@@ -657,7 +657,7 @@ const HomePage = () => {
                                             color="primary"
                                             fullWidth
                                             startIcon={<DocumentsIcon />}
-                                            onClick={() => navigate('/documents/new')}
+                                            onClick={() => navigate('/documents/smarteditor')}
                                             sx={{
                                                 justifyContent: 'flex-start',
                                                 py: isMobile ? 1 : 1.5,

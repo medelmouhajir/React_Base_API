@@ -270,7 +270,7 @@ const InvoicesListPage = () => {
     const formatCurrency = (amount) => {
         return amount.toLocaleString('en-US', {
             style: 'currency',
-            currency: 'USD'
+            currency: 'MAD'
         });
     };
 
@@ -786,7 +786,7 @@ const InvoicesListPage = () => {
                                                     <Tooltip title={t('billing.print')}>
                                                         <IconButton
                                                             size="small"
-                                                            onClick={() => window.print()}
+                                                            onClick={() => navigate(`/billing/invoices/${invoice.invoiceId}/print`)}
                                                         >
                                                             <PrintIcon />
                                                         </IconButton>

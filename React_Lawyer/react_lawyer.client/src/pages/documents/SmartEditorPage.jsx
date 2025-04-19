@@ -1,10 +1,13 @@
 // src/pages/documents/SmartEditorPage.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Box, Paper, TextField, Button, IconButton, Menu, MenuItem,
-    Divider, CircularProgress, Alert, AppBar, Toolbar, Tooltip, Snackbar
+    Divider, CircularProgress, Alert, AppBar, Toolbar, Tooltip, Snackbar,
+    Tabs, Tab, Breadcrumbs, Link, Drawer, List, ListItem, ListItemText,
+    ListItemIcon, Dialog, DialogTitle, DialogContent, DialogActions,
+    Avatar, Badge, Typography, Collapse, Grid, Chip, FormControl, InputLabel, Select
 } from '@mui/material';
 import {
     Save as SaveIcon,
@@ -13,8 +16,21 @@ import {
     Psychology as AIIcon,
     MoreVert as MoreIcon,
     FileCopy as FileIcon,
-    InsertDriveFile as NewDocIcon,
-    Print as PrintIcon
+    InsertDriveFile,
+    Print as PrintIcon,
+    Close as CloseIcon,
+    History as HistoryIcon,
+    CompareArrows as CompareIcon,
+    Bookmark as BookmarkIcon,
+    BookmarkBorder as BookmarkOutlineIcon,
+    FolderOpen as FolderIcon,
+    Add as AddIcon,
+    Person as PersonIcon,
+    Gavel as GavelIcon,
+    Refresh as RefreshIcon,
+    AccessTime as RecentIcon,
+    ExpandMore as ExpandMoreIcon,
+    ExpandLess as ExpandLessIcon
 } from '@mui/icons-material';
 import { useThemeMode } from '../../theme/ThemeProvider';
 import { useAuth } from '../../features/auth/AuthContext';
@@ -22,93 +38,209 @@ import { useAuth } from '../../features/auth/AuthContext';
 // Import components
 import TemplateSelectionDialog from './components/TemplateSelectionDialog';
 import AIAssistantPanel from './components/AIAssistantPanel';
+import EditorToolbar from './components/EditorToolbar';
+import DocumentEditor from './components/DocumentEditor';
 
 // Import services
 import documentGenerationService from '../../services/documentGenerationService';
 import smartEditorService from '../../services/smartEditorService';
+import caseService from '../../services/caseService';
+import clientService from '../../services/clientService';
 
-// Import ReactQuill
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+// Create document context
+const DocumentsContext = createContext();
+
+// Tabs for document editor
+const DocumentTab = ({ document, isActive, onActivate, onClose }) => {
+    const unsavedChanges = document.hasChanges;
+    return (
+        <Tab
+            label={
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Badge
+                        color="warning"
+                        variant="dot"
+                        invisible={!unsavedChanges}
+                        sx={{ mr: 1 }}
+                    >
+                        <InsertDriveFile fontSize="small" />
+                    </Badge>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            maxWidth: 120,
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                        }}
+                    >
+                        {document.title || 'Untitled'}
+                    </Typography>
+                </Box>
+            }
+            value={document.id}
+            onClick={onActivate}
+            sx={{ 
+                minHeight: 'unset',
+                py: 1,
+                opacity: isActive ? 1 : 0.7
+            }}
+            iconPosition="end"
+            icon={
+                <CloseIcon
+                    fontSize="small"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onClose(document.id);
+                    }}
+                    sx={{
+                        fontSize: '0.875rem',
+                        '&:hover': {
+                            color: 'error.main'
+                        }
+                    }}
+                />
+            }
+        />
+    );
+};
 
 const SmartEditorPage = () => {
     const { t } = useTranslation();
-    const { templateId, documentId: docId } = useParams();
+    const { templateId, documentId: urlDocumentId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
     const { isMobile, mode } = useThemeMode();
     const { user } = useAuth();
     const editorRef = useRef(null);
 
-    // State
+    // State for multiple documents handling
+    const [openDocuments, setOpenDocuments] = useState([]);
+    const [activeDocumentId, setActiveDocumentId] = useState(null);
+    const [showTemplateDialog, setShowTemplateDialog] = useState(false);
+
+    // UI state
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [template, setTemplate] = useState(null);
-    const [documentTitle, setDocumentTitle] = useState('');
-    const [documentContent, setDocumentContent] = useState('');
-    const [showTemplateDialog, setShowTemplateDialog] = useState(false);
     const [showAIPanel, setShowAIPanel] = useState(false);
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
     const [error, setError] = useState(null);
     const [notification, setNotification] = useState(null);
-    const [documentId, setDocumentId] = useState(docId || null);
-    const [hasChanges, setHasChanges] = useState(false);
-
-    // Quill editor modules configuration
-    const modules = {
-        toolbar: [
-            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-            [{ 'font': [] }],
-            [{ 'size': ['small', false, 'large', 'huge'] }],
-            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-            [{ 'color': [] }, { 'background': [] }],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'script': 'sub' }, { 'script': 'super' }],
-            [{ 'indent': '-1' }, { 'indent': '+1' }],
-            [{ 'align': [] }],
-            ['clean']
-        ],
-        history: { delay: 500, maxStack: 100, userOnly: true }
-    };
-
-    // Quill formats
-    const formats = [
-        'header', 'font', 'size', 'bold', 'italic', 'underline', 'strike',
-        'blockquote', 'list', 'bullet', 'indent', 'link', 'image',
-        'color', 'background', 'align', 'script'
-    ];
+    
+    // Document context panel
+    const [showDocumentContext, setShowDocumentContext] = useState(!isMobile);
+    const [contextLoading, setContextLoading] = useState(false);
+    const [caseData, setCaseData] = useState(null);
+    const [clientData, setClientData] = useState(null);
+    const [relatedDocuments, setRelatedDocuments] = useState([]);
+    
+    // Document history/recent
+    const [showHistory, setShowHistory] = useState(false);
+    const [recentDocuments, setRecentDocuments] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(false);
+    
+    // Document comparison
+    const [showCompareDialog, setShowCompareDialog] = useState(false);
+    const [compareDocumentId, setCompareDocumentId] = useState(null);
+    
+    // Document outline 
+    const [showOutline, setShowOutline] = useState(false);
+    const [documentOutline, setDocumentOutline] = useState([]);
+    
+    // Get active document
+    const activeDocument = openDocuments.find(doc => doc.id === activeDocumentId) || null;
 
     // Load document or template on mount
     useEffect(() => {
-        console.log("documentId : " + documentId);
-        if (documentId) {
-            loadExistingDocument(documentId);
+        if (urlDocumentId) {
+            loadExistingDocument(urlDocumentId);
         } else if (templateId) {
             loadTemplate(templateId);
-        } else if (!location.state?.skipTemplateDialog) {
+        } else if (!location.state?.skipTemplateDialog && openDocuments.length === 0) {
             setShowTemplateDialog(true);
         }
 
+        // Load recent documents
+        loadRecentDocuments();
+
         // Auto-save every minute if there are changes
         const autoSaveInterval = setInterval(() => {
-            if (hasChanges && documentId) handleAutoSave();
+            saveAllModifiedDocuments();
         }, 60000);
 
         return () => clearInterval(autoSaveInterval);
-    }, [templateId, documentId]);
+    }, [templateId, urlDocumentId]);
+
+    // Update document outline when content changes
+    useEffect(() => {
+        if (activeDocument && showOutline) {
+            generateDocumentOutline(activeDocument.content);
+        }
+    }, [activeDocument?.content, showOutline]);
+
+    // Load document context when active document changes
+    useEffect(() => {
+        if (activeDocument?.caseId) {
+            loadDocumentContext(activeDocument.caseId);
+        }
+    }, [activeDocumentId]);
+
+    // Auto-save all modified documents
+    const saveAllModifiedDocuments = async () => {
+        const modifiedDocs = openDocuments.filter(doc => doc.hasChanges && doc.id);
+        if (modifiedDocs.length === 0) return;
+
+        for (const doc of modifiedDocs) {
+            try {
+                await smartEditorService.updateDocument(doc.id, {
+                    content: doc.content,
+                    title: doc.title
+                });
+                
+                // Update document state to show it's saved
+                setOpenDocuments(prevDocs => 
+                    prevDocs.map(d => 
+                        d.id === doc.id ? { ...d, hasChanges: false } : d
+                    )
+                );
+                
+                console.log(`Document auto-saved: ${doc.title} (${doc.id})`);
+            } catch (error) {
+                console.error(`Error auto-saving document ${doc.id}:`, error);
+            }
+        }
+    };
 
     // Load existing document
     const loadExistingDocument = async (id) => {
-        console.log("loadExistingDocument : " + id)
+        // Check if document is already open
+        if (openDocuments.some(doc => doc.id === id)) {
+            setActiveDocumentId(id);
+            return;
+        }
+
         setLoading(true);
         setError(null);
         try {
             const doc = await smartEditorService.getDocumentById(id);
-            console.log(doc);
-            setDocumentId(id);
-            setDocumentTitle(doc.title);
-            setDocumentContent(doc.content);
-            setHasChanges(false);
+            
+            // Add document to open documents
+            const newDocument = {
+                id: id,
+                title: doc.title,
+                content: doc.content,
+                caseId: doc.case?.caseId,
+                caseName: doc.case?.title,
+                hasChanges: false,
+                createdBy: doc.uploadedBy,
+                lastModified: doc.lastModified
+            };
+            
+            setOpenDocuments(prev => [...prev, newDocument]);
+            setActiveDocumentId(id);
+            
+            // Add to recent documents
+            addToRecentDocuments(newDocument);
         } catch (error) {
             console.error('Error loading document:', error);
             setError(t('smartEditor.errors.documentLoad'));
@@ -123,9 +255,20 @@ const SmartEditorPage = () => {
         setError(null);
         try {
             const templateData = await documentGenerationService.getTemplateById(id);
-            setTemplate(templateData);
-            setDocumentTitle(templateData.name);
-            setDocumentContent(templateData.content || '');
+            
+            // Create a new document based on the template
+            const newDocument = {
+                id: `new-${Date.now()}`, // Temporary ID for new document
+                title: templateData.name,
+                content: templateData.content || '',
+                templateId: templateData.id,
+                templateName: templateData.name,
+                hasChanges: true,
+                isNew: true
+            };
+            
+            setOpenDocuments(prev => [...prev, newDocument]);
+            setActiveDocumentId(newDocument.id);
         } catch (error) {
             console.error('Error loading template:', error);
             setError(t('smartEditor.errors.templateLoad'));
@@ -136,21 +279,53 @@ const SmartEditorPage = () => {
 
     // Template selection handler
     const handleSelectTemplate = (template) => {
-        setTemplate(template);
-        setDocumentTitle(template.name);
-        setDocumentContent(template.content || '');
+        // Create a new document based on the template
+        const newDocument = {
+            id: `new-${Date.now()}`, // Temporary ID for new document
+            title: template.name,
+            content: template.content || '',
+            templateId: template.id,
+            templateName: template.name,
+            hasChanges: true,
+            isNew: true
+        };
+        
+        setOpenDocuments(prev => [...prev, newDocument]);
+        setActiveDocumentId(newDocument.id);
         setShowTemplateDialog(false);
     };
 
-    // Content change handler
+    // Update document content
     const handleContentChange = (content) => {
-        setDocumentContent(content);
-        setHasChanges(true);
+        if (!activeDocumentId) return;
+        
+        setOpenDocuments(prevDocs => 
+            prevDocs.map(doc => 
+                doc.id === activeDocumentId 
+                    ? { ...doc, content, hasChanges: true } 
+                    : doc
+            )
+        );
     };
 
-    // Save document
+    // Update document title
+    const handleTitleChange = (title) => {
+        if (!activeDocumentId) return;
+        
+        setOpenDocuments(prevDocs => 
+            prevDocs.map(doc => 
+                doc.id === activeDocumentId 
+                    ? { ...doc, title, hasChanges: true } 
+                    : doc
+            )
+        );
+    };
+
+    // Save active document
     const handleSaveDocument = async () => {
-        if (!documentTitle.trim()) {
+        if (!activeDocument) return;
+        
+        if (!activeDocument.title.trim()) {
             setNotification({
                 type: 'error',
                 message: t('smartEditor.errors.titleRequired')
@@ -161,29 +336,60 @@ const SmartEditorPage = () => {
         setSaving(true);
         try {
             let result;
+            let newId = activeDocument.id;
 
-            if (documentId) {
-                // Update existing document
-                result = await smartEditorService.updateDocument(documentId, {
-                    title: documentTitle,
-                    content: documentContent
-                });
-            } else {
+            // If it's a new document (not saved to server yet)
+            if (activeDocument.isNew) {
                 // Create new document
                 result = await smartEditorService.saveDocument({
-                    templateId: template?.id,
-                    title: documentTitle,
-                    content: documentContent,
+                    templateId: activeDocument.templateId,
+                    title: activeDocument.title,
+                    content: activeDocument.content,
                     lawFirmId: user?.lawFirmId,
-                    caseId: location.state?.caseId
+                    caseId: activeDocument.caseId || location.state?.caseId
                 });
-                setDocumentId(result.documentId);
+                newId = result.documentId;
+                
+                // Update URL without reloading page
+                navigate(`/documents/smarteditor/${newId}`, { replace: true });
+            } else {
+                // Update existing document
+                result = await smartEditorService.updateDocument(activeDocument.id, {
+                    title: activeDocument.title,
+                    content: activeDocument.content
+                });
             }
 
-            setHasChanges(false);
+            // Update document in state
+            setOpenDocuments(prevDocs => 
+                prevDocs.map(doc => 
+                    doc.id === activeDocumentId 
+                        ? { 
+                            ...doc, 
+                            id: newId, 
+                            hasChanges: false, 
+                            isNew: false,
+                            lastModified: new Date()
+                        } 
+                        : doc
+                )
+            );
+            
+            // If ID changed, update the active document ID
+            if (newId !== activeDocumentId) {
+                setActiveDocumentId(newId);
+            }
+
             setNotification({
                 type: 'success',
                 message: t('smartEditor.notifications.saved')
+            });
+            
+            // Add to recent documents
+            addToRecentDocuments({
+                id: newId,
+                title: activeDocument.title,
+                lastModified: new Date()
             });
         } catch (error) {
             console.error('Error saving document:', error);
@@ -196,33 +402,19 @@ const SmartEditorPage = () => {
         }
     };
 
-    // Auto-save document
-    const handleAutoSave = async () => {
-        if (!documentId || !hasChanges) return;
-
-        try {
-            await smartEditorService.updateDocument(documentId, {
-                content: documentContent,
-                title: documentTitle
-            });
-            setHasChanges(false);
-            console.log('Document auto-saved');
-        } catch (error) {
-            console.error('Error auto-saving:', error);
-        }
-    };
-
     // Export document
     const handleExportDocument = async (format = 'pdf') => {
+        if (!activeDocument) return;
+
         try {
             // Save any unsaved changes first
-            if (hasChanges) await handleSaveDocument();
+            if (activeDocument.hasChanges) await handleSaveDocument();
 
             // Export document
             const result = await smartEditorService.exportDocument({
-                documentId,
-                content: documentContent, // Include content for direct export
-                title: documentTitle,
+                documentId: activeDocument.isNew ? null : activeDocument.id,
+                content: activeDocument.content,
+                title: activeDocument.title,
                 format
             });
 
@@ -231,7 +423,7 @@ const SmartEditorPage = () => {
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = `${documentTitle}.${format}`;
+            a.download = `${activeDocument.title}.${format}`;
             document.body.appendChild(a);
             a.click();
 
@@ -254,7 +446,7 @@ const SmartEditorPage = () => {
 
     // Print document
     const handlePrintDocument = () => {
-        if (!editorRef.current) return;
+        if (!activeDocument || !editorRef.current) return;
 
         const content = editorRef.current.getEditor().root.innerHTML;
         const printWindow = window.open('', '_blank');
@@ -262,7 +454,7 @@ const SmartEditorPage = () => {
         printWindow.document.write(`
             <html>
             <head>
-                <title>${documentTitle || 'Document'}</title>
+                <title>${activeDocument.title || 'Document'}</title>
                 <style>
                     body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; }
                     .document { max-width: 8.5in; margin: 0 auto; }
@@ -283,32 +475,23 @@ const SmartEditorPage = () => {
         }, 250);
     };
 
-    // Create new document
+    // Create new document from template
     const handleCreateNewDocument = () => {
-        if (hasChanges && !window.confirm(t('smartEditor.unsavedChanges'))) {
-            return;
-        }
-
-        setTemplate(null);
-        setDocumentTitle('');
-        setDocumentContent('');
-        setDocumentId(null);
-        setHasChanges(false);
         setShowTemplateDialog(true);
     };
 
-    // Handle application of AI suggestions
+    // Apply AI suggestion
     const handleApplyAISuggestion = (suggestion) => {
-        if (!editorRef.current) return;
+        if (!activeDocument || !editorRef.current) return;
 
         const editor = editorRef.current.getEditor();
 
         // For translations or other full document replacements
-        if (suggestion.original.length > 100 && suggestion.original.trim() === documentContent.trim()) {
+        if (suggestion.original.length > 100 && suggestion.original.trim() === activeDocument.content.trim()) {
             // Replace entire document content
             editor.deleteText(0, editor.getLength());
             editor.insertText(0, suggestion.suggested);
-            setHasChanges(true);
+            handleContentChange(suggestion.suggested);
             return;
         }
 
@@ -320,12 +503,12 @@ const SmartEditorPage = () => {
             if (index !== -1) {
                 editor.deleteText(index, suggestion.original.length);
                 editor.insertText(index, suggestion.suggested);
-                setHasChanges(true);
+                handleContentChange(editor.getHTML());
             } else {
                 // Fallback for HTML content - replace everything
                 editor.deleteText(0, editor.getLength());
                 editor.insertText(0, suggestion.suggested);
-                setHasChanges(true);
+                handleContentChange(suggestion.suggested);
             }
         } catch (error) {
             console.error("Error applying suggestion:", error);
@@ -334,10 +517,189 @@ const SmartEditorPage = () => {
 
     // Navigate back with confirmation if needed
     const handleNavBack = () => {
-        if (hasChanges && !window.confirm(t('smartEditor.unsavedChanges'))) {
+        // Check for unsaved changes
+        const hasUnsavedChanges = openDocuments.some(doc => doc.hasChanges);
+        
+        if (hasUnsavedChanges && !window.confirm(t('smartEditor.unsavedChanges'))) {
             return;
         }
+        
         navigate('/documents');
+    };
+
+    // Close document tab
+    const handleCloseDocument = (documentId) => {
+        // Get document to check if it has unsaved changes
+        const docToClose = openDocuments.find(doc => doc.id === documentId);
+        
+        if (docToClose?.hasChanges && !window.confirm(t('smartEditor.closeUnsaved'))) {
+            return;
+        }
+        
+        // Remove document from open documents
+        setOpenDocuments(prev => prev.filter(doc => doc.id !== documentId));
+        
+        // Update active document if needed
+        if (activeDocumentId === documentId) {
+            const remainingDocs = openDocuments.filter(doc => doc.id !== documentId);
+            if (remainingDocs.length > 0) {
+                setActiveDocumentId(remainingDocs[0].id);
+            } else {
+                setActiveDocumentId(null);
+            }
+        }
+    };
+
+    // Activate document tab
+    const handleActivateDocument = (documentId) => {
+        setActiveDocumentId(documentId);
+    };
+
+    // Load recent documents
+    const loadRecentDocuments = async () => {
+        setHistoryLoading(true);
+        try {
+            // Try to load from local storage first
+            const storedRecent = localStorage.getItem('recentDocuments');
+            if (storedRecent) {
+                setRecentDocuments(JSON.parse(storedRecent));
+            }
+            
+            // Then load from server
+            const recentDocs = await smartEditorService.getRecentDocuments();
+            if (recentDocs && recentDocs.length > 0) {
+                setRecentDocuments(recentDocs);
+                // Update local storage
+                localStorage.setItem('recentDocuments', JSON.stringify(recentDocs));
+            }
+        } catch (error) {
+            console.error('Error loading recent documents:', error);
+        } finally {
+            setHistoryLoading(false);
+        }
+    };
+
+    // Add document to recent documents
+    const addToRecentDocuments = (document) => {
+        const newRecent = [
+            {
+                id: document.id,
+                title: document.title,
+                lastModified: document.lastModified || new Date(),
+                caseId: document.caseId,
+                caseName: document.caseName
+            },
+            // Keep existing documents but remove this one if it already exists
+            ...recentDocuments.filter(doc => doc.id !== document.id)
+        ].slice(0, 10); // Keep only 10 most recent
+        
+        setRecentDocuments(newRecent);
+        // Update local storage
+        localStorage.setItem('recentDocuments', JSON.stringify(newRecent));
+    };
+
+    // Load document context (case, client, related documents)
+    const loadDocumentContext = async (caseId) => {
+        if (!caseId) return;
+        
+        setContextLoading(true);
+        try {
+            // Load case data
+            const caseData = await caseService.getCaseById(caseId);
+            setCaseData(caseData);
+            
+            // Load client data if available
+            if (caseData.clients && caseData.clients.length > 0) {
+                const clientId = caseData.clients[0].clientId;
+                const clientData = await clientService.getClientById(clientId);
+                setClientData(clientData);
+            }
+            
+            // Load related documents
+            const documents = await caseService.getCaseDocuments(caseId);
+            setRelatedDocuments(documents);
+        } catch (error) {
+            console.error('Error loading document context:', error);
+        } finally {
+            setContextLoading(false);
+        }
+    };
+
+    // Generate document outline
+    const generateDocumentOutline = (content) => {
+        if (!content) return [];
+        
+        // Extract headings from the content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+        
+        const headings = [];
+        const headingTags = tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        
+        headingTags.forEach((heading, index) => {
+            const level = parseInt(heading.tagName.substring(1));
+            headings.push({
+                id: `heading-${index}`,
+                text: heading.textContent,
+                level: level
+            });
+        });
+        
+        setDocumentOutline(headings);
+    };
+
+    // Jump to heading in document
+    const jumpToHeading = (index) => {
+        if (!editorRef.current) return;
+        
+        const editor = editorRef.current.getEditor();
+        const content = editor.getText();
+        
+        const heading = documentOutline[index];
+        if (!heading) return;
+        
+        // Find position of this heading in text
+        const text = editor.getText();
+        const position = text.indexOf(heading.text);
+        
+        if (position >= 0) {
+            // Set focus and selection
+            editor.focus();
+            editor.setSelection(position, heading.text.length);
+            
+            // Scroll to position
+            const editorBounds = editor.container.getBoundingClientRect();
+            const scrollContainer = editor.container.closest('.ql-container');
+            if (scrollContainer) {
+                scrollContainer.scrollTop = position * (editorBounds.height / editor.getLength());
+            }
+        }
+    };
+
+    // Compare documents
+    const handleCompareDocuments = async () => {
+        if (!compareDocumentId || !activeDocumentId) return;
+        
+        try {
+            // Get the document to compare
+            const docToCompare = await smartEditorService.getDocumentById(compareDocumentId);
+            
+            // Create a diff and display it
+            // This would require a diff library implementation
+            // For now, we'll just show a notification
+            setNotification({
+                type: 'info',
+                message: t('smartEditor.notImplemented')
+            });
+            
+            setShowCompareDialog(false);
+        } catch (error) {
+            console.error('Error comparing documents:', error);
+            setNotification({
+                type: 'error',
+                message: t('smartEditor.errors.compareDocuments')
+            });
+        }
     };
 
     // Menu handlers
@@ -356,196 +718,668 @@ const SmartEditorPage = () => {
         );
     }
 
-    return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-            {/* Top App Bar */}
-            <AppBar position="static" color="default" elevation={1}>
-                <Toolbar variant="dense">
-                    <IconButton edge="start" color="inherit" onClick={handleNavBack} sx={{ mr: 1 }}>
-                        <BackIcon />
-                    </IconButton>
+    // Render document tabs
+    const renderDocumentTabs = () => (
+        <Box sx={{ 
+            display: 'flex', 
+            overflow: 'auto', 
+            borderBottom: 1, 
+            borderColor: 'divider',
+            '&::-webkit-scrollbar': {
+                height: '8px'
+            },
+            '&::-webkit-scrollbar-track': {
+                backgroundColor: 'rgba(0,0,0,0.05)'
+            },
+            '&::-webkit-scrollbar-thumb': {
+                backgroundColor: 'rgba(0,0,0,0.2)',
+                borderRadius: '4px'
+            }
+        }}>
+            <Tabs
+                value={activeDocumentId || false}
+                variant="scrollable"
+                scrollButtons="auto"
+                sx={{ 
+                    minHeight: 48,
+                    flex: 1,
+                    '& .MuiTabs-indicator': {
+                        backgroundColor: 'primary.main'
+                    }
+                }}
+            >
+                {openDocuments.map(doc => (
+                    <DocumentTab
+                        key={doc.id}
+                        document={doc}
+                        isActive={doc.id === activeDocumentId}
+                        onActivate={() => handleActivateDocument(doc.id)}
+                        onClose={handleCloseDocument}
+                    />
+                ))}
+            </Tabs>
+            
+            <Button
+                size="small"
+                startIcon={<AddIcon />}
+                onClick={handleCreateNewDocument}
+                sx={{ 
+                    minWidth: 'auto',
+                    m: 0.5
+                }}
+            >
+                {isMobile ? '' : t('smartEditor.newTab')}
+            </Button>
+        </Box>
+    );
 
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Tooltip title={t('smartEditor.newDocument')}>
-                            <IconButton color="inherit" onClick={handleCreateNewDocument} sx={{ mr: 1 }}>
-                                <NewDocIcon />
+    // Render main content
+    const renderMainContent = () => (
+        <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
+            {/* Document Context Panel - Left Sidebar */}
+            {showDocumentContext && (
+                <Paper
+                    elevation={0}
+                    sx={{
+                        width: 300,
+                        borderRight: 1,
+                        borderColor: 'divider',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: 'hidden'
+                    }}
+                >
+                    <Box sx={{ 
+                        p: 2, 
+                        borderBottom: 1, 
+                        borderColor: 'divider',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                    }}>
+                        <Typography variant="h6">{t('smartEditor.documentContext')}</Typography>
+                        {isMobile && (
+                            <IconButton size="small" onClick={() => setShowDocumentContext(false)}>
+                                <CloseIcon fontSize="small" />
                             </IconButton>
-                        </Tooltip>
-
-                        <TextField
-                            value={documentTitle}
-                            onChange={(e) => {
-                                setDocumentTitle(e.target.value);
-                                setHasChanges(true);
-                            }}
-                            variant="standard"
-                            placeholder={t('smartEditor.untitledDocument')}
-                            InputProps={{
-                                disableUnderline: true,
-                                sx: { fontSize: '1.2rem', fontWeight: 500 }
-                            }}
-                        />
+                        )}
                     </Box>
 
-                    <Box sx={{ flexGrow: 1 }} />
+                    <Box sx={{ overflow: 'auto', flexGrow: 1 }}>
+                        {contextLoading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+                                <CircularProgress size={24} />
+                            </Box>
+                        ) : (
+                            <>
+                                {/* Case Information */}
+                                <List disablePadding>
+                                    <ListItem>
+                                        <ListItemIcon><GavelIcon color="primary" /></ListItemIcon>
+                                        <ListItemText
+                                            primary={t('smartEditor.caseInformation')}
+                                            secondary={caseData?.title || t('smartEditor.noCaseAssociated')}
+                                        />
+                                    </ListItem>
+                                    
+                                    {caseData && (
+                                        <Collapse in={true}>
+                                            <List disablePadding dense>
+                                                <ListItem sx={{ pl: 4 }}>
+                                                    <ListItemText 
+                                                        primary={t('smartEditor.caseNumber')}
+                                                        secondary={caseData.caseNumber}
+                                                        primaryTypographyProps={{ variant: 'caption' }}
+                                                    />
+                                                </ListItem>
+                                                <ListItem sx={{ pl: 4 }}>
+                                                    <ListItemText 
+                                                        primary={t('smartEditor.caseStatus')}
+                                                        secondary={caseData.status}
+                                                        primaryTypographyProps={{ variant: 'caption' }}
+                                                    />
+                                                </ListItem>
+                                            </List>
+                                        </Collapse>
+                                    )}
+                                </List>
+                                
+                                <Divider />
+                                
+                                {/* Client Information */}
+                                <List disablePadding>
+                                    <ListItem>
+                                        <ListItemIcon><PersonIcon color="primary" /></ListItemIcon>
+                                        <ListItemText
+                                            primary={t('smartEditor.clientInformation')}
+                                            secondary={
+                                                clientData 
+                                                    ? `${clientData.firstName} ${clientData.lastName}`
+                                                    : t('smartEditor.noClientAssociated')
+                                            }
+                                        />
+                                    </ListItem>
+                                    
+                                    {clientData && (
+                                        <Collapse in={true}>
+                                            <List disablePadding dense>
+                                                <ListItem sx={{ pl: 4 }}>
+                                                    <ListItemText 
+                                                        primary={t('smartEditor.email')}
+                                                        secondary={clientData.email}
+                                                        primaryTypographyProps={{ variant: 'caption' }}
+                                                    />
+                                                </ListItem>
+                                                <ListItem sx={{ pl: 4 }}>
+                                                    <ListItemText 
+                                                        primary={t('smartEditor.phone')}
+                                                        secondary={clientData.phone}
+                                                        primaryTypographyProps={{ variant: 'caption' }}
+                                                    />
+                                                </ListItem>
+                                            </List>
+                                        </Collapse>
+                                    )}
+                                </List>
+                                
+                                <Divider />
+                                
+                                {/* Document Outline */}
+                                <List disablePadding>
+                                    <ListItem button onClick={() => setShowOutline(!showOutline)}>
+                                        <ListItemIcon><BookmarkIcon color="primary" /></ListItemIcon>
+                                        <ListItemText primary={t('smartEditor.documentOutline')} />
+                                        {showOutline ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                    </ListItem>
+                                    
+                                    {showOutline && (
+                                        <Collapse in={true}>
+                                            <List disablePadding dense>
+                                                {documentOutline.length > 0 ? (
+                                                    documentOutline.map((heading, index) => (
+                                                        <ListItem 
+                                                            key={heading.id}
+                                                            button
+                                                            onClick={() => jumpToHeading(index)}
+                                                            sx={{ 
+                                                                pl: 1 + heading.level,
+                                                                py: 0.5
+                                                            }}
+                                                        >
+                                                            <ListItemIcon sx={{ minWidth: 24 }}>
+                                                                <BookmarkOutlineIcon 
+                                                                    fontSize="small" 
+                                                                    sx={{ fontSize: `${Math.max(16 - heading.level, 12)}px` }}
+                                                                />
+                                                            </ListItemIcon>
+                                                            <ListItemText 
+                                                                primary={heading.text}
+                                                                primaryTypographyProps={{ 
+                                                                    variant: 'caption',
+                                                                    sx: { 
+                                                                        fontWeight: heading.level === 1 ? 'bold' : 'normal',
+                                                                        fontSize: `${Math.max(14 - heading.level, 11)}px`
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </ListItem>
+                                                    ))
+                                                ) : (
+                                                    <ListItem sx={{ pl: 4 }}>
+                                                        <ListItemText 
+                                                            primary={t('smartEditor.noHeadings')}
+                                                            primaryTypographyProps={{ 
+                                                                variant: 'caption',
+                                                                color: 'text.secondary' 
+                                                            }}
+                                                        />
+                                                    </ListItem>
+                                                )}
+                                            </List>
+                                        </Collapse>
+                                    )}
+                                </List>
+                                
+                                <Divider />
+                                
+                                {/* Related Documents */}
+                                <List disablePadding>
+                                    <ListItem>
+                                        <ListItemIcon><FolderIcon color="primary" /></ListItemIcon>
+                                        <ListItemText primary={t('smartEditor.relatedDocuments')} />
+                                    </ListItem>
+                                    
+                                    {relatedDocuments.length > 0 ? (
+                                        relatedDocuments.slice(0, 5).map(doc => (
+                                            <ListItem 
+                                                key={doc.documentId}
+                                                button
+                                                onClick={() => loadExistingDocument(doc.documentId)}
+                                                sx={{ pl: 4 }}
+                                                dense
+                                            >
+                                                <ListItemIcon sx={{ minWidth: 24 }}>
+                                                    <InsertDriveFile fontSize="small" />
+                                                </ListItemIcon>
+                                                <ListItemText 
+                                                    primary={doc.title}
+                                                    primaryTypographyProps={{ 
+                                                        variant: 'caption',
+                                                        noWrap: true
+                                                    }}
+                                                />
+                                            </ListItem>
+                                        ))
+                                    ) : (
+                                        <ListItem sx={{ pl: 4 }}>
+                                            <ListItemText 
+                                                primary={t('smartEditor.noRelatedDocuments')}
+                                                primaryTypographyProps={{ 
+                                                    variant: 'caption',
+                                                    color: 'text.secondary' 
+                                                }}
+                                            />
+                                        </ListItem>
+                                    )}
+                                </List>
+                            </>
+                        )}
+                    </Box>
+                </Paper>
+            )}
 
-                    <Box sx={{ display: 'flex', gap: 1 }}>
+            {/* Document Editor - Center */}
+            <Box sx={{ flexGrow: 1, overflow: 'auto', p: 2, backgroundColor: 'background.default' }}>
+                {error && (
+                    <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+                )}
+
+                {activeDocument ? (
+                    <>
+                        {/* Breadcrumb Navigation */}
+                        <Breadcrumbs sx={{ mb: 2 }}>
+                            <Link color="inherit" onClick={handleNavBack} sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                                <FolderIcon fontSize="small" sx={{ mr: 0.5 }} />
+                                {t('smartEditor.documents')}
+                            </Link>
+                            {activeDocument.caseName && (
+                                <Link color="inherit" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <GavelIcon fontSize="small" sx={{ mr: 0.5 }} />
+                                    {activeDocument.caseName}
+                                </Link>
+                            )}
+                            <Typography color="text.primary">{activeDocument.title || t('smartEditor.untitledDocument')}</Typography>
+                        </Breadcrumbs>
+
+                        {/* Editor Toolbar */}
+                        <EditorToolbar editorRef={editorRef} />
+
+                        {/* Document Editor */}
+                        <Paper
+                            elevation={2}
+                            sx={{
+                                maxWidth: '8.5in',
+                                minHeight: '11in',
+                                mx: 'auto',
+                                backgroundColor: 'background.paper',
+                                boxShadow: 3
+                            }}
+                        >
+                            <DocumentEditor
+                                ref={editorRef}
+                                content={activeDocument.content}
+                                onChange={handleContentChange}
+                            />
+                        </Paper>
+                    </>
+                ) : (
+                    <Box sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        height: '80%'
+                    }}>
+                        <InsertDriveFile sx={{ fontSize: 64, color: 'action.disabled', mb: 2 }} />
+                        <Typography variant="h6" color="text.secondary">
+                            {t('smartEditor.noDocumentOpen')}
+                        </Typography>
                         <Button
                             variant="contained"
                             color="primary"
-                            startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
-                            onClick={handleSaveDocument}
-                            disabled={saving || !hasChanges}
+                            startIcon={<AddIcon />}
+                            onClick={handleCreateNewDocument}
+                            sx={{ mt: 2 }}
                         >
-                            {saving ? t('common.saving') : documentId ? t('common.update') : t('common.save')}
+                            {t('smartEditor.createNew')}
                         </Button>
-
-                        <Tooltip title={t('smartEditor.aiAssistant')}>
-                            <IconButton
-                                color="secondary"
-                                onClick={() => setShowAIPanel(!showAIPanel)}
-                                sx={{
-                                    bgcolor: showAIPanel ? 'action.selected' : 'transparent'
-                                }}
-                            >
-                                <AIIcon />
-                            </IconButton>
-                        </Tooltip>
-
-                        <IconButton onClick={openMenu}>
-                            <MoreIcon />
-                        </IconButton>
+                        
+                        {recentDocuments.length > 0 && (
+                            <Box sx={{ mt: 4, width: '100%', maxWidth: 500 }}>
+                                <Typography variant="subtitle1" gutterBottom>
+                                    {t('smartEditor.recentDocuments')}:
+                                </Typography>
+                                <Grid container spacing={1}>
+                                    {recentDocuments.slice(0, 6).map(doc => (
+                                        <Grid item xs={12} sm={6} key={doc.id}>
+                                            <Paper
+                                                elevation={1}
+                                                sx={{
+                                                    p: 1,
+                                                    cursor: 'pointer',
+                                                    '&:hover': {
+                                                        bgcolor: 'action.hover'
+                                                    }
+                                                }}
+                                                onClick={() => loadExistingDocument(doc.id)}
+                                            >
+                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <InsertDriveFile fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
+                                                    <Typography variant="body2" noWrap>{doc.title}</Typography>
+                                                </Box>
+                                                <Typography variant="caption" color="text.secondary">
+                                                    {new Date(doc.lastModified).toLocaleDateString()}
+                                                </Typography>
+                                            </Paper>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Box>
+                        )}
                     </Box>
-                </Toolbar>
-            </AppBar>
-
-            {/* Main Content Area */}
-            <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
-                {/* Document Editor */}
-                <Box sx={{ flexGrow: 1, overflow: 'auto', p: 2, backgroundColor: 'background.default' }}>
-                    {error && (
-                        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
-                    )}
-
-                    <Paper
-                        elevation={2}
-                        sx={{
-                            maxWidth: '8.5in',
-                            minHeight: '11in',
-                            mx: 'auto',
-                            backgroundColor: 'background.paper',
-                            boxShadow: 3,
-                            '& .ql-container': {
-                                borderBottom: 'none',
-                                borderLeft: 'none',
-                                borderRight: 'none',
-                                fontFamily: 'Georgia, Times New Roman, serif',
-                                fontSize: '12pt'
-                            },
-                            '& .ql-toolbar': {
-                                borderTop: 'none',
-                                borderLeft: 'none',
-                                borderRight: 'none',
-                                borderBottom: '1px solid',
-                                borderColor: 'divider'
-                            },
-                            '& .ql-editor': {
-                                minHeight: '10in',
-                                padding: '0.5in',
-                                color: mode === 'dark' ? '#e0e0e0' : '#333',
-                            },
-                            '& .ql-toolbar button, & .ql-toolbar .ql-picker': {
-                                color: mode === 'dark' ? '#ffffff' : 'inherit',
-                            },
-                            '& .ql-toolbar .ql-stroke': {
-                                stroke: mode === 'dark' ? '#ffffff' : 'currentColor',
-                            },
-                            '& .ql-toolbar .ql-fill': {
-                                fill: mode === 'dark' ? '#ffffff' : 'currentColor',
-                            },
-                            '& .ql-toolbar .ql-picker-options': {
-                                backgroundColor: mode === 'dark' ? '#333' : '#fff',
-                            }
-                        }}
-                    >
-                        <ReactQuill
-                            ref={editorRef}
-                            theme="snow"
-                            value={documentContent}
-                            onChange={handleContentChange}
-                            modules={modules}
-                            formats={formats}
-                        />
-                    </Paper>
-                </Box>
-
-                {/* AI Assistant Panel */}
-                {showAIPanel && (
-                    <Paper
-                        sx={{
-                            width: 550,
-                            maxWidth: isMobile ? '100%' : 550,
-                            overflowY: 'auto',
-                            borderLeft: 1,
-                            borderColor: 'divider'
-                        }}
-                    >
-                        <AIAssistantPanel
-                            documentContent={documentContent}
-                            onApplySuggestion={handleApplyAISuggestion}
-                            onClose={() => setShowAIPanel(false)}
-                        />
-                    </Paper>
                 )}
             </Box>
 
-            {/* Template Selection Dialog */}
-            <TemplateSelectionDialog
-                open={showTemplateDialog}
-                onClose={() => setShowTemplateDialog(false)}
-                onSelect={handleSelectTemplate}
-            />
-
-            {/* Document Options Menu */}
-            <Menu
-                anchorEl={menuAnchorEl}
-                open={Boolean(menuAnchorEl)}
-                onClose={closeMenu}
-            >
-                <MenuItem onClick={() => { setShowTemplateDialog(true); closeMenu(); }}>
-                    <FileIcon fontSize="small" sx={{ mr: 1 }} />
-                    {t('smartEditor.menu.selectTemplate')}
-                </MenuItem>
-                <MenuItem onClick={() => { handlePrintDocument(); closeMenu(); }}>
-                    <PrintIcon fontSize="small" sx={{ mr: 1 }} />
-                    {t('smartEditor.menu.print')}
-                </MenuItem>
-                <Divider />
-                <MenuItem onClick={() => { handleExportDocument('docx'); closeMenu(); }}>
-                    {t('smartEditor.menu.exportWord')}
-                </MenuItem>
-                <MenuItem onClick={() => { handleExportDocument('pdf'); closeMenu(); }}>
-                    {t('smartEditor.menu.exportPdf')}
-                </MenuItem>
-                <MenuItem onClick={() => { handleExportDocument('html'); closeMenu(); }}>
-                    {t('smartEditor.menu.exportHtml')}
-                </MenuItem>
-            </Menu>
-
-            {/* Notification Snackbar */}
-            <Snackbar
-                open={!!notification}
-                autoHideDuration={6000}
-                onClose={handleCloseNotification}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            >
-                {notification && (
-                    <Alert onClose={handleCloseNotification} severity={notification.type} sx={{ width: '100%' }}>
-                        {notification.message}
-                    </Alert>
-                )}
-            </Snackbar>
+            {/* AI Assistant Panel - Right */}
+            {showAIPanel && (
+                <Paper
+                    sx={{
+                        width: 550,
+                        maxWidth: isMobile ? '100%' : 550,
+                        overflowY: 'auto',
+                        borderLeft: 1,
+                        borderColor: 'divider'
+                    }}
+                >
+                    <AIAssistantPanel
+                        documentContent={activeDocument?.content || ''}
+                        onApplySuggestion={handleApplyAISuggestion}
+                        onClose={() => setShowAIPanel(false)}
+                    />
+                </Paper>
+            )}
         </Box>
+    );
+
+    return (
+        <DocumentsContext.Provider value={{ 
+            openDocuments, 
+            activeDocument, 
+            setActiveDocumentId,
+            handleContentChange,
+            handleTitleChange
+        }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+                {/* Top App Bar */}
+                <AppBar position="static" color="default" elevation={1}>
+                    <Toolbar variant="dense">
+                        <IconButton edge="start" color="inherit" onClick={handleNavBack} sx={{ mr: 1 }}>
+                            <BackIcon />
+                        </IconButton>
+
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            {activeDocument && (
+                                <TextField
+                                    value={activeDocument.title}
+                                    onChange={(e) => handleTitleChange(e.target.value)}
+                                    variant="standard"
+                                    placeholder={t('smartEditor.untitledDocument')}
+                                    InputProps={{
+                                        disableUnderline: true,
+                                        sx: { fontSize: '1.2rem', fontWeight: 500 }
+                                    }}
+                                />
+                            )}
+                        </Box>
+
+                        <Box sx={{ flexGrow: 1 }} />
+
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            {activeDocument && (
+                                <>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
+                                        onClick={handleSaveDocument}
+                                        disabled={saving || !activeDocument.hasChanges}
+                                    >
+                                        {saving ? t('common.saving') : 
+                                            activeDocument.isNew ? t('common.save') : t('common.update')}
+                                    </Button>
+
+                                    <Tooltip title={t('smartEditor.documentContext')}>
+                                        <IconButton
+                                            color="inherit"
+                                            onClick={() => setShowDocumentContext(!showDocumentContext)}
+                                            sx={{
+                                                bgcolor: showDocumentContext ? 'action.selected' : 'transparent'
+                                            }}
+                                        >
+                                            <FolderIcon />
+                                        </IconButton>
+                                    </Tooltip>
+
+                                    <Tooltip title={t('smartEditor.aiAssistant')}>
+                                        <IconButton
+                                            color="secondary"
+                                            onClick={() => setShowAIPanel(!showAIPanel)}
+                                            sx={{
+                                                bgcolor: showAIPanel ? 'action.selected' : 'transparent'
+                                            }}
+                                        >
+                                            <AIIcon />
+                                        </IconButton>
+                                    </Tooltip>
+
+                                    <Tooltip title={t('smartEditor.documentHistory')}>
+                                        <IconButton
+                                            color="inherit"
+                                            onClick={() => setShowHistory(!showHistory)}
+                                        >
+                                            <HistoryIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </>
+                            )}
+
+                            <IconButton onClick={openMenu}>
+                                <MoreIcon />
+                            </IconButton>
+                        </Box>
+                    </Toolbar>
+                </AppBar>
+
+                {/* Document Tabs */}
+                {renderDocumentTabs()}
+
+                {/* Main Content */}
+                {renderMainContent()}
+
+                {/* Template Selection Dialog */}
+                <TemplateSelectionDialog
+                    open={showTemplateDialog}
+                    onClose={() => setShowTemplateDialog(false)}
+                    onSelect={handleSelectTemplate}
+                />
+
+                {/* Document History Drawer */}
+                <Drawer
+                    anchor="right"
+                    open={showHistory}
+                    onClose={() => setShowHistory(false)}
+                >
+                    <Box sx={{ width: 350, p: 2 }}>
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center',
+                            mb: 2
+                        }}>
+                            <Typography variant="h6">{t('smartEditor.recentDocuments')}</Typography>
+                            <IconButton size="small" onClick={() => setShowHistory(false)}>
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </Box>
+                        
+                        {historyLoading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                                <CircularProgress />
+                            </Box>
+                        ) : (
+                            <List>
+                                {recentDocuments.length > 0 ? (
+                                    recentDocuments.map(doc => (
+                                        <ListItem 
+                                            key={doc.id}
+                                            button
+                                            onClick={() => {
+                                                loadExistingDocument(doc.id);
+                                                setShowHistory(false);
+                                            }}
+                                        >
+                                            <ListItemIcon>
+                                                <InsertDriveFile />
+                                            </ListItemIcon>
+                                            <ListItemText 
+                                                primary={doc.title}
+                                                secondary={
+                                                    <>
+                                                        {doc.caseName && (
+                                                            <Chip 
+                                                                label={doc.caseName} 
+                                                                size="small" 
+                                                                variant="outlined"
+                                                                sx={{ mr: 1 }}
+                                                            />
+                                                        )}
+                                                        {new Date(doc.lastModified).toLocaleDateString()}
+                                                    </>
+                                                }
+                                            />
+                                        </ListItem>
+                                    ))
+                                ) : (
+                                    <Typography color="text.secondary">
+                                        {t('smartEditor.noRecentDocuments')}
+                                    </Typography>
+                                )}
+                            </List>
+                        )}
+                        
+                        <Button
+                            startIcon={<RefreshIcon />}
+                            onClick={loadRecentDocuments}
+                            fullWidth
+                            sx={{ mt: 2 }}
+                        >
+                            {t('smartEditor.refreshHistory')}
+                        </Button>
+                    </Box>
+                </Drawer>
+
+                {/* Document Compare Dialog */}
+                <Dialog
+                    open={showCompareDialog}
+                    onClose={() => setShowCompareDialog(false)}
+                    maxWidth="md"
+                    fullWidth
+                >
+                    <DialogTitle>{t('smartEditor.compareDocuments')}</DialogTitle>
+                    <DialogContent dividers>
+                        <Typography paragraph>
+                            {t('smartEditor.selectDocumentToCompare')}
+                        </Typography>
+                        
+                        <Box sx={{ my: 2 }}>
+                            <FormControl fullWidth>
+                                <InputLabel>{t('smartEditor.selectDocument')}</InputLabel>
+                                <Select
+                                    value={compareDocumentId || ''}
+                                    onChange={(e) => setCompareDocumentId(e.target.value)}
+                                    label={t('smartEditor.selectDocument')}
+                                >
+                                    {recentDocuments
+                                        .filter(doc => doc.id !== activeDocumentId)
+                                        .map(doc => (
+                                            <MenuItem key={doc.id} value={doc.id}>
+                                                {doc.title}
+                                            </MenuItem>
+                                        ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setShowCompareDialog(false)}>
+                            {t('common.cancel')}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleCompareDocuments}
+                            disabled={!compareDocumentId}
+                        >
+                            {t('smartEditor.compare')}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* Document Options Menu */}
+                <Menu
+                    anchorEl={menuAnchorEl}
+                    open={Boolean(menuAnchorEl)}
+                    onClose={closeMenu}
+                >
+                    <MenuItem onClick={() => { setShowTemplateDialog(true); closeMenu(); }}>
+                        <FileIcon fontSize="small" sx={{ mr: 1 }} />
+                        {t('smartEditor.menu.selectTemplate')}
+                    </MenuItem>
+                    <MenuItem onClick={() => { handlePrintDocument(); closeMenu(); }}>
+                        <PrintIcon fontSize="small" sx={{ mr: 1 }} />
+                        {t('smartEditor.menu.print')}
+                    </MenuItem>
+                    <MenuItem onClick={() => { setShowCompareDialog(true); closeMenu(); }}>
+                        <CompareIcon fontSize="small" sx={{ mr: 1 }} />
+                        {t('smartEditor.menu.compareDocuments')}
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem onClick={() => { handleExportDocument('docx'); closeMenu(); }}>
+                        {t('smartEditor.menu.exportWord')}
+                    </MenuItem>
+                    <MenuItem onClick={() => { handleExportDocument('pdf'); closeMenu(); }}>
+                        {t('smartEditor.menu.exportPdf')}
+                    </MenuItem>
+                    <MenuItem onClick={() => { handleExportDocument('html'); closeMenu(); }}>
+                        {t('smartEditor.menu.exportHtml')}
+                    </MenuItem>
+                </Menu>
+
+                {/* Notification Snackbar */}
+                <Snackbar
+                    open={!!notification}
+                    autoHideDuration={6000}
+                    onClose={handleCloseNotification}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                >
+                    {notification && (
+                        <Alert onClose={handleCloseNotification} severity={notification.type} sx={{ width: '100%' }}>
+                            {notification.message}
+                        </Alert>
+                    )}
+                </Snackbar>
+            </Box>
+        </DocumentsContext.Provider>
     );
 };
 
