@@ -278,10 +278,22 @@ const SmartEditorPage = () => {
     };
 
     // Template selection handler
+
     const handleSelectTemplate = (template) => {
+        const newId = `new-${Date.now()}`; // Temporary ID for new document
+
+        // Check if a document with this templateId already exists
+        if (openDocuments.some(doc => doc.templateId === template.id)) {
+            // Just set the existing one as active
+            const existingDoc = openDocuments.find(doc => doc.templateId === template.id);
+            setActiveDocumentId(existingDoc.id);
+            setShowTemplateDialog(false);
+            return;
+        }
+
         // Create a new document based on the template
         const newDocument = {
-            id: `new-${Date.now()}`, // Temporary ID for new document
+            id: newId,
             title: template.name,
             content: template.content || '',
             templateId: template.id,
@@ -289,9 +301,9 @@ const SmartEditorPage = () => {
             hasChanges: true,
             isNew: true
         };
-        
+
         setOpenDocuments(prev => [...prev, newDocument]);
-        setActiveDocumentId(newDocument.id);
+        setActiveDocumentId(newId);
         setShowTemplateDialog(false);
     };
 
@@ -311,20 +323,26 @@ const SmartEditorPage = () => {
     // Update document title
     const handleTitleChange = (title) => {
         if (!activeDocumentId) return;
-        
-        setOpenDocuments(prevDocs => 
-            prevDocs.map(doc => 
-                doc.id === activeDocumentId 
-                    ? { ...doc, title, hasChanges: true } 
+
+        // If title is empty, keep the previous title
+        if (!title.trim() && activeDocument?.title) {
+            return;
+        }
+
+        setOpenDocuments(prevDocs =>
+            prevDocs.map(doc =>
+                doc.id === activeDocumentId
+                    ? { ...doc, title: title || t('smartEditor.untitledDocument'), hasChanges: true }
                     : doc
             )
         );
     };
 
     // Save active document
+    // Update the handleSaveDocument function to properly handle ID changes without duplicating tabs
     const handleSaveDocument = async () => {
         if (!activeDocument) return;
-        
+
         if (!activeDocument.title.trim()) {
             setNotification({
                 type: 'error',
@@ -337,6 +355,7 @@ const SmartEditorPage = () => {
         try {
             let result;
             let newId = activeDocument.id;
+            const oldId = activeDocument.id; // Store old ID for reference
 
             // If it's a new document (not saved to server yet)
             if (activeDocument.isNew) {
@@ -349,7 +368,7 @@ const SmartEditorPage = () => {
                     caseId: activeDocument.caseId || location.state?.caseId
                 });
                 newId = result.documentId;
-                
+
                 // Update URL without reloading page
                 navigate(`/documents/smarteditor/${newId}`, { replace: true });
             } else {
@@ -360,31 +379,29 @@ const SmartEditorPage = () => {
                 });
             }
 
-            // Update document in state
-            setOpenDocuments(prevDocs => 
-                prevDocs.map(doc => 
-                    doc.id === activeDocumentId 
-                        ? { 
-                            ...doc, 
-                            id: newId, 
-                            hasChanges: false, 
-                            isNew: false,
-                            lastModified: new Date()
-                        } 
-                        : doc
-                )
-            );
-            
-            // If ID changed, update the active document ID
-            if (newId !== activeDocumentId) {
-                setActiveDocumentId(newId);
-            }
+            // Update document in state - IMPORTANT: carefully handle the ID change
+            setOpenDocuments(prevDocs => {
+                // First, remove any document with the old ID
+                const filteredDocs = prevDocs.filter(doc => doc.id !== oldId);
+
+                // Then add the updated document with the new ID
+                return [...filteredDocs, {
+                    ...activeDocument,
+                    id: newId,
+                    hasChanges: false,
+                    isNew: false,
+                    lastModified: new Date()
+                }];
+            });
+
+            // After updating the documents, update the active document ID
+            setActiveDocumentId(newId);
 
             setNotification({
                 type: 'success',
                 message: t('smartEditor.notifications.saved')
             });
-            
+
             // Add to recent documents
             addToRecentDocuments({
                 id: newId,
@@ -1149,11 +1166,38 @@ const SmartEditorPage = () => {
                                 <TextField
                                     value={activeDocument.title}
                                     onChange={(e) => handleTitleChange(e.target.value)}
+                                    onBlur={() => {
+                                        // Validate title on blur - don't allow empty titles
+                                        if (!activeDocument.title.trim()) {
+                                            handleTitleChange('Untitled Document');
+                                            setNotification({
+                                                type: 'warning',
+                                                message: t('smartEditor.errors.titleRequired')
+                                            });
+                                        }
+                                    }}
                                     variant="standard"
                                     placeholder={t('smartEditor.untitledDocument')}
                                     InputProps={{
                                         disableUnderline: true,
-                                        sx: { fontSize: '1.2rem', fontWeight: 500 }
+                                        sx: {
+                                            fontSize: '1.2rem',
+                                            fontWeight: 500,
+                                            '&:hover': {
+                                                backgroundColor: 'action.hover',
+                                                borderRadius: 1,
+                                                px: 1
+                                            },
+                                            '&:focus-within': {
+                                                backgroundColor: 'action.selected',
+                                                borderRadius: 1,
+                                                px: 1
+                                            }
+                                        }
+                                    }}
+                                    sx={{
+                                        minWidth: 200,
+                                        maxWidth: 400
                                     }}
                                 />
                             )}
