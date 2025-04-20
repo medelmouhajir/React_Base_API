@@ -128,7 +128,7 @@ const SmartEditorPage = () => {
     const [notification, setNotification] = useState(null);
     
     // Document context panel
-    const [showDocumentContext, setShowDocumentContext] = useState(!isMobile);
+    const [showDocumentContext, setShowDocumentContext] = useState(false);
     const [contextLoading, setContextLoading] = useState(false);
     const [caseData, setCaseData] = useState(null);
     const [clientData, setClientData] = useState(null);
@@ -481,37 +481,74 @@ const SmartEditorPage = () => {
     };
 
     // Apply AI suggestion
+    // Replace your handleApplyAISuggestion function with this simpler approach:
+
     const handleApplyAISuggestion = (suggestion) => {
         if (!activeDocument || !editorRef.current) return;
 
         const editor = editorRef.current.getEditor();
 
-        // For translations or other full document replacements
+        // The key issue: We need to use native clipboard to trigger proper history recording
+
+        // Store current selection
+        const selection = editor.getSelection();
+
+        // For full document replacements (like translations)
         if (suggestion.original.length > 100 && suggestion.original.trim() === activeDocument.content.trim()) {
-            // Replace entire document content
-            editor.deleteText(0, editor.getLength());
-            editor.insertText(0, suggestion.suggested);
-            handleContentChange(suggestion.suggested);
+            // Select all content
+            editor.setSelection(0, editor.getLength());
+
+            // Replace selected content - this triggers proper history recording
+            editor.clipboard.dangerouslyPasteHTML(suggestion.suggested);
+
+            // Update our state
+            handleContentChange(editor.root.innerHTML);
             return;
         }
 
-        // For partial document replacements, try a smarter approach
+        // For partial replacements
         try {
             const text = editor.getText();
             const index = text.indexOf(suggestion.original);
 
             if (index !== -1) {
-                editor.deleteText(index, suggestion.original.length);
-                editor.insertText(index, suggestion.suggested);
-                handleContentChange(editor.getHTML());
+                // Select the text to replace
+                editor.setSelection(index, suggestion.original.length);
+
+                // Replace selected text (this records in history)
+                editor.clipboard.dangerouslyPasteHTML(suggestion.suggested);
+
+                // Restore selection if needed
+                if (selection) {
+                    setTimeout(() => editor.setSelection(selection), 1);
+                }
             } else {
-                // Fallback for HTML content - replace everything
-                editor.deleteText(0, editor.getLength());
-                editor.insertText(0, suggestion.suggested);
-                handleContentChange(suggestion.suggested);
+                // If the original text can't be found, insert at current selection
+                if (selection) {
+                    editor.setSelection(selection);
+                } else {
+                    // Default to end of document
+                    editor.setSelection(editor.getLength() - 1, 0);
+                }
+
+                // Insert at current position
+                editor.clipboard.dangerouslyPasteHTML(suggestion.suggested);
             }
+
+            // Update our state
+            handleContentChange(editor.root.innerHTML);
         } catch (error) {
             console.error("Error applying suggestion:", error);
+
+            // Fallback to simpler approach
+            if (selection) {
+                editor.setSelection(selection);
+            } else {
+                editor.setSelection(editor.getLength() - 1, 0);
+            }
+
+            editor.clipboard.dangerouslyPasteHTML(suggestion.suggested);
+            handleContentChange(editor.root.innerHTML);
         }
     };
 
@@ -1219,7 +1256,7 @@ const SmartEditorPage = () => {
                     open={showHistory}
                     onClose={() => setShowHistory(false)}
                 >
-                    <Box sx={{ width: 350, p: 2 }}>
+                    <Box sx={{ maxWidth: 650, p: 2 }}>
                         <Box sx={{ 
                             display: 'flex', 
                             justifyContent: 'space-between', 
