@@ -481,28 +481,22 @@ const SmartEditorPage = () => {
     };
 
     // Apply AI suggestion
-    // Replace your handleApplyAISuggestion function with this simpler approach:
-
+    // Apply AI suggestion
     const handleApplyAISuggestion = (suggestion) => {
         if (!activeDocument || !editorRef.current) return;
 
         const editor = editorRef.current.getEditor();
 
-        // The key issue: We need to use native clipboard to trigger proper history recording
+        // Save the current selection to restore it later
+        const currentSelection = editor.getSelection();
 
-        // Store current selection
-        const selection = editor.getSelection();
-
-        // For full document replacements (like translations)
-        if (suggestion.original.length > 100 && suggestion.original.trim() === activeDocument.content.trim()) {
-            // Select all content
-            editor.setSelection(0, editor.getLength());
-
-            // Replace selected content - this triggers proper history recording
-            editor.clipboard.dangerouslyPasteHTML(suggestion.suggested);
-
-            // Update our state
-            handleContentChange(editor.root.innerHTML);
+        // For full document replacements
+        if (suggestion.original && suggestion.original.length > 100 &&
+            suggestion.original.trim() === activeDocument.content.trim()) {
+            // Use updateContents to properly register the change in history
+            const delta = editor.clipboard.convert(suggestion.suggested);
+            editor.setContents(delta, 'user');
+            handleContentChange(suggestion.suggested);
             return;
         }
 
@@ -512,43 +506,29 @@ const SmartEditorPage = () => {
             const index = text.indexOf(suggestion.original);
 
             if (index !== -1) {
-                // Select the text to replace
-                editor.setSelection(index, suggestion.original.length);
+                // Use deleteText and insertText with 'user' source to register in history
+                editor.deleteText(index, suggestion.original.length, 'user');
+                editor.insertText(index, suggestion.suggested, 'user');
 
-                // Replace selected text (this records in history)
-                editor.clipboard.dangerouslyPasteHTML(suggestion.suggested);
+                // Update selection to end of inserted text
+                editor.setSelection(index + suggestion.suggested.length, 0, 'user');
 
-                // Restore selection if needed
-                if (selection) {
-                    setTimeout(() => editor.setSelection(selection), 1);
-                }
+                // Update state with new content
+                handleContentChange(editor.root.innerHTML);
+            } else if (suggestion.original === '') {
+                // For insertions (when original is empty)
+                const position = currentSelection ? currentSelection.index : editor.getLength() - 1;
+                editor.insertText(position, suggestion.suggested, 'user');
+                editor.setSelection(position + suggestion.suggested.length, 0, 'user');
+                handleContentChange(editor.root.innerHTML);
             } else {
-                // If the original text can't be found, insert at current selection
-                if (selection) {
-                    editor.setSelection(selection);
-                } else {
-                    // Default to end of document
-                    editor.setSelection(editor.getLength() - 1, 0);
-                }
-
-                // Insert at current position
-                editor.clipboard.dangerouslyPasteHTML(suggestion.suggested);
+                // Fallback - replace everything
+                const delta = editor.clipboard.convert(suggestion.suggested);
+                editor.setContents(delta, 'user');
+                handleContentChange(suggestion.suggested);
             }
-
-            // Update our state
-            handleContentChange(editor.root.innerHTML);
         } catch (error) {
             console.error("Error applying suggestion:", error);
-
-            // Fallback to simpler approach
-            if (selection) {
-                editor.setSelection(selection);
-            } else {
-                editor.setSelection(editor.getLength() - 1, 0);
-            }
-
-            editor.clipboard.dangerouslyPasteHTML(suggestion.suggested);
-            handleContentChange(editor.root.innerHTML);
         }
     };
 
