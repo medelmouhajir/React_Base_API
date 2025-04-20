@@ -71,6 +71,7 @@ namespace React_Lawyer.Server.Controllers.Documents
                         d.UploadDate,
                         d.LastModified,
                         Category = d.Category.ToString(),
+                        Type = d.Type.ToString(),
                         d.IsConfidential,
                         d.IsTemplate,
                         d.IsSharedWithClient,
@@ -561,7 +562,8 @@ namespace React_Lawyer.Server.Controllers.Documents
                     IsSharedWithClient = model.IsSharedWithClient,
                     Tags = model.Tags,
                     VersionNumber = 1,
-                    LawFirmId = model.LawFirmId
+                    LawFirmId = model.LawFirmId,
+                    Type = DocumentType.Uploaded
                 };
 
                 _context.Documents.Add(document);
@@ -639,7 +641,8 @@ namespace React_Lawyer.Server.Controllers.Documents
                     IsSharedWithClient = existingDocument.IsSharedWithClient,
                     Tags = existingDocument.Tags,
                     VersionNumber = nextVersion,
-                    PreviousVersionId = existingDocument.DocumentId
+                    PreviousVersionId = existingDocument.DocumentId,
+                    Type = DocumentType.Uploaded
                 };
 
                 _context.Documents.Add(newVersionDocument);
@@ -726,7 +729,8 @@ namespace React_Lawyer.Server.Controllers.Documents
                     IsTemplate = false, // New document is not a template
                     IsSharedWithClient = model.IsSharedWithClient,
                     Tags = model.Tags ?? templateDocument.Tags,
-                    VersionNumber = 1 // Initial version
+                    VersionNumber = 1, // Initial version
+                    Type = DocumentType.Generated
                 };
 
                 _context.Documents.Add(document);

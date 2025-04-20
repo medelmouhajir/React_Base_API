@@ -230,6 +230,7 @@ namespace React_Lawyer.Server.Controllers
                     Tags = "",
                     VersionNumber = 1,
                     LawFirmId = model.lawFirmId,
+                    Type = DocumentType.SmartEditor
                 };
 
                 _context.Documents.Add(document);

@@ -769,6 +769,12 @@
       "other": "Other"
     },
 
+    "types": {
+      "Uploaded": "Uploaded",
+      "Generated": "Generated",
+      "SmartEditor": "Smart Editor"
+    },
+
     "deleteDocument": "Delete Document",
     "deleteConfirmation": "Are you sure you want to delete \"{title}\"?",
 

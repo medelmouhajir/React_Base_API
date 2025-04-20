@@ -767,6 +767,12 @@
       "financial": "مالي",
       "other": "أخرى"
     },
+    "types": {
+      "Uploaded": "تم الرفع",
+      "Generated": "تم الإنشاء",
+      "SmartEditor": "المحرر الذكي"
+    },
+
 
     "deleteDocument": "حذف المستند",
     "deleteConfirmation": "هل أنت متأكد من رغبتك في حذف \"{title}\"؟",

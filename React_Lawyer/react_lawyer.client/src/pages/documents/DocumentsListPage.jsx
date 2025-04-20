@@ -75,6 +75,12 @@ const CATEGORY_COLORS = {
     'Other': 'default'
 };
 
+const TYPES_COLORS = {
+    'Generated': 'primary',
+    'SmartEditor': 'success',
+    'Uploaded': 'info'
+};
+
 const DocumentsListPage = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -593,6 +599,7 @@ const DocumentsListPage = () => {
                             <TableRow>
                                 <TableCell>{t('documents.title')}</TableCell>
                                 <TableCell>{t('documents.category')}</TableCell>
+                                <TableCell>{t('documents.type')}</TableCell>
                                 <TableCell>{t('documents.uploadDate')}</TableCell>
                                 {!isMobile && <TableCell>{t('documents.uploadedBy')}</TableCell>}
                                 <TableCell align="right">{t('common.actions')}</TableCell>
@@ -672,6 +679,13 @@ const DocumentsListPage = () => {
                                                 color={CATEGORY_COLORS[document.category] || 'default'}
                                                 size="small"
                                                 label={t(`documents.categories.${document.category.charAt(0).toLowerCase() + document.category.slice(1)}`)}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                color={TYPES_COLORS[document.type] || 'default'}
+                                                size="small"
+                                                label={t(`documents.types.${document.type}`)}
                                             />
                                         </TableCell>
                                         <TableCell>
