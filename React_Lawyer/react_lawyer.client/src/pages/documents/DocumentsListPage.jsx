@@ -718,15 +718,6 @@ const DocumentsListPage = () => {
                                                         <ViewIcon />
                                                     </IconButton>
                                                 </Tooltip>
-                                                <Tooltip title={t('documents.download')}>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={() => handleDownload(document)}
-                                                        disabled={!isOnline}
-                                                    >
-                                                        <DownloadIcon />
-                                                    </IconButton>
-                                                </Tooltip>
                                                 <Tooltip title={t('common.edit')}>
                                                     <IconButton
                                                         size="small"

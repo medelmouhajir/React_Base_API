@@ -45,13 +45,15 @@ import {
     Person as ClientIcon,
     Gavel as CaseIcon,
     Save as SaveIcon,
-    Home as HomeIcon
+    Home as HomeIcon,
+    RecordVoiceOver as RecordVoiceOverIcon
 } from '@mui/icons-material';
 
 // Import services
 import aiService from '../../../services/aiService';
 import clientService from '../../../services/clientService';
 import caseService from '../../../services/caseService';
+import AIAssistantSpeechToText from './AIAssistantSpeechToText';
 
 const AIAssistantPanel = ({ documentContent, onApplySuggestion, onClose }) => {
     const { t } = useTranslation();
@@ -172,6 +174,11 @@ const AIAssistantPanel = ({ documentContent, onApplySuggestion, onClose }) => {
             id: 'client-info',
             label: t('ai.tabs.clientInfo'),
             icon: <ClientIcon fontSize="small" />
+        },
+        {
+            id: 'speech-to-text',
+            label: t('ai.tabs.speechToText'),
+            icon: <RecordVoiceOverIcon fontSize="small" />
         },
         {
             id: 'assistant',
@@ -884,6 +891,19 @@ const AIAssistantPanel = ({ documentContent, onApplySuggestion, onClose }) => {
         </Box>
     );
 
+    const renderSpeechToTextTab = () => (
+        <AIAssistantSpeechToText
+            onInsertText={(text) => {
+                // Create a suggestion-like object to use the same handler
+                const suggestion = {
+                    original: '',  // Empty since we're not replacing anything
+                    suggested: text
+                };
+                onApplySuggestion(suggestion);
+            }}
+        />
+    );
+
     // Render assistant tab
     const renderAssistantTab = () => (
         <Box sx={{ p: 2 }}>
@@ -1056,7 +1076,8 @@ const AIAssistantPanel = ({ documentContent, onApplySuggestion, onClose }) => {
                 {activeTab === 3 && renderTranslateTab()}
                 {activeTab === 4 && renderSummaryTab()}
                 {activeTab === 5 && renderClientInfoTab()}
-                {activeTab === 6 && renderAssistantTab()}
+                {activeTab === 6 && renderSpeechToTextTab()}
+                {activeTab === 7 && renderAssistantTab()}
             </Box>
         </Box>
     );

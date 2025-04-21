@@ -1067,7 +1067,25 @@
       "translate": "Translate",
       "summary": "Summarize",
       "clientInfo": "Client Info",
-      "assistant": "AI Assistant"
+      "assistant": "AI Assistant",
+      "speechToText": "Speech to Text"
+    },
+    "speechToText": {
+      "title": "Speech to Text",
+      "description": "Dictate text using your microphone. Click the microphone button to start recording, then click it again to stop. Your transcribed text will appear below.",
+      "notSupported": "Speech recognition is not supported in your browser",
+      "tryBrowser": "Please try using a modern browser such as Chrome, Edge, or Safari",
+      "startListening": "Start listening",
+      "stopListening": "Stop listening",
+      "listening": "Listening...",
+      "notListening": "Not listening",
+      "error": "Speech recognition error",
+      "startError": "Failed to start speech recognition",
+      "clear": "Clear",
+      "insert": "Insert into document",
+      "history": "Recent transcriptions",
+      "reuse": "Reuse this text",
+      "tip": "Tip: Speak clearly and at a moderate pace for the best results. You can pause naturally between sentences."
     },
     "original": "Original",
     "suggested": "Suggested",
@@ -1138,7 +1156,8 @@
       "translate": "Translate your document to another language",
       "summary": "Create a concise summary of your document",
       "client-info": "Integrate client and case information into your document",
-      "assistant": "Get AI-powered assistance for customized needs"
+      "assistant": "Get AI-powered assistance for customized needs",
+      "speech-to-text": "Convert your spoken words to text and insert them into your document"
     }
   },
 

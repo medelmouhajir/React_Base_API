@@ -153,6 +153,14 @@ const SmartEditorPage = () => {
     // Load document or template on mount
     useEffect(() => {
         if (urlDocumentId) {
+            // Skip loading if navigation state has the flag
+            if (location.state?.skipDocumentLoad) {
+                // Clear the flag to avoid problems with manual refreshes
+                const newState = { ...location.state };
+                delete newState.skipDocumentLoad;
+                navigate(location.pathname, { replace: true, state: newState });
+                return;
+            }
             loadExistingDocument(urlDocumentId);
         } else if (templateId) {
             loadTemplate(templateId);
@@ -169,7 +177,7 @@ const SmartEditorPage = () => {
         }, 60000);
 
         return () => clearInterval(autoSaveInterval);
-    }, [templateId, urlDocumentId]);
+    }, [templateId, urlDocumentId, location]);
 
     // Update document outline when content changes
     useEffect(() => {
@@ -235,10 +243,11 @@ const SmartEditorPage = () => {
                 createdBy: doc.uploadedBy,
                 lastModified: doc.lastModified
             };
-            
-            setOpenDocuments(prev => [...prev, newDocument]);
+
+            setOpenDocuments(prev => [newDocument, ...prev.filter(doc => doc.id !== newDocument.id)]);
             setActiveDocumentId(id);
-            
+
+            console.log(openDocuments);
             // Add to recent documents
             addToRecentDocuments(newDocument);
         } catch (error) {
@@ -370,7 +379,10 @@ const SmartEditorPage = () => {
                 newId = result.documentId;
 
                 // Update URL without reloading page
-                navigate(`/documents/smarteditor/${newId}`, { replace: true });
+                navigate(`/documents/smarteditor/${newId}`, {
+                    replace: true,
+                    state: { skipDocumentLoad: true }  // Add this flag
+                });
             } else {
                 // Update existing document
                 result = await smartEditorService.updateDocument(activeDocument.id, {
@@ -752,12 +764,12 @@ const SmartEditorPage = () => {
         );
     }
 
-    // Render document tabs
+    // Modify the renderDocumentTabs function in SmartEditorPage.jsx
     const renderDocumentTabs = () => (
-        <Box sx={{ 
-            display: 'flex', 
-            overflow: 'auto', 
-            borderBottom: 1, 
+        <Box sx={{
+            display: 'flex',
+            overflow: 'auto',
+            borderBottom: 1,
             borderColor: 'divider',
             '&::-webkit-scrollbar': {
                 height: '8px'
@@ -771,10 +783,10 @@ const SmartEditorPage = () => {
             }
         }}>
             <Tabs
-                value={activeDocumentId || false}
+                value={activeDocumentId ? activeDocumentId : false}
                 variant="scrollable"
                 scrollButtons="auto"
-                sx={{ 
+                sx={{
                     minHeight: 48,
                     flex: 1,
                     '& .MuiTabs-indicator': {
@@ -783,21 +795,63 @@ const SmartEditorPage = () => {
                 }}
             >
                 {openDocuments.map(doc => (
-                    <DocumentTab
+                    <Tab
                         key={doc.id}
-                        document={doc}
-                        isActive={doc.id === activeDocumentId}
-                        onActivate={() => handleActivateDocument(doc.id)}
-                        onClose={handleCloseDocument}
+                        value={doc.id}  // Use the document's ID as the tab value
+                        label={
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <Badge
+                                    color="warning"
+                                    variant="dot"
+                                    invisible={!doc.hasChanges}
+                                    sx={{ mr: 1 }}
+                                >
+                                    <InsertDriveFile fontSize="small" />
+                                </Badge>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        maxWidth: 120,
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis'
+                                    }}
+                                >
+                                    {doc.title || 'Untitled'}
+                                </Typography>
+                            </Box>
+                        }
+                        onClick={() => handleActivateDocument(doc.id)}
+                        sx={{
+                            minHeight: 'unset',
+                            py: 1,
+                            opacity: doc.id === activeDocumentId ? 1 : 0.7
+                        }}
+                        icon={
+                            <CloseIcon
+                                fontSize="small"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCloseDocument(doc.id);
+                                }}
+                                sx={{
+                                    fontSize: '0.875rem',
+                                    '&:hover': {
+                                        color: 'error.main'
+                                    }
+                                }}
+                            />
+                        }
+                        iconPosition="end"
                     />
                 ))}
             </Tabs>
-            
+
             <Button
                 size="small"
                 startIcon={<AddIcon />}
                 onClick={handleCreateNewDocument}
-                sx={{ 
+                sx={{
                     minWidth: 'auto',
                     m: 0.5
                 }}
