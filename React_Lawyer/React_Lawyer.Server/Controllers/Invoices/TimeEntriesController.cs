@@ -621,7 +621,7 @@ namespace React_Lawyer.Server.Controllers.Invoices
                 _context.TimeEntries.Add(timeEntry);
                 await _context.SaveChangesAsync();
 
-                return Ok();
+                return Ok( new object());
             }
             catch (Exception ex)
             {

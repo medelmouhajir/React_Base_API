@@ -4,6 +4,7 @@ using React_Lawyer.Server.Data;
 using Shared_Models.Cases;
 using Shared_Models.Clients;
 using Shared_Models.Notifications;
+using Shared_Models.TimeEntries;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -70,7 +71,7 @@ namespace React_Lawyer.Server.Controllers.Cases
 
         // GET: api/Cases/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Case>> GetCase(int id)
+        public async Task<ActionResult<object>> GetCase(int id)
         {
             try
             {
@@ -79,12 +80,15 @@ namespace React_Lawyer.Server.Controllers.Cases
                     .Include(c => c.AssignedLawyer)
                         .ThenInclude(l => l.User)
                     .Include(c => c.Documents)
+                    .ThenInclude(x=> x.UploadedBy)
                     .Include(c => c.Case_Clients)
                         .ThenInclude(cc => cc.Client)
                     .Include(c => c.Events)
                         .ThenInclude(e => e.CreatedBy)
                     .Include(c => c.TimeEntries)
                     .Include(c => c.Invoices)
+                    .Include(x=> x.Events)
+                    .ThenInclude(x=> x.CreatedBy)
                     .FirstOrDefaultAsync(c => c.CaseId == id);
 
                 if (@case == null)
@@ -93,7 +97,7 @@ namespace React_Lawyer.Server.Controllers.Cases
                     return NotFound();
                 }
 
-                return new Case
+                return new
                 {
                     CaseId = @case.CaseId,
                     CaseNumber = @case.CaseNumber,
@@ -113,17 +117,17 @@ namespace React_Lawyer.Server.Controllers.Cases
                     Notes = @case.Notes,
                     IsUrgent = @case.IsUrgent,
                     ParentCaseId = @case.ParentCaseId,
-                    AssignedLawyer = new Shared_Models.Users.Lawyer
+                    AssignedLawyer = new
                     {
                         LawyerId = @case.AssignedLawyer.LawyerId,
-                        User = new Shared_Models.Users.User
+                        User = new
                         {
                             FirstName = @case.AssignedLawyer.User.FirstName,
                             LastName = @case.AssignedLawyer.User.LastName
                         }
                     },
                     ActualSettlement = @case.ActualSettlement,
-                    Case_Clients = @case.Case_Clients.Select(cc => new Case_Client
+                    Case_Clients = @case.Case_Clients.Select(cc => new
                     {
                         CaseId = cc.CaseId,
                         ClientId = cc.ClientId,
@@ -136,16 +140,22 @@ namespace React_Lawyer.Server.Controllers.Cases
                             PhoneNumber = cc.Client.PhoneNumber
                         }
                     }).ToList(),
-                    Documents = @case.Documents.Select(x=> new Document
+                    Documents = @case.Documents.Select(x => new
                     {
+                        Title = x.Title,
                         DocumentId = x.DocumentId,
                         CaseId = x.CaseId,
                         FileSize = x.FileSize,
                         FileType = x.FileType,
-                        UploadDate = x.UploadDate
+                        UploadDate = x.UploadDate,
+                        UploadedBy = new
+                        {
+                            FirstName = x.UploadedBy.FirstName,
+                            LastName = x.UploadedBy.LastName
+                        }
                     }).ToList(),
                     ExpectedSettlement = @case.ExpectedSettlement,
-                    Invoices = @case.Invoices.Select(x => new Shared_Models.Invoices.Invoice
+                    Invoices = @case.Invoices.Select(x => new
                     {
                         InvoiceId = x.InvoiceId,
                         CaseId = x.CaseId,
@@ -158,7 +168,7 @@ namespace React_Lawyer.Server.Controllers.Cases
                         TaxAmount = x.TaxAmount
                     }
                     ).ToList(),
-                    Events = @case.Events.Select(x=> new CaseEvent
+                    Events = @case.Events.Select(x => new
                     {
                         CaseEventId = x.CaseEventId,
                         CaseId = x.CaseId,
@@ -169,7 +179,34 @@ namespace React_Lawyer.Server.Controllers.Cases
                         IsImportant = x.IsImportant,
                         Location = x.Location,
                         Outcome = x.Outcome,
-                    }).ToList(),
+                        CreatedBy = new
+                        {
+                            FirstName = x.CreatedBy.FirstName,
+                            LastName = x.CreatedBy.LastName
+                        }
+                    }
+                    ).ToList(),
+                    TimeEntries = @case.TimeEntries.Select(x => new
+                    {
+                        x.TimeEntryId,
+                        CaseId = x.CaseId,
+                        ActivityDate = x.ActivityDate,
+                        Category = x.Category,
+                        ClientId = x.ClientId,
+                        Client = new
+                        {
+                            ClientId = x.Client.ClientId,
+                            FirstName = x.Client.FirstName,
+                            LastName = x.Client.LastName,
+                        },
+                        CreatedAt = x.CreatedAt,
+                        Description = x.Description,
+                        IsBillable = x.IsBillable,
+                        IsBilled = x.IsBilled,
+                        DurationMinutes = x.DurationMinutes,
+                        HourlyRate = x.HourlyRate,
+                        Lawyer = x.Lawyer.User.FirstName + " " + x.Lawyer.User.LastName,
+                    }),
                 };
             }
             catch (Exception ex)
@@ -686,7 +723,7 @@ namespace React_Lawyer.Server.Controllers.Cases
 
         // GET: api/Cases/5/Documents
         [HttpGet("{id}/Documents")]
-        public async Task<ActionResult<IEnumerable<Document>>> GetCaseDocuments(int id)
+        public async Task<ActionResult<IEnumerable<object>>> GetCaseDocuments(int id)
         {
             try
             {
@@ -701,6 +738,23 @@ namespace React_Lawyer.Server.Controllers.Cases
                 return await _context.Documents
                     .Where(d => d.CaseId == id)
                     .OrderByDescending(d => d.UploadDate)
+                    .Select (x=> new
+                    {
+                        DocumentId = x.DocumentId,
+                        Tags = x.Tags,
+                        VersionNumber = x.VersionNumber,
+                        CaseId = x.CaseId,
+                        Category = x.Category,
+                        Description = x.Description,
+                        Type = x.Type.ToString(),
+                        Title = x.Title,
+                        UploadDate = x.UploadDate,
+                        UploadedBy = new
+                        {
+                            FirstName = x.UploadedBy.FirstName,
+                            LastName = x.UploadedBy.LastName,
+                        }
+                    })
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -844,13 +898,15 @@ namespace React_Lawyer.Server.Controllers.Cases
                     Description = $"Client has been added to the case.",
                     Date = DateTime.UtcNow,
                     EventType = CaseEventType.ClientAdded,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    Location = "",
+                    Outcome = ""
                 };
 
                 _context.CaseEvents.Add(caseEvent);
                 await _context.SaveChangesAsync();
 
-                return NoContent();
+                return Ok( new object());
             }
             catch (Exception ex)
             {
@@ -886,13 +942,15 @@ namespace React_Lawyer.Server.Controllers.Cases
                     Description = $"Client has been removed from the case.",
                     Date = DateTime.UtcNow,
                     EventType = CaseEventType.ClientRemoved,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    Location = "",
+                    Outcome = ""
                 };
 
                 _context.CaseEvents.Add(caseEvent);
                 await _context.SaveChangesAsync();
 
-                return NoContent();
+                return Ok(new object());
             }
             catch (Exception ex)
             {

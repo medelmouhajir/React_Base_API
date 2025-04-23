@@ -463,7 +463,7 @@ namespace React_Lawyer.Server.Controllers
                             CreatedAt = DateTime.UtcNow,
                             //InvoiceId = invoice.InvoiceId,
                             ClientId = invoice.ClientId,
-                            ActionUrl = $"/invoices/{invoice.InvoiceId}"
+                            ActionUrl = $"/billing/invoices/{invoice.InvoiceId}"
                         };
 
                         _context.Notifications.Add(notification);

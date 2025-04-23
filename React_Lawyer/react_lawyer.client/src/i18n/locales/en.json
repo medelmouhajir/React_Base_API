@@ -74,7 +74,13 @@
     "hour": "hour",
     "hours": "hours",
     "minute": "minute",
-    "minutes": "minutes"
+    "minutes": "minutes",
+    "removing": "Removing...",
+    "noDescriptionProvided": "No description provided",
+    "system": "System",
+    "saving": "Saving...",
+    "download": "Download",
+    "uploading": "Uploading..."
   },
 
   "auth": {
@@ -190,6 +196,21 @@
     "basicInfo": "Basic Information",
     "courtInfo": "Court Information",
     "searchPlaceholder": "Search for cases",
+
+
+    "manageClients": "Manage Clients",
+    "backToCase": "Back to Case",
+    "currentClients": "Current Clients",
+    "availableClients": "Available Clients",
+    "noAvailableClients": "No available clients found",
+    "addClient": "Add Client",
+    "removeClient": "Remove Client",
+    "clientAddedSuccess": "Client successfully added to case",
+    "clientRemovedSuccess": "Client successfully removed from case",
+    "clientAddError": "Error adding client to case",
+    "clientRemoveError": "Error removing client from case",
+    "removeClientConfirmTitle": "Remove Client",
+    "removeClientConfirmMessage": "Are you sure you want to remove {{client}} from the case \"{{caseTitle}}\"?",
 
     "types": {
       "CivilLaw": "Civil",
@@ -365,7 +386,8 @@
       "emailRequired": "Email is required",
       "emailInvalid": "Invalid email format",
       "companyNameRequired": "Company name is required for corporate clients"
-    }
+    },
+    "createNew": "Create New Client"
   },
 
   "appointments": {
@@ -819,6 +841,32 @@
       "templateRequired": "Template selection is required",
       "titleRequired": "Document title is required",
       "clientRequired": "At least one client is required"
+    },
+    "uploadToCase": "Upload Document to Case: {{caseNumber}} - {{caseTitle}}",
+    "titleRequired": "Document title is required",
+    "fileRequired": "Please select a file to upload",
+    "fileTooLarge": "File is too large. Maximum size is {{maxSize}}",
+    "maxFileSize": "Maximum file size: {{size}}",
+    "uploadPolicyTitle": "Document Upload Policy",
+    "uploadPolicyText": "Documents uploaded to the system must comply with firm policy regarding confidentiality and data retention. Please ensure all sensitive client information is properly marked as confidential.",
+    "learnMoreAboutDocumentPolicy": "Learn more about document policy",
+    "redirecting": "Redirecting to document details...",
+    "by": "By",
+    "generation": {
+      "generateDocument": "Generate Document",
+      "hideForm": "Hide Document Generator",
+      "templateRequired": "Please select a template",
+      "titleRequired": "Document title is required",
+      "selectTemplate": "Select Template",
+      "templateFetchError": "Error fetching templates",
+      "success": "Document generated successfully",
+      "error": "Error generating document",
+      "generateForCase": "Generate document for this case",
+      "generateForClient": "Generate document for this client",
+      "noTemplates": "No templates available",
+      "downloadGenerated": "Download Generated Document",
+      "viewGenerated": "View Generated Document",
+      "documentFormat": "Document Format"
     }
   },
 

@@ -74,7 +74,13 @@
     "hour": "ساعة",
     "hours": "ساعات",
     "minute": "دقيقة",
-    "minutes": "دقائق"
+    "minutes": "دقائق",
+    "removing": "جارٍ الإزالة...",
+    "noDescriptionProvided": "لم يتم تقديم وصف",
+    "system": "النظام",
+    "saving": "جارٍ الحفظ...",
+    "download": "تنزيل",
+    "uploading": "جارٍ التحميل..."
   },
 
   "auth": {
@@ -313,7 +319,20 @@
       "sortOrder": "ترتيب",
       "ascending": "تصاعدي",
       "descending": "تنازلي"
-    }
+    },
+    "manageClients": "إدارة العملاء",
+    "backToCase": "العودة إلى القضية",
+    "currentClients": "العملاء الحاليون",
+    "availableClients": "العملاء المتاحون",
+    "noAvailableClients": "لم يتم العثور على عملاء متاحين",
+    "addClient": "إضافة عميل",
+    "removeClient": "إزالة عميل",
+    "clientAddedSuccess": "تمت إضافة العميل إلى القضية بنجاح",
+    "clientRemovedSuccess": "تمت إزالة العميل من القضية بنجاح",
+    "clientAddError": "حدث خطأ أثناء إضافة العميل إلى القضية",
+    "clientRemoveError": "حدث خطأ أثناء إزالة العميل من القضية",
+    "removeClientConfirmTitle": "إزالة العميل",
+    "removeClientConfirmMessage": "هل أنت متأكد أنك تريد إزالة {{client}} من القضية \"{{caseTitle}}\"؟"
   },
 
   "clients": {
@@ -365,7 +384,8 @@
       "emailRequired": "البريد الإلكتروني مطلوب",
       "emailInvalid": "صيغة البريد الإلكتروني غير صحيحة",
       "companyNameRequired": "اسم الشركة مطلوب للعملاء من نوع شركة"
-    }
+    },
+    "createNew": "إنشاء عميل جديد"
   },
 
   "appointments": {
@@ -819,6 +839,32 @@
       "templateRequired": "اختيار القالب مطلوب",
       "titleRequired": "عنوان الوثيقة مطلوب",
       "clientRequired": "مطلوب عميل واحد على الأقل"
+    },
+    "uploadToCase": "تحميل مستند إلى القضية: {{caseNumber}} - {{caseTitle}}",
+    "titleRequired": "عنوان المستند مطلوب",
+    "fileRequired": "يرجى تحديد ملف للتحميل",
+    "fileTooLarge": "الملف كبير جدًا. الحد الأقصى للحجم هو {{maxSize}}",
+    "maxFileSize": "الحجم الأقصى للملف: {{size}}",
+    "uploadPolicyTitle": "سياسة تحميل المستندات",
+    "uploadPolicyText": "يجب أن تمتثل المستندات المحملة إلى النظام لسياسة الشركة بشأن السرية والاحتفاظ بالبيانات. يرجى التأكد من أن جميع المعلومات الحساسة الخاصة بالعملاء تم تمييزها بشكل صحيح على أنها سرية.",
+    "learnMoreAboutDocumentPolicy": "معرفة المزيد عن سياسة المستندات",
+    "redirecting": "جارٍ التحويل إلى تفاصيل المستند...",
+    "by": "بواسطة",
+    "generation": {
+      "generateDocument": "إنشاء مستند",
+      "hideForm": "إخفاء مولد المستندات",
+      "templateRequired": "يرجى اختيار نموذج",
+      "titleRequired": "عنوان المستند مطلوب",
+      "selectTemplate": "اختر نموذجًا",
+      "templateFetchError": "حدث خطأ أثناء جلب النماذج",
+      "success": "تم إنشاء المستند بنجاح",
+      "error": "حدث خطأ أثناء إنشاء المستند",
+      "generateForCase": "إنشاء مستند لهذه القضية",
+      "generateForClient": "إنشاء مستند لهذا العميل",
+      "noTemplates": "لا توجد نماذج متاحة",
+      "downloadGenerated": "تنزيل المستند المُنشأ",
+      "viewGenerated": "عرض المستند المُنشأ",
+      "documentFormat": "تنسيق المستند"
     }
   },
 

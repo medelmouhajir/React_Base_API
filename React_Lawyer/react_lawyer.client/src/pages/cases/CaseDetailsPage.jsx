@@ -765,7 +765,7 @@ const CaseDetailsPage = () => {
                                         <TableRow key={doc.documentId} hover>
                                             <TableCell>{doc.title || doc.fileName}</TableCell>
                                             <TableCell>{doc.documentType || doc.fileType}</TableCell>
-                                            <TableCell>{doc.uploadedBy || t('common.system')}</TableCell>
+                                            <TableCell>{doc.uploadedBy.firstName || t('common.system')}</TableCell>
                                             <TableCell>{formatDate(doc.uploadDate)}</TableCell>
                                             <TableCell align="right">
                                                 <Tooltip title={t('documents.download')}>
@@ -893,7 +893,7 @@ const CaseDetailsPage = () => {
                                     <TableRow>
                                         <TableCell>{t('billing.date')}</TableCell>
                                         <TableCell>{t('common.description')}</TableCell>
-                                        <TableCell>{t('billing.hours')}</TableCell>
+                                        <TableCell>{t('common.minutes')}</TableCell>
                                         <TableCell>{t('billing.billable')}</TableCell>
                                         <TableCell>{t('cases.lawyer')}</TableCell>
                                         <TableCell align="right">{t('common.actions')}</TableCell>
@@ -902,9 +902,9 @@ const CaseDetailsPage = () => {
                                 <TableBody>
                                     {caseData.timeEntries.map(entry => (
                                         <TableRow key={entry.timeEntryId} hover>
-                                            <TableCell>{formatDate(entry.date)}</TableCell>
+                                            <TableCell>{formatDate(entry.activityDate)}</TableCell>
                                             <TableCell>{entry.description}</TableCell>
-                                            <TableCell>{entry.hours}</TableCell>
+                                            <TableCell>{entry.durationMinutes}</TableCell>
                                             <TableCell>
                                                 {entry.isBillable ?
                                                     <Chip label={t('billing.billableYes')} color="success" size="small" /> :

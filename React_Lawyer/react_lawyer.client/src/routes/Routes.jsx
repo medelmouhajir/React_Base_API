@@ -32,6 +32,7 @@ import CasesListPage from '../pages/cases/CasesListPage';
 import CaseDetailsPage from '../pages/cases/CaseDetailsPage';
 import NewCasePage from '../pages/cases/NewCasePage';
 import EditCasePage from '../pages/cases/EditCasePage';
+import CaseClientsPage from '../pages/cases/CaseClientsPage';
 
 // Clients pages
 import ClientsListPage from '../pages/clients/ClientsListPage';
@@ -60,6 +61,10 @@ import DocumentDetailsPage from '../pages/documents/DocumentDetailsPage';
 import DocumentEditor from '../pages/documents/DocumentEditor';
 import DocumentGenerationPage from '../pages/documents/DocumentGenerationPage';
 import SmartEditorPage from '../pages/documents/SmartEditorPage';
+import DocumentUploadPage from '../pages/documents/DocumentUploadPage';
+
+//// Time entries pages
+import NewTimeEntryPage from '../pages/time-entries/NewTimeEntryPage';
 
 //// Reports pages
 import ReportsPage from '../pages/reports/ReportsPage';
@@ -116,6 +121,8 @@ const AppRoutes = () => {
                     <Route path="/cases/new" element={<NewCasePage />} />
                     <Route path="/cases/:id" element={<CaseDetailsPage />} />
                     <Route path="/cases/:id/edit" element={<EditCasePage />} />
+                    <Route path="/cases/:id/clients/add" element={<CaseClientsPage />} />
+                    <Route path="/cases/:id/clients" element={<CaseClientsPage />} />
                 </Route>
 
                 {/* Clients */}
@@ -148,6 +155,11 @@ const AppRoutes = () => {
                 <Route path="/documents/smarteditor/:documentId" element={<SmartEditorPage />} />
                 <Route path="/documents/:id/edit" element={<DocumentEditor />} />
                 <Route path="/documents/:id" element={<DocumentDetailsPage />} />
+                <Route path="/documents/upload" element={<DocumentUploadPage />} /> 
+
+                {/* Time entries - Only for Lawyers and Admins */}
+                <Route path="/time-entries/new" element={<NewTimeEntryPage />} />
+
 
                 {/* Reports - Only for Lawyers and Admins */}
                 <Route element={<ProtectedRoute requiredRole={["Lawyer", "Admin"]} />}>

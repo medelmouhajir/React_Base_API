@@ -714,7 +714,7 @@ const HomePage = () => {
                                             }
                                             secondary={
                                                 <Typography variant="body2" component="span">
-                                                    12 {/* Replace with actual data */}
+                                                    {stats.caseCount}
                                                 </Typography>
                                             }
                                         />
@@ -794,78 +794,6 @@ const HomePage = () => {
                                 </List>
                             </Paper>
 
-                            {/* Important Reminders */}
-                            <Paper sx={{ p: isMobile ? 1.5 : 2 }}>
-                                <Box sx={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    mb: 2
-                                }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <NotificationsIcon color="primary" sx={{ mr: 1 }} />
-                                        <Typography variant="h6" component="h2">
-                                            {t('dashboard.reminders')}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-
-                                <Divider sx={{ mb: 2 }} />
-
-                                <List sx={{ width: '100%', p: 0 }}>
-                                    <ListItem sx={{ px: isMobile ? 0 : 1 }}>
-                                        <ListItemIcon sx={{ minWidth: isMobile ? 36 : 56 }}>
-                                            <CheckIcon color="success" sx={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }} />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <Typography variant={isMobile ? "body2" : "body1"}>
-                                                    {t('dashboard.reminderDeadline')}
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography variant="body2" component="span">
-                                                    Smith vs Anderson - Tomorrow
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                    <ListItem sx={{ px: isMobile ? 0 : 1 }}>
-                                        <ListItemIcon sx={{ minWidth: isMobile ? 36 : 56 }}>
-                                            <CheckIcon color="success" sx={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }} />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <Typography variant={isMobile ? "body2" : "body1"}>
-                                                    {t('dashboard.reminderDocument')}
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography variant="body2" component="span">
-                                                    Contract review - 2 days left
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                    <ListItem sx={{ px: isMobile ? 0 : 1 }}>
-                                        <ListItemIcon sx={{ minWidth: isMobile ? 36 : 56 }}>
-                                            <CheckIcon color="success" sx={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }} />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            primary={
-                                                <Typography variant={isMobile ? "body2" : "body1"}>
-                                                    {t('dashboard.reminderInvoice')}
-                                                </Typography>
-                                            }
-                                            secondary={
-                                                <Typography variant="body2" component="span">
-                                                    3 invoices need to be sent
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItem>
-                                </List>
-                            </Paper>
                         </Grid>
                     </Grid>
                 </>
