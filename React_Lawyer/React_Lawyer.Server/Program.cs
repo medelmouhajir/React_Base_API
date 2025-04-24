@@ -57,6 +57,7 @@ namespace React_Lawyer.Server
             // Register DocumentGenerationService & EnhancedGeminiService
             builder.Services.AddScoped<DocumentGenerationService>();
             builder.Services.AddScoped<EnhancedGeminiService>();
+            builder.Services.AddHttpClient<ICaseScraperService, CaseScraperService>();
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
