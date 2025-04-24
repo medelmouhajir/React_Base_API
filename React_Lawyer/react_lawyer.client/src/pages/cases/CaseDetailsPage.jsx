@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../../features/auth/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
+import PortalDataSection from '../../components/cases/PortalDataSection ';
 import caseService from '../../services/caseService';
 import clientService from '../../services/clientService';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
@@ -588,6 +589,7 @@ const CaseDetailsPage = () => {
                     <Tab label={t('documents.documents')} icon={<DocumentIcon />} iconPosition="start" />
                     <Tab label={t('billing.billing')} icon={<MoneyIcon />} iconPosition="start" />
                     <Tab label={t('cases.notes')} icon={<NotesIcon />} iconPosition="start" />
+                    <Tab label={t('cases.tribunalPortal')} icon={<GavelIcon />} iconPosition="start" />
                 </Tabs>
 
                 {/* Clients Tab */}
@@ -955,6 +957,9 @@ const CaseDetailsPage = () => {
                             </Button>
                         )}
                     </Box>
+                </TabPanel>
+                <TabPanel value={tabValue} index={5}> {/* Assuming it's the 6th tab (index 5) */}
+                    <PortalDataSection caseId={id} caseNumber={caseData?.courtCaseNumber} />
                 </TabPanel>
             </Paper>
 
