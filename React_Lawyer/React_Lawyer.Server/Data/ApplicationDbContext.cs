@@ -7,6 +7,7 @@ using Shared_Models.Invoices;
 using Shared_Models.Notifications;
 using Shared_Models.TimeEntries;
 using Shared_Models.Users;
+using Shared_Models.Juridictions;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
@@ -34,6 +35,7 @@ namespace React_Lawyer.Server.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<CaseEvent> CaseEvents { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Juridiction> Juridictions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

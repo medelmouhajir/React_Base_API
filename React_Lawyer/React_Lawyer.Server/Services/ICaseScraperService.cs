@@ -18,8 +18,8 @@ namespace React_Lawyer.Server.Services
     {
         private readonly HttpClient _httpClient;
         private const string BaseUrl = "https://www.mahakim.ma/middleware/api/SuiviDossiers/CarteDossier?numeroCompletDossier={0}&idjuridiction=86";
-        private const string BaseUrl_ListDicisions = "https://www.mahakim.ma/middleware/api/SuiviDossiers/ListeDicisions?idDossier={0}&typeaffaire=DC";
-        private const string BaseUrl_ListParties = "https://www.mahakim.ma/middleware/api/SuiviDossiers/ListeParties?idDossier={0}&typeaffaire=DC";
+        private const string BaseUrl_ListDicisions = "https://www.mahakim.ma/middleware/api/SuiviDossiers/ListeDicisions?idDossier={0}&typeaffaire={1}";
+        private const string BaseUrl_ListParties = "https://www.mahakim.ma/middleware/api/SuiviDossiers/ListeParties?idDossier={0}&typeaffaire={1}";
 
         public CaseScraperService(HttpClient httpClient)
         {
