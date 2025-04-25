@@ -28,17 +28,17 @@ const PortalDataSection = ({ caseNumber }) => {
 
         try {
             const data = await portalService.getCaseDetails(caseNumber);
-            setPortalData(data?.Data || null);
+            setPortalData(data?.data || null);
 
-            if (data?.Data?.IdDossierCivil && data?.Data?.Affaire) {
+            if (data?.data?.idDossierCivil && data?.data?.affaire) {
                 // Fetch decisions and parties
                 const [decisionsData, partiesData] = await Promise.all([
-                    portalService.getCaseDecisions(data.Data.IdDossierCivil, data.Data.Affaire),
-                    portalService.getCaseParties(data.Data.IdDossierCivil, data.Data.Affaire)
+                    portalService.getCaseDecisions(data.data.idDossierCivil, data.data.affaire),
+                    portalService.getCaseParties(data.data.idDossierCivil, data.data.affaire)
                 ]);
 
-                setDecisions(decisionsData?.Data || []);
-                setParties(partiesData?.Data || []);
+                setDecisions(decisionsData?.data || []);
+                setParties(partiesData?.data || []);
             }
         } catch (err) {
             console.error('Error fetching portal data:', err);
@@ -96,25 +96,25 @@ const PortalDataSection = ({ caseNumber }) => {
                         <Divider sx={{ mb: 2 }} />
 
                         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-                            <Typography><strong>{t('cases.portal.courtName')}:</strong> {portalData.LibEntite}</Typography>
-                            <Typography><strong>{t('cases.portal.judge')}:</strong> {portalData.JugeRapporteur}</Typography>
-                            <Typography><strong>{t('cases.portal.registrationDate')}:</strong> {portalData.DateEnregistrementDossierDansRegistre}</Typography>
-                            <Typography><strong>{t('cases.portal.requestType')}:</strong> {portalData.TypeRequette}</Typography>
-                            <Typography><strong>{t('cases.portal.caseNumber')}:</strong> {portalData.NumeroCompletDossier1Instance}</Typography>
-                            <Typography><strong>{t('cases.portal.jurisdiction')}:</strong> {portalData.Juridiction1Instance}</Typography>
-                            <Typography><strong>{t('cases.portal.appealNumber')}:</strong> {portalData.NumeroCompletDossier2Instance || t('common.notAvailable')}</Typography>
-                            <Typography><strong>{t('cases.portal.appealJurisdiction')}:</strong> {portalData.Juridiction2Instance || t('common.notAvailable')}</Typography>
+                            <Typography><strong>{t('cases.portal.courtName')}:</strong> {portalData.libEntite}</Typography>
+                            <Typography><strong>{t('cases.portal.judge')}:</strong> {portalData.jugeRapporteur}</Typography>
+                            <Typography><strong>{t('cases.portal.registrationDate')}:</strong> {portalData.dateEnregistrementDossierDansRegistre}</Typography>
+                            <Typography><strong>{t('cases.portal.requestType')}:</strong> {portalData.typeRequette}</Typography>
+                            <Typography><strong>{t('cases.portal.caseNumber')}:</strong> {portalData.numeroCompletDossier1Instance}</Typography>
+                            <Typography><strong>{t('cases.portal.jurisdiction')}:</strong> {portalData.juridiction1Instance}</Typography>
+                            <Typography><strong>{t('cases.portal.appealNumber')}:</strong> {portalData.numeroCompletDossier2Instance || t('common.notAvailable')}</Typography>
+                            <Typography><strong>{t('cases.portal.appealJurisdiction')}:</strong> {portalData.juridiction2Instance || t('common.notAvailable')}</Typography>
                         </Box>
 
                         <Box sx={{ mt: 2 }}>
-                            <Typography><strong>{t('cases.portal.caseSubject')}:</strong> {portalData.ObjetDossier}</Typography>
+                            <Typography><strong>{t('cases.portal.caseSubject')}:</strong> {portalData.objetDossier}</Typography>
                         </Box>
 
                         {portalData.LibelleDernierJugement && (
                             <Box sx={{ mt: 2, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
-                                <Typography><strong>{t('cases.portal.lastJudgment')}:</strong> {portalData.LibelleDernierJugement}</Typography>
-                                <Typography><strong>{t('cases.portal.judgmentStatus')}:</strong> {portalData.EtatDernierJugement}</Typography>
-                                <Typography><strong>{t('cases.portal.judgmentDate')}:</strong> {portalData.DateDernierJugement}</Typography>
+                                <Typography><strong>{t('cases.portal.lastJudgment')}:</strong> {portalData.libelleDernierJugement}</Typography>
+                                <Typography><strong>{t('cases.portal.judgmentStatus')}:</strong> {portalData.etatDernierJugement}</Typography>
+                                <Typography><strong>{t('cases.portal.judgmentDate')}:</strong> {portalData.dateDernierJugement}</Typography>
                             </Box>
                         )}
                     </Paper>
@@ -146,12 +146,12 @@ const PortalDataSection = ({ caseNumber }) => {
                                         </TableRow>
                                     ) : (
                                         decisions.map((decision) => (
-                                            <TableRow key={decision.IdDecision}>
-                                                <TableCell>{decision.DateTimeDecision}</TableCell>
-                                                <TableCell>{decision.TypeDecision}</TableCell>
-                                                <TableCell>{decision.ContenuDecision}</TableCell>
-                                                <TableCell>{decision.NumeroJugement || t('common.notAvailable')}</TableCell>
-                                                <TableCell>{decision.DateTimeNextAudience || t('common.notAvailable')}</TableCell>
+                                            <TableRow key={decision.idDecision}>
+                                                <TableCell>{decision.dateTimeDecision}</TableCell>
+                                                <TableCell>{decision.typeDecision}</TableCell>
+                                                <TableCell>{decision.contenuDecision}</TableCell>
+                                                <TableCell>{decision.numeroJugement || t('common.notAvailable')}</TableCell>
+                                                <TableCell>{decision.dateTimeNextAudience || t('common.notAvailable')}</TableCell>
                                             </TableRow>
                                         ))
                                     )}
@@ -182,10 +182,10 @@ const PortalDataSection = ({ caseNumber }) => {
                                     ) : (
                                         parties.map((party) => (
                                             <TableRow key={party.IdPartie}>
-                                                <TableCell>{party.NomPrenomPartie}</TableCell>
-                                                <TableCell>{party.RolePartie}</TableCell>
-                                                <TableCell>{party.CodeTypePersonne}</TableCell>
-                                                <TableCell>{party.CountAvocatsPartie}</TableCell>
+                                                <TableCell>{party.nomPrenomPartie}</TableCell>
+                                                <TableCell>{party.rolePartie}</TableCell>
+                                                <TableCell>{party.codeTypePersonne}</TableCell>
+                                                <TableCell>{party.countAvocatsPartie}</TableCell>
                                             </TableRow>
                                         ))
                                     )}

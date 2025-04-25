@@ -31,7 +31,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../../features/auth/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
-import PortalDataSection from '../../components/cases/PortalDataSection ';
+import PortalDataSection from '../../components/cases/PortalDataSection';
 import caseService from '../../services/caseService';
 import clientService from '../../services/clientService';
 import useOnlineStatus from '../../hooks/useOnlineStatus';
@@ -589,7 +589,7 @@ const CaseDetailsPage = () => {
                     <Tab label={t('documents.documents')} icon={<DocumentIcon />} iconPosition="start" />
                     <Tab label={t('billing.billing')} icon={<MoneyIcon />} iconPosition="start" />
                     <Tab label={t('cases.notes')} icon={<NotesIcon />} iconPosition="start" />
-                    <Tab label={t('cases.tribunalPortal')} icon={<GavelIcon />} iconPosition="start" />
+                    <Tab label={t('cases.portal.moroccanTribunalPortal')} icon={<GavelIcon />} iconPosition="start" />
                 </Tabs>
 
                 {/* Clients Tab */}
