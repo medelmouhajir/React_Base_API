@@ -1,6 +1,9 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using React_Mangati.Server.Data;
+using System.Text;
 
 namespace React_Mangati.Server
 {
@@ -23,25 +26,17 @@ namespace React_Mangati.Server
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
+            // Configure JWT authentication
+            ConfigureJwtAuthentication(builder);
+
+
+            // Configure CORS
+            ConfigureCors(builder);
 
             // Register HttpClient for API calls
             builder.Services.AddHttpClient();
 
 
-
-            // Configure CORS
-            var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ??
-                new[] { "http://localhost:5267", "http://localhost:54440" };
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(policy =>
-                {
-                    policy.WithOrigins(allowedOrigins)
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
-                });
-            });
 
             var app = builder.Build();
 
@@ -83,6 +78,71 @@ namespace React_Mangati.Server
             app.MapFallbackToFile("/index.html");
 
             app.Run();
+        }
+
+        private static void ConfigureCors(WebApplicationBuilder builder)
+        {
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowReactApp", builder =>
+                {
+                    builder.WithOrigins(
+                            // Development origins
+                            "http://localhost:5229",
+                            "https://localhost:5229",
+                            // Production origin (update with your domain)
+                            "http://152.53.243.82:5229",
+                            "https://152.53.243.82:5229",
+                            "https://mangati.ma",
+                            "https://www.mangati.ma"
+                        )
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials(); // Important for cookies
+                });
+            });
+        }
+
+        private static void ConfigureJwtAuthentication(WebApplicationBuilder builder)
+        {
+            var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+            var secretKey = jwtSettings["SecretKey"] ??
+                "DefaultSecretKeyThatShouldBeReplaced123456789012345678901234"; // Use a secure key in production
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = !builder.Environment.IsDevelopment(); // Only require HTTPS in production
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)),
+                    ValidateIssuer = false, // Set to true in production and specify issuer
+                    ValidateAudience = false, // Set to true in production and specify audience
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero // Remove default 5-minute tolerance for token expiration
+                };
+
+                // For signalR support (if needed later)
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+            });
         }
     }
 }

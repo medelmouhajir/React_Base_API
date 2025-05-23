@@ -1,27 +1,43 @@
-# Use the latest LTS version of Node.js
+# Build stage
 FROM node:20-alpine AS build
- 
-# Set the working directory inside the container
+
+# Set working directory
 WORKDIR /app
- 
-# Copy package.json and package-lock.json
+
+# Copy package files
 COPY package*.json ./
- 
+
 # Install dependencies
 RUN npm install
- 
-# Copy the rest of your application files
+
+# Copy source code
 COPY . .
- 
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM node:20-alpine AS production
+
+# Set working directory
 WORKDIR /app
-# Install serve to run the application
+
+# Install serve globally
 RUN npm install -g serve
 
+# Copy built assets from build stage
+COPY --from=build /app/dist ./dist
 
+# Copy package.json for reference
+COPY --from=build /app/package.json ./
 
-# Install dependencies with legacy peer deps to avoid conflicts
-RUN npm install --legacy-peer-deps
-# Expose the port your app runs on
+# Create a non-root user for security
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S reactuser -u 1001
+USER reactuser
+
+# Expose port
 EXPOSE 54450
- 
-# Define the command to run 
+
+# Start the application
+CMD ["serve", "-s", "dist", "-l", "54450", "-H", "0.0.0.0"]
