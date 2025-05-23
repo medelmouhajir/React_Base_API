@@ -19,7 +19,7 @@ const Header = () => {
         {/* Logo */}
         <div className="header__logo">
           <a href="/" className="header__logo-link">
-            <img src="/logo.svg" alt="Mangati" className="header__logo-image" />
+            <img src="https://placehold.co/40x40" alt="Mangati" className="header__logo-image" />
             <span className="header__logo-text">Mangati</span>
           </a>
         </div>
@@ -50,7 +50,7 @@ const Header = () => {
               onClick={toggleUserMenu}
             >
               <img 
-                src="/default-avatar.png" 
+                src="https://placehold.co/50x50" 
                 alt="User Avatar" 
                 className="header__user-avatar"
               />

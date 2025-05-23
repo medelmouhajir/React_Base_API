@@ -1,34 +1,60 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using React_Mangati.Server.Data;
+using React_Mangati.Server.Models.Users;
 using System.Text;
 
 namespace React_Mangati.Server
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
 
             // Configure database
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // Configure Identity
+            builder.Services.AddIdentity<User, IdentityRole>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings
+                options.User.AllowedUserNameCharacters =
+                    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.RequireUniqueEmail = true;
+
+                // Sign in settings
+                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedPhoneNumber = false;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
             // Configure JWT authentication
             ConfigureJwtAuthentication(builder);
-
 
             // Configure CORS
             ConfigureCors(builder);
@@ -36,24 +62,28 @@ namespace React_Mangati.Server
             // Register HttpClient for API calls
             builder.Services.AddHttpClient();
 
-
-
             var app = builder.Build();
 
-
-            // Apply pending migrations
+            // Apply pending migrations and seed roles
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 try
                 {
                     var context = services.GetRequiredService<ApplicationDbContext>();
-                    context.Database.Migrate(); // This applies pending migrations
+                    var userManager = services.GetRequiredService<UserManager<User>>();
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                    // Apply migrations
+                    await context.Database.MigrateAsync();
+
+                    // Seed roles and admin user
+                    await SeedRolesAndAdminUser(userManager, roleManager);
                 }
                 catch (Exception ex)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while migrating the database.");
+                    logger.LogError(ex, "An error occurred while migrating the database or seeding data.");
                 }
             }
 
@@ -69,27 +99,32 @@ namespace React_Mangati.Server
 
             app.UseHttpsRedirection();
 
-            app.UseCors();
-            app.UseAuthorization();
+            // Use CORS before auth
+            app.UseCors("AllowReactApp");
 
+            // Enable authentication and authorization
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 
             app.MapFallbackToFile("/index.html");
 
-            app.Run();
+            await app.RunAsync();
         }
 
         private static void ConfigureCors(WebApplicationBuilder builder)
         {
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowReactApp", builder =>
+                options.AddPolicy("AllowReactApp", corsBuilder =>
                 {
-                    builder.WithOrigins(
+                    corsBuilder.WithOrigins(
                             // Development origins
                             "http://localhost:5229",
                             "https://localhost:5229",
+                            "http://localhost:54450",
+                            "https://localhost:54450",
                             // Production origin (update with your domain)
                             "http://152.53.243.82:5229",
                             "https://152.53.243.82:5229",
@@ -122,13 +157,15 @@ namespace React_Mangati.Server
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)),
-                    ValidateIssuer = false, // Set to true in production and specify issuer
-                    ValidateAudience = false, // Set to true in production and specify audience
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = jwtSettings["Audience"],
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero // Remove default 5-minute tolerance for token expiration
                 };
 
-                // For signalR support (if needed later)
+                // For SignalR support (if needed later)
                 options.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
@@ -143,6 +180,55 @@ namespace React_Mangati.Server
                     }
                 };
             });
+
+            // Add authorization policies
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("ManagerOrAdmin", policy => policy.RequireRole("Manager", "Admin"));
+                options.AddPolicy("UserOrAbove", policy => policy.RequireRole("User", "Manager", "Admin"));
+            });
+        }
+
+        private static async Task SeedRolesAndAdminUser(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            // Seed roles
+            var roles = new[] { "Admin", "Manager", "User" };
+
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
+
+            // Seed admin user
+            const string adminEmail = "admin@mangati.com";
+            const string adminPassword = "Admin123!";
+
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+            if (adminUser == null)
+            {
+                adminUser = new User
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    FirstName = "System",
+                    LastName = "Administrator",
+                    Role = "Admin",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(adminUser, adminPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                }
+            }
         }
     }
 }
