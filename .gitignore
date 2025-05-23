@@ -361,3 +361,11 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/React_Lawyer/react_lawyer.client/public/icons/icon-128x128.png
+/React_Lawyer/react_lawyer.client/public/icons/icon-144x144.png
+/React_Lawyer/react_lawyer.client/public/icons/icon-152x152.png
+/React_Lawyer/react_lawyer.client/public/icons/icon-192x192.png
+/React_Lawyer/react_lawyer.client/public/icons/icon-384x384.png
+/React_Lawyer/react_lawyer.client/public/icons/icon-512x512.png
+/React_Lawyer/react_lawyer.client/public/icons/icon-72x72.png
+/React_Lawyer/react_lawyer.client/public/icons/icon-96x96.png
