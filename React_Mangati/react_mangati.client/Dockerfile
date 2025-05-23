@@ -39,5 +39,5 @@ USER reactuser
 # Expose port
 EXPOSE 54450
 
-# Start the application
-CMD ["serve", "-s", "dist", "-l", "54450", "-H", "0.0.0.0"]
+# Start the application - removed the invalid -H flag
+CMD ["serve", "-s", "dist", "-l", "54450"]

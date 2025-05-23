@@ -81,7 +81,7 @@ services:
     ports:
       - "54450:54450"
     volumes:
-      - ./React_Mangati/react_mangati.client:/app
+      - ./React_Mangati/react_mangati.client:/app/mangati
       - /app/node_modules
     environment:
       - DEV_SERVER_PORT=54450
