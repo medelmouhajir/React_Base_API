@@ -1,5 +1,5 @@
 services:
-  # Backend .NET Core API service
+  # Backend .NET Core API services
   react_lawyer.server:
     build:
       context: .
