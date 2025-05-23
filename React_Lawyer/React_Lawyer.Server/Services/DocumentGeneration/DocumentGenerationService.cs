@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using React_Lawyer.Server.Models.DocumentGeneration;
+using Shared_Models.Juridictions;
 
 namespace React_Lawyer.Server.Services.DocumentGeneration
 {
@@ -236,13 +237,18 @@ namespace React_Lawyer.Server.Services.DocumentGeneration
                         Status = caseData.Status.ToString(),
                         OpenDate = caseData.OpenDate.ToString("yyyy-MM-dd"),
                         CloseDate = caseData.CloseDate?.ToString("yyyy-MM-dd"),
-                        caseData.CourtName,
                         caseData.CourtCaseNumber,
                         caseData.OpposingParty,
                         caseData.OpposingCounsel,
                         NextHearingDate = caseData.NextHearingDate?.ToString("yyyy-MM-dd"),
                         caseData.Notes,
-                        caseData.IsUrgent
+                        caseData.IsUrgent,
+                        Juridiction = new Juridiction
+                        {
+                            Id = caseData.Juridiction.Id,
+                            Name = caseData.Juridiction.Name,
+                            Portal_Identifier = caseData.Juridiction.Portal_Identifier
+                        }
                     },
                     Attorney = caseData.AssignedLawyer != null ? new
                     {

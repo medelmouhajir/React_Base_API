@@ -15,13 +15,18 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "conf.d", "conf.d", "{1B884825-FB2E-4E78-A424-D234171CCB5B}"
 	ProjectSection(SolutionItems) = preProject
 		default.conf = default.conf
+		ssl.conf = ssl.conf
 	EndProjectSection
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared_Models", "..\Shared_Models\Shared_Models.csproj", "{D9FA6F16-1F4D-409A-9A93-37526FC9B3CE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "React_Lawyer.DocumentGenerator", "React_Lawyer\React_Lawyer.DocumentGenerator\React_Lawyer.DocumentGenerator.csproj", "{9F36E319-5DE7-476F-9AC6-BED3054F3374}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "www", "www", "{D105C66E-7FEE-4D06-82E9-2704C5AD5D9B}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "react_mangati.client", "React_Mangati\react_mangati.client\react_mangati.client.esproj", "{3B609539-3EF6-32FA-1DAA-99987BCA2DC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "React_Mangati.Server", "React_Mangati\React_Mangati.Server\React_Mangati.Server.csproj", "{08A9F1BE-6994-41CA-AFA1-931BBCA9BB04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,14 +48,20 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9FA6F16-1F4D-409A-9A93-37526FC9B3CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9FA6F16-1F4D-409A-9A93-37526FC9B3CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9FA6F16-1F4D-409A-9A93-37526FC9B3CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9FA6F16-1F4D-409A-9A93-37526FC9B3CE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9F36E319-5DE7-476F-9AC6-BED3054F3374}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9F36E319-5DE7-476F-9AC6-BED3054F3374}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F36E319-5DE7-476F-9AC6-BED3054F3374}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F36E319-5DE7-476F-9AC6-BED3054F3374}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B609539-3EF6-32FA-1DAA-99987BCA2DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B609539-3EF6-32FA-1DAA-99987BCA2DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B609539-3EF6-32FA-1DAA-99987BCA2DC5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3B609539-3EF6-32FA-1DAA-99987BCA2DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B609539-3EF6-32FA-1DAA-99987BCA2DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B609539-3EF6-32FA-1DAA-99987BCA2DC5}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{08A9F1BE-6994-41CA-AFA1-931BBCA9BB04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08A9F1BE-6994-41CA-AFA1-931BBCA9BB04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08A9F1BE-6994-41CA-AFA1-931BBCA9BB04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08A9F1BE-6994-41CA-AFA1-931BBCA9BB04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,6 +70,7 @@ Global
 		{F0DEDD37-19FB-4C32-880E-029540A20C19} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{5A31252A-A3E4-4D80-B876-92FBBFA3AAF3} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{1B884825-FB2E-4E78-A424-D234171CCB5B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{D105C66E-7FEE-4D06-82E9-2704C5AD5D9B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7705D36B-1351-4295-9C84-DBAE3325E379}

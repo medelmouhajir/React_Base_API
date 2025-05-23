@@ -3,7 +3,8 @@
     "title": "إدارة مكتب المحاماة",
     "dashboard": "لوحة التحكم",
     "settings": "الإعدادات",
-    "version": "الإصدار 1.0.0"
+    "version": "الإصدار 1.0.0",
+    "login": "تسجيل الدخول"
   },
 
   "common": {
@@ -80,7 +81,8 @@
     "system": "النظام",
     "saving": "جارٍ الحفظ...",
     "download": "تنزيل",
-    "uploading": "جارٍ التحميل..."
+    "uploading": "جارٍ التحميل...",
+    "signingIn": "جاري تسجيل الدخول..."
   },
 
   "auth": {
@@ -96,7 +98,9 @@
     "loginError": "اسم المستخدم أو كلمة المرور غير صحيحة",
     "registerError": "فشلت عملية التسجيل",
     "loginSuccess": "تم تسجيل الدخول بنجاح",
-    "registerSuccess": "تم التسجيل بنجاح"
+    "registerSuccess": "تم التسجيل بنجاح",
+    "signIn": "تسجيل الدخول",
+    "registerUser": "تسجيل مستخدم جديد"
   },
 
   "profile": {
@@ -1133,6 +1137,15 @@
     "insertTable": "إدراج جدول"
   },
 
+  "validation": {
+    "usernameRequired": "اسم المستخدم مطلوب",
+    "passwordRequired": "كلمة المرور مطلوبة"
+  },
+
+  "errors": {
+    "offlineLogin": "لا يمكنك تسجيل الدخول أثناء عدم الاتصال بالإنترنت",
+    "loginFailed": "فشل في تسجيل الدخول"
+  },
 
   "ai": {
     "title": "المساعد الذكي",

@@ -9,9 +9,9 @@ class PortalService {
     }
 
     // Get case details from Moroccan portal
-    async getCaseDetails(caseNumber) {
+    async getCaseDetails(caseNumber, juridiction) {
         try {
-            const response = await fetch(`${API_URL}/api/portal/${encodeURIComponent(caseNumber)}`, {
+            const response = await fetch(`${API_URL}/api/portal/${encodeURIComponent(caseNumber)}/${encodeURIComponent(juridiction)}`, {
                 headers: this.getAuthHeader()
             });
 

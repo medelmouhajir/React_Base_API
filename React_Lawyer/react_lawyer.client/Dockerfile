@@ -31,6 +31,7 @@ RUN ls -la src/
 RUN npm pkg set dependencies.react-router-dom="^6.22.0"
 RUN npm install --legacy-peer-deps i18next i18next-browser-languagedetector react-i18next react-big-calendar moment react-quill react-color
 RUN npm install --legacy-peer-deps
+# RUN chmod +x node_modules/.bin/vite
 
 # Build the application with legacy peer deps
 RUN npm run build --legacy-peer-deps

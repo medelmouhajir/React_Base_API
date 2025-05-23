@@ -68,12 +68,12 @@ namespace React_Lawyer.Server.Controllers.Cases
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<object>> Details(string id)
+        [HttpGet("{id}/{juridiction}")]
+        public async Task<ActionResult<object>> Details(string id , int juridiction = 86)
         {
             try
             {
-                var caseInfo = await _scraper.GetCaseDataAsync(id);
+                var caseInfo = await _scraper.GetCaseDataAsync(id , juridiction);
                 return Ok(caseInfo);
             }
             catch (Exception e)

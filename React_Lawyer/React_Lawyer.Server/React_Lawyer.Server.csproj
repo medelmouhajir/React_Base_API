@@ -31,11 +31,4 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.7.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Shared_Models\Shared_Models.csproj" />
-    <ProjectReference Include="..\react_lawyer.client\react_lawyer.client.esproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
-
 </Project>

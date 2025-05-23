@@ -30,6 +30,7 @@ import useOnlineStatus from '../../hooks/useOnlineStatus';
 import caseService from '../../services/caseService';
 import clientService from '../../services/clientService';
 import lawyerService from '../../services/lawyerService';
+import juridictionService from '../../services/juridictionService';
 
 const NewCasePage = () => {
 
@@ -59,11 +60,11 @@ const NewCasePage = () => {
         title: '',
         description: '',
         type: 'Civil', // Default case type
-        courtName: '',
         courtCaseNumber: '',
         opposingParty: '',
         opposingCounsel: '',
         nextHearingDate: '',
+        juridictionId: 0,
         notes: '',
         isUrgent: false,
         parentCaseId: null,
@@ -81,6 +82,7 @@ const NewCasePage = () => {
     // Reference data
     const [lawyers, setLawyers] = useState([]);
     const [clients, setClients] = useState([]);
+    const [juridictions, setJuridictions] = useState([]);
     const [parentCases, setParentCases] = useState([]);
     const [selectedClients, setSelectedClients] = useState([]);
 
@@ -98,6 +100,7 @@ const NewCasePage = () => {
                     // Default to empty arrays if fetch fails
                     fetchLawyers(),
                     fetchClients(),
+                    fetchJuridictions(),
                     fetchCases()
                 ];
 
@@ -141,6 +144,17 @@ const NewCasePage = () => {
         } catch (error) {
             console.error('Error fetching clients:', error);
             setClients([]); // Set empty array on error
+        }
+    };
+
+    const fetchJuridictions = async () => {
+        try {
+            const juridictionsData = await juridictionService.getJuridictions();
+            console.log('Juridictions data fetched:', juridictionsData.length);
+            setJuridictions(juridictionsData || []);
+        } catch (error) {
+            console.error('Error fetching Juridictions:', error);
+            setJuridictions([]);
         }
     };
 
@@ -311,16 +325,16 @@ const NewCasePage = () => {
 
     // Get case type options based on backend enum
     const caseTypeOptions = [
-        { value: 'Civil', label: t('cases.types.civil'), enumValue: 0 },
-        { value: 'Criminal', label: t('cases.types.criminal'), enumValue: 1 },
-        { value: 'Family', label: t('cases.types.family'), enumValue: 2 },
-        { value: 'Immigration', label: t('cases.types.immigration'), enumValue: 3 },
-        { value: 'Corporate', label: t('cases.types.corporate'), enumValue: 4 },
-        { value: 'RealEstate', label: t('cases.types.realEstate'), enumValue: 5 },
-        { value: 'Bankruptcy', label: t('cases.types.bankruptcy'), enumValue: 6 },
-        { value: 'IntellectualProperty', label: t('cases.types.intellectualProperty'), enumValue: 7 },
-        { value: 'Tax', label: t('cases.types.tax'), enumValue: 8 },
-        { value: 'Other', label: t('cases.types.other'), enumValue: 9 }
+        { value: 'CivilLaw', label: t('cases.types.CivilLaw'), enumValue: 0 },
+        { value: 'CriminalLaw', label: t('cases.types.CriminalLaw'), enumValue: 1 },
+        { value: 'FamilyLaw', label: t('cases.types.FamilyLaw'), enumValue: 2 },
+        { value: 'Immigration', label: t('cases.types.Immigration'), enumValue: 3 },
+        { value: 'CommercialLaw', label: t('cases.types.CommercialLaw'), enumValue: 4 },
+        { value: 'AdministrativeLaw', label: t('cases.types.AdministrativeLaw'), enumValue: 5 },
+        { value: 'RealEstate', label: t('cases.types.RealEstate'), enumValue: 6 },
+        { value: 'LaborLaw', label: t('cases.types.LaborLaw'), enumValue: 7 },
+        { value: 'IntellectualProperty', label: t('cases.types.IntellectualProperty'), enumValue: 8 },
+        { value: 'Other', label: t('cases.types.Other'), enumValue: 9 }
     ];
 
     return (
@@ -510,15 +524,32 @@ const NewCasePage = () => {
                                 </Typography>
                             </Grid>
 
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    fullWidth
-                                    label={t('cases.courtName')}
-                                    name="courtName"
-                                    value={formData.courtName}
-                                    onChange={handleChange}
-                                />
-                            </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="juridictions-label">{t('cases.juridiction')}</InputLabel>
+                                        <Select
+                                            labelId="juridictions-label"
+                                            name="juridictionId"
+                                            onChange={handleChange}
+                                            value={formData.juridictionId || ''}
+                                            label={t('cases.juridiction')}
+                                        >
+                                            <MenuItem value="">{t('common.none')}</MenuItem>
+                                            {juridictions && juridictions.length > 0 ? (
+                                                juridictions.map(pJuridiction => (
+                                                    <MenuItem key={pJuridiction.id || `case-${Math.random()}`} value={pJuridiction.id || ''}>
+                                                        {pJuridiction.name ? `${pJuridiction.name}` : pJuridiction.name || ''}
+                                                    </MenuItem>
+                                                ))
+                                            ) : (
+                                                <MenuItem disabled value="">
+                                                    {t('common.noJuridictionsAvailable')}
+                                                </MenuItem>
+                                            )}
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+
 
                             <Grid item xs={12} md={6}>
                                 <TextField

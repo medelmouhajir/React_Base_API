@@ -5,6 +5,7 @@ using React_Lawyer.Server.Data;
 using React_Lawyer.Server.Services.DocumentGeneration;
 using Shared_Models.Cases;
 using Shared_Models.Clients;
+using Shared_Models.Juridictions;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -198,6 +199,7 @@ namespace React_Lawyer.Server.Controllers
                 var caseData = await _context.Cases
                     .Include(c => c.AssignedLawyer)
                         .ThenInclude(l => l.User)
+                    .Include(x=> x.Juridiction)
                     .Where(c => c.CaseId == caseId)
                     .Select(c => new
                     {
@@ -209,7 +211,7 @@ namespace React_Lawyer.Server.Controllers
                         Status = c.Status.ToString(),
                         OpenDate = c.OpenDate.ToString("yyyy-MM-dd"),
                         CloseDate = c.CloseDate.HasValue ? c.CloseDate.Value.ToString("yyyy-MM-dd") : null,
-                        c.CourtName,
+                        CourtName = c.Juridiction.Name,
                         c.CourtCaseNumber,
                         c.OpposingParty,
                         c.OpposingCounsel,
@@ -294,7 +296,12 @@ namespace React_Lawyer.Server.Controllers
                             Status = c.Status.ToString(),
                             OpenDate = c.OpenDate.ToString("yyyy-MM-dd"),
                             CloseDate = c.CloseDate.HasValue ? c.CloseDate.Value.ToString("yyyy-MM-dd") : null,
-                            c.CourtName,
+                            Juridiction = new Juridiction
+                            {
+                                Id = c.Juridiction.Id,
+                                Name = c.Juridiction.Name,
+                                Portal_Identifier = c.Juridiction.Portal_Identifier
+                            },
                             c.CourtCaseNumber,
                             c.OpposingParty,
                             c.OpposingCounsel,

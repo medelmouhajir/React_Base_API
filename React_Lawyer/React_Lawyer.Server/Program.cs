@@ -162,7 +162,10 @@ namespace React_Lawyer.Server
                             "http://localhost:54440",
                             "https://localhost:54440",
                             // Production origin (update with your domain)
-                            "https://yourdomain.com"
+                            "http://152.53.243.82:54440",
+                            "https://152.53.243.82:54440",
+                            "https://yallahub.ma",
+                            "https://www.yallahub.ma"
                         )
                         .AllowAnyMethod()
                         .AllowAnyHeader()

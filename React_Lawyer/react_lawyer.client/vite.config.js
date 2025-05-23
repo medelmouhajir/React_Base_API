@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url';
-
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -53,7 +52,7 @@ if (fs.existsSync(certFilePath) && fs.existsSync(keyFilePath)) {
 // Determine the backend API URL - when running in Docker, use the service name
 const isInDocker = env.DOCKER_CONTAINER === 'true';
 const backendTarget = isInDocker
-    ? 'http://react_lawyer.server:8080'
+    ? 'https://react_lawyer.server:8080'
     : env.ASPNETCORE_HTTPS_PORT
         ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
         : env.ASPNETCORE_URLS
@@ -149,16 +148,14 @@ export default defineConfig({
             '@': fileURLToPath(new URL('./src', import.meta.url))
         }
     },
+
     server: {
-        proxy: {
-            '/weatherforecast': {
-                target: backendTarget,
-                secure: false,
-                changeOrigin: true
-            }
+        host: '0.0.0.0',     // bind dev-server inside Docker
+        port: 54440,
+        allowedHosts: true,  // so any Host header (yallahub.ma) is OK
+        hmr: {
+            clientPort: 443,  // Client connects to 443 (Nginx)
+            path: '/hmr/',    // Adding a dedicated path for HMR
         },
-        port: parseInt(env.DEV_SERVER_PORT || '54440'),
-        host: '0.0.0.0',
-        ...(Object.keys(httpsConfig).length > 0 ? { https: httpsConfig } : {})
     }
 });

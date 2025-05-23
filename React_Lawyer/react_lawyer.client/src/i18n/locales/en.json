@@ -3,7 +3,8 @@
     "title": "Law Office Management",
     "dashboard": "Dashboard",
     "settings": "Settings",
-    "version": "v1.0.0"
+    "version": "v1.0.0",
+    "login": "Login"
   },
 
   "common": {
@@ -80,7 +81,8 @@
     "system": "System",
     "saving": "Saving...",
     "download": "Download",
-    "uploading": "Uploading..."
+    "uploading": "Uploading...",
+    "signingIn": "Signing in..."
   },
 
   "auth": {
@@ -96,7 +98,9 @@
     "loginError": "Invalid username or password",
     "registerError": "Registration failed",
     "loginSuccess": "Login successful",
-    "registerSuccess": "Registration successful"
+    "registerSuccess": "Registration successful",
+    "signIn": "Sign In",
+    "registerUser": "Register"
   },
 
   "profile": {
@@ -1140,6 +1144,15 @@
   },
 
 
+  "validation": {
+    "usernameRequired": "Username is required",
+    "passwordRequired": "Password is required"
+  },
+
+  "errors": {
+    "offlineLogin": "You are offline. Please connect to the internet to login.",
+    "loginFailed": "Login failed. Please check your credentials and try again."
+  },
 
   "ai": {
     "title": "AI Assistant",

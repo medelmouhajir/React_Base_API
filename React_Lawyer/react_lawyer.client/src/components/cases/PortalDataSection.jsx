@@ -8,7 +8,7 @@ import {
 import { Refresh as RefreshIcon } from '@mui/icons-material';
 import portalService from '../../services/portalService';
 
-const PortalDataSection = ({ caseNumber }) => {
+const PortalDataSection = ({ caseNumber, juridiction }) => {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -18,7 +18,7 @@ const PortalDataSection = ({ caseNumber }) => {
     const [tabValue, setTabValue] = useState(0);
 
     const fetchPortalData = async () => {
-        if (!caseNumber) {
+        if (!caseNumber || !juridiction) {
             setError(t('cases.portal.noCaseNumber'));
             return;
         }
@@ -27,7 +27,7 @@ const PortalDataSection = ({ caseNumber }) => {
         setError('');
 
         try {
-            const data = await portalService.getCaseDetails(caseNumber);
+            const data = await portalService.getCaseDetails(caseNumber, juridiction);
             setPortalData(data?.data || null);
 
             if (data?.data?.idDossierCivil && data?.data?.affaire) {

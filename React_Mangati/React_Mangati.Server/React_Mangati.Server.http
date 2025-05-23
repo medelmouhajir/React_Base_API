@@ -1,0 +1,6 @@
+@React_Mangati.Server_HostAddress = http://localhost:5177
+
+GET {{React_Mangati.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

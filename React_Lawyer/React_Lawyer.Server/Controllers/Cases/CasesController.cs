@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using React_Lawyer.Server.Data;
 using Shared_Models.Cases;
 using Shared_Models.Clients;
+using Shared_Models.Juridictions;
 using Shared_Models.Notifications;
 using Shared_Models.TimeEntries;
 using System;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace React_Lawyer.Server.Controllers.Cases
 {
@@ -49,14 +51,19 @@ namespace React_Lawyer.Server.Controllers.Cases
                             Status = c.Status,
                             OpenDate = c.OpenDate,
                             CloseDate = c.CloseDate,
-                            CourtName = c.CourtName,
                             CourtCaseNumber = c.CourtCaseNumber,
                             OpposingParty = c.OpposingParty,
                             OpposingCounsel = c.OpposingCounsel,
                             NextHearingDate = c.NextHearingDate,
                             Notes = c.Notes,
                             IsUrgent = c.IsUrgent,
-                            ParentCaseId = c.ParentCaseId
+                            ParentCaseId = c.ParentCaseId,
+                            Juridiction = new Juridiction
+                            {
+                                Id = c.Juridiction.Id,
+                                Name = c.Juridiction.Name,
+                                Portal_Identifier = c.Juridiction.Portal_Identifier
+                            },
                         })
                     .ToListAsync();
 
@@ -89,6 +96,7 @@ namespace React_Lawyer.Server.Controllers.Cases
                     .Include(c => c.Invoices)
                     .Include(x=> x.Events)
                     .ThenInclude(x=> x.CreatedBy)
+                    .Include(x=> x.Juridiction)
                     .FirstOrDefaultAsync(c => c.CaseId == id);
 
                 if (@case == null)
@@ -109,7 +117,7 @@ namespace React_Lawyer.Server.Controllers.Cases
                     Status = @case.Status,
                     OpenDate = @case.OpenDate,
                     CloseDate = @case.CloseDate,
-                    CourtName = @case.CourtName,
+                    CourtName = @case.Juridiction.Id,
                     CourtCaseNumber = @case.CourtCaseNumber,
                     OpposingParty = @case.OpposingParty,
                     OpposingCounsel = @case.OpposingCounsel,
@@ -207,6 +215,13 @@ namespace React_Lawyer.Server.Controllers.Cases
                         HourlyRate = x.HourlyRate,
                         Lawyer = x.Lawyer.User.FirstName + " " + x.Lawyer.User.LastName,
                     }),
+                    @case.JuridictionId,
+                    Juridiction = new
+                    {
+                        Id = @case.Juridiction.Id,
+                        Name = @case.Juridiction.Name,
+                        Portal_Identifier = @case.Juridiction.Portal_Identifier
+                    }
                 };
             }
             catch (Exception ex)
@@ -240,7 +255,7 @@ namespace React_Lawyer.Server.Controllers.Cases
                             Status = c.Status.ToString(),
                             OpenDate = c.OpenDate,
                             CloseDate = c.CloseDate,
-                            CourtName = c.CourtName,
+                            CourtName = c.Juridiction.Id,
                             CourtCaseNumber = c.CourtCaseNumber,
                             OpposingParty = c.OpposingParty,
                             OpposingCounsel = c.OpposingCounsel,
@@ -256,7 +271,13 @@ namespace React_Lawyer.Server.Controllers.Cases
                                     FirstName = c.AssignedLawyer.User.FirstName,
                                     LastName = c.AssignedLawyer.User.LastName,
                                 }
-                            }
+                            },
+                            Juridiction = new Juridiction
+                            {
+                                Id = c.Juridiction.Id,
+                                Name = c.Juridiction.Name,
+                                Portal_Identifier = c.Juridiction.Portal_Identifier
+                            },
                         })
                     .ToListAsync();
 
@@ -295,7 +316,6 @@ namespace React_Lawyer.Server.Controllers.Cases
                             Status = c.Status,
                             OpenDate = c.OpenDate,
                             CloseDate = c.CloseDate,
-                            CourtName = c.CourtName,
                             CourtCaseNumber = c.CourtCaseNumber,
                             OpposingParty = c.OpposingParty,
                             OpposingCounsel = c.OpposingCounsel,
@@ -311,7 +331,13 @@ namespace React_Lawyer.Server.Controllers.Cases
                                     FirstName = c.AssignedLawyer.User.FirstName,
                                     LastName = c.AssignedLawyer.User.LastName,
                                 }
-                            }
+                            },
+                            Juridiction = new Juridiction
+                            {
+                                Id = c.Juridiction.Id,
+                                Name = c.Juridiction.Name,
+                                Portal_Identifier = c.Juridiction.Portal_Identifier
+                            },
                         })
                     .ToListAsync();
 
@@ -355,6 +381,32 @@ namespace React_Lawyer.Server.Controllers.Cases
                     .Include(c => c.AssignedLawyer)
                         .ThenInclude(l => l.User)
                     .Where(c => c.Status != CaseStatus.Closed && c.Status != CaseStatus.Archived)
+                        .Select(c => new Case
+                        {
+                            CaseId = c.CaseId,
+                            CaseNumber = c.CaseNumber,
+                            LawFirmId = c.LawFirmId,
+                            LawyerId = c.LawyerId,
+                            Title = c.Title,
+                            Description = c.Description,
+                            Type = c.Type,
+                            Status = c.Status,
+                            OpenDate = c.OpenDate,
+                            CloseDate = c.CloseDate,
+                            CourtCaseNumber = c.CourtCaseNumber,
+                            OpposingParty = c.OpposingParty,
+                            OpposingCounsel = c.OpposingCounsel,
+                            NextHearingDate = c.NextHearingDate,
+                            Notes = c.Notes,
+                            IsUrgent = c.IsUrgent,
+                            ParentCaseId = c.ParentCaseId,
+                            Juridiction = new Juridiction
+                            {
+                                Id = c.Juridiction.Id,
+                                Name = c.Juridiction.Name,
+                                Portal_Identifier = c.Juridiction.Portal_Identifier
+                            },
+                        })
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -439,14 +491,14 @@ namespace React_Lawyer.Server.Controllers.Cases
                     Type = model.type,
                     Status = CaseStatus.Intake,
                     OpenDate = DateTime.UtcNow,
-                    CourtName = model.courtName,
                     CourtCaseNumber = model.courtCaseNumber,
                     OpposingParty = model.opposingParty,
                     OpposingCounsel = model.opposingCounsel,
                     NextHearingDate = model.nextHearingDate,
                     Notes = model.notes,
                     IsUrgent = model.isUrgent,
-                    ParentCaseId = model.parentCaseId
+                    ParentCaseId = model.parentCaseId,
+                    JuridictionId = model.juridictionId,
                 };
 
                 _context.Cases.Add(@case);
@@ -511,7 +563,7 @@ namespace React_Lawyer.Server.Controllers.Cases
 
                 await transaction.CommitAsync();
 
-                return CreatedAtAction(nameof(GetCase), new { id = @case.CaseId }, @case);
+                return Ok(new object());
             }
             catch (Exception ex)
             {
@@ -542,7 +594,6 @@ namespace React_Lawyer.Server.Controllers.Cases
                 existingCase.Description = @case.description;
                 existingCase.LawyerId = @case.lawyerId;
                 existingCase.Type = @case.type;
-                existingCase.CourtName = @case.courtName;
                 existingCase.CourtCaseNumber = @case.courtCaseNumber;
                 existingCase.OpposingParty = @case.opposingParty;
                 existingCase.OpposingCounsel = @case.opposingCounsel;
@@ -550,6 +601,7 @@ namespace React_Lawyer.Server.Controllers.Cases
                 existingCase.Notes = @case.notes;
                 existingCase.IsUrgent = @case.isUrgent;
                 existingCase.ParentCaseId = @case.parentCaseId;
+                existingCase.JuridictionId = @case.juridictionId;
 
                 // Don't update sensitive fields like Status directly
                 // Those should be updated through dedicated endpoints
@@ -653,7 +705,7 @@ namespace React_Lawyer.Server.Controllers.Cases
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    return Ok();
+                    return Ok(new object());
                 }
                 catch (Exception ex)
                 {
@@ -1007,6 +1059,7 @@ namespace React_Lawyer.Server.Controllers.Cases
 
         // Optional - Assigned lawyer ID
         public int? lawyerId { get; set; }
+        public int? juridictionId { get; set; }
 
         public string title { get; set; }
 
@@ -1016,7 +1069,7 @@ namespace React_Lawyer.Server.Controllers.Cases
         public CaseType type { get; set; }
 
         // Optional - Court information
-        public string courtName { get; set; }
+
         public string courtCaseNumber { get; set; }
         public string opposingParty { get; set; }
         public string opposingCounsel { get; set; }

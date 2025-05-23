@@ -159,11 +159,6 @@ namespace React_Lawyer.Server.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("CourtName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -174,6 +169,9 @@ namespace React_Lawyer.Server.Migrations
 
                     b.Property<bool>("IsUrgent")
                         .HasColumnType("boolean");
+
+                    b.Property<int?>("JuridictionId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("LawFirmId")
                         .HasColumnType("integer");
@@ -221,6 +219,8 @@ namespace React_Lawyer.Server.Migrations
                     b.HasIndex("CaseNumber");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("JuridictionId");
 
                     b.HasIndex("LawFirmId");
 
@@ -1133,6 +1133,10 @@ namespace React_Lawyer.Server.Migrations
                         .WithMany("Cases")
                         .HasForeignKey("ClientId");
 
+                    b.HasOne("Shared_Models.Juridictions.Juridiction", "Juridiction")
+                        .WithMany()
+                        .HasForeignKey("JuridictionId");
+
                     b.HasOne("Shared_Models.Firms.LawFirm", "LawFirm")
                         .WithMany("Cases")
                         .HasForeignKey("LawFirmId")
@@ -1149,6 +1153,8 @@ namespace React_Lawyer.Server.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("AssignedLawyer");
+
+                    b.Navigation("Juridiction");
 
                     b.Navigation("LawFirm");
 

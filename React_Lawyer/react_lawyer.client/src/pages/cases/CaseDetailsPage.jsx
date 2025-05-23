@@ -515,7 +515,7 @@ const CaseDetailsPage = () => {
                                 {t('cases.court')}
                             </Typography>
                             <Typography variant="body1">
-                                {caseData?.courtName || t('common.notAvailable')}
+                                {caseData?.juridiction?.name || t('common.notAvailable')}
                             </Typography>
                         </Box>
 
@@ -959,7 +959,7 @@ const CaseDetailsPage = () => {
                     </Box>
                 </TabPanel>
                 <TabPanel value={tabValue} index={5}> {/* Assuming it's the 6th tab (index 5) */}
-                    <PortalDataSection caseId={id} caseNumber={caseData?.courtCaseNumber} />
+                    <PortalDataSection caseId={id} caseNumber={caseData?.courtCaseNumber} juridiction={caseData?.juridiction?.portal_Identifier} />
                 </TabPanel>
             </Paper>
 
