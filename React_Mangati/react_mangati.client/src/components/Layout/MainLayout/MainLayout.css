@@ -1,0 +1,228 @@
+/* MainLayout Component Styles */
+.main-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f8fafc;
+}
+
+.main-layout__body {
+    flex: 1;
+    display: flex;
+    position: relative;
+}
+
+/* Content Area Styles */
+.main-layout__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    min-height: calc(100vh - 4rem); /* Subtract header height */
+}
+
+.main-layout__content--with-sidebar {
+    margin-left: 16rem; /* Sidebar width */
+}
+
+.main-layout__content--sidebar-collapsed {
+    margin-left: 4rem; /* Collapsed sidebar width */
+}
+
+.main-layout__content--full-width {
+    margin-left: 0;
+}
+
+.main-layout__content-inner {
+    flex: 1;
+    padding: 1.5rem;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* Mobile Overlay */
+.main-layout__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    backdrop-filter: blur(2px);
+    animation: overlayFadeIn 0.3s ease;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+    .main-layout__content--with-sidebar,
+    .main-layout__content--sidebar-collapsed {
+        margin-left: 0;
+    }
+
+    .main-layout__content-inner {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-layout__content-inner {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-layout__content-inner {
+        padding: 0.5rem;
+    }
+}
+
+/* Content Area Variants */
+.main-layout__content--dashboard {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.main-layout__content--settings {
+    background: #ffffff;
+}
+
+.main-layout__content--reports {
+    background: linear-gradient(135deg, #fef7f0 0%, #fed7aa 100%);
+}
+
+/* Animation for content transitions */
+.main-layout__content-inner {
+    animation: contentFadeIn 0.4s ease;
+}
+
+@keyframes contentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes overlayFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Content Loading States */
+.main-layout__content--loading {
+    position: relative;
+    overflow: hidden;
+}
+
+    .main-layout__content--loading::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #60a5fa, transparent);
+        animation: loadingBar 2s infinite;
+        z-index: 1000;
+    }
+
+@keyframes loadingBar {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* Scrollbar Customization */
+.main-layout__content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.main-layout__content::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.main-layout__content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+    .main-layout__content::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
+/* Focus and Accessibility */
+.main-layout__content:focus-within {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .main-layout__content {
+        margin-left: 0 !important;
+        background: white !important;
+    }
+
+    .main-layout__content-inner {
+        padding: 0 !important;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .main-layout__content {
+        background: white;
+        border: 2px solid black;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .main-layout__content,
+    .main-layout__content-inner,
+    .main-layout__overlay {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* Dark Theme Support */
+@media (prefers-color-scheme: dark) {
+    .main-layout {
+        background: #0f172a;
+    }
+
+    .main-layout__content {
+        background: #0f172a;
+    }
+
+    .main-layout__content--dashboard {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    }
+
+    .main-layout__content::-webkit-scrollbar-track {
+        background: #1e293b;
+    }
+
+    .main-layout__content::-webkit-scrollbar-thumb {
+        background: #475569;
+    }
+
+        .main-layout__content::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+}
