@@ -56,7 +56,7 @@ namespace React_Mangati.Server
             // Configure JWT authentication
             ConfigureJwtAuthentication(builder);
 
-            // Configure CORS
+            // Configure CORS - MUST be before authentication
             ConfigureCors(builder);
 
             // Register HttpClient for API calls
@@ -97,9 +97,10 @@ namespace React_Mangati.Server
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            // IMPORTANT: Comment out UseHttpsRedirection for development to prevent CORS issues
+            // app.UseHttpsRedirection();
 
-            // Use CORS before auth
+            // Use CORS BEFORE authentication - this is critical!
             app.UseCors("AllowReactApp");
 
             // Enable authentication and authorization
@@ -120,12 +121,14 @@ namespace React_Mangati.Server
                 options.AddPolicy("AllowReactApp", corsBuilder =>
                 {
                     corsBuilder.WithOrigins(
-                            // Development origins
+                            // Development origins - include both HTTP and HTTPS
                             "http://localhost:5229",
                             "https://localhost:5229",
                             "http://localhost:54450",
                             "https://localhost:54450",
-                            // Production origin (update with your domain)
+                            "http://localhost:7039",
+                            "https://localhost:7039",
+                            // Production origins
                             "http://152.53.243.82:5229",
                             "https://152.53.243.82:5229",
                             "https://mangati.ma",
@@ -133,7 +136,8 @@ namespace React_Mangati.Server
                         )
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .AllowCredentials(); // Important for cookies
+                        .AllowCredentials() // Important for auth
+                        .SetPreflightMaxAge(TimeSpan.FromSeconds(3600)); // Cache preflight for 1 hour
                 });
             });
         }
@@ -151,7 +155,7 @@ namespace React_Mangati.Server
             })
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = !builder.Environment.IsDevelopment(); // Only require HTTPS in production
+                options.RequireHttpsMetadata = false; // Allow HTTP for development
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {

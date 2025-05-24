@@ -40,7 +40,7 @@ namespace React_Mangati.Server.Controllers
 
             var user = new User
             {
-                UserName = model.Email,
+                UserName = GetUsernameFromEmail(model.Email),
                 Email = model.Email,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
@@ -84,6 +84,16 @@ namespace React_Mangati.Server.Controllers
 
             return BadRequest(ModelState);
         }
+
+        public string GetUsernameFromEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+                return string.Empty;
+
+            int atIndex = email.IndexOf("@");
+            return email.Substring(0, atIndex);
+        }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)

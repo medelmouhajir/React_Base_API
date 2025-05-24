@@ -1,13 +1,16 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
 // Create axios instance with base configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5229';
+
+console.log('🔧 API Base URL:', API_BASE_URL); // Debug log
 
 const apiClient = axios.create({
     baseURL: `${API_BASE_URL}/api`,
     headers: {
         'Content-Type': 'application/json',
     },
+    timeout: 10000, // 10 second timeout
 });
 
 // Request interceptor to add auth token
@@ -17,18 +20,30 @@ apiClient.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        console.log('🚀 Making API request:', config.method?.toUpperCase(), config.url);
         return config;
     },
     (error) => {
+        console.error('❌ Request interceptor error:', error);
         return Promise.reject(error);
     }
 );
 
 // Response interceptor to handle token expiration
 apiClient.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        console.log('✅ API response:', response.status, response.config.url);
+        return response;
+    },
     async (error) => {
         const originalRequest = error.config;
+
+        console.error('❌ API error:', {
+            status: error.response?.status,
+            url: error.config?.url,
+            message: error.message,
+            data: error.response?.data
+        });
 
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
@@ -56,6 +71,7 @@ apiClient.interceptors.response.use(
                     originalRequest.headers.Authorization = `Bearer ${newToken}`;
                     return apiClient(originalRequest);
                 } catch (refreshError) {
+                    console.error('❌ Token refresh failed:', refreshError);
                     // Refresh failed, clear storage and redirect to login
                     localStorage.removeItem('authToken');
                     localStorage.removeItem('tokenExpiry');
@@ -73,12 +89,15 @@ export const authService = {
     // Login user
     async login(email, password) {
         try {
+            console.log('🔐 Attempting login for:', email);
             const response = await apiClient.post('/auth/login', {
                 email,
                 password,
             });
+            console.log('✅ Login successful:', response.data);
             return response.data;
         } catch (error) {
+            console.error('❌ Login failed:', error);
             throw this.handleError(error);
         }
     },
@@ -86,6 +105,7 @@ export const authService = {
     // Register new user
     async register(userData) {
         try {
+            console.log('📝 Attempting registration for:', userData.email);
             const response = await apiClient.post('/auth/register', {
                 email: userData.email,
                 password: userData.password,
@@ -94,8 +114,10 @@ export const authService = {
                 phoneNumber: userData.phoneNumber,
                 role: userData.role || 'User',
             });
+            console.log('✅ Registration successful:', response.data);
             return response.data;
         } catch (error) {
+            console.error('❌ Registration failed:', error);
             throw this.handleError(error);
         }
     },
@@ -126,7 +148,7 @@ export const authService = {
             await apiClient.post('/auth/logout');
         } catch (error) {
             // Don't throw error for logout, just log it
-            console.error('Logout API call failed:', error);
+            console.error('❌ Logout API call failed:', error);
         }
     },
 
@@ -176,7 +198,7 @@ export const authService = {
             return new Error(message);
         } else if (error.request) {
             // Network error
-            return new Error('Network error. Please check your connection.');
+            return new Error('Network error. Please check your connection and ensure the API server is running.');
         } else {
             // Other error
             return new Error(error.message || 'An unexpected error occurred.');
@@ -207,6 +229,19 @@ export const authService = {
     clearAuth() {
         localStorage.removeItem('authToken');
         localStorage.removeItem('tokenExpiry');
+    },
+
+    // Test API connectivity
+    async testConnection() {
+        try {
+            console.log('🔍 Testing API connection to:', `${API_BASE_URL}/api`);
+            const response = await fetch(`${API_BASE_URL}/weatherforecast`);
+            console.log('✅ API connection test result:', response.status);
+            return response.ok;
+        } catch (error) {
+            console.error('❌ API connection test failed:', error);
+            return false;
+        }
     }
 };
 
