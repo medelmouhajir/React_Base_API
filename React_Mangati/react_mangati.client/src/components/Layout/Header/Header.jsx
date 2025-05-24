@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import './Header.css';
 
 const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const { user, logout } = useAuth();
 
@@ -22,15 +25,17 @@ const Header = () => {
     };
 
     const handleProfile = () => {
-        // Navigate to profile page
-        console.log('Navigate to profile');
+        navigate('/settings/profile');
         setIsUserMenuOpen(false);
     };
 
     const handleSettings = () => {
-        // Navigate to settings page
-        console.log('Navigate to settings');
+        navigate('/settings');
         setIsUserMenuOpen(false);
+    };
+
+    const isActiveRoute = (path) => {
+        return location.pathname === path || location.pathname.startsWith(path + '/');
     };
 
     return (
@@ -38,7 +43,7 @@ const Header = () => {
             <div className="header__container">
                 {/* Logo */}
                 <div className="header__logo">
-                    <a href="/" className="header__logo-link">
+                    <Link to="/dashboard" className="header__logo-link">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" className="header__logo-image">
                             <path
                                 d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
@@ -49,23 +54,47 @@ const Header = () => {
                             />
                         </svg>
                         <span className="header__logo-text">Mangati</span>
-                    </a>
+                    </Link>
                 </div>
 
                 {/* Navigation */}
                 <nav className={`header__nav ${isMenuOpen ? 'header__nav--open' : ''}`}>
                     <ul className="header__nav-list">
                         <li className="header__nav-item">
-                            <a href="/dashboard" className="header__nav-link">Dashboard</a>
+                            <Link
+                                to="/dashboard"
+                                className={`header__nav-link ${isActiveRoute('/dashboard') ? 'header__nav-link--active' : ''}`}
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                Dashboard
+                            </Link>
                         </li>
                         <li className="header__nav-item">
-                            <a href="/projects" className="header__nav-link">Projects</a>
+                            <Link
+                                to="/projects"
+                                className={`header__nav-link ${isActiveRoute('/projects') ? 'header__nav-link--active' : ''}`}
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                Projects
+                            </Link>
                         </li>
                         <li className="header__nav-item">
-                            <a href="/tasks" className="header__nav-link">Tasks</a>
+                            <Link
+                                to="/tasks"
+                                className={`header__nav-link ${isActiveRoute('/tasks') ? 'header__nav-link--active' : ''}`}
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                Tasks
+                            </Link>
                         </li>
                         <li className="header__nav-item">
-                            <a href="/reports" className="header__nav-link">Reports</a>
+                            <Link
+                                to="/reports"
+                                className={`header__nav-link ${isActiveRoute('/reports') ? 'header__nav-link--active' : ''}`}
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                Reports
+                            </Link>
                         </li>
                     </ul>
                 </nav>
