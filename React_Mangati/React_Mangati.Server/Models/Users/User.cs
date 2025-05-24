@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using React_Mangati.Server.Models.Favorites;
+using React_Mangati.Server.Models.Series;
 
 namespace React_Mangati.Server.Models.Users
 {
@@ -14,5 +16,8 @@ namespace React_Mangati.Server.Models.Users
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+
+        public virtual ICollection<Serie>? Series { get; set; }
+        public virtual ICollection<UserFavorite>? UserFavorites { get; set; }
     }
 }

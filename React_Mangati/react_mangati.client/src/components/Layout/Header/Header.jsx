@@ -58,7 +58,7 @@ const Header = ({
     };
 
     const handleProfile = () => {
-        navigate('/settings/profile');
+        navigate('/account');
         setIsUserMenuOpen(false);
     };
 
@@ -113,7 +113,7 @@ const Header = ({
 
                 {/* Logo */}
                 <div className="header__logo">
-                    <Link to="/dashboard" className="header__logo-link">
+                    <Link to="/" className="header__logo-link">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" className="header__logo-image">
                             <path
                                 d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
@@ -141,11 +141,11 @@ const Header = ({
                         </li>
                         <li className="header__nav-item">
                             <Link
-                                to="/projects"
-                                className={`header__nav-link ${isActiveRoute('/projects') ? 'header__nav-link--active' : ''}`}
+                                to="/series"
+                                className={`header__nav-link ${isActiveRoute('/series') ? 'header__nav-link--active' : ''}`}
                                 onClick={() => setIsMenuOpen(false)}
                             >
-                                {t('navigation.projects')}
+                                {t('navigation.series')}
                             </Link>
                         </li>
                         <li className="header__nav-item">

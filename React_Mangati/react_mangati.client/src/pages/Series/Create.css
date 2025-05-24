@@ -1,0 +1,71 @@
+/* src/pages/Series/Create.css */
+
+.serie-create {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    color: #f1f1f1;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+    .serie-create h1 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+.serie-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+    .serie-form label {
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+    }
+
+    .serie-form input[type="text"],
+    .serie-form textarea,
+    .serie-form select,
+    .serie-form input[type="file"] {
+        padding: 0.5rem;
+        border: 1px solid #333;
+        background-color: #2a2a2a;
+        color: #f1f1f1;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .serie-form textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .serie-form button {
+        padding: 0.75rem;
+        font-weight: bold;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .serie-form button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+@media (max-width: 600px) {
+    .serie-create {
+        margin: 1rem;
+        padding: 1rem;
+    }
+
+    .serie-form button {
+        font-size: 0.9rem;
+    }
+}

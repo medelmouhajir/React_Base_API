@@ -154,6 +154,216 @@ namespace React_Mangati.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("React_Mangati.Server.Models.Favorites.UserFavorite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SerieId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SerieId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserFavorites");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Languages.Language", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Languages");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Languages.Serie_Language", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SerieId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("SerieId");
+
+                    b.ToTable("Serie_Languages");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Series.Chapters.Chapter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SerieId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SerieId");
+
+                    b.ToTable("Chapters");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Series.Chapters.Page", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChapterId")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("FileSizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChapterId");
+
+                    b.ToTable("Pages");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Series.Serie", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CoverImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Synopsis")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Series");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Tags.Serie_Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("SerieId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SerieId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("Serie_Tags");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Tags.Tag", b =>
+                {
+                    b.Property<int>("TagId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TagId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("TagId");
+
+                    b.ToTable("Tags");
+                });
+
             modelBuilder.Entity("React_Mangati.Server.Models.Users.User", b =>
                 {
                     b.Property<string>("Id")
@@ -268,6 +478,69 @@ namespace React_Mangati.Server.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
+            modelBuilder.Entity("React_Mangati.Server.Models.Viewer.Reading_Progress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChapterId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("LastReadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("LastReadPage")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChapterId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reading_Progresses");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Viewer.Reading_Settings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("FitToWidth")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Reading_Mode")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SerieId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Theme")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SerieId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reading_Settings");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -317,6 +590,165 @@ namespace React_Mangati.Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Favorites.UserFavorite", b =>
+                {
+                    b.HasOne("React_Mangati.Server.Models.Series.Serie", "Serie")
+                        .WithMany()
+                        .HasForeignKey("SerieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("React_Mangati.Server.Models.Users.User", "User")
+                        .WithMany("UserFavorites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Serie");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Languages.Serie_Language", b =>
+                {
+                    b.HasOne("React_Mangati.Server.Models.Languages.Language", "Language")
+                        .WithMany("MangaLanguages")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("React_Mangati.Server.Models.Series.Serie", "Serie")
+                        .WithMany("Serie_Languages")
+                        .HasForeignKey("SerieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Language");
+
+                    b.Navigation("Serie");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Series.Chapters.Chapter", b =>
+                {
+                    b.HasOne("React_Mangati.Server.Models.Series.Serie", "Serie")
+                        .WithMany("Chapters")
+                        .HasForeignKey("SerieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Serie");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Series.Chapters.Page", b =>
+                {
+                    b.HasOne("React_Mangati.Server.Models.Series.Chapters.Chapter", "Chapter")
+                        .WithMany("Pages")
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chapter");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Series.Serie", b =>
+                {
+                    b.HasOne("React_Mangati.Server.Models.Users.User", "Author")
+                        .WithMany("Series")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Tags.Serie_Tag", b =>
+                {
+                    b.HasOne("React_Mangati.Server.Models.Series.Serie", "Serie")
+                        .WithMany("Serie_Tags")
+                        .HasForeignKey("SerieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("React_Mangati.Server.Models.Tags.Tag", "Tag")
+                        .WithMany("MangaTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Serie");
+
+                    b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Viewer.Reading_Progress", b =>
+                {
+                    b.HasOne("React_Mangati.Server.Models.Series.Chapters.Chapter", "Chapter")
+                        .WithMany()
+                        .HasForeignKey("ChapterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("React_Mangati.Server.Models.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chapter");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Viewer.Reading_Settings", b =>
+                {
+                    b.HasOne("React_Mangati.Server.Models.Series.Serie", "Serie")
+                        .WithMany()
+                        .HasForeignKey("SerieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("React_Mangati.Server.Models.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Serie");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Languages.Language", b =>
+                {
+                    b.Navigation("MangaLanguages");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Series.Chapters.Chapter", b =>
+                {
+                    b.Navigation("Pages");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Series.Serie", b =>
+                {
+                    b.Navigation("Chapters");
+
+                    b.Navigation("Serie_Languages");
+
+                    b.Navigation("Serie_Tags");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Tags.Tag", b =>
+                {
+                    b.Navigation("MangaTags");
+                });
+
+            modelBuilder.Entity("React_Mangati.Server.Models.Users.User", b =>
+                {
+                    b.Navigation("Series");
+
+                    b.Navigation("UserFavorites");
                 });
 #pragma warning restore 612, 618
         }

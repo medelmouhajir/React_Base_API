@@ -1,0 +1,92 @@
+/* src/pages/Series/SeriesList.css */
+
+.series-list {
+    padding: 20px;
+    color: #e0e0e0;
+}
+
+    .series-list h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #ffffff;
+    }
+
+.series-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.serie-card {
+    background: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+
+    .serie-card:hover {
+        transform: scale(1.02);
+    }
+
+.serie-cover {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.serie-info {
+    padding: 15px;
+}
+
+    .serie-info h2 {
+        font-size: 1.25rem;
+        margin: 0 0 10px 0;
+        color: #ffffff;
+    }
+
+    .serie-info p {
+        font-size: 0.95rem;
+        color: #cccccc;
+        height: 60px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+.status {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    text-transform: capitalize;
+}
+
+    .status.ongoing {
+        background-color: #bfa93e;
+        color: #1e1e1e;
+    }
+
+    .status.completed {
+        background-color: #3e8e41;
+        color: #ffffff;
+    }
+
+    .status.canceled {
+        background-color: #b94a48;
+        color: #ffffff;
+    }
+
+.details-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: #66b2ff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+    .details-link:hover {
+        text-decoration: underline;
+    }

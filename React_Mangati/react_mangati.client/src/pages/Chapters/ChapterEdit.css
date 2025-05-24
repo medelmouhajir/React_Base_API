@@ -1,0 +1,152 @@
+/* ChapterEdit.css */
+
+.chapter-edit {
+    padding: 20px;
+    color: #e0e0e0;
+    background-color: #121212;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+    .chapter-edit h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: #ffffff;
+    }
+
+/* Upload Button Styling */
+.upload-section {
+    margin-bottom: 20px;
+}
+
+    .upload-section input[type="file"] {
+        display: none;
+    }
+
+.upload-label {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #1f6feb;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+    .upload-label:hover {
+        background-color: #155bcb;
+    }
+
+/* Pages List */
+.pages-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+.page-item {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 8px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+    .page-item:hover {
+        transform: scale(1.02);
+    }
+
+    .page-item img {
+        max-width: 100%;
+        max-height: 300px;
+        height: auto;
+        object-fit: contain;
+        border-radius: 4px;
+        border: 1px solid #444;
+        background-color: #000;
+    }
+
+/* Action Buttons */
+.actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+    .actions button {
+        background: #333;
+        border: none;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: background-color 0.2s ease;
+    }
+
+        .actions button:hover {
+            background: #444;
+        }
+
+        .actions button:disabled {
+            background-color: #222;
+            cursor: not-allowed;
+        }
+
+    .actions .danger {
+        background-color: #d32f2f;
+    }
+
+        .actions .danger:hover {
+            background-color: #b71c1c;
+        }
+
+/* Save Button */
+.save-btn {
+    margin-top: 30px;
+    padding: 12px 24px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    display: block;
+}
+
+    .save-btn:hover {
+        background-color: #1976d2;
+    }
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+    .pages-list {
+        justify-content: center;
+    }
+
+    .page-item {
+        width: 90%;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .upload-label, .save-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

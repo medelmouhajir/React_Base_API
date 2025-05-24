@@ -1,6 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using React_Mangati.Server.Models.Favorites;
+using React_Mangati.Server.Models.Languages;
+using React_Mangati.Server.Models.Series;
+using React_Mangati.Server.Models.Series.Chapters;
+using React_Mangati.Server.Models.Tags;
 using React_Mangati.Server.Models.Users;
+using React_Mangati.Server.Models.Viewer;
 
 namespace React_Mangati.Server.Data
 {
@@ -12,6 +18,22 @@ namespace React_Mangati.Server.Data
         }
 
         public DbSet<User> Users { get; set; }
+
+        public DbSet<Serie> Series { get; set; }
+        public DbSet<Chapter> Chapters { get; set; }
+        public DbSet<Page> Pages { get; set; }
+
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<Serie_Tag> Serie_Tags { get; set; }
+
+        public DbSet<Language> Languages { get; set; }
+        public DbSet<Serie_Language> Serie_Languages { get; set; }
+
+        public DbSet<UserFavorite> UserFavorites { get; set; }
+
+        public DbSet<Reading_Progress> Reading_Progresses { get; set; }
+        public DbSet<Reading_Settings> Reading_Settings { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

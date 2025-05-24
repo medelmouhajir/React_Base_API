@@ -1,0 +1,135 @@
+/* src/pages/Viewer/Viewer.css */
+
+.viewer-container {
+    min-height: 100vh;
+    width: 100%;
+    transition: background 0.3s, color 0.3s;
+    overflow-x: hidden;
+}
+
+    .viewer-container.dark {
+        background-color: #121212;
+        color: #ffffff;
+    }
+
+    .viewer-container.light {
+        background-color: #f2f2f2;
+        color: #222222;
+    }
+
+.viewer-toolbar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    flex-wrap: wrap;
+}
+
+    .viewer-toolbar button {
+        padding: 8px 14px;
+        background-color: #1f6feb;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.2s;
+    }
+
+        .viewer-toolbar button:hover {
+            background-color: #155bcb;
+        }
+
+.viewer-empty {
+    text-align: center;
+    padding: 30px;
+}
+
+/* Horizontal Mode */
+.viewer-horizontal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+    .viewer-horizontal img {
+        max-width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+        border-radius: 6px;
+    }
+
+/* Vertical Mode */
+.viewer-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+    .viewer-vertical img {
+        max-width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+        border-radius: 6px;
+    }
+
+/* Infinite Mode */
+.viewer-infinite {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    gap: 20px;
+}
+
+    .viewer-infinite img {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+        border-radius: 6px;
+        background-color: black;
+    }
+
+/* Navigation Buttons */
+.nav-btn {
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .nav-btn:hover {
+        background-color: #444;
+    }
+
+    .nav-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .viewer-toolbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .viewer-horizontal,
+    .viewer-vertical {
+        flex-direction: column;
+    }
+
+        .viewer-horizontal img,
+        .viewer-vertical img {
+            width: 100%;
+        }
+}
