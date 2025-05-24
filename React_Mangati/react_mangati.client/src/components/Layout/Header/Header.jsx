@@ -3,7 +3,13 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import './Header.css';
 
-const Header = () => {
+const Header = ({
+    onToggleSidebar,
+    onToggleMobileSidebar,
+    showSidebarToggle = true,
+    isSidebarOpen,
+    isMobileSidebarOpen
+}) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const location = useLocation();
@@ -41,6 +47,21 @@ const Header = () => {
     return (
         <header className="header">
             <div className="header__container">
+                {/* Sidebar Toggle */}
+                {showSidebarToggle && (
+                    <button
+                        className="header__sidebar-toggle"
+                        onClick={onToggleSidebar}
+                        aria-label="Toggle sidebar"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                )}
+
                 {/* Logo */}
                 <div className="header__logo">
                     <Link to="/dashboard" className="header__logo-link">
@@ -156,9 +177,9 @@ const Header = () => {
                 {/* Mobile Menu Button */}
                 <button
                     className="header__mobile-toggle"
-                    onClick={toggleMenu}
+                    onClick={onToggleMobileSidebar || toggleMenu}
                 >
-                    <span className={`header__hamburger ${isMenuOpen ? 'header__hamburger--open' : ''}`}>
+                    <span className={`header__hamburger ${isMenuOpen || isMobileSidebarOpen ? 'header__hamburger--open' : ''}`}>
                         <span></span>
                         <span></span>
                         <span></span>
