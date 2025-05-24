@@ -1,9 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../../contexts/AuthContext';
 import './Sidebar.css';
 
-const Sidebar = ({ isOpen = true, isMobileOpen = false, onClose }) => {
+const Sidebar = ({
+    isOpen = false,
+    isMobileOpen = false,
+    onClose,
+    onToggle
+}) => {
     const [activeMenu, setActiveMenu] = useState('dashboard');
-    const [expandedMenus, setExpandedMenus] = useState(['projects']); // Keep some menus expanded by default
+    const [expandedMenus, setExpandedMenus] = useState([]);
+    const { user } = useAuth();
+
+    // Close sidebar on escape key
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape' && (isOpen || isMobileOpen)) {
+                if (onClose) onClose();
+                if (onToggle) onToggle();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, [isOpen, isMobileOpen, onClose, onToggle]);
+
+    // Close mobile sidebar when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (isMobileOpen && !e.target.closest('.sidebar')) {
+                if (onClose) onClose();
+            }
+        };
+
+        if (isMobileOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isMobileOpen, onClose]);
 
     const menuItems = [
         {
@@ -144,7 +178,7 @@ const Sidebar = ({ isOpen = true, isMobileOpen = false, onClose }) => {
                 </svg>
             ),
             href: '/calendar',
-            badge: { text: '3', type: 'info' } // Today's events
+            badge: { text: '3', type: 'info' }
         },
         {
             id: 'reports',
@@ -219,39 +253,41 @@ const Sidebar = ({ isOpen = true, isMobileOpen = false, onClose }) => {
     ];
 
     const handleMenuClick = (item) => {
-        // If item has submenu, toggle expansion
         if (item.submenu) {
+            // Toggle submenu expansion
             setExpandedMenus(prev =>
                 prev.includes(item.id)
                     ? prev.filter(id => id !== item.id)
                     : [...prev, item.id]
             );
         } else {
-            // Single menu item - set as active and navigate
+            // Navigate to single menu item
             setActiveMenu(item.id);
-            if (item.href) {
-                // Handle navigation here - you can use React Router
-                console.log('Navigate to:', item.href);
-                // window.location.href = item.href; // For now
-            }
+            handleNavigation(item.href);
         }
     };
 
     const handleSubmenuClick = (submenuItem, parentId) => {
         setActiveMenu(submenuItem.id);
-        if (submenuItem.href) {
-            console.log('Navigate to:', submenuItem.href);
-            // Handle navigation
-        }
+        handleNavigation(submenuItem.href);
+
         // Close mobile sidebar after navigation
-        if (onClose && window.innerWidth <= 1024) {
+        if (isMobileOpen && onClose) {
             onClose();
+        }
+    };
+
+    const handleNavigation = (href) => {
+        if (href) {
+            // For now, just log the navigation
+            // In a real app, you'd use React Router
+            console.log('Navigate to:', href);
+            // Example: navigate(href);
         }
     };
 
     const renderBadge = (badge) => {
         if (!badge) return null;
-
         return (
             <span className={`sidebar__badge sidebar__badge--${badge.type || 'default'}`}>
                 {badge.text}
@@ -261,7 +297,6 @@ const Sidebar = ({ isOpen = true, isMobileOpen = false, onClose }) => {
 
     const renderCount = (count, status) => {
         if (!count) return null;
-
         return (
             <span className={`sidebar__count ${status ? `sidebar__count--${status}` : ''}`}>
                 {count}
@@ -269,155 +304,200 @@ const Sidebar = ({ isOpen = true, isMobileOpen = false, onClose }) => {
         );
     };
 
+    const sidebarClasses = [
+        'sidebar',
+        isOpen ? 'sidebar--open' : 'sidebar--closed',
+        isMobileOpen ? 'sidebar--mobile-open' : ''
+    ].filter(Boolean).join(' ');
+
     return (
-        <aside className={`sidebar ${isOpen ? 'sidebar--open' : 'sidebar--collapsed'} ${isMobileOpen ? 'sidebar--mobile-open' : ''}`}>
-            {/* Sidebar Header */}
-            <div className="sidebar__header">
-                <div className="sidebar__brand">
-                    <div className="sidebar__logo">
-                        <svg viewBox="0 0 24 24" className="sidebar__logo-icon">
-                            <path fill="currentColor" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                        </svg>
-                    </div>
-                    {isOpen && (
-                        <div className="sidebar__brand-text">
+        <>
+            {/* Mobile Overlay */}
+            {isMobileOpen && (
+                <div
+                    className="sidebar__overlay"
+                    onClick={onClose}
+                    aria-hidden="true"
+                />
+            )}
+
+            {/* Sidebar */}
+            <aside className={sidebarClasses} role="navigation" aria-label="Main navigation">
+                {/* Sidebar Header */}
+                <div className="sidebar__header">
+                    <div className="sidebar__brand">
+                        <div className="sidebar__logo">
+                            <svg viewBox="0 0 24 24" className="sidebar__logo-icon" aria-hidden="true">
+                                <path fill="currentColor" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+
+                        <div className={`sidebar__brand-text ${!isOpen ? 'sidebar__brand-text--hidden' : ''}`}>
                             <h2 className="sidebar__title">Mangati</h2>
                             <span className="sidebar__subtitle">Project Hub</span>
                         </div>
-                    )}
-                </div>
-            </div>
-
-            {/* Navigation Menu */}
-            <nav className="sidebar__nav">
-                <div className="sidebar__nav-section">
-                    {isOpen && (
-                        <div className="sidebar__section-title">
-                            <span>Main Navigation</span>
-                        </div>
-                    )}
-
-                    <ul className="sidebar__menu">
-                        {menuItems.map((item) => {
-                            const isMenuActive = activeMenu === item.id ||
-                                (item.submenu && item.submenu.some(sub => activeMenu === sub.id));
-                            const isExpanded = expandedMenus.includes(item.id);
-
-                            return (
-                                <li key={item.id} className="sidebar__menu-item">
-                                    <button
-                                        className={`sidebar__menu-button ${isMenuActive ? 'sidebar__menu-button--active' : ''}`}
-                                        onClick={() => handleMenuClick(item)}
-                                        title={!isOpen ? item.title : ''}
-                                    >
-                                        <span className="sidebar__menu-icon">
-                                            {item.icon}
-                                        </span>
-
-                                        {isOpen && (
-                                            <>
-                                                <span className="sidebar__menu-label">{item.title}</span>
-
-                                                <div className="sidebar__menu-meta">
-                                                    {item.badge && renderBadge(item.badge)}
-
-                                                    {item.submenu && (
-                                                        <svg
-                                                            className={`sidebar__chevron ${isExpanded ? 'sidebar__chevron--expanded' : ''}`}
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                            stroke="currentColor"
-                                                            strokeWidth="2"
-                                                        >
-                                                            <polyline points="6,9 12,15 18,9"></polyline>
-                                                        </svg>
-                                                    )}
-                                                </div>
-                                            </>
-                                        )}
-                                    </button>
-
-                                    {/* Submenu */}
-                                    {item.submenu && isOpen && (
-                                        <ul className={`sidebar__submenu ${isExpanded ? 'sidebar__submenu--expanded' : ''}`}>
-                                            {item.submenu.map((subItem) => (
-                                                <li key={subItem.id} className="sidebar__submenu-item">
-                                                    <button
-                                                        className={`sidebar__submenu-button ${activeMenu === subItem.id ? 'sidebar__submenu-button--active' : ''}`}
-                                                        onClick={() => handleSubmenuClick(subItem, item.id)}
-                                                    >
-                                                        <span className="sidebar__submenu-dot"></span>
-                                                        <span className="sidebar__submenu-label">{subItem.title}</span>
-
-                                                        <div className="sidebar__submenu-meta">
-                                                            {subItem.count && renderCount(subItem.count, subItem.status)}
-                                                            {subItem.priority && (
-                                                                <span className="sidebar__priority-indicator"></span>
-                                                            )}
-                                                        </div>
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-
-                                    {/* Collapsed state tooltip submenu */}
-                                    {item.submenu && !isOpen && (
-                                        <div className="sidebar__tooltip-submenu">
-                                            <div className="sidebar__tooltip-header">{item.title}</div>
-                                            <ul className="sidebar__tooltip-list">
-                                                {item.submenu.map((subItem) => (
-                                                    <li key={subItem.id}>
-                                                        <button
-                                                            className="sidebar__tooltip-item"
-                                                            onClick={() => handleSubmenuClick(subItem, item.id)}
-                                                        >
-                                                            {subItem.title}
-                                                            {subItem.count && renderCount(subItem.count, subItem.status)}
-                                                        </button>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </div>
-            </nav>
-
-            {/* User Profile Section */}
-            <div className="sidebar__footer">
-                <div className="sidebar__user">
-                    <div className="sidebar__user-avatar">
-                        <img
-                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face&auto=format"
-                            alt="User Avatar"
-                            className="sidebar__avatar-image"
-                        />
-                        <div className="sidebar__status-indicator"></div>
                     </div>
 
-                    {isOpen && (
-                        <div className="sidebar__user-info">
-                            <div className="sidebar__user-name">Ahmed Benali</div>
-                            <div className="sidebar__user-role">CTO, WAN Solutions</div>
-                        </div>
-                    )}
-
-                    {isOpen && (
-                        <button className="sidebar__user-menu">
+                    {/* Close button for mobile */}
+                    {isMobileOpen && (
+                        <button
+                            className="sidebar__close-btn"
+                            onClick={onClose}
+                            aria-label="Close sidebar"
+                        >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <circle cx="12" cy="12" r="1"></circle>
-                                <circle cx="12" cy="5" r="1"></circle>
-                                <circle cx="12" cy="19" r="1"></circle>
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
                         </button>
                     )}
                 </div>
-            </div>
-        </aside>
+
+                {/* Navigation Menu */}
+                <nav className="sidebar__nav">
+                    <div className="sidebar__nav-section">
+                        {isOpen && (
+                            <div className="sidebar__section-title">
+                                <span>Main Navigation</span>
+                            </div>
+                        )}
+
+                        <ul className="sidebar__menu" role="menubar">
+                            {menuItems.map((item) => {
+                                const isMenuActive = activeMenu === item.id ||
+                                    (item.submenu && item.submenu.some(sub => activeMenu === sub.id));
+                                const isExpanded = expandedMenus.includes(item.id);
+
+                                return (
+                                    <li key={item.id} className="sidebar__menu-item" role="none">
+                                        <button
+                                            className={`sidebar__menu-button ${isMenuActive ? 'sidebar__menu-button--active' : ''}`}
+                                            onClick={() => handleMenuClick(item)}
+                                            title={!isOpen ? item.title : ''}
+                                            aria-expanded={item.submenu ? isExpanded : undefined}
+                                            role="menuitem"
+                                        >
+                                            <span className="sidebar__menu-icon" aria-hidden="true">
+                                                {item.icon}
+                                            </span>
+
+                                            <span className={`sidebar__menu-label ${!isOpen ? 'sidebar__menu-label--hidden' : ''}`}>
+                                                {item.title}
+                                            </span>
+
+                                            <div className={`sidebar__menu-meta ${!isOpen ? 'sidebar__menu-meta--hidden' : ''}`}>
+                                                {item.badge && renderBadge(item.badge)}
+
+                                                {item.submenu && (
+                                                    <svg
+                                                        className={`sidebar__chevron ${isExpanded ? 'sidebar__chevron--expanded' : ''}`}
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2"
+                                                        aria-hidden="true"
+                                                    >
+                                                        <polyline points="6,9 12,15 18,9"></polyline>
+                                                    </svg>
+                                                )}
+                                            </div>
+                                        </button>
+
+                                        {/* Submenu - only show when sidebar is open */}
+                                        {item.submenu && isOpen && (
+                                            <ul
+                                                className={`sidebar__submenu ${isExpanded ? 'sidebar__submenu--expanded' : ''}`}
+                                                role="menu"
+                                                aria-label={`${item.title} submenu`}
+                                            >
+                                                {item.submenu.map((subItem) => (
+                                                    <li key={subItem.id} className="sidebar__submenu-item" role="none">
+                                                        <button
+                                                            className={`sidebar__submenu-button ${activeMenu === subItem.id ? 'sidebar__submenu-button--active' : ''}`}
+                                                            onClick={() => handleSubmenuClick(subItem, item.id)}
+                                                            role="menuitem"
+                                                        >
+                                                            <span className="sidebar__submenu-dot" aria-hidden="true"></span>
+                                                            <span className="sidebar__submenu-label">{subItem.title}</span>
+
+                                                            <div className="sidebar__submenu-meta">
+                                                                {subItem.count && renderCount(subItem.count, subItem.status)}
+                                                                {subItem.priority && (
+                                                                    <span
+                                                                        className="sidebar__priority-indicator"
+                                                                        aria-label="High priority"
+                                                                    ></span>
+                                                                )}
+                                                            </div>
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+
+                                        {/* Tooltip for collapsed state */}
+                                        {item.submenu && !isOpen && (
+                                            <div className="sidebar__tooltip-submenu" role="tooltip">
+                                                <div className="sidebar__tooltip-header">{item.title}</div>
+                                                <ul className="sidebar__tooltip-list">
+                                                    {item.submenu.map((subItem) => (
+                                                        <li key={subItem.id}>
+                                                            <button
+                                                                className="sidebar__tooltip-item"
+                                                                onClick={() => handleSubmenuClick(subItem, item.id)}
+                                                            >
+                                                                {subItem.title}
+                                                                {subItem.count && renderCount(subItem.count, subItem.status)}
+                                                            </button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                </nav>
+
+                {/* User Profile Section */}
+                {user && (
+                    <div className="sidebar__footer">
+                        <div className="sidebar__user">
+                            <div className="sidebar__user-avatar">
+                                <img
+                                    src={user.profilePictureUrl || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face&auto=format"}
+                                    alt={`${user.firstName} ${user.lastName}`}
+                                    className="sidebar__avatar-image"
+                                />
+                                <div className="sidebar__status-indicator" aria-label="Online"></div>
+                            </div>
+
+                            <div className={`sidebar__user-info ${!isOpen ? 'sidebar__user-info--hidden' : ''}`}>
+                                <div className="sidebar__user-name">
+                                    {user.firstName} {user.lastName}
+                                </div>
+                                <div className="sidebar__user-role">{user.role}</div>
+                            </div>
+
+                            {isOpen && (
+                                <button
+                                    className="sidebar__user-menu"
+                                    aria-label="User menu"
+                                >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <circle cx="12" cy="12" r="1"></circle>
+                                        <circle cx="12" cy="5" r="1"></circle>
+                                        <circle cx="12" cy="19" r="1"></circle>
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </aside>
+        </>
     );
 };
 
