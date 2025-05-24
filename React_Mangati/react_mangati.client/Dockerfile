@@ -9,7 +9,7 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install
-RUN npm install axios react-router-dom react-i18next i18next-browser-languagedetector react-toastify
+RUN npm install axios react-router-dom react-i18next i18next-browser-languagedetector react-toastify hammerjs
 
 # Copy source code
 COPY . .

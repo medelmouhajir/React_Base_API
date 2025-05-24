@@ -26,11 +26,24 @@ namespace React_Mangati.Server.Controllers.Series
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Chapter>> GetChapter(int id)
+        public async Task<ActionResult<object>> GetChapter(int id)
         {
             var chapter = await _context.Chapters
                 .Include(c => c.Serie)
                 .Include(c => c.Pages)
+                .Select(x=> new
+                {
+                    x.Id,
+                    x.Title,
+                    x.Number,
+                    x.Status,
+                    x.UploadedAt,
+                    Serie = new
+                    {
+                        x.Serie.Id,
+                        x.Serie.Title
+                    }
+                })
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (chapter == null)

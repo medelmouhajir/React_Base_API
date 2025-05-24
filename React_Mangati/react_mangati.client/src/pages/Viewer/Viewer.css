@@ -1,135 +1,310 @@
-/* src/pages/Viewer/Viewer.css */
+﻿/* src/pages/Viewer/Viewer.css */
 
-.viewer-container {
+.manga-viewer {
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
-    width: 100%;
-    transition: background 0.3s, color 0.3s;
+    background-color: #121212;
+    color: #f1f1f1;
     overflow-x: hidden;
+    padding-top: 60px; /* Space for fixed toolbar */
 }
 
-    .viewer-container.dark {
-        background-color: #121212;
-        color: #ffffff;
-    }
-
-    .viewer-container.light {
-        background-color: #f2f2f2;
-        color: #222222;
-    }
-
+/* Toolbar */
 .viewer-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
     display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 15px;
-    flex-wrap: wrap;
+    align-items: center;
+    height: 60px;
+    padding: 0 0.75rem;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-    .viewer-toolbar button {
-        padding: 8px 14px;
-        background-color: #1f6feb;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: background-color 0.2s;
+    .viewer-toolbar::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
     }
 
-        .viewer-toolbar button:hover {
-            background-color: #155bcb;
-        }
-
-.viewer-empty {
-    text-align: center;
-    padding: 30px;
-}
-
-/* Horizontal Mode */
-.viewer-horizontal {
+.toolbar-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
-    padding: 20px;
-    flex-wrap: wrap;
-}
-
-    .viewer-horizontal img {
-        max-width: 100%;
-        max-height: 80vh;
-        object-fit: contain;
-        border-radius: 6px;
-    }
-
-/* Vertical Mode */
-.viewer-vertical {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-}
-
-    .viewer-vertical img {
-        max-width: 100%;
-        max-height: 80vh;
-        object-fit: contain;
-        border-radius: 6px;
-    }
-
-/* Infinite Mode */
-.viewer-infinite {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    gap: 20px;
-}
-
-    .viewer-infinite img {
-        width: auto;
-        max-width: 100%;
-        height: auto;
-        object-fit: contain;
-        border-radius: 6px;
-        background-color: black;
-    }
-
-/* Navigation Buttons */
-.nav-btn {
-    background-color: #333;
-    color: white;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    margin-right: 10px;
     border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 1.2rem;
+    border-radius: 8px;
+    background-color: #333;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
-    .nav-btn:hover {
+    .toolbar-button:hover {
         background-color: #444;
     }
 
-    .nav-btn:disabled {
+    .toolbar-button:active {
+        transform: translateY(1px);
+    }
+
+    .toolbar-button.active {
+        background-color: #3e6ae1;
+        color: white;
+    }
+
+    .toolbar-button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
     }
 
-/* Responsive */
+.toolbar-divider {
+    width: 1px;
+    height: 24px;
+    margin: 0 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.toolbar-spacer {
+    flex: 1;
+}
+
+.chapter-title {
+    font-size: 1rem;
+    margin: 0 15px 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+}
+
+/* Reading Modes */
+.select-wrapper {
+    position: relative;
+    margin-right: 10px;
+}
+
+.mode-select {
+    appearance: none;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0 30px 0 12px;
+    height: 40px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.select-wrapper::after {
+    content: "▼";
+    font-size: 0.7rem;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #fff;
+}
+
+/* Content Area */
+.viewer-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    min-height: 0;
+    touch-action: pan-y;
+}
+
+/* Reading Modes */
+.horizontal-mode {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    max-width: 100%;
+    height: 100%;
+    width: 100%;
+}
+
+.vertical-mode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: var(--viewer-width, 800px);
+    margin: 0 auto;
+}
+
+.infinite-mode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: var(--viewer-width, 800px);
+    margin: 0 auto;
+    gap: 20px;
+}
+
+/* Page Display */
+.manga-page {
+    width: 100%;
+    max-width: var(--viewer-width, 800px);
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    background-color: #000;
+}
+
+.nav-button {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 80px;
+    background-color: rgba(30, 30, 30, 0.8);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+}
+
+    .nav-button.prev {
+        left: 10px;
+    }
+
+    .nav-button.next {
+        right: 10px;
+    }
+
+    .nav-button:hover {
+        opacity: 0.9;
+        background-color: rgba(50, 50, 50, 0.9);
+    }
+
+    .nav-button:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    width: 100%;
+}
+
+.loader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    border-top-color: #3e6ae1;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.zoom-indicator {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(30, 30, 30, 0.8);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+    .zoom-indicator.visible {
+        opacity: 1;
+    }
+
+/* Mobile Styles */
 @media (max-width: 768px) {
+    .manga-viewer {
+        padding-top: 50px; /* Smaller padding for mobile */
+    }
+
     .viewer-toolbar {
-        flex-direction: column;
-        align-items: center;
+        height: 50px;
+        padding: 0 0.5rem;
     }
 
-    .viewer-horizontal,
-    .viewer-vertical {
-        flex-direction: column;
+    .toolbar-button {
+        min-width: 36px;
+        height: 36px;
+        padding: 0 8px;
+        font-size: 0.8rem;
+        margin-right: 6px;
     }
 
-        .viewer-horizontal img,
-        .viewer-vertical img {
-            width: 100%;
+    .viewer-content {
+        padding: 10px 5px;
+    }
+
+    .nav-button {
+        width: 36px;
+        height: 70px;
+        font-size: 1.5rem;
+        background-color: rgba(30, 30, 30, 0.8);
+    }
+
+        .nav-button.prev {
+            left: 0;
+            border-radius: 0 4px 4px 0;
         }
+
+        .nav-button.next {
+            right: 0;
+            border-radius: 4px 0 0 4px;
+        }
+
+    .mode-select {
+        min-width: 120px;
+        height: 36px;
+        font-size: 0.8rem;
+    }
+
+    .chapter-title {
+        max-width: 150px;
+        font-size: 0.9rem;
+    }
+
+    .manga-page {
+        max-width: 100% !important;
+    }
 }
