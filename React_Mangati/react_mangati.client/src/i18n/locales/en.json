@@ -1,0 +1,172 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "close": "Close",
+    "yes": "Yes",
+    "no": "No",
+    "submit": "Submit",
+    "reset": "Reset"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your Mangati account",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signInButton": "Sign In",
+      "signingIn": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create one",
+      "demoCredentials": "Demo Credentials:",
+      "adminDemo": "Admin: admin@mangati.com / Admin123!"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join Mangati to manage your projects",
+      "firstNameLabel": "First Name",
+      "firstNamePlaceholder": "John",
+      "lastNameLabel": "Last Name",
+      "lastNamePlaceholder": "Doe",
+      "emailLabel": "Email Address",
+      "emailPlaceholder": "john.doe@example.com",
+      "phoneLabel": "Phone Number",
+      "phonePlaceholder": "+1 (555) 000-0000",
+      "phoneOptional": "(Optional)",
+      "roleLabel": "Role",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Create a strong password",
+      "confirmPasswordLabel": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "agreeTerms": "I agree to the",
+      "termsOfService": "Terms of Service",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy",
+      "createAccountButton": "Create Account",
+      "creatingAccount": "Creating account...",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "passwordStrength": {
+        "veryWeak": "Very Weak",
+        "weak": "Weak",
+        "fair": "Fair",
+        "good": "Good",
+        "strong": "Strong"
+      }
+    },
+    "errors": {
+      "invalidCredentials": "Invalid credentials or account is disabled",
+      "networkError": "Network error. Please check your connection and ensure the API server is running.",
+      "unexpectedError": "An unexpected error occurred.",
+      "passwordMismatch": "Passwords do not match",
+      "weakPassword": "Password is too weak",
+      "fieldRequired": "This field is required",
+      "invalidEmail": "Please enter a valid email address"
+    }
+  },
+  "dashboard": {
+    "title": "Welcome to Mangati, {{name}}!",
+    "subtitle": "Here's your project overview and recent activity.",
+    "loading": "Loading dashboard data...",
+    "stats": {
+      "activeProjects": {
+        "title": "Active Projects",
+        "change": "+{{count}} this week"
+      },
+      "tasksCompleted": {
+        "title": "Tasks Completed",
+        "change": "+{{count}} today"
+      },
+      "teamMembers": {
+        "title": "Team Members",
+        "noChange": "No change"
+      },
+      "overallProgress": {
+        "title": "Overall Progress",
+        "change": "+{{percent}}% this month"
+      }
+    },
+    "sections": {
+      "weatherDemo": "Weather Forecast Demo"
+    },
+    "table": {
+      "date": "Date",
+      "tempC": "Temp. (C)",
+      "tempF": "Temp. (F)",
+      "summary": "Summary"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "tasks": "Tasks",
+    "team": "Team",
+    "calendar": "Calendar",
+    "reports": "Reports & Analytics",
+    "settings": "Settings",
+    "submenu": {
+      "allProjects": "All Projects",
+      "activeProjects": "Active Projects",
+      "pendingReview": "Pending Review",
+      "completed": "Completed",
+      "myTasks": "My Tasks",
+      "assignedToMe": "Assigned to Me",
+      "dueToday": "Due Today",
+      "overdue": "Overdue",
+      "allMembers": "All Members",
+      "departments": "Departments",
+      "rolesPermissions": "Roles & Permissions",
+      "performance": "Performance",
+      "projectAnalytics": "Project Analytics",
+      "timeReports": "Time Reports",
+      "teamPerformance": "Team Performance",
+      "exportData": "Export Data",
+      "general": "General",
+      "profile": "Profile Settings",
+      "security": "Security",
+      "notifications": "Notifications",
+      "integrations": "Integrations"
+    }
+  },
+  "header": {
+    "userMenu": {
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Logout"
+    }
+  },
+  "footer": {
+    "companyName": "Mangati",
+    "tagline": "Project Hub",
+    "description": "Streamline your project management with our comprehensive platform designed for modern teams.",
+    "quickLinks": "Quick Links",
+    "support": "Support",
+    "legal": "Legal",
+    "followUs": "Follow Us",
+    "contact": "Contact Information",
+    "rights": "All rights reserved."
+  },
+  "roles": {
+    "Admin": "Admin",
+    "Manager": "Manager",
+    "User": "User"
+  },
+  "language": {
+    "english": "English",
+    "french": "Français",
+    "arabic": "العربية",
+    "selectLanguage": "Select Language"
+  }
+}

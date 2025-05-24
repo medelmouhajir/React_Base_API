@@ -1,8 +1,11 @@
+// src/pages/auth/Login.jsx
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import './Auth.css';
 
 const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -71,8 +74,8 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
                         />
                     </svg>
                 </div>
-                <h1 className="auth-form__title">Welcome Back</h1>
-                <p className="auth-form__subtitle">Sign in to your Mangati account</p>
+                <h1 className="auth-form__title">{t('auth.login.title')}</h1>
+                <p className="auth-form__subtitle">{t('auth.login.subtitle')}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="auth-form__form">
@@ -89,7 +92,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
 
                 <div className="auth-form__field">
                     <label htmlFor="email" className="auth-form__label">
-                        Email Address
+                        {t('auth.login.emailLabel')}
                     </label>
                     <div className="auth-form__input-wrapper">
                         <svg className="auth-form__input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -103,7 +106,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
                             value={formData.email}
                             onChange={handleChange}
                             className="auth-form__input"
-                            placeholder="Enter your email"
+                            placeholder={t('auth.login.emailPlaceholder')}
                             required
                             autoComplete="email"
                         />
@@ -112,7 +115,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
 
                 <div className="auth-form__field">
                     <label htmlFor="password" className="auth-form__label">
-                        Password
+                        {t('auth.login.passwordLabel')}
                     </label>
                     <div className="auth-form__input-wrapper">
                         <svg className="auth-form__input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -127,7 +130,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
                             value={formData.password}
                             onChange={handleChange}
                             className="auth-form__input auth-form__input--with-toggle"
-                            placeholder="Enter your password"
+                            placeholder={t('auth.login.passwordPlaceholder')}
                             required
                             autoComplete="current-password"
                         />
@@ -160,7 +163,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
                             onChange={(e) => setRememberMe(e.target.checked)}
                         />
                         <span className="auth-form__checkbox-mark"></span>
-                        Remember me
+                        {t('auth.login.rememberMe')}
                     </label>
 
                     <button
@@ -168,7 +171,7 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
                         className="auth-form__link"
                         onClick={() => {/* Handle forgot password */ }}
                     >
-                        Forgot password?
+                        {t('auth.login.forgotPassword')}
                     </button>
                 </div>
 
@@ -180,32 +183,32 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
                     {loading ? (
                         <>
                             <div className="auth-form__spinner"></div>
-                            Signing in...
+                            {t('auth.login.signingIn')}
                         </>
                     ) : (
-                        'Sign In'
+                        t('auth.login.signInButton')
                     )}
                 </button>
             </form>
 
             <div className="auth-form__footer">
                 <p>
-                    Don't have an account?{' '}
+                    {t('auth.login.noAccount')}{' '}
                     <button
                         type="button"
                         onClick={onSwitchToRegister}
                         className="auth-form__link auth-form__link--primary"
                     >
-                        Create one
+                        {t('auth.login.createAccount')}
                     </button>
                 </p>
             </div>
 
             {/* Demo credentials info */}
             <div className="auth-form__demo">
-                <p className="auth-form__demo-title">Demo Credentials:</p>
+                <p className="auth-form__demo-title">{t('auth.login.demoCredentials')}</p>
                 <div className="auth-form__demo-creds">
-                    <p><strong>Admin:</strong> admin@mangati.com / Admin123!</p>
+                    <p>{t('auth.login.adminDemo')}</p>
                 </div>
             </div>
         </div>

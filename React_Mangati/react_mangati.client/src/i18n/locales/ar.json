@@ -1,0 +1,172 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "success": "نجح",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "add": "إضافة",
+    "search": "بحث",
+    "filter": "تصفية",
+    "close": "إغلاق",
+    "yes": "نعم",
+    "no": "لا",
+    "submit": "إرسال",
+    "reset": "إعادة تعيين"
+  },
+  "auth": {
+    "login": {
+      "title": "مرحباً بعودتك",
+      "subtitle": "تسجيل الدخول إلى حساب مانجاتي الخاص بك",
+      "emailLabel": "عنوان البريد الإلكتروني",
+      "emailPlaceholder": "أدخل بريدك الإلكتروني",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "rememberMe": "تذكرني",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "signInButton": "تسجيل الدخول",
+      "signingIn": "جاري تسجيل الدخول...",
+      "noAccount": "ليس لديك حساب؟",
+      "createAccount": "أنشئ حساباً",
+      "demoCredentials": "بيانات اعتماد التجريب:",
+      "adminDemo": "المدير: admin@mangati.com / Admin123!"
+    },
+    "register": {
+      "title": "إنشاء حساب",
+      "subtitle": "انضم إلى مانجاتي لإدارة مشاريعك",
+      "firstNameLabel": "الاسم الأول",
+      "firstNamePlaceholder": "أحمد",
+      "lastNameLabel": "اسم العائلة",
+      "lastNamePlaceholder": "محمد",
+      "emailLabel": "عنوان البريد الإلكتروني",
+      "emailPlaceholder": "ahmed.mohamed@example.com",
+      "phoneLabel": "رقم الهاتف",
+      "phonePlaceholder": "+212 6 12 34 56 78",
+      "phoneOptional": "(اختياري)",
+      "roleLabel": "الدور",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "أنشئ كلمة مرور قوية",
+      "confirmPasswordLabel": "تأكيد كلمة المرور",
+      "confirmPasswordPlaceholder": "أكد كلمة المرور",
+      "agreeTerms": "أوافق على",
+      "termsOfService": "شروط الخدمة",
+      "and": "و",
+      "privacyPolicy": "سياسة الخصوصية",
+      "createAccountButton": "إنشاء حساب",
+      "creatingAccount": "جاري إنشاء الحساب...",
+      "alreadyHaveAccount": "لديك حساب بالفعل؟",
+      "signIn": "تسجيل الدخول",
+      "passwordStrength": {
+        "veryWeak": "ضعيفة جداً",
+        "weak": "ضعيفة",
+        "fair": "مقبولة",
+        "good": "جيدة",
+        "strong": "قوية"
+      }
+    },
+    "errors": {
+      "invalidCredentials": "بيانات اعتماد غير صحيحة أو حساب معطل",
+      "networkError": "خطأ في الشبكة. يرجى التحقق من اتصالك والتأكد من تشغيل خادم API.",
+      "unexpectedError": "حدث خطأ غير متوقع.",
+      "passwordMismatch": "كلمات المرور غير متطابقة",
+      "weakPassword": "كلمة المرور ضعيفة جداً",
+      "fieldRequired": "هذا الحقل مطلوب",
+      "invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صحيح"
+    }
+  },
+  "dashboard": {
+    "title": "مرحباً بك في مانجاتي، {{name}}!",
+    "subtitle": "إليك نظرة عامة على مشاريعك والنشاط الأخير.",
+    "loading": "جاري تحميل بيانات لوحة التحكم...",
+    "stats": {
+      "activeProjects": {
+        "title": "المشاريع النشطة",
+        "change": "+{{count}} هذا الأسبوع"
+      },
+      "tasksCompleted": {
+        "title": "المهام المكتملة",
+        "change": "+{{count}} اليوم"
+      },
+      "teamMembers": {
+        "title": "أعضاء الفريق",
+        "noChange": "لا تغيير"
+      },
+      "overallProgress": {
+        "title": "التقدم العام",
+        "change": "+{{percent}}% هذا الشهر"
+      }
+    },
+    "sections": {
+      "weatherDemo": "عرض توقعات الطقس التجريبي"
+    },
+    "table": {
+      "date": "التاريخ",
+      "tempC": "الحرارة (مئوي)",
+      "tempF": "الحرارة (فهرنهايت)",
+      "summary": "الملخص"
+    }
+  },
+  "navigation": {
+    "dashboard": "لوحة التحكم",
+    "projects": "المشاريع",
+    "tasks": "المهام",
+    "team": "الفريق",
+    "calendar": "التقويم",
+    "reports": "التقارير والتحليلات",
+    "settings": "الإعدادات",
+    "submenu": {
+      "allProjects": "جميع المشاريع",
+      "activeProjects": "المشاريع النشطة",
+      "pendingReview": "في انتظار المراجعة",
+      "completed": "مكتمل",
+      "myTasks": "مهامي",
+      "assignedToMe": "مُسند إلي",
+      "dueToday": "مستحق اليوم",
+      "overdue": "متأخر",
+      "allMembers": "جميع الأعضاء",
+      "departments": "الأقسام",
+      "rolesPermissions": "الأدوار والصلاحيات",
+      "performance": "الأداء",
+      "projectAnalytics": "تحليلات المشروع",
+      "timeReports": "تقارير الوقت",
+      "teamPerformance": "أداء الفريق",
+      "exportData": "تصدير البيانات",
+      "general": "عام",
+      "profile": "إعدادات الملف الشخصي",
+      "security": "الأمان",
+      "notifications": "الإشعارات",
+      "integrations": "التكاملات"
+    }
+  },
+  "header": {
+    "userMenu": {
+      "profile": "الملف الشخصي",
+      "settings": "الإعدادات",
+      "logout": "تسجيل الخروج"
+    }
+  },
+  "footer": {
+    "companyName": "مانجاتي",
+    "tagline": "مركز المشاريع",
+    "description": "قم بتبسيط إدارة مشاريعك مع منصتنا الشاملة المصممة للفرق الحديثة.",
+    "quickLinks": "روابط سريعة",
+    "support": "الدعم",
+    "legal": "قانوني",
+    "followUs": "تابعنا",
+    "contact": "معلومات الاتصال",
+    "rights": "جميع الحقوق محفوظة."
+  },
+  "roles": {
+    "Admin": "مدير",
+    "Manager": "مدير",
+    "User": "مستخدم"
+  },
+  "language": {
+    "english": "English",
+    "french": "Français",
+    "arabic": "العربية",
+    "selectLanguage": "اختر اللغة"
+  }
+}
