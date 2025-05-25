@@ -6,47 +6,28 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Account from './pages/Account/Account';
 import Home from './pages/Home/Home';
 
+
 import Create from './pages/Series/Create';
 import SeriesList from './pages/Series/SeriesList';
 import SerieDetails from './pages/Series/SerieDetails';
 
+
 import ChapterEdit from './pages/Chapters/ChapterEdit';
+
 
 import Viewer from './pages/Viewer/Viewer';
 
+
+import Search from './pages/Search/Search';
+
+
+
+//import Settings from './pages/Settings/Settings';
+//import NotFound from './pages/NotFound/NotFound';
 import './App.css';
 
-// Protected Route Component
-const ProtectedRoute = ({ children }) => {
-    const { user, loading } = useAuth();
-
-    if (loading) {
-        return (
-            <div className="app__loading">
-                <div className="app__spinner"></div>
-                <p><em>Checking authentication...</em></p>
-            </div>
-        );
-    }
-
-    if (!user) {
-        return <Navigate to="/auth" replace />;
-    }
-
-    return children;
-};
-
-// Public Layout Component (without sidebar/navigation)
-const PublicLayout = ({ children }) => {
-    return (
-        <div className="public-layout">
-            {children}
-        </div>
-    );
-};
-
 function App() {
-    const { loading: authLoading } = useAuth();
+    const { user, loading: authLoading } = useAuth();
 
     // Show loading spinner while checking authentication
     if (authLoading) {
@@ -58,85 +39,39 @@ function App() {
         );
     }
 
+    // Show auth page if user is not authenticated
+    if (!user) {
+        return <AuthPage />;
+    }
+
+    // User is authenticated, show main app with routing
     return (
-        <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Navigate to="/home" replace />} />
-            <Route path="/home" element={
-                <PublicLayout>
-                    <Home />
-                </PublicLayout>
-            } />
-            <Route path="/auth" element={<AuthPage />} />
+        <MainLayout>
+            <Routes>
+                {/* Default redirect to dashboard */}
+                <Route path="/" element={<Navigate to="/home" replace />} />
 
-            {/* Protected Routes */}
-            <Route path="/dashboard" element={
-                <ProtectedRoute>
-                    <MainLayout>
-                        <Dashboard />
-                    </MainLayout>
-                </ProtectedRoute>
-            } />
+                {/* Main application routes */}
+                <Route path="/home" element={<Home />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/series" element={<SeriesList />} />
+                <Route path="/series/:id" element={<SerieDetails />} />
+                <Route path="/series/create" element={<Create />} />
 
-            <Route path="/account" element={
-                <ProtectedRoute>
-                    <MainLayout>
-                        <Account />
-                    </MainLayout>
-                </ProtectedRoute>
-            } />
+                <Route path="/series/:id/chapters/:id/edit" element={<ChapterEdit />} />
 
-            <Route path="/series" element={
-                <ProtectedRoute>
-                    <MainLayout>
-                        <SeriesList />
-                    </MainLayout>
-                </ProtectedRoute>
-            } />
+                <Route path="/viewer/:id" element={<Viewer />} />
 
-            <Route path="/series/:id" element={
-                <ProtectedRoute>
-                    <MainLayout>
-                        <SerieDetails />
-                    </MainLayout>
-                </ProtectedRoute>
-            } />
+                <Route path="/search" element={<Search />} />
 
-            <Route path="/series/create" element={
-                <ProtectedRoute>
-                    <MainLayout>
-                        <Create />
-                    </MainLayout>
-                </ProtectedRoute>
-            } />
+                {/*<Route path="/settings" element={<Settings />} />*/}
+                {/*<Route path="/settings/:section" element={<Settings />} />*/}
 
-            <Route path="/series/:id/chapters/:id/edit" element={
-                <ProtectedRoute>
-                    <MainLayout>
-                        <ChapterEdit />
-                    </MainLayout>
-                </ProtectedRoute>
-            } />
-
-            <Route path="/viewer/:id" element={
-                <ProtectedRoute>
-                    <MainLayout>
-                        <Viewer />
-                    </MainLayout>
-                </ProtectedRoute>
-            } />
-
-            {/* 404 Not Found */}
-            <Route path="*" element={
-                <PublicLayout>
-                    <div className="not-found">
-                        <h1>404 - Page Not Found</h1>
-                        <p>The page you're looking for doesn't exist.</p>
-                        <a href="/home">Go to Home</a>
-                    </div>
-                </PublicLayout>
-            } />
-        </Routes>
+                {/* 404 Not Found */}
+                {/*<Route path="*" element={<NotFound />} />*/}
+            </Routes>
+        </MainLayout>
     );
 }
 

@@ -204,13 +204,6 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
                 </p>
             </div>
 
-            {/* Demo credentials info */}
-            <div className="auth-form__demo">
-                <p className="auth-form__demo-title">{t('auth.login.demoCredentials')}</p>
-                <div className="auth-form__demo-creds">
-                    <p>{t('auth.login.adminDemo')}</p>
-                </div>
-            </div>
         </div>
     );
 };

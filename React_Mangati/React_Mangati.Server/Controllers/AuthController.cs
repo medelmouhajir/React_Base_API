@@ -85,7 +85,7 @@ namespace React_Mangati.Server.Controllers
             return BadRequest(ModelState);
         }
 
-        public string GetUsernameFromEmail(string email)
+        private string GetUsernameFromEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
                 return string.Empty;

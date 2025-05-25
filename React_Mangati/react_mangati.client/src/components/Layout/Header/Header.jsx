@@ -132,15 +132,6 @@ const Header = ({
                     <ul className="header__nav-list">
                         <li className="header__nav-item">
                             <Link
-                                to="/dashboard"
-                                className={`header__nav-link ${isActiveRoute('/dashboard') ? 'header__nav-link--active' : ''}`}
-                                onClick={() => setIsMenuOpen(false)}
-                            >
-                                {t('navigation.dashboard')}
-                            </Link>
-                        </li>
-                        <li className="header__nav-item">
-                            <Link
                                 to="/series"
                                 className={`header__nav-link ${isActiveRoute('/series') ? 'header__nav-link--active' : ''}`}
                                 onClick={() => setIsMenuOpen(false)}
@@ -150,11 +141,11 @@ const Header = ({
                         </li>
                         <li className="header__nav-item">
                             <Link
-                                to="/tasks"
-                                className={`header__nav-link ${isActiveRoute('/tasks') ? 'header__nav-link--active' : ''}`}
+                                to="/search"
+                                className={`header__nav-link ${isActiveRoute('/search') ? 'header__nav-link--active' : ''}`}
                                 onClick={() => setIsMenuOpen(false)}
                             >
-                                {t('navigation.tasks')}
+                                {t('navigation.search')}
                             </Link>
                         </li>
                         <li className="header__nav-item">

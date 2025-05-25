@@ -1,5 +1,4 @@
-/* src/pages/Home/Home.css - Dark themed, responsive homepage */
-
+/* src/pages/Home/Home.css */
 .home {
     font-family: Arial, sans-serif;
     background-color: transparent;
@@ -9,83 +8,200 @@
     flex-direction: column;
 }
 
+/* Navigation */
+.home__nav {
+    background: #1f1f1f;
+    padding: 1rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.home__nav-brand {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.home__nav-menu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+    .home__nav-menu a {
+        color: #f1f1f1;
+        margin-left: 1.5rem;
+        text-decoration: none;
+        font-weight: bold;
+        transition: opacity 0.2s;
+    }
+
+        .home__nav-menu a:hover {
+            opacity: 0.7;
+        }
+
+/* Hero */
 .home__hero {
-    background: linear-gradient(to bottom, #1f1f1f, #121212);
+    position: relative;
     padding: 4rem 2rem;
     text-align: center;
+    overflow: hidden;
 }
 
 .home__hero-content {
+    position: relative;
+    z-index: 1;
     max-width: 800px;
     margin: 0 auto;
 }
 
 .home__title {
-    font-size: 2.5rem;
-    font-weight: bold;
+    font-size: 3rem;
     margin-bottom: 1rem;
+    line-height: 1.2;
 }
 
 .home__subtitle {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     margin-bottom: 2rem;
     color: #cccccc;
+    line-height: 1.4;
 }
 
 .home__cta {
-    background-color: transparent;
-    color: white;
-    padding: 0.75rem 1.5rem;
+    background-color: #1e90ff;
     border: none;
     border-radius: 0.375rem;
+    padding: 0.75rem 1.5rem;
     font-size: 1rem;
     cursor: pointer;
     transition: background 0.3s;
 }
 
     .home__cta:hover {
-        background-color: #0056b3;
+        background-color: #006add;
     }
 
+.home__hero-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.1;
+}
+
+/* Features */
 .home__features {
     padding: 4rem 2rem;
-    background-color: transparent;
 }
 
 .home__section-title {
-    font-size: 2rem;
+    font-size: 2.25rem;
     margin-bottom: 2rem;
     text-align: center;
 }
 
 .home__feature-list {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 2rem;
 }
 
-@media (min-width: 768px) {
-    .home__feature-list {
-        flex-direction: row;
-        justify-content: center;
-    }
-}
-
 .home__feature {
-    background-color: #222;
+    background-color: #1f1f1f;
     padding: 1.5rem;
     border-radius: 0.5rem;
     text-align: center;
-    flex: 1;
 }
 
+    .home__feature img {
+        margin-bottom: 1rem;
+        max-width: 100%;
+        height: auto;
+    }
+
     .home__feature h3 {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         margin-bottom: 0.5rem;
-        color: #ffffff;
     }
 
     .home__feature p {
         color: #cccccc;
+        line-height: 1.5;
     }
 
+/* Responsive Breakpoints */
+
+/* Medium and up */
+@media (min-width: 768px) {
+    .home__feature-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Small devices */
+@media (max-width: 767px) {
+    .home__nav {
+        padding: 1rem;
+    }
+
+    .home__nav-menu {
+        width: 100%;
+        justify-content: center;
+    }
+
+        .home__nav-menu a {
+            margin: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+    .home__title {
+        font-size: 2.25rem;
+    }
+
+    .home__subtitle {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .home__cta {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .home__features {
+        padding: 2rem 1rem;
+    }
+
+    .home__section-title {
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .home__feature-list {
+        gap: 1.5rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    .home__title {
+        font-size: 1.75rem;
+    }
+
+    .home__subtitle {
+        font-size: 0.9rem;
+    }
+
+    .home__feature h3 {
+        font-size: 1.25rem;
+    }
+
+    .home__feature p {
+        font-size: 0.9rem;
+    }
+}

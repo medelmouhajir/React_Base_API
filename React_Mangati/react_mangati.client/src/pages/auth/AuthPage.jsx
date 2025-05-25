@@ -86,19 +86,6 @@ const AuthPage = () => {
                                 </div>
                             </div>
 
-                            <div className="auth-page__feature">
-                                <div className="auth-page__feature-icon">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" strokeWidth="2" />
-                                        <line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" strokeWidth="2" />
-                                        <line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" strokeWidth="2" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3>Analytics & Reports</h3>
-                                    <p>Get insights into your team's performance with detailed analytics and reports.</p>
-                                </div>
-                            </div>
                         </div>
 
                         <div className="auth-page__testimonial">
