@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import pageService from '../../services/pageService';
 import chapterService from '../../services/chapterService';
 import './Viewer.css';
+import { useAuth } from '../../contexts/AuthContext';
+import useUserData from '../../hooks/useUserData';
 
 const Viewer = () => {
     const { id } = useParams(); // chapterId
@@ -21,6 +23,54 @@ const Viewer = () => {
     const MIN_ZOOM = 50;
     const MAX_ZOOM = 200;
     const ZOOM_STEP = 10;
+
+
+    const { user } = useAuth();
+    const { saveReadingProgress, getReadingProgress } = useUserData();
+    const [currentPageIndex, setCurrentPageIndex] = useState(0);
+
+    // Load initial reading progress
+    useEffect(() => {
+        const loadInitialProgress = async () => {
+            if (!user || !id) return;
+
+            try {
+                const progress = await getReadingProgress(parseInt(id));
+                if (progress && progress.lastReadPage >= 0) {
+                    setCurrentPageIndex(progress.lastReadPage);
+                }
+            } catch (error) {
+                console.error('Error loading reading progress:', error);
+            }
+        };
+
+        loadInitialProgress();
+    }, [user, id, getReadingProgress]);
+
+    // Save reading progress periodically
+    useEffect(() => {
+        if (!user || !id || currentPageIndex < 0) return;
+
+        const saveTimer = setTimeout(() => {
+            saveReadingProgress(parseInt(id), currentPageIndex)
+                .catch(error => console.error('Error saving reading progress:', error));
+        }, 3000); // Save after 3 seconds of inactivity
+
+        return () => clearTimeout(saveTimer);
+    }, [user, id, currentPageIndex, saveReadingProgress]);
+
+    // Save on page exit
+    useEffect(() => {
+        if (!user || !id) return;
+
+        const handleBeforeUnload = () => {
+            saveReadingProgress(parseInt(id), currentPageIndex);
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [user, id, currentPageIndex, saveReadingProgress]);
+
 
     // Fetch chapter and pages data
     useEffect(() => {
@@ -144,13 +194,17 @@ const Viewer = () => {
     // Navigation functions
     const goToNextPage = () => {
         if (currentIndex < pages.length - 1) {
-            setCurrentIndex(prev => prev + 1);
+            const newIndex = currentIndex + 1;
+            setCurrentIndex(newIndex);
+            setCurrentPageIndex(newIndex);
         }
     };
 
     const goToPrevPage = () => {
         if (currentIndex > 0) {
-            setCurrentIndex(prev => prev - 1);
+            const newIndex = currentIndex - 1;
+            setCurrentIndex(newIndex);
+            setCurrentPageIndex(newIndex);
         }
     };
 
