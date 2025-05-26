@@ -150,11 +150,11 @@ const Header = ({
                         </li>
                         <li className="header__nav-item">
                             <Link
-                                to="/reports"
-                                className={`header__nav-link ${isActiveRoute('/reports') ? 'header__nav-link--active' : ''}`}
+                                to="/favorites"
+                                className={`header__nav-link ${isActiveRoute('/favorites') ? 'header__nav-link--active' : ''}`}
                                 onClick={() => setIsMenuOpen(false)}
                             >
-                                {t('navigation.reports')}
+                                {t('navigation.favorites')}
                             </Link>
                         </li>
                     </ul>

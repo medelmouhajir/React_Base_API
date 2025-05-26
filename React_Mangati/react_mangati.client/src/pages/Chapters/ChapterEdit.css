@@ -3,7 +3,7 @@
 .chapter-edit {
     padding: 20px;
     color: #e0e0e0;
-    background-color: #121212;
+    background-color: transparent;
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }

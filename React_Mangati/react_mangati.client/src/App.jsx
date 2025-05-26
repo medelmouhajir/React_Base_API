@@ -21,6 +21,9 @@ import Viewer from './pages/Viewer/Viewer';
 import Search from './pages/Search/Search';
 
 
+import Favorites from './pages/Favorites/Favorites';
+
+
 
 //import Settings from './pages/Settings/Settings';
 //import NotFound from './pages/NotFound/NotFound';
@@ -65,7 +68,10 @@ function App() {
 
                 <Route path="/search" element={<Search />} />
 
-                {/*<Route path="/settings" element={<Settings />} />*/}
+                
+                <Route path="/favorites" element={<Favorites />} />
+
+                                {/*<Route path="/settings" element={<Settings />} />*/}
                 {/*<Route path="/settings/:section" element={<Settings />} />*/}
 
                 {/* 404 Not Found */}

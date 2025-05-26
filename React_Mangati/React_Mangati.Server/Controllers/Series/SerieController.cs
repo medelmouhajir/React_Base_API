@@ -59,6 +59,7 @@ namespace React_Mangati.Server.Controllers.Series
                 CoverImageUrl = serie.CoverImageUrl,
                 Status = serie.Status.ToString(),
                 AuthorName = serie.Author?.FirstName + " " + serie.Author?.LastName,
+                AuthorId = serie.AuthorId,
                 CreatedAt = serie.CreatedAt
             });
         }
@@ -160,6 +161,7 @@ namespace React_Mangati.Server.Controllers.Series
         public string? CoverImageUrl { get; set; }
         public string Status { get; set; } = string.Empty;
         public string? AuthorName { get; set; }
+        public string? AuthorId { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 

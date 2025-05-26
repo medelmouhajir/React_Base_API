@@ -308,7 +308,7 @@ const Viewer = () => {
                     <div className="toolbar-divider"></div>
 
                     <h2 className="chapter-title">
-                        {chapter ? `Chapter ${chapter.number}: ${chapter.title}` : 'Chapter'}
+                        {chapter ? `Chapter ${chapter.number}: ${chapter.serie.title}` : 'Chapter'}
                     </h2>
                 </div>
 

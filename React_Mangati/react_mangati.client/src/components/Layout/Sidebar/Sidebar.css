@@ -1,4 +1,4 @@
-/* Enhanced Sidebar Component Styles - Hidden by Default */
+﻿/* Enhanced Sidebar Component Styles - Hidden by Default */
 
 .sidebar {
     position: fixed;
@@ -821,5 +821,33 @@
     .sidebar,
     .sidebar__overlay {
         display: none !important;
+    }
+}
+@media (max-width: 1024px) {
+    /* When we’re explicitly in “mobile open” mode,
+     undo all of the collapsed‐sidebar styles */
+    .sidebar--mobile-open .sidebar__menu-button {
+        justify-content: flex-start;
+        padding: 0.875rem 1rem;
+    }
+
+    .sidebar--mobile-open .sidebar__menu-icon {
+        margin-right: 0.875rem;
+    }
+
+    .sidebar--mobile-open .sidebar__menu-label {
+        /* restore the text */
+        opacity: 1 !important;
+        width: auto !important;
+        visibility: visible !important;
+    }
+
+    .sidebar--mobile-open .sidebar__section-title {
+        display: block;
+    }
+
+    .sidebar--mobile-open .sidebar__menu-meta {
+        opacity: 1 !important;
+        width: auto !important;
     }
 }
