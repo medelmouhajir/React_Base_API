@@ -22,6 +22,7 @@ import Search from './pages/Search/Search';
 
 
 import Favorites from './pages/Favorites/Favorites';
+import MySeries from './pages/Series/MySeries';
 
 
 
@@ -70,6 +71,7 @@ function App() {
 
                 
                 <Route path="/favorites" element={<Favorites />} />
+                <Route path="/myseries" element={<MySeries />} />
 
                                 {/*<Route path="/settings" element={<Settings />} />*/}
                 {/*<Route path="/settings/:section" element={<Settings />} />*/}

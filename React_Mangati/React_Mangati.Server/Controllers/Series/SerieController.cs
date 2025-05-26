@@ -37,6 +37,7 @@ namespace React_Mangati.Server.Controllers.Series
                     CoverImageUrl = s.CoverImageUrl,
                     Status = s.Status.ToString(),
                     AuthorName = s.Author != null ? s.Author.FirstName + " " + s.Author.LastName : null,
+                    AuthorId = s.AuthorId,
                     CreatedAt = s.CreatedAt
                 }).ToListAsync();
 

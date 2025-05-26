@@ -1,4 +1,7 @@
+// src/components/Layout/Sidebar/Sidebar.jsx
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
 import './Sidebar.css';
 
@@ -8,16 +11,33 @@ const Sidebar = ({
     onClose,
     onToggle
 }) => {
-    const [activeMenu, setActiveMenu] = useState('dashboard');
-    const [expandedMenus, setExpandedMenus] = useState([]);
+    const { t } = useTranslation();
+    const [activeMenu, setActiveMenu] = useState('');
+    const navigate = useNavigate();
     const { user } = useAuth();
+
+    // Set active menu based on current path
+    useEffect(() => {
+        const path = window.location.pathname;
+        if (path.includes('/series')) {
+            setActiveMenu('series');
+        } else if (path.includes('/myseries')) {
+            setActiveMenu('myseries');
+        } else if (path.includes('/search')) {
+            setActiveMenu('search');
+        } else if (path.includes('/create-serie')) {
+            setActiveMenu('create-serie');
+        } else if (path.includes('/favorites')) {
+            setActiveMenu('favorites');
+        }
+    }, []);
 
     // Close sidebar on escape key
     useEffect(() => {
         const handleEscape = (e) => {
             if (e.key === 'Escape' && (isOpen || isMobileOpen)) {
                 if (onClose) onClose();
-                if (onToggle) onToggle();
+                if (onToggle && !isMobileOpen) onToggle();
             }
         };
 
@@ -39,253 +59,77 @@ const Sidebar = ({
         }
     }, [isMobileOpen, onClose]);
 
+    // Navigation menu items
     const menuItems = [
         {
-            id: 'dashboard',
-            title: 'Dashboard',
+            id: 'series',
+            title: t('sidebar.series'),
             icon: (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="3" width="7" height="9"></rect>
-                    <rect x="14" y="3" width="7" height="5"></rect>
-                    <rect x="14" y="12" width="7" height="9"></rect>
-                    <rect x="3" y="16" width="7" height="5"></rect>
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                 </svg>
             ),
-            href: '/dashboard',
+            href: '/series',
         },
         {
-            id: 'projects',
-            title: 'Projects',
+            id: 'myseries',
+            title: t('sidebar.mySeries'),
             icon: (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                 </svg>
             ),
-            submenu: [
-                {
-                    id: 'all-projects',
-                    title: 'All Projects',
-                    href: '/projects',
-                    count: 24
-                },
-                {
-                    id: 'active-projects',
-                    title: 'Active Projects',
-                    href: '/projects/active',
-                    count: 12,
-                    status: 'success'
-                },
-                {
-                    id: 'pending-projects',
-                    title: 'Pending Review',
-                    href: '/projects/pending',
-                    count: 5,
-                    status: 'warning'
-                },
-                {
-                    id: 'completed-projects',
-                    title: 'Completed',
-                    href: '/projects/completed',
-                    count: 7,
-                    status: 'info'
-                },
-            ]
+            href: '/myseries',
         },
         {
-            id: 'tasks',
-            title: 'Tasks',
+            id: 'search',
+            title: t('sidebar.search'),
             icon: (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 11l3 3L22 4"></path>
-                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
             ),
-            submenu: [
-                {
-                    id: 'my-tasks',
-                    title: 'My Tasks',
-                    href: '/tasks/my',
-                    count: 8,
-                    priority: true
-                },
-                {
-                    id: 'assigned-tasks',
-                    title: 'Assigned to Me',
-                    href: '/tasks/assigned',
-                    count: 15
-                },
-                {
-                    id: 'due-today',
-                    title: 'Due Today',
-                    href: '/tasks/due-today',
-                    count: 3,
-                    status: 'danger'
-                },
-                {
-                    id: 'overdue',
-                    title: 'Overdue',
-                    href: '/tasks/overdue',
-                    count: 2,
-                    status: 'danger'
-                },
-            ]
+            href: '/search',
         },
         {
-            id: 'team',
-            title: 'Team',
+            id: 'create-serie',
+            title: t('sidebar.createSerie'),
             icon: (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
             ),
-            submenu: [
-                {
-                    id: 'team-members',
-                    title: 'All Members',
-                    href: '/team',
-                    count: 28
-                },
-                {
-                    id: 'departments',
-                    title: 'Departments',
-                    href: '/team/departments'
-                },
-                {
-                    id: 'roles',
-                    title: 'Roles & Permissions',
-                    href: '/team/roles'
-                },
-                {
-                    id: 'team-performance',
-                    title: 'Performance',
-                    href: '/team/performance'
-                },
-            ]
+            href: '/series/create',
+            badge: { text: 'New', type: 'info' }
         },
         {
-            id: 'calendar',
-            title: 'Calendar',
+            id: 'favorites',
+            title: t('sidebar.favorites'),
             icon: (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
             ),
-            href: '/calendar',
-            badge: { text: '3', type: 'info' }
-        },
-        {
-            id: 'reports',
-            title: 'Reports & Analytics',
-            icon: (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="20" x2="18" y2="10"></line>
-                    <line x1="12" y1="20" x2="12" y2="4"></line>
-                    <line x1="6" y1="20" x2="6" y2="14"></line>
-                </svg>
-            ),
-            submenu: [
-                {
-                    id: 'analytics',
-                    title: 'Project Analytics',
-                    href: '/reports/analytics'
-                },
-                {
-                    id: 'time-tracking',
-                    title: 'Time Reports',
-                    href: '/reports/time'
-                },
-                {
-                    id: 'performance',
-                    title: 'Team Performance',
-                    href: '/reports/performance'
-                },
-                {
-                    id: 'export',
-                    title: 'Export Data',
-                    href: '/reports/export'
-                },
-            ]
-        },
-        {
-            id: 'settings',
-            title: 'Settings',
-            icon: (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
-            ),
-            submenu: [
-                {
-                    id: 'general-settings',
-                    title: 'General',
-                    href: '/settings/general'
-                },
-                {
-                    id: 'profile-settings',
-                    title: 'Profile Settings',
-                    href: '/settings/profile'
-                },
-                {
-                    id: 'security',
-                    title: 'Security',
-                    href: '/settings/security'
-                },
-                {
-                    id: 'notifications',
-                    title: 'Notifications',
-                    href: '/settings/notifications'
-                },
-                {
-                    id: 'integrations',
-                    title: 'Integrations',
-                    href: '/settings/integrations'
-                },
-            ]
+            href: '/favorites',
         },
     ];
 
-    const handleMenuClick = (item) => {
-        if (item.submenu) {
-            // Toggle submenu expansion
-            setExpandedMenus(prev =>
-                prev.includes(item.id)
-                    ? prev.filter(id => id !== item.id)
-                    : [...prev, item.id]
-            );
-        } else {
-            // Navigate to single menu item
-            setActiveMenu(item.id);
-            handleNavigation(item.href);
-        }
-    };
-
-    const handleSubmenuClick = (submenuItem, parentId) => {
-        setActiveMenu(submenuItem.id);
-        handleNavigation(submenuItem.href);
-
-        // Close mobile sidebar after navigation
-        if (isMobileOpen && onClose) {
-            onClose();
-        }
-    };
-
+    // Handle navigation
     const handleNavigation = (href) => {
         if (href) {
-            // For now, just log the navigation
-            // In a real app, you'd use React Router
-            console.log('Navigate to:', href);
-            // Example: navigate(href);
+            navigate(href);
+
+            // Close mobile sidebar after navigation
+            if (isMobileOpen && onClose) {
+                onClose();
+            }
         }
     };
 
+    // Render badge if present
     const renderBadge = (badge) => {
         if (!badge) return null;
         return (
@@ -295,15 +139,7 @@ const Sidebar = ({
         );
     };
 
-    const renderCount = (count, status) => {
-        if (!count) return null;
-        return (
-            <span className={`sidebar__count ${status ? `sidebar__count--${status}` : ''}`}>
-                {count}
-            </span>
-        );
-    };
-
+    // Define CSS classes for the sidebar
     const sidebarClasses = [
         'sidebar',
         isOpen ? 'sidebar--open' : 'sidebar--closed',
@@ -334,7 +170,7 @@ const Sidebar = ({
 
                         <div className={`sidebar__brand-text ${!isOpen ? 'sidebar__brand-text--hidden' : ''}`}>
                             <h2 className="sidebar__title">Mangati</h2>
-                            <span className="sidebar__subtitle">Project Hub</span>
+                            <span className="sidebar__subtitle">{t('sidebar.subtitle')}</span>
                         </div>
                     </div>
 
@@ -343,7 +179,7 @@ const Sidebar = ({
                         <button
                             className="sidebar__close-btn"
                             onClick={onClose}
-                            aria-label="Close sidebar"
+                            aria-label={t('sidebar.close')}
                         >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -358,105 +194,40 @@ const Sidebar = ({
                     <div className="sidebar__nav-section">
                         {isOpen && (
                             <div className="sidebar__section-title">
-                                <span>Main Navigation</span>
+                                <span>{t('sidebar.mainNavigation')}</span>
                             </div>
                         )}
 
                         <ul className="sidebar__menu" role="menubar">
-                            {menuItems.map((item) => {
-                                const isMenuActive = activeMenu === item.id ||
-                                    (item.submenu && item.submenu.some(sub => activeMenu === sub.id));
-                                const isExpanded = expandedMenus.includes(item.id);
+                            {menuItems.map((item) => (
+                                <li key={item.id} className="sidebar__menu-item" role="none">
+                                    <button
+                                        className={`sidebar__menu-button ${activeMenu === item.id ? 'sidebar__menu-button--active' : ''}`}
+                                        onClick={() => handleNavigation(item.href)}
+                                        title={!isOpen ? item.title : ''}
+                                        role="menuitem"
+                                    >
+                                        <span className="sidebar__menu-icon" aria-hidden="true">
+                                            {item.icon}
+                                        </span>
 
-                                return (
-                                    <li key={item.id} className="sidebar__menu-item" role="none">
-                                        <button
-                                            className={`sidebar__menu-button ${isMenuActive ? 'sidebar__menu-button--active' : ''}`}
-                                            onClick={() => handleMenuClick(item)}
-                                            title={!isOpen ? item.title : ''}
-                                            aria-expanded={item.submenu ? isExpanded : undefined}
-                                            role="menuitem"
-                                        >
-                                            <span className="sidebar__menu-icon" aria-hidden="true">
-                                                {item.icon}
-                                            </span>
+                                        <span className={`sidebar__menu-label ${!isOpen && !isMobileOpen ? 'sidebar__menu-label--hidden' : ''}`}>
+                                            {item.title}
+                                        </span>
 
-                                            <span className={`sidebar__menu-label ${!isOpen ? 'sidebar__menu-label--hidden' : ''}`}>
-                                                {item.title}
-                                            </span>
+                                        <div className={`sidebar__menu-meta ${!isOpen && !isMobileOpen ? 'sidebar__menu-meta--hidden' : ''}`}>
+                                            {item.badge && renderBadge(item.badge)}
+                                        </div>
+                                    </button>
 
-                                            <div className={`sidebar__menu-meta ${!isOpen ? 'sidebar__menu-meta--hidden' : ''}`}>
-                                                {item.badge && renderBadge(item.badge)}
-
-                                                {item.submenu && (
-                                                    <svg
-                                                        className={`sidebar__chevron ${isExpanded ? 'sidebar__chevron--expanded' : ''}`}
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        aria-hidden="true"
-                                                    >
-                                                        <polyline points="6,9 12,15 18,9"></polyline>
-                                                    </svg>
-                                                )}
-                                            </div>
-                                        </button>
-
-                                        {/* Submenu - only show when sidebar is open */}
-                                        {item.submenu && isOpen && (
-                                            <ul
-                                                className={`sidebar__submenu ${isExpanded ? 'sidebar__submenu--expanded' : ''}`}
-                                                role="menu"
-                                                aria-label={`${item.title} submenu`}
-                                            >
-                                                {item.submenu.map((subItem) => (
-                                                    <li key={subItem.id} className="sidebar__submenu-item" role="none">
-                                                        <button
-                                                            className={`sidebar__submenu-button ${activeMenu === subItem.id ? 'sidebar__submenu-button--active' : ''}`}
-                                                            onClick={() => handleSubmenuClick(subItem, item.id)}
-                                                            role="menuitem"
-                                                        >
-                                                            <span className="sidebar__submenu-dot" aria-hidden="true"></span>
-                                                            <span className="sidebar__submenu-label">{subItem.title}</span>
-
-                                                            <div className="sidebar__submenu-meta">
-                                                                {subItem.count && renderCount(subItem.count, subItem.status)}
-                                                                {subItem.priority && (
-                                                                    <span
-                                                                        className="sidebar__priority-indicator"
-                                                                        aria-label="High priority"
-                                                                    ></span>
-                                                                )}
-                                                            </div>
-                                                        </button>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-
-                                        {/* Tooltip for collapsed state */}
-                                        {item.submenu && !isOpen && (
-                                            <div className="sidebar__tooltip-submenu" role="tooltip">
-                                                <div className="sidebar__tooltip-header">{item.title}</div>
-                                                <ul className="sidebar__tooltip-list">
-                                                    {item.submenu.map((subItem) => (
-                                                        <li key={subItem.id}>
-                                                            <button
-                                                                className="sidebar__tooltip-item"
-                                                                onClick={() => handleSubmenuClick(subItem, item.id)}
-                                                            >
-                                                                {subItem.title}
-                                                                {subItem.count && renderCount(subItem.count, subItem.status)}
-                                                            </button>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </li>
-                                );
-                            })}
+                                    {/* Tooltip for collapsed state */}
+                                    {!isOpen && !isMobileOpen && (
+                                        <div className="sidebar__tooltip">
+                                            <span className="sidebar__tooltip-text">{item.title}</span>
+                                        </div>
+                                    )}
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </nav>
@@ -471,20 +242,21 @@ const Sidebar = ({
                                     alt={`${user.firstName} ${user.lastName}`}
                                     className="sidebar__avatar-image"
                                 />
-                                <div className="sidebar__status-indicator" aria-label="Online"></div>
+                                <div className="sidebar__status-indicator" aria-label={t('sidebar.statusOnline')}></div>
                             </div>
 
-                            <div className={`sidebar__user-info ${!isOpen ? 'sidebar__user-info--hidden' : ''}`}>
+                            <div className={`sidebar__user-info ${!isOpen && !isMobileOpen ? 'sidebar__user-info--hidden' : ''}`}>
                                 <div className="sidebar__user-name">
                                     {user.firstName} {user.lastName}
                                 </div>
                                 <div className="sidebar__user-role">{user.role}</div>
                             </div>
 
-                            {isOpen && (
+                            {(isOpen || isMobileOpen) && (
                                 <button
                                     className="sidebar__user-menu"
-                                    aria-label="User menu"
+                                    onClick={() => handleNavigation('/account')}
+                                    aria-label={t('sidebar.userMenu')}
                                 >
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <circle cx="12" cy="12" r="1"></circle>
