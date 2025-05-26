@@ -20,9 +20,28 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const initializeAuth = async () => {
             try {
+                // Check for normal token
                 const token = localStorage.getItem('authToken');
                 if (token) {
                     // Verify token and get user info
+                    const userData = await authService.getCurrentUser();
+                    setUser(userData);
+                }
+
+                // Check URL for tokens from Google auth redirect
+                const urlParams = new URLSearchParams(window.location.search);
+                const googleToken = urlParams.get('token');
+                const expiresAt = urlParams.get('expiresAt');
+
+                if (googleToken && expiresAt) {
+                    // Store the token
+                    localStorage.setItem('authToken', googleToken);
+                    localStorage.setItem('tokenExpiry', expiresAt);
+
+                    // Clean the URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+
+                    // Get user info using the token
                     const userData = await authService.getCurrentUser();
                     setUser(userData);
                 }
@@ -38,6 +57,17 @@ export const AuthProvider = ({ children }) => {
 
         initializeAuth();
     }, []);
+
+
+    // Add a method for Google authentication
+    const loginWithGoogle = () => {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5229';
+        const redirectUri = encodeURIComponent(window.location.origin);
+
+        // Redirect to backend endpoint that starts Google OAuth flow
+        window.location.href = `${apiUrl}/api/GoogleAuth/signin?returnUrl=${redirectUri}`;
+    };
+
 
     // Auto-refresh token when it's about to expire
     useEffect(() => {
@@ -187,6 +217,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         error,
         login,
+        loginWithGoogle,
         register,
         logout,
         refreshToken,

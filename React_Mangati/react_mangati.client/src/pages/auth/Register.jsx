@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import GoogleLoginButton from '../../components/Google/GoogleLoginButton';
 import './Auth.css';
 
 const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
@@ -131,6 +132,9 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                 <h1 className="auth-form__title">Create Account</h1>
                 <p className="auth-form__subtitle">Join Mangati to manage your projects</p>
             </div>
+
+            {/* Google Sign-Up Button */}
+            <GoogleLoginButton />
 
             <form onSubmit={handleSubmit} className="auth-form__form">
                 {error && (

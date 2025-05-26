@@ -485,3 +485,81 @@
         transition: none;
     }
 }
+/* Add these styles to your Auth.css file */
+
+.auth-form__google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: white;
+    color: #333;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 1rem;
+    gap: 0.75rem;
+}
+
+    .auth-form__google-btn:hover {
+        background: #f8f8f8;
+        border-color: #d1d5db;
+    }
+
+.auth-form__google-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    fill: #4285F4;
+}
+
+.auth-form__divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+    .auth-form__divider::before,
+    .auth-form__divider::after {
+        content: '';
+        flex: 1;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .auth-form__divider::before {
+        margin-right: 1rem;
+    }
+
+    .auth-form__divider::after {
+        margin-left: 1rem;
+    }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .auth-form__google-btn {
+        background: #1f1f1f;
+        color: #e0e0e0;
+        border-color: #333;
+    }
+
+        .auth-form__google-btn:hover {
+            background: #2a2a2a;
+            border-color: #444;
+        }
+
+    .auth-form__divider {
+        color: #9ca3af;
+    }
+
+        .auth-form__divider::before,
+        .auth-form__divider::after {
+            border-color: #333;
+        }
+}

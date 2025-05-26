@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
+import GoogleLoginButton from '../../components/Google/GoogleLoginButton';
 import './Auth.css';
 
 const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
@@ -18,6 +19,31 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
     useEffect(() => {
         // Clear any previous errors when component mounts
         clearError();
+
+        // Check for token in URL params (from Google auth redirect)
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const expiresAt = urlParams.get('expiresAt');
+        const error = urlParams.get('error');
+
+        if (token && expiresAt) {
+            // Store token in localStorage
+            localStorage.setItem('authToken', token);
+            localStorage.setItem('tokenExpiry', expiresAt);
+
+            // Remove the token from URL (to prevent accidental token sharing)
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+            // Reload the page to update auth state
+            window.location.reload();
+        } else if (error) {
+            // Handle error
+            console.error('Authentication error:', error);
+            // Optionally set an error state here
+
+            // Remove the error from URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
     }, [clearError]);
 
     const handleChange = (e) => {
@@ -76,6 +102,13 @@ const Login = ({ onSwitchToRegister, onLoginSuccess }) => {
                 </div>
                 <h1 className="auth-form__title">{t('auth.login.title')}</h1>
                 <p className="auth-form__subtitle">{t('auth.login.subtitle')}</p>
+            </div>
+
+            {/* Google Login Button */}
+            <GoogleLoginButton />
+
+            <div className="auth-form__divider">
+                {t('auth.login.orDivider', 'or continue with email')}
             </div>
 
             <form onSubmit={handleSubmit} className="auth-form__form">

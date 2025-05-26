@@ -14,6 +14,46 @@ namespace React_Mangati.Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Make sure this is BEFORE AddControllers()
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "ApplicationCookie";
+                options.DefaultChallengeScheme = "Google";
+            })
+            .AddCookie("ApplicationCookie", options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                options.LoginPath = "/api/Auth/login";
+            })
+            .AddGoogle(options =>
+            {
+                var googleAuthSection = builder.Configuration.GetSection("Authentication:Google");
+                options.ClientId = googleAuthSection["ClientId"];
+                options.ClientSecret = googleAuthSection["ClientSecret"];
+                options.CallbackPath = "/signin-google"; // This must match exactly what's in Google Console
+                options.SaveTokens = true;
+
+                // Make sure cookies are properly configured
+                options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+
+                // Important: Set cookie paths to root to ensure they're accessible
+                options.CorrelationCookie.Path = "/";
+            });
+
+            // Set proper cookie policy (very important for authentication flows)
+            builder.Services.Configure<CookiePolicyOptions>(options =>
+            {
+                // This determines whether user consent for non-essential cookies is needed
+                options.CheckConsentNeeded = context => false;
+                // Adjust as needed, but Lax is usually best for authentication
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
+                // Match secure policy with your app's HTTPS usage
+                options.Secure = CookieSecurePolicy.SameAsRequest;
+            });
+
+
             // Add services to the container.
             builder.Services.AddControllers();
 
