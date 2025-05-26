@@ -51,7 +51,7 @@ namespace React_Mangati.Server.Controllers
             return Challenge(properties, "Google");
         }
 
-        [HttpGet("callback")]
+        [HttpGet("signin-google")]
         public async Task<IActionResult> HandleGoogleCallback()
         {
             try
