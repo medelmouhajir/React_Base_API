@@ -19,11 +19,11 @@ const Viewer = () => {
     const contentRef = useRef(null);
     const hammerRef = useRef(null);
     const zoomTimeout = useRef(null);
+    const observerRef = useRef(null); // Add ref for intersection observer
 
     const MIN_ZOOM = 50;
     const MAX_ZOOM = 200;
     const ZOOM_STEP = 10;
-
 
     const { user } = useAuth();
     const { saveReadingProgress, getReadingProgress } = useUserData();
@@ -71,6 +71,59 @@ const Viewer = () => {
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, [user, id, currentPageIndex, saveReadingProgress]);
 
+    // Set up a hook to add initial scroll to position
+    useEffect(() => {
+        // When loading in infinite mode, scroll to the saved position
+        if (mode === 'infinite' && pages.length > 0 && !loading && currentPageIndex > 0) {
+            // Add a slight delay to ensure the DOM is ready
+            const timer = setTimeout(() => {
+                const pageElements = document.querySelectorAll('.page-wrapper');
+                if (pageElements.length > currentPageIndex) {
+                    pageElements[currentPageIndex].scrollIntoView({ behavior: 'auto' });
+                }
+            }, 300);
+
+            return () => clearTimeout(timer);
+        }
+    }, [mode, pages.length, loading, currentPageIndex]);
+
+    // Set up the intersection observer for infinite scroll mode
+    useEffect(() => {
+        if (mode !== 'infinite' || pages.length === 0) return;
+
+        // Create a new IntersectionObserver
+        observerRef.current = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    // If the page is visible
+                    if (entry.isIntersecting) {
+                        // Get the page index from the data attribute
+                        const pageIndex = parseInt(entry.target.dataset.index);
+                        // Update the currentPageIndex (for saving progress)
+                        setCurrentPageIndex(pageIndex);
+                    }
+                });
+            },
+            {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.5 // Page is considered viewed when 50% visible
+            }
+        );
+
+        // Observe all page elements
+        const pageElements = document.querySelectorAll('.page-wrapper');
+        pageElements.forEach(el => {
+            observerRef.current.observe(el);
+        });
+
+        // Cleanup function
+        return () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+        };
+    }, [mode, pages]);
 
     // Fetch chapter and pages data
     useEffect(() => {
@@ -309,7 +362,11 @@ const Viewer = () => {
         <div className="viewer-mode infinite-mode" ref={contentRef}>
             <div className="infinite-scroll-container" style={{ transform: `scale(${zoom / 100})` }}>
                 {pages.map((page, index) => (
-                    <div key={page.id} className="page-wrapper">
+                    <div
+                        key={page.id}
+                        className="page-wrapper"
+                        data-index={index} // Add data attribute for the observer
+                    >
                         <img
                             src={`${import.meta.env.VITE_API_URL}${page.imageUrl}`}
                             alt={`Page ${index + 1}`}
