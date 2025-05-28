@@ -11,11 +11,14 @@ COPY package*.json ./
 RUN npm install
 RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs
 
+
 # Copy source code
 COPY . .
 
 # Build the application
 RUN npm run build
+
+RUN sudo chmod +x node_modules/.bin/vite
 
 # Development stage for hot-reloading
 FROM node:20-alpine AS development
