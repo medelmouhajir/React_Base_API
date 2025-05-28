@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using React_Mangati.Server.Data;
 using React_Mangati.Server.Models.Series;
+using React_Mangati.Server.Models.Languages;
+using React_Mangati.Server.Models.Tags;
 using React_Mangati.Server.Models.Users;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
@@ -29,6 +31,8 @@ namespace React_Mangati.Server.Controllers.Series
         {
             var series = await _context.Series
                 .Include(s => s.Author)
+                .Include(s => s.Serie_Tags).ThenInclude(st => st.Tag)
+                .Include(s => s.Serie_Languages).ThenInclude(sl => sl.Language)
                 .Select(s => new SerieDto
                 {
                     Id = s.Id,
@@ -38,7 +42,9 @@ namespace React_Mangati.Server.Controllers.Series
                     Status = s.Status.ToString(),
                     AuthorName = s.Author != null ? s.Author.FirstName + " " + s.Author.LastName : null,
                     AuthorId = s.AuthorId,
-                    CreatedAt = s.CreatedAt
+                    CreatedAt = s.CreatedAt,
+                    Tags = s.Serie_Tags.Select(st => new TagDto { TagId = st.Tag.TagId, Name = st.Tag.Name }).ToList(),
+                    Languages = s.Serie_Languages.Select(sl => new LanguageDto { Id = sl.Language.Id, Name = sl.Language.Name }).ToList()
                 }).ToListAsync();
 
             return Ok(series);
@@ -47,7 +53,11 @@ namespace React_Mangati.Server.Controllers.Series
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var serie = await _context.Series.Include(s => s.Author).FirstOrDefaultAsync(s => s.Id == id);
+            var serie = await _context.Series
+                .Include(s => s.Author)
+                .Include(s => s.Serie_Tags).ThenInclude(st => st.Tag)
+                .Include(s => s.Serie_Languages).ThenInclude(sl => sl.Language)
+                .FirstOrDefaultAsync(s => s.Id == id);
 
             if (serie == null)
                 return NotFound();
@@ -61,7 +71,9 @@ namespace React_Mangati.Server.Controllers.Series
                 Status = serie.Status.ToString(),
                 AuthorName = serie.Author?.FirstName + " " + serie.Author?.LastName,
                 AuthorId = serie.AuthorId,
-                CreatedAt = serie.CreatedAt
+                CreatedAt = serie.CreatedAt,
+                Tags = serie.Serie_Tags?.Select(st => new TagDto { TagId = st.Tag.TagId, Name = st.Tag.Name }).ToList() ?? new List<TagDto>(),
+                Languages = serie.Serie_Languages?.Select(sl => new LanguageDto { Id = sl.Language.Id, Name = sl.Language.Name }).ToList() ?? new List<LanguageDto>()
             });
         }
 
@@ -72,72 +84,158 @@ namespace React_Mangati.Server.Controllers.Series
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userId == null) return Unauthorized();
 
-            string? imageUrl = null;
-
-            if (model.CoverImage != null && model.CoverImage.Length > 0)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/series");
-                Directory.CreateDirectory(uploadsFolder);
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.CoverImage.FileName);
-                var filePath = Path.Combine(uploadsFolder, fileName);
+                string? imageUrl = null;
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                // Handle cover image upload
+                if (model.CoverImage != null && model.CoverImage.Length > 0)
                 {
-                    await model.CoverImage.CopyToAsync(stream);
+                    var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/series");
+                    Directory.CreateDirectory(uploadsFolder);
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.CoverImage.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.CoverImage.CopyToAsync(stream);
+                    }
+
+                    imageUrl = $"/uploads/series/{fileName}";
                 }
 
-                imageUrl = $"/uploads/series/{fileName}";
+                // Create the serie
+                var newSerie = new Serie
+                {
+                    Title = model.Title,
+                    Synopsis = model.Synopsis,
+                    CoverImageUrl = imageUrl,
+                    Status = model.Status,
+                    AuthorId = userId,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Series.Add(newSerie);
+                await _context.SaveChangesAsync();
+
+                // Add languages
+                if (model.LanguageIds != null && model.LanguageIds.Any())
+                {
+                    foreach (var languageId in model.LanguageIds)
+                    {
+                        _context.Serie_Languages.Add(new Serie_Language
+                        {
+                            SerieId = newSerie.Id,
+                            LanguageId = languageId
+                        });
+                    }
+                }
+
+                // Add tags
+                if (model.TagIds != null && model.TagIds.Any())
+                {
+                    foreach (var tagId in model.TagIds)
+                    {
+                        _context.Serie_Tags.Add(new Serie_Tag
+                        {
+                            SerieId = newSerie.Id,
+                            TagId = tagId
+                        });
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                _logger.LogInformation("Serie created successfully with ID: {SerieId}", newSerie.Id);
+
+                return CreatedAtAction(nameof(GetById), new { id = newSerie.Id }, new { id = newSerie.Id });
             }
-
-            var newSerie = new Serie
+            catch (Exception ex)
             {
-                Title = model.Title,
-                Synopsis = model.Synopsis,
-                CoverImageUrl = imageUrl,
-                Status = model.Status,
-                AuthorId = userId,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.Series.Add(newSerie);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetById), new { id = newSerie.Id }, new { id = newSerie.Id });
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error creating serie");
+                return StatusCode(500, new { message = "An error occurred while creating the serie" });
+            }
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Writer,Admin")]
         public async Task<IActionResult> Update(int id, [FromForm] SerieCreateDto model)
         {
-            var serie = await _context.Series.FindAsync(id);
+            var serie = await _context.Series
+                .Include(s => s.Serie_Languages)
+                .Include(s => s.Serie_Tags)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
             if (serie == null) return NotFound();
 
-            string? imageUrl = serie.CoverImageUrl;
-            if (model.CoverImage != null && model.CoverImage.Length > 0)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/series");
-                Directory.CreateDirectory(uploadsFolder);
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.CoverImage.FileName);
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                string? imageUrl = serie.CoverImageUrl;
+                if (model.CoverImage != null && model.CoverImage.Length > 0)
                 {
-                    await model.CoverImage.CopyToAsync(stream);
+                    var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads/series");
+                    Directory.CreateDirectory(uploadsFolder);
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.CoverImage.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.CoverImage.CopyToAsync(stream);
+                    }
+
+                    imageUrl = $"/uploads/series/{fileName}";
                 }
 
-                imageUrl = $"/uploads/series/{fileName}";
+                serie.Title = model.Title;
+                serie.Synopsis = model.Synopsis;
+                serie.Status = model.Status;
+                serie.CoverImageUrl = imageUrl;
+                serie.UpdatedAt = DateTime.UtcNow;
+
+                // Update languages
+                _context.Serie_Languages.RemoveRange(serie.Serie_Languages);
+                if (model.LanguageIds != null && model.LanguageIds.Any())
+                {
+                    foreach (var languageId in model.LanguageIds)
+                    {
+                        _context.Serie_Languages.Add(new Serie_Language
+                        {
+                            SerieId = serie.Id,
+                            LanguageId = languageId
+                        });
+                    }
+                }
+
+                // Update tags
+                _context.Serie_Tags.RemoveRange(serie.Serie_Tags);
+                if (model.TagIds != null && model.TagIds.Any())
+                {
+                    foreach (var tagId in model.TagIds)
+                    {
+                        _context.Serie_Tags.Add(new Serie_Tag
+                        {
+                            SerieId = serie.Id,
+                            TagId = tagId
+                        });
+                    }
+                }
+
+                _context.Series.Update(serie);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return NoContent();
             }
-
-            serie.Title = model.Title;
-            serie.Synopsis = model.Synopsis;
-            serie.Status = model.Status;
-            serie.CoverImageUrl = imageUrl;
-            serie.UpdatedAt = DateTime.UtcNow;
-
-            _context.Series.Update(serie);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error updating serie");
+                return StatusCode(500, new { message = "An error occurred while updating the serie" });
+            }
         }
 
         [HttpDelete("{id}")]
@@ -164,6 +262,8 @@ namespace React_Mangati.Server.Controllers.Series
         public string? AuthorName { get; set; }
         public string? AuthorId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public List<TagDto> Tags { get; set; } = new List<TagDto>();
+        public List<LanguageDto> Languages { get; set; } = new List<LanguageDto>();
     }
 
     public class SerieCreateDto
@@ -178,5 +278,20 @@ namespace React_Mangati.Server.Controllers.Series
 
         [Required]
         public Serie_Status Status { get; set; }
+
+        public List<int>? LanguageIds { get; set; }
+        public List<int>? TagIds { get; set; }
+    }
+
+    public class TagDto
+    {
+        public int TagId { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class LanguageDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }

@@ -27,11 +27,34 @@ export const serieService = {
             formData.append('title', serieData.title);
             formData.append('synopsis', serieData.synopsis || '');
             formData.append('status', serieData.status);
+
+            // Append cover image if provided
             if (serieData.coverImage) {
                 formData.append('coverImage', serieData.coverImage);
             }
-            console.log('Creating serie with data: HHHHHHHHHHHHHHHH');
-            console.log(formData);
+
+            // Append language IDs
+            if (serieData.languageIds && serieData.languageIds.length > 0) {
+                serieData.languageIds.forEach(id => {
+                    formData.append('languageIds', id);
+                });
+            }
+
+            // Append tag IDs
+            if (serieData.tagIds && serieData.tagIds.length > 0) {
+                serieData.tagIds.forEach(id => {
+                    formData.append('tagIds', id);
+                });
+            }
+
+            console.log('Creating serie with data:', {
+                title: serieData.title,
+                synopsis: serieData.synopsis,
+                status: serieData.status,
+                languageIds: serieData.languageIds,
+                tagIds: serieData.tagIds,
+                hasCoverImage: !!serieData.coverImage
+            });
 
             const response = await apiClient.post('/serie', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -50,8 +73,24 @@ export const serieService = {
             formData.append('title', serieData.title);
             formData.append('synopsis', serieData.synopsis || '');
             formData.append('status', serieData.status);
+
+            // Append cover image if provided
             if (serieData.coverImage) {
                 formData.append('coverImage', serieData.coverImage);
+            }
+
+            // Append language IDs
+            if (serieData.languageIds && serieData.languageIds.length > 0) {
+                serieData.languageIds.forEach(id => {
+                    formData.append('languageIds', id);
+                });
+            }
+
+            // Append tag IDs
+            if (serieData.tagIds && serieData.tagIds.length > 0) {
+                serieData.tagIds.forEach(id => {
+                    formData.append('tagIds', id);
+                });
             }
 
             const response = await apiClient.put(`/serie/${id}`, formData, {
