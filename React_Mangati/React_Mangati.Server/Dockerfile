@@ -7,22 +7,35 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS with-node
 RUN apt-get update
-RUN apt-get install curl
+RUN apt-get install curl -y
 RUN curl -sL https://deb.nodesource.com/setup_20.x | bash
 RUN apt-get -y install nodejs
-
 
 FROM with-node AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Copy project files
 COPY ["React_Mangati/React_Mangati.Server/React_Mangati.Server.csproj", "React_Mangati/React_Mangati.Server/"]
-COPY ["react_mangati.client/react_mangati.client.esproj", "react_mangati.client/"]
+COPY ["React_Mangati/react_mangati.client/react_mangati.client.esproj", "React_Mangati/react_mangati.client/"]
+COPY ["React_Mangati/react_mangati.client/package*.json", "React_Mangati/react_mangati.client/"]
+
+# Restore .NET dependencies
 RUN dotnet restore "./React_Mangati/React_Mangati.Server/React_Mangati.Server.csproj"
+
+# Install npm dependencies BEFORE copying all source files
+WORKDIR /src/React_Mangati/react_mangati.client
+RUN npm install
+RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs
+
+# Copy all source files
+WORKDIR /src
 COPY . .
+
+# Build the .NET project
 WORKDIR "/src/React_Mangati/React_Mangati.Server"
 RUN dotnet build "./React_Mangati.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

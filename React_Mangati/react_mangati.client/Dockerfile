@@ -7,9 +7,9 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install all required dependencies based on your imports
 RUN npm install
-RUN npm install axios react-router-dom react-i18next i18next-browser-languagedetector react-toastify hammerjs
+RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs
 
 # Copy source code
 COPY . .
@@ -17,28 +17,27 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine AS production
+# Development stage for hot-reloading
+FROM node:20-alpine AS development
 
 # Set working directory
 WORKDIR /app
 
-# Install serve globally
-RUN npm install -g serve
+# Copy package files
+COPY package*.json ./
 
-# Copy built assets from build stage
-COPY --from=build /app/dist ./dist
+# Install dependencies including dev dependencies
+RUN npm install
+RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs
 
-# Copy package.json for reference
-COPY --from=build /app/package.json ./
+# Copy source code
+COPY . .
 
-# Create a non-root user for security
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S reactuser -u 1001
-USER reactuser
+# Set environment variable to indicate Docker
+ENV DOCKER_CONTAINER=true
 
-# Expose port
+# Expose the dev server port
 EXPOSE 54450
 
-# Start the application - removed the invalid -H flag
-CMD ["serve", "-s", "dist", "-l", "54450"]
+# Start Vite dev server with host binding
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "54450"]
