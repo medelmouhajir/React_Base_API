@@ -85,6 +85,7 @@ export default defineConfig({
     },
     server: {
         host: '0.0.0.0',
+        allowedHosts: true,
         port: parseInt(process.env.DEV_SERVER_PORT || '54450'),
         // Only add proxy and HTTPS in development (non-Docker)
         ...(isDocker ? {} : {
