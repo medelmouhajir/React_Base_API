@@ -18,7 +18,7 @@ COPY . .
 # Build the application
 RUN npm run build
 
-RUN sudo chmod +x node_modules/.bin/vite
+RUN chmod +x node_modules/.bin/vite
 
 # Development stage for hot-reloading
 FROM node:20-alpine AS development
@@ -33,6 +33,7 @@ COPY package*.json ./
 RUN npm install
 RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs
 
+RUN chmod +x node_modules/.bin/vite
 # Copy source code
 COPY . .
 
