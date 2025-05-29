@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import GoogleLoginButton from '../../components/Google/GoogleLoginButton';
 import './Auth.css';
 
 const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -55,11 +57,11 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
     const getPasswordStrengthLabel = () => {
         switch (passwordStrength) {
             case 0:
-            case 1: return 'Very Weak';
-            case 2: return 'Weak';
-            case 3: return 'Fair';
-            case 4: return 'Good';
-            case 5: return 'Strong';
+            case 1: return t('auth.passwordStrength.veryWeak');
+            case 2: return t('auth.passwordStrength.weak');
+            case 3: return t('auth.passwordStrength.fair');
+            case 4: return t('auth.passwordStrength.good');
+            case 5: return t('auth.passwordStrength.strong');
             default: return '';
         }
     };
@@ -81,8 +83,8 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
         if (!formData.lastName.trim()) return 'Last name is required';
         if (!formData.email.trim()) return 'Email is required';
         if (!formData.password) return 'Password is required';
-        if (formData.password !== formData.confirmPassword) return 'Passwords do not match';
-        if (passwordStrength < 3) return 'Password is too weak';
+        if (formData.password !== formData.confirmPassword) return t('auth.errors.passwordMismatch');
+        if (passwordStrength < 3) return t('auth.errors.weakPassword');
         if (!acceptTerms) return 'You must accept the terms and conditions';
         return null;
     };
@@ -129,8 +131,11 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                         />
                     </svg>
                 </div>
-                <h1 className="auth-form__title">Create Account</h1>
-                <p className="auth-form__subtitle">Join Mangati to manage your projects</p>
+                <h1 className="auth-form__title">
+                    {t('auth.register.title', 'or continue with email')}</h1>
+                <p className="auth-form__subtitle">
+                    {t('auth.register.subtitle', 'or continue with email')}
+                </p>
             </div>
 
             {/* Google Sign-Up Button */}
@@ -151,7 +156,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                 <div className="auth-form__row">
                     <div className="auth-form__field">
                         <label htmlFor="firstName" className="auth-form__label">
-                            First Name
+                            {t('auth.register.firstNameLabel', 'or continue with email')}
                         </label>
                         <input
                             type="text"
@@ -160,7 +165,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                             value={formData.firstName}
                             onChange={handleChange}
                             className="auth-form__input"
-                            placeholder="John"
+                            placeholder={t('auth.register.firstNamePlaceholder', 'or continue with email')}
                             required
                             autoComplete="given-name"
                         />
@@ -168,7 +173,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
 
                     <div className="auth-form__field">
                         <label htmlFor="lastName" className="auth-form__label">
-                            Last Name
+                            {t('auth.register.lastNameLabel', 'or continue with email')}
                         </label>
                         <input
                             type="text"
@@ -177,7 +182,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                             value={formData.lastName}
                             onChange={handleChange}
                             className="auth-form__input"
-                            placeholder="Doe"
+                            placeholder={t('auth.register.lastNamePlaceholder', 'or continue with email')}
                             required
                             autoComplete="family-name"
                         />
@@ -186,7 +191,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
 
                 <div className="auth-form__field">
                     <label htmlFor="email" className="auth-form__label">
-                        Email Address
+                        {t('auth.register.emailLabel', 'or continue with email')}
                     </label>
                     <div className="auth-form__input-wrapper">
                         <svg className="auth-form__input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -200,7 +205,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                             value={formData.email}
                             onChange={handleChange}
                             className="auth-form__input"
-                            placeholder="john.doe@example.com"
+                            placeholder={t('auth.register.emailPlaceholder', 'or continue with email')}
                             required
                             autoComplete="email"
                         />
@@ -209,7 +214,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
 
                 <div className="auth-form__field">
                     <label htmlFor="phoneNumber" className="auth-form__label">
-                        Phone Number <span className="auth-form__optional">(Optional)</span>
+                        {t('auth.register.phoneLabel', 'or continue with email')} <span className="auth-form__optional">(Optional)</span>
                     </label>
                     <div className="auth-form__input-wrapper">
                         <svg className="auth-form__input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -222,7 +227,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                             value={formData.phoneNumber}
                             onChange={handleChange}
                             className="auth-form__input"
-                            placeholder="+1 (555) 000-0000"
+                            placeholder={t('auth.register.phonePlaceholder', 'or continue with email')}
                             autoComplete="tel"
                         />
                     </div>
@@ -230,7 +235,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
 
                 <div className="auth-form__field">
                     <label htmlFor="role" className="auth-form__label">
-                        Role
+                        {t('auth.register.roleLabel', 'or continue with email')}
                     </label>
                     <select
                         id="role"
@@ -239,15 +244,14 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                         onChange={handleChange}
                         className="auth-form__select"
                     >
-                        <option value="User">User</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Admin">Admin</option>
+                        <option value="WRITER">{t('roles.Writer')}</option>
+                        <option value="READER">{t('roles.Reader')}</option>
                     </select>
                 </div>
 
                 <div className="auth-form__field">
                     <label htmlFor="password" className="auth-form__label">
-                        Password
+                        {t('auth.register.passwordLabel', 'or continue with email')}
                     </label>
                     <div className="auth-form__input-wrapper">
                         <svg className="auth-form__input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -262,7 +266,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                             value={formData.password}
                             onChange={handleChange}
                             className="auth-form__input auth-form__input--with-toggle"
-                            placeholder="Create a strong password"
+                            placeholder={t('auth.register.passwordPlaceholder', 'or continue with email')}
                             required
                             autoComplete="new-password"
                         />
@@ -308,7 +312,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
 
                 <div className="auth-form__field">
                     <label htmlFor="confirmPassword" className="auth-form__label">
-                        Confirm Password
+                        {t('auth.register.confirmPasswordLabel', 'or continue with email')}
                     </label>
                     <div className="auth-form__input-wrapper">
                         <svg className="auth-form__input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -323,7 +327,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             className="auth-form__input auth-form__input--with-toggle"
-                            placeholder="Confirm your password"
+                            placeholder={t('auth.register.confirmPasswordPlaceholder', 'or continue with email')}
                             required
                             autoComplete="new-password"
                         />
@@ -348,7 +352,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
 
                     {formData.confirmPassword && formData.password !== formData.confirmPassword && (
                         <div className="auth-form__field-error">
-                            Passwords do not match
+                            {t('auth.errors.passwordMismatch', 'or continue with email')}
                         </div>
                     )}
                 </div>
@@ -361,10 +365,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                         required
                     />
                     <span className="auth-form__checkbox-mark"></span>
-                    I agree to the{' '}
-                    <button type="button" className="auth-form__link">Terms of Service</button>
-                    {' '}and{' '}
-                    <button type="button" className="auth-form__link">Privacy Policy</button>
+                    {t('auth.register.termsAndConditions', 'or continue with email')}
                 </label>
 
                 <button
@@ -375,23 +376,23 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                     {loading ? (
                         <>
                             <div className="auth-form__spinner"></div>
-                            Creating account...
+                            {t('auth.register.creatingAccount', 'or continue with email')}
                         </>
                     ) : (
-                        'Create Account'
+                        t('auth.register.createAccountButton')
                     )}
                 </button>
             </form>
 
             <div className="auth-form__footer">
                 <p>
-                    Already have an account?{' '}
+                    {t('auth.register.alreadyHaveAccount', 'or continue with email')} {' '}
                     <button
                         type="button"
                         onClick={onSwitchToLogin}
                         className="auth-form__link auth-form__link--primary"
                     >
-                        Sign in
+                        {t('auth.register.signIn', 'or continue with email')}
                     </button>
                 </p>
             </div>

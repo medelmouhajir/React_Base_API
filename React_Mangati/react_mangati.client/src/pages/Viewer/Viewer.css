@@ -8,6 +8,7 @@
     color: #e2e8f0;
     overflow-x: hidden;
     position: relative;
+    max-width: 100% !important;
 }
 
 /* Toolbar Styles */

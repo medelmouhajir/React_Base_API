@@ -5,6 +5,17 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './Home.css';
 
+// import images and icons
+import hero from '../../assets/hero.png'; 
+import icon1 from '../../assets/1-1.png';
+import icon2 from '../../assets/1-2.png';
+import icon3 from '../../assets/1-3.png';
+import Workflow1 from '../../assets/2-1.png';
+import Workflow2 from '../../assets/2-2.png';
+import Workflow3 from '../../assets/2-3.png';
+
+
+
 const Home = () => {
     const { t } = useTranslation();
     const { user } = useAuth();
@@ -63,7 +74,7 @@ const Home = () => {
                 <div className="home__hero-image-container">
                     <img
                         className="home__hero-image"
-                        src="https://placehold.co/800x600/5046e4/ffffff?text=AI+Manga+Generation"
+                        src={hero}
                         alt={t('home.heroImageAlt')}
                     />
                     <div className="home__hero-shape"></div>
@@ -80,7 +91,7 @@ const Home = () => {
                 <div className="home__feature-grid">
                     <div className="home__feature-card">
                         <div className="home__feature-icon">
-                            <img src="https://placehold.co/80x80/5046e4/ffffff?text=AI" alt="AI generation icon" />
+                            <img src={icon1} alt="AI generation icon" />
                         </div>
                         <h3>{t('home.features.aiGeneration.title')}</h3>
                         <p>{t('home.features.aiGeneration.description')}</p>
@@ -88,7 +99,7 @@ const Home = () => {
 
                     <div className="home__feature-card">
                         <div className="home__feature-icon">
-                            <img src="https://placehold.co/80x80/5046e4/ffffff?text=Story" alt="Storytelling tools icon" />
+                            <img src={icon2} alt="Storytelling tools icon" />
                         </div>
                         <h3>{t('home.features.storytelling.title')}</h3>
                         <p>{t('home.features.storytelling.description')}</p>
@@ -96,7 +107,7 @@ const Home = () => {
 
                     <div className="home__feature-card">
                         <div className="home__feature-icon">
-                            <img src="https://placehold.co/80x80/5046e4/ffffff?text=Export" alt="Export options icon" />
+                            <img src={icon3} alt="Export options icon" />
                         </div>
                         <h3>{t('home.features.export.title')}</h3>
                         <p>{t('home.features.export.description')}</p>
@@ -119,7 +130,7 @@ const Home = () => {
                             <p>{t('home.workflow.step1.description')}</p>
                         </div>
                         <img
-                            src="https://placehold.co/300x200/5046e4/ffffff?text=Write+Story"
+                            src={Workflow1}
                             alt="Write your story illustration"
                             className="home__workflow-image"
                         />
@@ -132,7 +143,7 @@ const Home = () => {
                             <p>{t('home.workflow.step2.description')}</p>
                         </div>
                         <img
-                            src="https://placehold.co/300x200/5046e4/ffffff?text=AI+Generation"
+                            src={Workflow2}
                             alt="AI generates illustrations"
                             className="home__workflow-image"
                         />
@@ -145,7 +156,7 @@ const Home = () => {
                             <p>{t('home.workflow.step3.description')}</p>
                         </div>
                         <img
-                            src="https://placehold.co/300x200/5046e4/ffffff?text=Publish"
+                            src={Workflow3}
                             alt="Publish and share your manga"
                             className="home__workflow-image"
                         />

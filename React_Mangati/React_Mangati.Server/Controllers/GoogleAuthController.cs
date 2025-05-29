@@ -33,168 +33,274 @@ namespace React_Mangati.Server.Controllers
         [HttpGet("signin")]
         public IActionResult SignIn(string returnUrl = "/")
         {
-            // Store the return URL in a temporary cookie
-            Response.Cookies.Append("GoogleAuthReturnUrl", returnUrl, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = Request.IsHttps,
-                SameSite = SameSiteMode.Lax,
-                Path = "/"
-            });
+            // Log the start of authentication
+            _logger.LogInformation("Starting Google authentication with return URL: {ReturnUrl}", returnUrl);
 
-            // Start the challenge
+            // Create authentication properties
             var properties = new AuthenticationProperties
             {
-                RedirectUri = Url.Action(nameof(HandleGoogleCallback))
+                RedirectUri = Url.Action(nameof(HandleGoogleCallback)),
+                Items = { { "returnUrl", returnUrl } }  // Store returnUrl in Items instead of cookie
             };
 
+            // Start the challenge
             return Challenge(properties, "Google");
         }
 
-        [HttpGet("signin-google")]
+        [HttpGet("signin-google-callback")]  // More explicit callback path
         public async Task<IActionResult> HandleGoogleCallback()
         {
             try
             {
-                // Retrieve the return URL from the cookie
-                var returnUrl = "/";
-                if (Request.Cookies.TryGetValue("GoogleAuthReturnUrl", out var storedReturnUrl))
+                _logger.LogInformation("HandleGoogleCallback started");
+
+                // Get the authentication result
+                var authenticateResult = await HttpContext.AuthenticateAsync("Google");
+
+                if (!authenticateResult.Succeeded)
                 {
-                    returnUrl = storedReturnUrl;
-                    // Clear the cookie
-                    Response.Cookies.Delete("GoogleAuthReturnUrl");
+                    _logger.LogError("Google authentication failed: {Error}",
+                        authenticateResult.Failure?.Message ?? "Unknown error");
+                    return Redirect("/?error=GoogleAuthenticationFailed");
                 }
 
-                // Complete the authentication
+                // Get external login info
                 var info = await _signInManager.GetExternalLoginInfoAsync();
 
                 if (info == null)
                 {
-                    _logger.LogError("External login info was null in HandleGoogleCallback");
-                    return Redirect($"{returnUrl}?error=ExternalLoginInfoNull");
-                }
+                    _logger.LogError("External login info was null. Attempting alternative method...");
 
-                // Try to sign in with external login
-                var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-
-                if (result.Succeeded)
-                {
-                    // User already exists and is linked to Google
-                    _logger.LogInformation("User logged in with {LoginProvider}", info.LoginProvider);
-                    var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-                    var token = await GenerateJwtToken(user);
-
-                    return Redirect($"{returnUrl}?token={token}&expiresAt={DateTime.UtcNow.AddMinutes(60)}");
-                }
-
-                // If we get here, the user either doesn't exist or isn't linked to a Google account
-                // Let's check if the email exists
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-
-                if (string.IsNullOrEmpty(email))
-                {
-                    _logger.LogError("No email found in Google login info");
-                    return Redirect($"{returnUrl}?error=NoEmailInGoogleLogin");
-                }
-
-                var user2 = await _userManager.FindByEmailAsync(email);
-
-                if (user2 != null)
-                {
-                    // User exists but isn't linked to Google, so let's link them
-                    _logger.LogInformation("Linking existing user to Google account");
-                    var addLoginResult = await _userManager.AddLoginAsync(user2, info);
-                    if (addLoginResult.Succeeded)
+                    // Alternative method to get user info from the authenticated principal
+                    var principal = authenticateResult.Principal;
+                    if (principal == null)
                     {
-                        await _signInManager.SignInAsync(user2, isPersistent: false);
-                        var token = await GenerateJwtToken(user2);
-                        return Redirect($"{returnUrl}?token={token}&expiresAt={DateTime.UtcNow.AddMinutes(60)}");
+                        _logger.LogError("Principal is also null");
+                        return Redirect("/?error=NoPrincipalFound");
                     }
-                    else
+
+                    // Extract user information manually
+                    var email = principal.FindFirstValue(ClaimTypes.Email)
+                        ?? principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
+                    var nameIdentifier = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                    if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(nameIdentifier))
                     {
-                        _logger.LogError("Failed to link Google account to existing user: {Errors}",
+                        _logger.LogError("Could not extract email or identifier from principal");
+                        return Redirect("/?error=MissingUserInfo");
+                    }
+
+                    // Process the user with the extracted information
+                    return await ProcessGoogleUser(email, nameIdentifier, principal,
+                        authenticateResult.Properties?.Items["returnUrl"] ?? "/");
+                }
+
+                // Normal flow with external login info
+                return await ProcessExternalLoginInfo(info,
+                    authenticateResult.Properties?.Items["returnUrl"] ?? "/");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during Google authentication callback");
+                return Redirect($"/?error=GoogleAuthException&message={Uri.EscapeDataString(ex.Message)}");
+            }
+        }
+
+        private async Task<IActionResult> ProcessExternalLoginInfo(ExternalLoginInfo info, string returnUrl)
+        {
+            // Try to sign in with external login
+            var result = await _signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider,
+                info.ProviderKey,
+                isPersistent: false);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User logged in with {LoginProvider}", info.LoginProvider);
+                var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                return await GenerateTokenAndRedirect(user, returnUrl);
+            }
+
+            // Process new or unlinked user
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email))
+            {
+                _logger.LogError("No email found in Google login info");
+                return Redirect($"{returnUrl}?error=NoEmailInGoogleLogin");
+            }
+
+            return await CreateOrLinkUser(email, info, returnUrl);
+        }
+
+        private async Task<IActionResult> ProcessGoogleUser(
+            string email,
+            string googleId,
+            ClaimsPrincipal principal,
+            string returnUrl)
+        {
+            // Check if user exists by email
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                // User exists, check if already linked to Google
+                var logins = await _userManager.GetLoginsAsync(user);
+                var googleLogin = logins.FirstOrDefault(l => l.LoginProvider == "Google");
+
+                if (googleLogin == null)
+                {
+                    // Link the Google account
+                    var userLoginInfo = new UserLoginInfo("Google", googleId, "Google");
+                    var addLoginResult = await _userManager.AddLoginAsync(user, userLoginInfo);
+
+                    if (!addLoginResult.Succeeded)
+                    {
+                        _logger.LogError("Failed to link Google account: {Errors}",
                             string.Join(", ", addLoginResult.Errors.Select(e => e.Description)));
                         return Redirect($"{returnUrl}?error=FailedToLinkGoogleAccount");
                     }
                 }
+
+                // Sign in the user
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return await GenerateTokenAndRedirect(user, returnUrl);
+            }
+
+            // Create new user
+            var firstName = principal.FindFirstValue(ClaimTypes.GivenName)
+                ?? principal.FindFirstValue("given_name")
+                ?? "";
+            var lastName = principal.FindFirstValue(ClaimTypes.Surname)
+                ?? principal.FindFirstValue("family_name")
+                ?? "";
+
+            if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(lastName))
+            {
+                var emailPrefix = email.Split('@')[0];
+                firstName = emailPrefix;
+                lastName = "";
+            }
+
+            var newUser = new User
+            {
+                UserName = email,
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName,
+                Role = "User",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                EmailConfirmed = true
+            };
+
+            var createResult = await _userManager.CreateAsync(newUser);
+            if (!createResult.Succeeded)
+            {
+                _logger.LogError("Failed to create user: {Errors}",
+                    string.Join(", ", createResult.Errors.Select(e => e.Description)));
+                return Redirect($"{returnUrl}?error=FailedToCreateUser");
+            }
+
+            // Add to role
+            await _userManager.AddToRoleAsync(newUser, "User");
+
+            // Add Google login
+            var loginInfo = new UserLoginInfo("Google", googleId, "Google");
+            await _userManager.AddLoginAsync(newUser, loginInfo);
+
+            // Sign in
+            await _signInManager.SignInAsync(newUser, isPersistent: false);
+            return await GenerateTokenAndRedirect(newUser, returnUrl);
+        }
+
+        private async Task<IActionResult> CreateOrLinkUser(string email, ExternalLoginInfo info, string returnUrl)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                // User exists but isn't linked to Google
+                _logger.LogInformation("Linking existing user to Google account");
+                var addLoginResult = await _userManager.AddLoginAsync(user, info);
+
+                if (addLoginResult.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return await GenerateTokenAndRedirect(user, returnUrl);
+                }
                 else
                 {
-                    // User doesn't exist, so let's create a new user
-                    _logger.LogInformation("Creating new user from Google account");
-                    var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "";
-                    var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "";
-
-                    // If name info is missing, try to extract from email or use defaults
-                    if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(lastName))
-                    {
-                        var emailPrefix = email.Split('@')[0];
-                        if (emailPrefix.Contains('.'))
-                        {
-                            var parts = emailPrefix.Split('.');
-                            firstName = parts[0];
-                            lastName = parts.Length > 1 ? parts[1] : "";
-                        }
-                        else
-                        {
-                            firstName = emailPrefix;
-                            lastName = "";
-                        }
-                    }
-
-                    var newUser = new User
-                    {
-                        UserName = email,
-                        Email = email,
-                        FirstName = firstName,
-                        LastName = lastName,
-                        Role = "User",
-                        IsActive = true,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow,
-                        EmailConfirmed = true
-                    };
-
-                    var createResult = await _userManager.CreateAsync(newUser);
-                    if (createResult.Succeeded)
-                    {
-                        // Add the user to the User role
-                        await _userManager.AddToRoleAsync(newUser, "User");
-
-                        // Add the Google login to the user
-                        var addLoginResult = await _userManager.AddLoginAsync(newUser, info);
-                        if (addLoginResult.Succeeded)
-                        {
-                            await _signInManager.SignInAsync(newUser, isPersistent: false);
-                            var token = await GenerateJwtToken(newUser);
-                            return Redirect($"{returnUrl}?token={token}&expiresAt={DateTime.UtcNow.AddMinutes(60)}");
-                        }
-                        else
-                        {
-                            _logger.LogError("Failed to add Google login to new user: {Errors}",
-                                string.Join(", ", addLoginResult.Errors.Select(e => e.Description)));
-                            return Redirect($"{returnUrl}?error=FailedToAddGoogleLogin");
-                        }
-                    }
-                    else
-                    {
-                        _logger.LogError("Failed to create new user from Google account: {Errors}",
-                            string.Join(", ", createResult.Errors.Select(e => e.Description)));
-                        return Redirect($"{returnUrl}?error=FailedToCreateUser");
-                    }
+                    _logger.LogError("Failed to link Google account: {Errors}",
+                        string.Join(", ", addLoginResult.Errors.Select(e => e.Description)));
+                    return Redirect($"{returnUrl}?error=FailedToLinkGoogleAccount");
                 }
             }
-            catch (Exception ex)
+
+            // Create new user
+            _logger.LogInformation("Creating new user from Google account");
+            var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName) ?? "";
+            var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname) ?? "";
+
+            if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(lastName))
             {
-                // Log the detailed exception
-                _logger.LogError(ex, "Error during Google authentication callback");
-                return Redirect($"/?error=GoogleAuthException&message={ex.Message}");
+                var emailPrefix = email.Split('@')[0];
+                firstName = emailPrefix;
+                lastName = "";
             }
+
+            var newUser = new User
+            {
+                UserName = email,
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName,
+                Role = "User",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                EmailConfirmed = true
+            };
+
+            var createResult = await _userManager.CreateAsync(newUser);
+            if (!createResult.Succeeded)
+            {
+                _logger.LogError("Failed to create user: {Errors}",
+                    string.Join(", ", createResult.Errors.Select(e => e.Description)));
+                return Redirect($"{returnUrl}?error=FailedToCreateUser");
+            }
+
+            // Add to role
+            await _userManager.AddToRoleAsync(newUser, "User");
+
+            // Add Google login
+            var addLoginResult2 = await _userManager.AddLoginAsync(newUser, info);
+            if (!addLoginResult2.Succeeded)
+            {
+                _logger.LogError("Failed to add Google login: {Errors}",
+                    string.Join(", ", addLoginResult2.Errors.Select(e => e.Description)));
+            }
+
+            await _signInManager.SignInAsync(newUser, isPersistent: false);
+            return await GenerateTokenAndRedirect(newUser, returnUrl);
+        }
+
+        private async Task<IActionResult> GenerateTokenAndRedirect(User user, string returnUrl)
+        {
+            var token = await GenerateJwtToken(user);
+            var expiresAt = DateTime.UtcNow.AddMinutes(60);
+
+            // URL encode the token to prevent issues with special characters
+            var encodedToken = Uri.EscapeDataString(token);
+
+            return Redirect($"{returnUrl}?token={encodedToken}&expiresAt={Uri.EscapeDataString(expiresAt.ToString("O"))}");
         }
 
         private async Task<string> GenerateJwtToken(User user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["SecretKey"] ?? "DefaultSecretKeyThatShouldBeReplaced123456789012345678901234";
+            var secretKey = jwtSettings["SecretKey"] ??
+                "DefaultSecretKeyThatShouldBeReplaced123456789012345678901234";
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -209,7 +315,6 @@ namespace React_Mangati.Server.Controllers
                 new Claim("lastName", user.LastName ?? ""),
             };
 
-            // Add role claims
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));

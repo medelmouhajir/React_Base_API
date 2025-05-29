@@ -1,27 +1,90 @@
 {
+  "app": {
+    "title": "Mangati",
+    "description": "منصة لإنشاء ومشاركة المانجا والمانهوا والمانهوى.",
+    "keywords": "مانجا, مانهوا, مانهوي, إنشاء مانجا, مشاركة مانجا"
+  },
+  "tags": {
+    "manga": "Manga",
+    "manhwa": "Manhwa",
+    "action": "Action",
+    "adventure": "Adventure",
+    "fantasy": "Fantasy",
+    "romance": "Romance",
+    "drama": "Drama",
+    "adult": "Adult",
+    "comedy": "Comedy",
+    "isekai": "Isekai"
+
+  },
+  "languages": {
+    "arabic": "Arabic",
+    "darija": "Moroccan Darija",
+    "english": "English",
+    "french": "French",
+    "spanish": "Spanish",
+    "japanese": "Japanese",
+    "korean": "Korean",
+    "chinese": "Chinese"
+  },
   "common": {
     "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "cancel": "Cancel",
+    "error": "An error occurred",
+    "retry": "Try Again",
     "save": "Save",
+    "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
-    "add": "Add",
+    "view": "View",
+    "backToList": "Back to List",
+    "areYouSure": "Are you sure?",
+    "thisActionCannot": "This action cannot be undone."
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "series": "Series",
     "search": "Search",
-    "filter": "Filter",
-    "close": "Close",
-    "yes": "Yes",
-    "no": "No",
-    "submit": "Submit",
-    "reset": "Reset"
+    "favorites": "Favorites",
+    "account": "Account",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "language": {
+    "english": "English",
+    "french": "French",
+    "arabic": "Arabic",
+    "selectLanguage": "Language"
+  },
+  "header": {
+    "userMenu": {
+      "profile": "My Profile",
+      "settings": "Settings",
+      "logout": "Sign Out"
+    }
+  },
+  "sidebar": {
+    "title": "Mangati",
+    "subtitle": "Manga Creator",
+    "mainNavigation": "MAIN NAVIGATION",
+    "series": "Series",
+    "mySeries": "My Series",
+    "search": "Search",
+    "createSerie": "Create New",
+    "favorites": "Favorites",
+    "close": "Close Sidebar",
+    "statusOnline": "Online",
+    "userMenu": "User menu"
   },
   "auth": {
+    "continueWithGoogle": "Continue with Google",
     "login": {
       "title": "Welcome Back",
-      "subtitle": "Sign in to your Mangati account",
+      "orDivider": "or continue with email",
+      "login": "Sign in",
+      "subtitle": "Sign in to your account to continue",
       "emailLabel": "Email Address",
-      "emailPlaceholder": "Enter your email",
+      "emailPlaceholder": "you@example.com",
       "passwordLabel": "Password",
       "passwordPlaceholder": "Enter your password",
       "rememberMe": "Remember me",
@@ -29,31 +92,26 @@
       "signInButton": "Sign In",
       "signingIn": "Signing in...",
       "noAccount": "Don't have an account?",
-      "createAccount": "Create one",
-      "demoCredentials": "Demo Credentials:",
-      "adminDemo": "Admin: admin@mangati.com / Admin123!"
+      "createAccount": "Create an account"
     },
     "register": {
       "title": "Create Account",
+      "register": "Sign up",
       "subtitle": "Join Mangati to manage your projects",
       "firstNameLabel": "First Name",
       "firstNamePlaceholder": "John",
       "lastNameLabel": "Last Name",
       "lastNamePlaceholder": "Doe",
       "emailLabel": "Email Address",
-      "emailPlaceholder": "john.doe@example.com",
+      "emailPlaceholder": "you@example.com",
       "phoneLabel": "Phone Number",
       "phonePlaceholder": "+1 (555) 000-0000",
-      "phoneOptional": "(Optional)",
-      "roleLabel": "Role",
       "passwordLabel": "Password",
-      "passwordPlaceholder": "Create a strong password",
+      "passwordPlaceholder": "Create a secure password",
       "confirmPasswordLabel": "Confirm Password",
       "confirmPasswordPlaceholder": "Confirm your password",
-      "agreeTerms": "I agree to the",
-      "termsOfService": "Terms of Service",
-      "and": "and",
-      "privacyPolicy": "Privacy Policy",
+      "roleLabel": "Role",
+      "termsAndConditions": "I agree to the Terms of Service and Privacy Policy",
       "createAccountButton": "Create Account",
       "creatingAccount": "Creating account...",
       "alreadyHaveAccount": "Already have an account?",
@@ -64,109 +122,317 @@
         "fair": "Fair",
         "good": "Good",
         "strong": "Strong"
+      },
+      "errors": {
+        "passwordMismatch": "Passwords do not match",
+        "weakPassword": "Password is too weak"
       }
     },
     "errors": {
-      "invalidCredentials": "Invalid credentials or account is disabled",
-      "networkError": "Network error. Please check your connection and ensure the API server is running.",
-      "unexpectedError": "An unexpected error occurred.",
-      "passwordMismatch": "Passwords do not match",
-      "weakPassword": "Password is too weak",
-      "fieldRequired": "This field is required",
-      "invalidEmail": "Please enter a valid email address"
+      "invalidCredentials": "Invalid email or password",
+      "accountDisabled": "Your account has been disabled",
+      "generalError": "An error occurred during authentication"
     }
   },
   "dashboard": {
-    "title": "Welcome to Mangati, {{name}}!",
+    "title": "Dashboard",
+    "welcome": "Welcome to Mangati, {{name}}!",
     "subtitle": "Here's your project overview and recent activity.",
-    "loading": "Loading dashboard data...",
     "stats": {
-      "activeProjects": {
-        "title": "Active Projects",
-        "change": "+{{count}} this week"
+      "activeProjects": "Active Projects",
+      "tasksCompleted": "Tasks Completed",
+      "teamMembers": "Team Members",
+      "overallProgress": "Overall Progress"
+    },
+    "recentActivity": "Recent Activity",
+    "weatherDemo": "Weather Forecast Demo"
+  },
+
+  "home": {
+    "pageTitle": "Home",
+    "title": "Create Your Manga with AI",
+    "subtitle": "No drawing skills needed—let AI bring your stories to life.",
+    "ctaPrimary": "Start Creating",
+    "ctaSecondary": "Learn More",
+    "heroImageAlt": "AI Manga Generation Preview",
+    "features": {
+      "title": "Features",
+      "subtitle": "Discover what makes Mangati unique",
+      "aiGeneration": {
+        "title": "AI Generation",
+        "description": "Generate characters, scenes, and stories effortlessly with AI."
       },
-      "tasksCompleted": {
-        "title": "Tasks Completed",
-        "change": "+{{count}} today"
+      "storytelling": {
+        "title": "Storytelling Tools",
+        "description": "User-friendly tools to help you craft and structure your manga easily."
       },
-      "teamMembers": {
-        "title": "Team Members",
-        "noChange": "No change"
-      },
-      "overallProgress": {
-        "title": "Overall Progress",
-        "change": "+{{percent}}% this month"
+      "export": {
+        "title": "Customization & Export",
+        "description": "Customize your manga and export in multiple formats for sharing."
       }
     },
-    "sections": {
-      "weatherDemo": "Weather Forecast Demo"
+    "workflow": {
+      "title": "How It Works",
+      "subtitle": "Three simple steps to create your manga",
+      "step1": {
+        "title": "Write Your Story",
+        "description": "Start by writing the story you want to tell."
+      },
+      "step2": {
+        "title": "AI Generation",
+        "description": "Let the AI create stunning illustrations based on your story."
+      },
+      "step3": {
+        "title": "Publish & Share",
+        "description": "Export your manga and share it with the world."
+      }
     },
-    "table": {
-      "date": "Date",
-      "tempC": "Temp. (C)",
-      "tempF": "Temp. (F)",
-      "summary": "Summary"
+    "cta": {
+      "title": "Ready to Create Your Manga?",
+      "description": "Join Mangati and start your journey today.",
+      "buttonText": "Get Started"
     }
   },
-  "navigation": {
-    "dashboard": "Dashboard",
-    "projects": "Projects",
-    "tasks": "Tasks",
-    "team": "Team",
-    "calendar": "Calendar",
-    "reports": "Reports & Analytics",
-    "settings": "Settings",
-    "submenu": {
-      "allProjects": "All Projects",
-      "activeProjects": "Active Projects",
-      "pendingReview": "Pending Review",
+  "series": {
+    "title": "All Series",
+    "emptyState": "No series found",
+    "createNew": "Create New Series",
+    "list": {
+      "title": "Browse Series",
+      "empty": "No series available yet",
+      "error": "Failed to load series",
+      "viewDetails": "View Details"
+    },
+    "details": {
+      "notFound": "Series not found",
+      "noSynopsis": "No synopsis available",
+      "error": "Error loading series details"
+    },
+    "edit": "Edit Series",
+    "delete": "Delete Series",
+    "create": {
+      "title": "Create New Series",
+      "subtitle": "Fill in the details to create your new manga series",
+      "success": "Series created successfully",
+      "error": "Failed to create series"
+    },
+    "fields": {
+      "title": "Title",
+      "titlePlaceholder": "Enter series title",
+      "synopsis": "Synopsis",
+      "synopsisPlaceholder": "Write a brief description of your series",
+      "cover": "Cover Image",
+      "coverHelp": "Recommended size: 800x1200px, Max: 2MB",
+      "uploadCover": "Upload Cover",
+      "status": "Status",
+      "author": "Author",
+      "created": "Created",
+      "updated": "Updated",
+      "languages": "Languages",
+      "tags": "Tags"
+    },
+    "status": {
+      "ongoing": "Ongoing",
       "completed": "Completed",
-      "myTasks": "My Tasks",
-      "assignedToMe": "Assigned to Me",
-      "dueToday": "Due Today",
-      "overdue": "Overdue",
-      "allMembers": "All Members",
-      "departments": "Departments",
-      "rolesPermissions": "Roles & Permissions",
-      "performance": "Performance",
-      "projectAnalytics": "Project Analytics",
-      "timeReports": "Time Reports",
-      "teamPerformance": "Team Performance",
-      "exportData": "Export Data",
-      "general": "General",
-      "profile": "Profile Settings",
-      "security": "Security",
-      "notifications": "Notifications",
-      "integrations": "Integrations"
+      "canceled": "Canceled"
+    },
+    "chapters": {
+      "title": "Chapters",
+      "empty": "No chapters available yet",
+      "createFirst": "Create First Chapter",
+      "add": "Add Chapter",
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete",
+      "details": "Details",
+      "confirmDelete": "Are you sure you want to delete this chapter?",
+      "deleteSuccess": "Chapter deleted successfully",
+      "deleteError": "Failed to delete chapter",
+      "createSuccess": "Chapter created successfully",
+      "createError": "Failed to create chapter",
+      "newChapter": "New Chapter",
+      "titleField": "Title",
+      "titlePlaceholder": "Enter chapter title",
+      "numberField": "Chapter Number",
+      "numberPlaceholder": "Enter chapter number",
+      "titleRequired": "Chapter title is required",
+      "startReading": "Start Reading",
+      "resumeReading": "Resume Reading"
+    },
+    "favorite": "Add to Favorites",
+    "unfavorite": "Remove from Favorites"
+  },
+  "mySeries": {
+    "title": "My Series",
+    "createNew": "Create New",
+    "createPrompt": "Start creating your own manga series and share them with the world.",
+    "noSeries": "You haven't created any series yet",
+    "startCreating": "Start Creating",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this series? This action cannot be undone.",
+    "deleteSuccess": "Series deleted successfully",
+    "deleteError": "Failed to delete series",
+    "fetchError": "Failed to fetch your series",
+    "gridView": "Grid View",
+    "listView": "List View",
+    "columns": {
+      "title": "Title",
+      "status": "Status",
+      "created": "Created",
+      "actions": "Actions"
     }
   },
-  "header": {
-    "userMenu": {
+  "favorites": {
+    "title": "My Favorites",
+    "empty": {
+      "title": "No favorites yet",
+      "message": "Start exploring series and add them to your favorites"
+    },
+    "noResults": {
+      "title": "No matching results",
+      "message": "Try adjusting your search terms"
+    },
+    "searchPlaceholder": "Search your favorites...",
+    "loading": "Loading your favorites...",
+    "remove": "Remove from favorites",
+    "removeError": "Failed to remove from favorites",
+    "addedOn": "Added on",
+    "explore": "Explore Series",
+    "clearSearch": "Clear Search"
+  },
+  "search": {
+    "title": "Search Series",
+    "subtitle": "Find your next favorite manga series",
+    "placeholder": "Search by title, author, or keywords...",
+    "buttonSearch": "Search",
+    "buttonClear": "Clear",
+    "filterLanguage": "Language",
+    "filterTags": "Tags",
+    "allLanguages": "All Languages",
+    "searching": "Searching...",
+    "resultsFound": "{{count}} results found",
+    "noResults": "No results found",
+    "tryAdjustingFilters": "Try adjusting your search filters or try a different keyword",
+    "startSearching": "Start your search",
+    "useFilters": "Use the search bar and filters to find manga series",
+    "trending": "Trending Series",
+    "errorLoadingFilters": "Failed to load filters",
+    "errorSearching": "An error occurred while searching"
+  },
+  "account": {
+    "title": "My Account",
+    "subtitle": "Manage your personal information and preferences",
+    "tabs": {
       "profile": "Profile",
-      "settings": "Settings",
-      "logout": "Logout"
+      "security": "Security",
+      "notifications": "Notifications"
+    },
+    "profile": {
+      "personalInfo": "Personal Information",
+      "profilePicture": "Profile Picture",
+      "imageRequirements": "JPG, GIF or PNG. Max size 1MB",
+      "uploadNew": "Upload New",
+      "removePhoto": "Remove",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "emailHelp": "Your email address is used for login and cannot be changed",
+      "phoneNumber": "Phone Number",
+      "address": "Address",
+      "role": "Role",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "updateSuccess": "Profile updated successfully"
+    },
+    "security": {
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "passwordRequirements": "Password Requirements",
+      "requirement1": "At least 8 characters long",
+      "requirement2": "At least one uppercase letter",
+      "requirement3": "At least one lowercase letter",
+      "requirement4": "At least one number",
+      "updatePassword": "Update Password",
+      "updating": "Updating...",
+      "updateSuccess": "Password updated successfully"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "description": "Control how you receive notifications from the platform",
+      "email": "Email Notifications",
+      "inApp": "In-App Notifications",
+      "taskAssignments": "Task Assignments",
+      "taskAssignmentsDesc": "Receive notifications when you are assigned to a task",
+      "comments": "Comments",
+      "commentsDesc": "Receive notifications when someone comments on your content",
+      "projectUpdates": "Project Updates",
+      "projectUpdatesDesc": "Receive updates about projects you are involved in",
+      "taskReminders": "Task Reminders",
+      "taskRemindersDesc": "Receive reminders about upcoming deadlines",
+      "mentions": "Mentions",
+      "mentionsDesc": "Receive notifications when someone mentions you",
+      "systemAnnouncements": "System Announcements",
+      "systemAnnouncementsDesc": "Receive important announcements about the platform",
+      "savePreferences": "Save Preferences"
+    },
+    "errors": {
+      "loadingProfile": "Failed to load profile",
+      "updateProfile": "Failed to update profile",
+      "updateSecurity": "Failed to update security settings",
+      "passwordMismatch": "Passwords do not match"
     }
   },
-  "footer": {
-    "companyName": "Mangati",
-    "tagline": "Project Hub",
-    "description": "Streamline your project management with our comprehensive platform designed for modern teams.",
-    "quickLinks": "Quick Links",
-    "support": "Support",
-    "legal": "Legal",
-    "followUs": "Follow Us",
-    "contact": "Contact Information",
-    "rights": "All rights reserved."
+  "viewer": {
+    "loading": "Loading chapter...",
+    "noPages": "No pages found for this chapter",
+    "goBack": "Go Back",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetZoom": "Reset zoom",
+    "toggleFullscreen": "Toggle fullscreen",
+    "modes": {
+      "infinite": "Infinite Scroll",
+      "horizontal": "Horizontal Pages",
+      "vertical": "Vertical Pages"
+    }
   },
   "roles": {
-    "Admin": "Admin",
-    "Manager": "Manager",
-    "User": "User"
+    "Admin": "Administrator",
+    "Writer": "Writer",
+    "Reader": "Reader"
   },
-  "language": {
-    "english": "English",
-    "french": "Français",
-    "arabic": "العربية",
-    "selectLanguage": "Select Language"
+
+  "create": {
+    "title": "Create a New Series",
+    "subtitle": "Tell your story—bring your manga/​manhwa to life!",
+    "success": "Series created successfully.",
+    "errors": {
+      "loadingFilters": "Failed to load languages and tags.",
+      "imageTooLarge": "Cover image must be 5 MB or smaller.",
+      "titleRequired": "Title is required.",
+      "languageRequired": "At least one language must be selected.",
+      "createFailed": "Failed to create series. Please try again."
+    },
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Enter series title",
+      "synopsis": "Synopsis",
+      "synopsisPlaceholder": "Write a brief description…",
+      "status": "Status",
+      "coverImage": "Cover Image",
+      "uploadImage": "Click to upload",
+      "imageRequirements": "Max 5 MB, JPG/PNG only",
+      "removeImage": "Remove image",
+      "languages": "Languages",
+      "tags": "Tags",
+      "submit": "Create Series"
+    }
   }
 }

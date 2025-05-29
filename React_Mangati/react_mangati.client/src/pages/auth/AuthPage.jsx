@@ -2,8 +2,10 @@ import { useState } from 'react';
 import Login from './Login';
 import Register from './Register';
 import './AuthPage.css';
+import { useTranslation } from 'react-i18next';
 
 const AuthPage = () => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('login');
 
     const handleSwitchToRegister = () => {
@@ -51,9 +53,9 @@ const AuthPage = () => {
                             </svg>
                         </div>
 
-                        <h1 className="auth-page__brand-title">Mangati</h1>
+                        <h1 className="auth-page__brand-title">{t('app.title')}</h1>
                         <p className="auth-page__brand-subtitle">
-                            Powerful project management platform designed for modern teams at WAN Solutions.
+                            {t('app.description')}
                         </p>
 
                         <div className="auth-page__features">
@@ -66,8 +68,8 @@ const AuthPage = () => {
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3>Project Management</h3>
-                                    <p>Organize and track your projects with powerful tools and intuitive interfaces.</p>
+                                    <h3>{t('home.features.aiGeneration.title')}</h3>
+                                    <p>{t('home.features.aiGeneration.description')}</p>
                                 </div>
                             </div>
 
@@ -81,8 +83,8 @@ const AuthPage = () => {
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3>Team Collaboration</h3>
-                                    <p>Work together seamlessly with real-time updates and communication tools.</p>
+                                    <h3>{t('home.features.storytelling.title')}</h3>
+                                    <p>{t('home.features.storytelling.description')}</p>
                                 </div>
                             </div>
 
@@ -90,15 +92,14 @@ const AuthPage = () => {
 
                         <div className="auth-page__testimonial">
                             <blockquote>
-                                "Mangati has transformed how we manage projects at WAN Solutions.
-                                The intuitive interface and powerful features make project tracking effortless."
+                                " {t('home.subtitle')} "
                             </blockquote>
                             <cite>
                                 <div className="auth-page__testimonial-avatar">
                                     <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face&auto=format" alt="Ahmed Benali" />
                                 </div>
                                 <div>
-                                    <strong>Ahmed Benali</strong>
+                                    <strong>Mohamed Amin</strong>
                                     <span>CTO, WAN Solutions</span>
                                 </div>
                             </cite>
@@ -115,13 +116,13 @@ const AuthPage = () => {
                                 className={`auth-page__tab ${activeTab === 'login' ? 'auth-page__tab--active' : ''}`}
                                 onClick={() => setActiveTab('login')}
                             >
-                                Sign In
+                                {t('auth.login.login', 'Sign in')}
                             </button>
                             <button
                                 className={`auth-page__tab ${activeTab === 'register' ? 'auth-page__tab--active' : ''}`}
                                 onClick={() => setActiveTab('register')}
                             >
-                                Sign Up
+                                {t('auth.register.register', 'Sign up')}
                             </button>
                         </div>
 
@@ -143,11 +144,6 @@ const AuthPage = () => {
 
                     {/* Footer */}
                     <div className="auth-page__footer">
-                        <div className="auth-page__footer-links">
-                            <a href="#" className="auth-page__footer-link">Privacy Policy</a>
-                            <a href="#" className="auth-page__footer-link">Terms of Service</a>
-                            <a href="#" className="auth-page__footer-link">Support</a>
-                        </div>
                         <p className="auth-page__footer-text">
                             © 2024 WAN Solutions. All rights reserved.
                         </p>

@@ -1,144 +1,59 @@
 {
+  "app": {
+    "title": "مانجاتي",
+    "description": "منصة لإنشاء ومشاركة المانجا والمانهوا والمانهوى.",
+    "keywords": "مانجا, مانهوا, مانهوي, إنشاء مانجا, مشاركة مانجا"
+  },
+  "tags": {
+    "manga": "مانجا",
+    "manhwa": "مانهوا",
+    "action": "أكشن",
+    "adventure": "مغامرة",
+    "fantasy": "خيال",
+    "romance": "رومانسية",
+    "drama": "دراما",
+    "adult": "للكبار فقط",
+    "comedy": "كوميديا",
+    "isekai": "إيسيكاي"
+  },
+  "languages": {
+    "arabic": "العربية",
+    "darija": "الدارجة",
+    "english": "الإنجليزية",
+    "french": "الفرنسية",
+    "spanish": "الإسبانية",
+    "japanese": "اليابانية",
+    "korean": "الكورية",
+    "chinese": "الصينية"
+  },
   "common": {
     "loading": "جاري التحميل...",
-    "error": "خطأ",
-    "success": "نجح",
-    "cancel": "إلغاء",
+    "error": "حدث خطأ",
+    "retry": "حاول مرة أخرى",
     "save": "حفظ",
+    "cancel": "إلغاء",
     "delete": "حذف",
     "edit": "تعديل",
-    "add": "إضافة",
-    "search": "بحث",
-    "filter": "تصفية",
-    "close": "إغلاق",
-    "yes": "نعم",
-    "no": "لا",
-    "submit": "إرسال",
-    "reset": "إعادة تعيين"
-  },
-  "auth": {
-    "login": {
-      "title": "مرحباً بعودتك",
-      "subtitle": "تسجيل الدخول إلى حساب مانجاتي الخاص بك",
-      "emailLabel": "عنوان البريد الإلكتروني",
-      "emailPlaceholder": "أدخل بريدك الإلكتروني",
-      "passwordLabel": "كلمة المرور",
-      "passwordPlaceholder": "أدخل كلمة المرور",
-      "rememberMe": "تذكرني",
-      "forgotPassword": "نسيت كلمة المرور؟",
-      "signInButton": "تسجيل الدخول",
-      "signingIn": "جاري تسجيل الدخول...",
-      "noAccount": "ليس لديك حساب؟",
-      "createAccount": "أنشئ حساباً",
-      "demoCredentials": "بيانات اعتماد التجريب:",
-      "adminDemo": "المدير: admin@mangati.com / Admin123!"
-    },
-    "register": {
-      "title": "إنشاء حساب",
-      "subtitle": "انضم إلى مانجاتي لإدارة مشاريعك",
-      "firstNameLabel": "الاسم الأول",
-      "firstNamePlaceholder": "أحمد",
-      "lastNameLabel": "اسم العائلة",
-      "lastNamePlaceholder": "محمد",
-      "emailLabel": "عنوان البريد الإلكتروني",
-      "emailPlaceholder": "ahmed.mohamed@example.com",
-      "phoneLabel": "رقم الهاتف",
-      "phonePlaceholder": "+212 6 12 34 56 78",
-      "phoneOptional": "(اختياري)",
-      "roleLabel": "الدور",
-      "passwordLabel": "كلمة المرور",
-      "passwordPlaceholder": "أنشئ كلمة مرور قوية",
-      "confirmPasswordLabel": "تأكيد كلمة المرور",
-      "confirmPasswordPlaceholder": "أكد كلمة المرور",
-      "agreeTerms": "أوافق على",
-      "termsOfService": "شروط الخدمة",
-      "and": "و",
-      "privacyPolicy": "سياسة الخصوصية",
-      "createAccountButton": "إنشاء حساب",
-      "creatingAccount": "جاري إنشاء الحساب...",
-      "alreadyHaveAccount": "لديك حساب بالفعل؟",
-      "signIn": "تسجيل الدخول",
-      "passwordStrength": {
-        "veryWeak": "ضعيفة جداً",
-        "weak": "ضعيفة",
-        "fair": "مقبولة",
-        "good": "جيدة",
-        "strong": "قوية"
-      }
-    },
-    "errors": {
-      "invalidCredentials": "بيانات اعتماد غير صحيحة أو حساب معطل",
-      "networkError": "خطأ في الشبكة. يرجى التحقق من اتصالك والتأكد من تشغيل خادم API.",
-      "unexpectedError": "حدث خطأ غير متوقع.",
-      "passwordMismatch": "كلمات المرور غير متطابقة",
-      "weakPassword": "كلمة المرور ضعيفة جداً",
-      "fieldRequired": "هذا الحقل مطلوب",
-      "invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صحيح"
-    }
-  },
-  "dashboard": {
-    "title": "مرحباً بك في مانجاتي، {{name}}!",
-    "subtitle": "إليك نظرة عامة على مشاريعك والنشاط الأخير.",
-    "loading": "جاري تحميل بيانات لوحة التحكم...",
-    "stats": {
-      "activeProjects": {
-        "title": "المشاريع النشطة",
-        "change": "+{{count}} هذا الأسبوع"
-      },
-      "tasksCompleted": {
-        "title": "المهام المكتملة",
-        "change": "+{{count}} اليوم"
-      },
-      "teamMembers": {
-        "title": "أعضاء الفريق",
-        "noChange": "لا تغيير"
-      },
-      "overallProgress": {
-        "title": "التقدم العام",
-        "change": "+{{percent}}% هذا الشهر"
-      }
-    },
-    "sections": {
-      "weatherDemo": "عرض توقعات الطقس التجريبي"
-    },
-    "table": {
-      "date": "التاريخ",
-      "tempC": "الحرارة (مئوي)",
-      "tempF": "الحرارة (فهرنهايت)",
-      "summary": "الملخص"
-    }
+    "view": "عرض",
+    "backToList": "العودة إلى القائمة",
+    "areYouSure": "هل أنت متأكد؟",
+    "thisActionCannot": "لا يمكن التراجع عن هذا الإجراء."
   },
   "navigation": {
+    "home": "الرئيسية",
     "dashboard": "لوحة التحكم",
-    "projects": "المشاريع",
-    "tasks": "المهام",
-    "team": "الفريق",
-    "calendar": "التقويم",
-    "reports": "التقارير والتحليلات",
+    "series": "السلاسل",
+    "search": "بحث",
+    "favorites": "المفضلة",
+    "account": "الحساب",
     "settings": "الإعدادات",
-    "submenu": {
-      "allProjects": "جميع المشاريع",
-      "activeProjects": "المشاريع النشطة",
-      "pendingReview": "في انتظار المراجعة",
-      "completed": "مكتمل",
-      "myTasks": "مهامي",
-      "assignedToMe": "مُسند إلي",
-      "dueToday": "مستحق اليوم",
-      "overdue": "متأخر",
-      "allMembers": "جميع الأعضاء",
-      "departments": "الأقسام",
-      "rolesPermissions": "الأدوار والصلاحيات",
-      "performance": "الأداء",
-      "projectAnalytics": "تحليلات المشروع",
-      "timeReports": "تقارير الوقت",
-      "teamPerformance": "أداء الفريق",
-      "exportData": "تصدير البيانات",
-      "general": "عام",
-      "profile": "إعدادات الملف الشخصي",
-      "security": "الأمان",
-      "notifications": "الإشعارات",
-      "integrations": "التكاملات"
-    }
+    "logout": "تسجيل الخروج"
+  },
+  "language": {
+    "english": "الإنجليزية",
+    "french": "الفرنسية",
+    "arabic": "العربية",
+    "selectLanguage": "اللغة"
   },
   "header": {
     "userMenu": {
@@ -147,26 +62,378 @@
       "logout": "تسجيل الخروج"
     }
   },
-  "footer": {
-    "companyName": "مانجاتي",
-    "tagline": "مركز المشاريع",
-    "description": "قم بتبسيط إدارة مشاريعك مع منصتنا الشاملة المصممة للفرق الحديثة.",
-    "quickLinks": "روابط سريعة",
-    "support": "الدعم",
-    "legal": "قانوني",
-    "followUs": "تابعنا",
-    "contact": "معلومات الاتصال",
-    "rights": "جميع الحقوق محفوظة."
+  "sidebar": {
+    "title": "مانجاتي",
+    "subtitle": "منشئ المانجا",
+    "mainNavigation": "التنقل الرئيسي",
+    "series": "السلاسل",
+    "mySeries": "سلاسلي",
+    "search": "بحث",
+    "createSerie": "إنشاء جديد",
+    "favorites": "المفضلة",
+    "close": "إغلاق الشريط الجانبي",
+    "statusOnline": "متصل",
+    "userMenu": "قائمة المستخدم"
+  },
+  "auth": {
+    "continueWithGoogle": "متابعة مع جوجل",
+    "login": {
+      "title": "مرحبًا بعودتك",
+      "orDivider": "أو الاستمرار بالبريد الإلكتروني",
+      "login": "تسجيل الدخول",
+      "subtitle": "سجل دخولك للمتابعة",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "rememberMe": "تذكرني",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "signInButton": "تسجيل الدخول",
+      "signingIn": "جاري تسجيل الدخول...",
+      "noAccount": "ليس لديك حساب؟",
+      "createAccount": "إنشاء حساب"
+    },
+    "register": {
+      "title": "إنشاء حساب",
+      "register": "إنشاء حساب",
+      "subtitle": "انضم إلى مانجاتي لإدارة مشاريعك",
+      "firstNameLabel": "الاسم الأول",
+      "firstNamePlaceholder": "محمد",
+      "lastNameLabel": "اسم العائلة",
+      "lastNamePlaceholder": "أحمد",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "you@example.com",
+      "phoneLabel": "رقم الهاتف",
+      "phonePlaceholder": "+212 6XX-XXXXXX",
+      "passwordLabel": "كلمة المرور",
+      "passwordPlaceholder": "أنشئ كلمة مرور آمنة",
+      "confirmPasswordLabel": "تأكيد كلمة المرور",
+      "confirmPasswordPlaceholder": "أكد كلمة المرور",
+      "roleLabel": "الدور",
+      "termsAndConditions": "أوافق على شروط الخدمة وسياسة الخصوصية",
+      "createAccountButton": "إنشاء حساب",
+      "creatingAccount": "جاري إنشاء الحساب...",
+      "alreadyHaveAccount": "لديك حساب بالفعل؟",
+      "signIn": "تسجيل الدخول",
+      "passwordStrength": {
+        "veryWeak": "ضعيفة جداً",
+        "weak": "ضعيفة",
+        "fair": "متوسطة",
+        "good": "جيدة",
+        "strong": "قوية"
+      },
+      "errors": {
+        "passwordMismatch": "كلمات المرور غير متطابقة",
+        "weakPassword": "كلمة المرور ضعيفة جدًا"
+      }
+    },
+    "errors": {
+      "invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صالحة",
+      "accountDisabled": "تم تعطيل حسابك",
+      "generalError": "حدث خطأ أثناء المصادقة"
+    }
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحبًا بك في مانجاتي، {{name}}!",
+    "subtitle": "إليك نظرة عامة على مشروعك والنشاط الأخير.",
+    "stats": {
+      "activeProjects": "المشاريع النشطة",
+      "tasksCompleted": "المهام المكتملة",
+      "teamMembers": "أعضاء الفريق",
+      "overallProgress": "التقدم الإجمالي"
+    },
+    "recentActivity": "النشاط الأخير",
+    "weatherDemo": "عرض توقعات الطقس"
+  },
+
+  "home": {
+    "pageTitle": "الصفحة الرئيسية",
+    "title": "أنشئ مانغا الخاصة بك باستخدام الذكاء الاصطناعي",
+    "subtitle": "لا حاجة لمهارات الرسم—دع الذكاء الاصطناعي يجسد قصصك.",
+    "ctaPrimary": "ابدأ الآن",
+    "ctaSecondary": "تعرف على المزيد",
+    "heroImageAlt": "معاينة إنشاء المانغا بالذكاء الاصطناعي",
+    "features": {
+      "title": "الميزات",
+      "subtitle": "اكتشف ما يجعل مانغاتي فريدة",
+      "aiGeneration": {
+        "title": "التوليد بالذكاء الاصطناعي",
+        "description": "أنشئ الشخصيات والمشاهد والقصص بسهولة باستخدام الذكاء الاصطناعي."
+      },
+      "storytelling": {
+        "title": "أدوات السرد القصصي",
+        "description": "أدوات سهلة الاستخدام لمساعدتك في صياغة وتنظيم مانغا الخاصة بك."
+      },
+      "export": {
+        "title": "التخصيص والتصدير",
+        "description": "قم بتخصيص مانغا الخاصة بك وتصديرها بصيغ متعددة للمشاركة."
+      }
+    },
+    "workflow": {
+      "title": "كيف تعمل",
+      "subtitle": "ثلاث خطوات بسيطة لإنشاء مانغا الخاصة بك",
+      "step1": {
+        "title": "اكتب قصتك",
+        "description": "ابدأ بكتابة القصة التي تريد سردها."
+      },
+      "step2": {
+        "title": "التوليد بالذكاء الاصطناعي",
+        "description": "دع الذكاء الاصطناعي ينشئ رسومات رائعة بناءً على قصتك."
+      },
+      "step3": {
+        "title": "النشر والمشاركة",
+        "description": "صدّر مانغا الخاصة بك وشاركها مع العالم."
+      }
+    },
+    "cta": {
+      "title": "هل أنت جاهز لإنشاء مانغا الخاصة بك؟",
+      "description": "انضم إلى مانغاتي وابدأ رحلتك اليوم.",
+      "buttonText": "ابدأ الآن"
+    }
+  },
+  "series": {
+    "title": "جميع السلاسل",
+    "emptyState": "لم يتم العثور على سلاسل",
+    "createNew": "إنشاء سلسلة جديدة",
+    "list": {
+      "title": "تصفح السلاسل",
+      "empty": "لا توجد سلاسل متاحة حاليًا",
+      "error": "فشل في تحميل السلاسل",
+      "viewDetails": "عرض التفاصيل"
+    },
+    "details": {
+      "notFound": "لم يتم العثور على السلسلة",
+      "noSynopsis": "لا يوجد ملخص متاح",
+      "error": "خطأ في تحميل تفاصيل السلسلة"
+    },
+    "edit": "تعديل السلسلة",
+    "delete": "حذف السلسلة",
+    "create": {
+      "title": "إنشاء سلسلة جديدة",
+      "subtitle": "املأ التفاصيل لإنشاء سلسلة المانجا الجديدة",
+      "success": "تم إنشاء السلسلة بنجاح",
+      "error": "فشل في إنشاء السلسلة"
+    },
+    "fields": {
+      "title": "العنوان",
+      "titlePlaceholder": "أدخل عنوان السلسلة",
+      "synopsis": "الملخص",
+      "synopsisPlaceholder": "اكتب وصفًا موجزًا لسلسلتك",
+      "cover": "صورة الغلاف",
+      "coverHelp": "الحجم الموصى به: 800×1200 بكسل، الحد الأقصى: 2 ميجابايت",
+      "uploadCover": "تحميل الغلاف",
+      "status": "الحالة",
+      "author": "المؤلف",
+      "created": "تاريخ الإنشاء",
+      "updated": "تاريخ التحديث",
+      "languages": "اللغات",
+      "tags": "الوسوم"
+    },
+    "status": {
+      "ongoing": "مستمرة",
+      "completed": "مكتملة",
+      "canceled": "ملغاة"
+    },
+    "chapters": {
+      "title": "الفصول",
+      "empty": "لا توجد فصول متاحة بعد",
+      "createFirst": "إنشاء الفصل الأول",
+      "add": "إضافة فصل",
+      "view": "عرض",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "details": "التفاصيل",
+      "confirmDelete": "هل أنت متأكد من رغبتك في حذف هذا الفصل؟",
+      "deleteSuccess": "تم حذف الفصل بنجاح",
+      "deleteError": "فشل في حذف الفصل",
+      "createSuccess": "تم إنشاء الفصل بنجاح",
+      "createError": "فشل في إنشاء الفصل",
+      "newChapter": "فصل جديد",
+      "titleField": "العنوان",
+      "titlePlaceholder": "أدخل عنوان الفصل",
+      "numberField": "رقم الفصل",
+      "numberPlaceholder": "أدخل رقم الفصل",
+      "titleRequired": "عنوان الفصل مطلوب",
+      "startReading": "ابدأ القراءة",
+      "resumeReading": "متابعة القراءة"
+    },
+    "favorite": "إضافة إلى المفضلة",
+    "unfavorite": "إزالة من المفضلة"
+  },
+  "mySeries": {
+    "title": "سلاسلي",
+    "createNew": "إنشاء جديد",
+    "createPrompt": "ابدأ بإنشاء سلاسل المانجا الخاصة بك ومشاركتها مع العالم.",
+    "noSeries": "لم تقم بإنشاء أي سلاسل بعد",
+    "startCreating": "ابدأ الإنشاء",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "deleteConfirm": "هل أنت متأكد من رغبتك في حذف هذه السلسلة؟ لا يمكن التراجع عن هذا الإجراء.",
+    "deleteSuccess": "تم حذف السلسلة بنجاح",
+    "deleteError": "فشل في حذف السلسلة",
+    "fetchError": "فشل في جلب سلاسلك",
+    "gridView": "عرض الشبكة",
+    "listView": "عرض القائمة",
+    "columns": {
+      "title": "العنوان",
+      "status": "الحالة",
+      "created": "تاريخ الإنشاء",
+      "actions": "الإجراءات"
+    }
+  },
+  "favorites": {
+    "title": "المفضلة",
+    "empty": {
+      "title": "لا توجد مفضلات بعد",
+      "message": "ابدأ باستكشاف السلاسل وأضفها إلى مفضلاتك"
+    },
+    "noResults": {
+      "title": "لا توجد نتائج مطابقة",
+      "message": "حاول تعديل مصطلحات البحث"
+    },
+    "searchPlaceholder": "ابحث في مفضلاتك...",
+    "loading": "جاري تحميل المفضلات...",
+    "remove": "إزالة من المفضلة",
+    "removeError": "فشل في إزالة من المفضلة",
+    "addedOn": "أضيف في",
+    "explore": "استكشاف السلاسل",
+    "clearSearch": "مسح البحث"
+  },
+  "search": {
+    "title": "البحث في السلاسل",
+    "subtitle": "ابحث عن سلسلة المانجا المفضلة التالية",
+    "placeholder": "ابحث بالعنوان أو المؤلف أو الكلمات الرئيسية...",
+    "buttonSearch": "بحث",
+    "buttonClear": "مسح",
+    "filterLanguage": "اللغة",
+    "filterTags": "الوسوم",
+    "allLanguages": "جميع اللغات",
+    "searching": "جاري البحث...",
+    "resultsFound": "تم العثور على {{count}} نتيجة",
+    "noResults": "لم يتم العثور على نتائج",
+    "tryAdjustingFilters": "حاول تعديل مرشحات البحث أو جرّب كلمة رئيسية مختلفة",
+    "startSearching": "ابدأ البحث",
+    "useFilters": "استخدم شريط البحث والمرشحات للعثور على سلاسل المانجا",
+    "trending": "السلاسل الرائجة",
+    "errorLoadingFilters": "فشل في تحميل المرشحات",
+    "errorSearching": "حدث خطأ أثناء البحث"
+  },
+  "account": {
+    "title": "حسابي",
+    "subtitle": "إدارة معلوماتك الشخصية وتفضيلاتك",
+    "tabs": {
+      "profile": "الملف الشخصي",
+      "security": "الأمان",
+      "notifications": "الإشعارات"
+    },
+    "profile": {
+      "personalInfo": "المعلومات الشخصية",
+      "profilePicture": "الصورة الشخصية",
+      "imageRequirements": "JPG أو GIF أو PNG. الحجم الأقصى 1 ميجابايت",
+      "uploadNew": "تحميل جديد",
+      "removePhoto": "إزالة",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "emailHelp": "يُستخدم بريدك الإلكتروني لتسجيل الدخول ولا يمكن تغييره",
+      "phoneNumber": "رقم الهاتف",
+      "address": "العنوان",
+      "role": "الدور",
+      "saveChanges": "حفظ التغييرات",
+      "saving": "جاري الحفظ...",
+      "updateSuccess": "تم تحديث الملف الشخصي بنجاح"
+    },
+    "security": {
+      "changePassword": "تغيير كلمة المرور",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور الجديدة",
+      "passwordRequirements": "متطلبات كلمة المرور",
+      "requirement1": "8 أحرف على الأقل",
+      "requirement2": "حرف كبير واحد على الأقل",
+      "requirement3": "حرف صغير واحد على الأقل",
+      "requirement4": "رقم واحد على الأقل",
+      "updatePassword": "تحديث كلمة المرور",
+      "updating": "جاري التحديث...",
+      "updateSuccess": "تم تحديث كلمة المرور بنجاح"
+    },
+    "notifications": {
+      "title": "تفضيلات الإشعارات",
+      "description": "تحكم في كيفية تلقي الإشعارات من المنصة",
+      "email": "إشعارات البريد الإلكتروني",
+      "inApp": "إشعارات التطبيق",
+      "taskAssignments": "تعيينات المهام",
+      "taskAssignmentsDesc": "تلقي إشعارات عند تعيينك لمهمة",
+      "comments": "التعليقات",
+      "commentsDesc": "تلقي إشعارات عندما يعلق شخص ما على المحتوى الخاص بك",
+      "projectUpdates": "تحديثات المشروع",
+      "projectUpdatesDesc": "تلقي تحديثات حول المشاريع التي تشارك فيها",
+      "taskReminders": "تذكيرات المهام",
+      "taskRemindersDesc": "تلقي تذكيرات حول المواعيد النهائية القادمة",
+      "mentions": "الإشارات",
+      "mentionsDesc": "تلقي إشعارات عندما يشير إليك شخص ما",
+      "systemAnnouncements": "إعلانات النظام",
+      "systemAnnouncementsDesc": "تلقي إعلانات مهمة حول المنصة",
+      "savePreferences": "حفظ التفضيلات"
+    },
+    "errors": {
+      "loadingProfile": "فشل في تحميل الملف الشخصي",
+      "updateProfile": "فشل في تحديث الملف الشخصي",
+      "updateSecurity": "فشل في تحديث إعدادات الأمان",
+      "passwordMismatch": "كلمات المرور غير متطابقة"
+    }
+  },
+  "viewer": {
+    "loading": "جاري تحميل الفصل...",
+    "noPages": "لم يتم العثور على صفحات لهذا الفصل",
+    "goBack": "العودة",
+    "firstPage": "الصفحة الأولى",
+    "previousPage": "الصفحة السابقة",
+    "nextPage": "الصفحة التالية",
+    "lastPage": "الصفحة الأخيرة",
+    "zoomIn": "تكبير",
+    "zoomOut": "تصغير",
+    "resetZoom": "إعادة ضبط التكبير",
+    "toggleFullscreen": "تبديل ملء الشاشة",
+    "modes": {
+      "infinite": "التمرير اللانهائي",
+      "horizontal": "الصفحات الأفقية",
+      "vertical": "الصفحات العمودية"
+    }
   },
   "roles": {
-    "Admin": "مدير",
+    "Admin": "مدير النظام",
     "Manager": "مدير",
-    "User": "مستخدم"
+    "User": "مستخدم عادي",
+    "Writer": "كاتب",
+    "Reader": "قارئ"
   },
-  "language": {
-    "english": "English",
-    "french": "Français",
-    "arabic": "العربية",
-    "selectLanguage": "اختر اللغة"
+
+  "create": {
+    "title": "إنشاء سلسلة جديدة",
+    "subtitle": "احكِ قصتك—واجعل مانغا/مانهواك تنبض بالحياة!",
+    "success": "تم إنشاء السلسلة بنجاح.",
+    "errors": {
+      "loadingFilters": "فشل في تحميل اللغات والوسوم.",
+      "imageTooLarge": "يجب أن تكون صورة الغلاف بحجم 5 ميغابايت أو أقل.",
+      "titleRequired": "العنوان مطلوب.",
+      "languageRequired": "يجب اختيار لغة واحدة على الأقل.",
+      "createFailed": "فشل في إنشاء السلسلة. يرجى المحاولة مرة أخرى."
+    },
+    "form": {
+      "title": "العنوان",
+      "titlePlaceholder": "أدخل عنوان السلسلة",
+      "synopsis": "الملخص",
+      "synopsisPlaceholder": "اكتب وصفًا موجزًا…",
+      "status": "الحالة",
+      "coverImage": "صورة الغلاف",
+      "uploadImage": "انقر للتحميل",
+      "imageRequirements": "الحد الأقصى 5 ميغابايت، JPG/PNG فقط",
+      "removeImage": "إزالة الصورة",
+      "languages": "اللغات",
+      "tags": "الوسوم",
+      "submit": "إنشاء السلسلة"
+    }
   }
 }

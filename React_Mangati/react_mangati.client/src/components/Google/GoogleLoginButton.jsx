@@ -1,7 +1,9 @@
 // src/components/GoogleLoginButton.jsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const GoogleLoginButton = () => {
+    const { t } = useTranslation();
     const handleGoogleLogin = () => {
         // The backend URL that initiates Google OAuth flow
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5229';
@@ -25,7 +27,7 @@ const GoogleLoginButton = () => {
         C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10
         c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
             </svg>
-            Continue with Google
+            {t('auth.continueWithGoogle', 'Continue with Google')}
         </button>
     );
 };

@@ -264,7 +264,7 @@ const Create = () => {
                                                     checked={formData.languageIds.includes(language.id)}
                                                     onChange={() => handleLanguageToggle(language.id)}
                                                 />
-                                                <span>{language.name}</span>
+                                                <span>{t('languages.' + language.name)}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -287,7 +287,7 @@ const Create = () => {
                                                     checked={formData.tagIds.includes(tag.tagId)}
                                                     onChange={() => handleTagToggle(tag.tagId)}
                                                 />
-                                                <span className="tag-name">{tag.name}</span>
+                                                <span className="tag-name">{t('tags.' + tag.name)}</span>
                                             </label>
                                         ))}
                                     </div>
