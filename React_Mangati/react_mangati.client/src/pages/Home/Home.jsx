@@ -63,12 +63,12 @@ const Home = () => {
                     <p className="home__subtitle">{t('home.subtitle')}</p>
 
                     <div className="home__cta-group">
-                        <Link to={user ? "/series/create" : "/auth"} className="home__cta-button primary">
+                        <Link to={user ? "/series" : "/auth"} className="home__cta-button primary">
                             {t('home.ctaPrimary')}
                         </Link>
-                        <a href="#features" className="home__cta-button secondary">
-                            {t('home.ctaSecondary')}
-                        </a>
+                        <Link to={user ? "/search" : "/auth"} className="home__cta-button secondary">
+                            {t('navigation.search')}
+                        </Link>
                     </div>
                 </div>
                 <div className="home__hero-image-container">

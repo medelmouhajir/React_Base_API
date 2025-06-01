@@ -181,7 +181,7 @@ const MySeries = () => {
                             <div className="my-series__card-cover-wrapper">
                                 {serie.coverImageUrl ? (
                                     <img
-                                        src={'http://localhost:5229/' + serie.coverImageUrl}
+                                        src={'${import.meta.env.VITE_API_URL}$serie.coverImageUrl}'}
                                         alt={serie.title}
                                         className="my-series__card-cover"
                                     />

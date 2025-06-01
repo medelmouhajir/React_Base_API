@@ -176,9 +176,7 @@ const SerieDetails = () => {
                 <div className="serie-cover-container">
                     <img
                         className="serie-cover"
-                        src={serie.coverImageUrl?.startsWith('/')
-                            ? `${import.meta.env.VITE_API_URL}${serie.coverImageUrl}`
-                            : serie.coverImageUrl}
+                        src={`${import.meta.env.VITE_API_URL}${serie.coverImageUrl}`}
                         alt={serie.title}
                     />
 

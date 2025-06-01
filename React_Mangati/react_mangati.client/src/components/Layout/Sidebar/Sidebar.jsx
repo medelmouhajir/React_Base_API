@@ -1,5 +1,6 @@
 // src/components/Layout/Sidebar/Sidebar.jsx
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -14,7 +15,7 @@ const Sidebar = ({
     const { t } = useTranslation();
     const [activeMenu, setActiveMenu] = useState('');
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user} = useAuth();
 
     // Set active menu based on current path
     useEffect(() => {
@@ -29,6 +30,10 @@ const Sidebar = ({
             setActiveMenu('create-serie');
         } else if (path.includes('/favorites')) {
             setActiveMenu('favorites');
+        } else if (path.includes('/admin')) {
+            setActiveMenu('admin');
+        } else if (path.includes('/reports')) {
+            setActiveMenu('reports');
         }
     }, []);
 
@@ -59,8 +64,10 @@ const Sidebar = ({
         }
     }, [isMobileOpen, onClose]);
 
-    // Navigation menu items
-    const menuItems = [
+
+    // All possible navigation menu items
+    const allMenuItems = useMemo(() => [
+        // Public items visible to all users
         {
             id: 'series',
             title: t('sidebar.series'),
@@ -71,16 +78,7 @@ const Sidebar = ({
                 </svg>
             ),
             href: '/series',
-        },
-        {
-            id: 'myseries',
-            title: t('sidebar.mySeries'),
-            icon: (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                </svg>
-            ),
-            href: '/myseries',
+            roles: ['User', 'Manager', 'Admin', 'Writer', 'Reader']
         },
         {
             id: 'search',
@@ -92,6 +90,30 @@ const Sidebar = ({
                 </svg>
             ),
             href: '/search',
+            roles: ['User', 'Manager', 'Admin', 'Writer', 'Reader']
+        },
+        {
+            id: 'favorites',
+            title: t('sidebar.favorites'),
+            icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            ),
+            href: '/favorites',
+            roles: ['User', 'Manager', 'Admin', 'Writer', 'Reader']
+        },
+        // Creator/content contributor items
+        {
+            id: 'myseries',
+            title: t('sidebar.mySeries'),
+            icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                </svg>
+            ),
+            href: '/myseries',
+            roles: ['Manager', 'Admin', 'Writer']
         },
         {
             id: 'create-serie',
@@ -103,19 +125,76 @@ const Sidebar = ({
                 </svg>
             ),
             href: '/series/create',
-            badge: { text: 'New', type: 'info' }
+            badge: { text: 'New', type: 'info' },
+            roles: ['Manager', 'Admin', 'Writer']
         },
+        // Manager items
         {
-            id: 'favorites',
-            title: t('sidebar.favorites'),
+            id: 'approval',
+            title: t('sidebar.approvalQueue'),
             icon: (
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
                 </svg>
             ),
-            href: '/favorites',
+            href: '/approval-queue',
+            badge: { text: 'Manager', type: 'warning' },
+            roles: ['Manager', 'Admin']
         },
-    ];
+        {
+            id: 'reports',
+            title: t('sidebar.reports'),
+            icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+            ),
+            href: '/reports',
+            roles: ['Manager', 'Admin']
+        },
+        // Admin items
+        {
+            id: 'admin',
+            title: t('sidebar.adminPanel'),
+            icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+                    <path d="M12 16v-4"></path>
+                    <path d="M12 8h.01"></path>
+                </svg>
+            ),
+            href: '/admin',
+            badge: { text: 'Admin', type: 'danger' },
+            roles: ['Admin']
+        },
+        {
+            id: 'users',
+            title: t('sidebar.userManagement'),
+            icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            ),
+            href: '/admin/users',
+            roles: ['Admin']
+        }
+    ], [t]);
+
+    // Navigation menu items
+    // Filter menu items based on user role
+    const menuItems = useMemo(() => {
+        if (!user) return [];
+
+        return allMenuItems.filter(item => {
+            return item.roles.includes(user.role);
+        });
+    }, [user, allMenuItems]);
 
     // Handle navigation
     const handleNavigation = (href) => {

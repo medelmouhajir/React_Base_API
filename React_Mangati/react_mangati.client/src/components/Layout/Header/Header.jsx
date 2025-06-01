@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
 import LanguageSelector from '../../LanguageSelector/LanguageSelector';
+import ThemeToggle from '../../ThemeToggle/ThemeToggle';
 import './Header.css';
 
 const Header = ({
@@ -100,9 +101,7 @@ const Header = ({
                         aria-label="Toggle sidebar"
                     >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <line x1="3" y1="12" x2="21" y2="12"></line>
-                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
                     </button>
                 )}
@@ -155,6 +154,12 @@ const Header = ({
                         </li>
                     </ul>
                 </nav>
+
+                {/* Controls section - Added for theme toggle and other controls */}
+                <div className="header__controls">
+                    {/* Theme Toggle */}
+                    <ThemeToggle />
+                </div>
 
                 {/* User Menu */}
                 {user && (

@@ -40,7 +40,7 @@ const SeriesList = () => {
                         <div className="serie-card" key={serie.id}>
                             {serie.coverImageUrl && (
                                 <img
-                                    src={'http://localhost:5229/' + serie.coverImageUrl}
+                                    src={`${import.meta.env.VITE_API_URL}${serie.coverImageUrl}`}
                                     alt={serie.title}
                                     className="serie-cover"
                                 />

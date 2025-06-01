@@ -7,6 +7,7 @@ namespace React_Mangati.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<User> _userManager;

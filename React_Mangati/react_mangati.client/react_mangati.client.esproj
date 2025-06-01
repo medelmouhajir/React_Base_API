@@ -10,5 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\components\Layout\Navigation\" />
+    <Folder Include="src\components\ThemeToggle\" />
   </ItemGroup>
 </Project>

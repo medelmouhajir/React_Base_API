@@ -214,7 +214,7 @@ namespace React_Mangati.Server
         private static async Task SeedRolesAndAdminUser(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             // Seed roles
-            var roles = new[] { "Admin", "Manager", "User" };
+            var roles = new[] { "Admin", "Manager", "User" , "Writer" , "Reader" };
 
             foreach (var role in roles)
             {

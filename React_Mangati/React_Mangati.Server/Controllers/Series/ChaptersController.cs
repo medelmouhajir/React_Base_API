@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using React_Mangati.Server.Data;
 using React_Mangati.Server.Models.Series.Chapters;
@@ -7,6 +8,7 @@ namespace React_Mangati.Server.Controllers.Series
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ChaptersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;

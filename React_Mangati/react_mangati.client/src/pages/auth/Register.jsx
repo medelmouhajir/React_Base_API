@@ -13,7 +13,7 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
         phoneNumber: '',
         password: '',
         confirmPassword: '',
-        role: 'User'
+        role: 'Writer'
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -244,8 +244,8 @@ const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
                         onChange={handleChange}
                         className="auth-form__select"
                     >
-                        <option value="WRITER">{t('roles.Writer')}</option>
-                        <option value="READER">{t('roles.Reader')}</option>
+                        <option value="Writer">{t('roles.Writer')}</option>
+                        <option value="Reader">{t('roles.Reader')}</option>
                     </select>
                 </div>
 
