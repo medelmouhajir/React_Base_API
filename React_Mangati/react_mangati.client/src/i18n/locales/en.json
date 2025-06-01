@@ -409,6 +409,10 @@
     "Reader": "Reader"
   },
 
+  "theme": {
+    "switchToLight": "Switch to Light Mode",
+    "switchToDark": "Switch to Dark Mode"
+  },
   "create": {
     "title": "Create a New Series",
     "subtitle": "Tell your story—bring your manga/​manhwa to life!",

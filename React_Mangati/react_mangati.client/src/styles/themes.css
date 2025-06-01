@@ -1,0 +1,117 @@
+/* Add this to your index.css or create a new themes.css file and import it */
+
+/* Theme Variables */
+:root {
+    /* Light theme variables (default) */
+    --bg-color: #f8fafc;
+    --text-color: #213547;
+    --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --sidebar-bg: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    --sidebar-text: #334155;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --button-bg: #f9f9f9;
+    --input-bg: #ffffff;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+    /* Dark theme variables */
+    :root.dark-mode {
+        --bg-color: #0f172a;
+        --text-color: rgba(255, 255, 255, 0.87);
+        --header-bg: linear-gradient(135deg, #3b4b7a 0%, #553a75 100%);
+        --sidebar-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+        --sidebar-text: #e2e8f0;
+        --card-bg: #1e293b;
+        --border-color: #334155;
+        --button-bg: #1a1a1a;
+        --input-bg: #1e293b;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    }
+
+/* Apply variables to main elements */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.main-layout {
+    background-color: var(--bg-color);
+}
+
+.main-layout__content {
+    background-color: var(--bg-color);
+}
+
+.header {
+    background: var(--header-bg);
+}
+
+.sidebar {
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+}
+
+.footer {
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+}
+
+/* Dark mode adjustments for specific components */
+:root.dark-mode .app__table-container {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+:root.dark-mode .app__table td {
+    color: var(--text-color);
+    border-bottom-color: var(--border-color);
+}
+
+:root.dark-mode .app__table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+:root.dark-mode .header__dropdown-item {
+    color: var(--text-color);
+}
+
+:root.dark-mode .header__dropdown-languages,
+:root.dark-mode .header__user-dropdown {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+:root.dark-mode .header__dropdown-language:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+:root.dark-mode .header__dropdown-language-native {
+    color: var(--text-color);
+}
+
+:root.dark-mode .header__dropdown-language-translated {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+:root.dark-mode .header__dropdown-divider {
+    background: var(--border-color);
+}
+
+/* Ensure theme toggle works correctly in the header */
+.header__controls {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 1rem;
+}
+
+.theme-toggle {
+    margin-right: 0.5rem;
+}
+
+[dir="rtl"] .theme-toggle {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
