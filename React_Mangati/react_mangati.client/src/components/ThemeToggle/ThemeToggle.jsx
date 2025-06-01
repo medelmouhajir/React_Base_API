@@ -1,47 +1,20 @@
-import { useState, useEffect } from 'react';
+// src/components/ThemeToggle/ThemeToggle.jsx
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../contexts/ThemeContext';
 import './ThemeToggle.css';
 
 const ThemeToggle = ({ className = '' }) => {
     const { t } = useTranslation();
-    const [isDark, setIsDark] = useState(false);
-
-    useEffect(() => {
-        // Check if theme is stored in localStorage
-        const storedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        // Set initial theme state
-        if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
-            setIsDark(true);
-            document.documentElement.classList.add('dark-mode');
-        } else {
-            setIsDark(false);
-            document.documentElement.classList.remove('dark-mode');
-        }
-    }, []);
-
-    const toggleTheme = () => {
-        if (isDark) {
-            // Switch to light mode
-            document.documentElement.classList.remove('dark-mode');
-            localStorage.setItem('theme', 'light');
-        } else {
-            // Switch to dark mode
-            document.documentElement.classList.add('dark-mode');
-            localStorage.setItem('theme', 'dark');
-        }
-        setIsDark(!isDark);
-    };
+    const { isDarkMode, toggleTheme } = useTheme();
 
     return (
         <button
-            className={`theme-toggle ${className} ${isDark ? 'theme-toggle--dark' : 'theme-toggle--light'}`}
+            className={`theme-toggle ${className} ${isDarkMode ? 'theme-toggle--dark' : 'theme-toggle--light'}`}
             onClick={toggleTheme}
-            aria-label={isDark ? t('theme.switchToLight') : t('theme.switchToDark')}
-            title={isDark ? t('theme.switchToLight') : t('theme.switchToDark')}
+            aria-label={isDarkMode ? t('theme.switchToLight') : t('theme.switchToDark')}
+            title={isDarkMode ? t('theme.switchToLight') : t('theme.switchToDark')}
         >
-            {isDark ? (
+            {isDarkMode ? (
                 <svg className="theme-toggle__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="12" cy="12" r="5"></circle>
                     <line x1="12" y1="1" x2="12" y2="3"></line>

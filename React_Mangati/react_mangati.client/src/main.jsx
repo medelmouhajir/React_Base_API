@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './contexts/AuthContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 
 // Import i18n configuration
 import './i18n/config'
@@ -13,7 +14,9 @@ createRoot(document.getElementById('root')).render(
     <StrictMode>
         <BrowserRouter>
             <AuthProvider>
-                <App />
+                <ThemeProvider>
+                    <App />
+                </ThemeProvider>
             </AuthProvider>
         </BrowserRouter>
     </StrictMode>,
