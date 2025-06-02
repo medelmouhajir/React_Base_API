@@ -6,6 +6,7 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 // Import i18n configuration
 import './i18n/config'
@@ -21,3 +22,7 @@ createRoot(document.getElementById('root')).render(
         </BrowserRouter>
     </StrictMode>,
 )
+
+
+// Register service worker for PWA functionality
+serviceWorkerRegistration.register();

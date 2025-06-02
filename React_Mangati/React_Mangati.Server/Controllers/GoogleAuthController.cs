@@ -187,7 +187,7 @@ namespace React_Mangati.Server.Controllers
                 Email = email,
                 FirstName = firstName,
                 LastName = lastName,
-                Role = "User",
+                Role = "Reader",
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,

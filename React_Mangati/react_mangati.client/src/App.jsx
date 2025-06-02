@@ -7,6 +7,9 @@ import Account from './pages/Account/Account';
 import Home from './pages/Home/Home';
 
 
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import Create from './pages/Series/Create';
 import SeriesList from './pages/Series/SeriesList';
 import SerieDetails from './pages/Series/SerieDetails';
@@ -31,7 +34,19 @@ import MySeries from './pages/Series/MySeries';
 import './App.css';
 
 function App() {
+    const { i18n } = useTranslation();
     const { user, loading: authLoading } = useAuth();
+
+    useEffect(() => {
+        // Set document direction based on current language
+        if (i18n.language === 'ar') {
+            document.documentElement.dir = 'rtl';
+            document.documentElement.lang = 'ar';
+        } else {
+            document.documentElement.dir = 'ltr';
+            document.documentElement.lang = i18n.language;
+        }
+    }, [i18n.language]);
 
     // Show loading spinner while checking authentication
     if (authLoading) {

@@ -1,0 +1,55 @@
+{
+  "name": "Mangati",
+  "short_name": "Mangati",
+  "description": "A manga reading platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Series",
+      "short_name": "Series",
+      "description": "View all manga series",
+      "url": "/series"
+    },
+    {
+      "name": "Search",
+      "short_name": "Search",
+      "description": "Search for manga",
+      "url": "/search"
+    },
+    {
+      "name": "Favorites",
+      "short_name": "Favorites",
+      "description": "View your favorite manga",
+      "url": "/favorites"
+    }
+  ]
+}

@@ -1,9 +1,11 @@
-/* MainLayout Component Styles */
+/* MainLayout Component Styles with Dark Mode */
 .main-layout {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: #f8fafc;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .main-layout__body {
@@ -18,7 +20,8 @@
     display: flex;
     flex-direction: column;
     transition: all 0.3s ease;
-    background: #f8fafc;
+    background: var(--bg-color);
+    color: var(--text-color);
     min-height: calc(100vh - 4rem); /* Subtract header height */
 }
 
@@ -54,11 +57,27 @@
     animation: overlayFadeIn 0.3s ease;
 }
 
+/* RTL Support for content area */
+[dir="rtl"] .main-layout__content--with-sidebar {
+    margin-left: 0;
+    margin-right: 16rem; /* Sidebar width */
+}
+
+[dir="rtl"] .main-layout__content--sidebar-collapsed {
+    margin-left: 0;
+    margin-right: 4rem; /* Collapsed sidebar width */
+}
+
 /* Responsive Breakpoints */
 @media (max-width: 1024px) {
     .main-layout__content--with-sidebar,
     .main-layout__content--sidebar-collapsed {
         margin-left: 0;
+    }
+
+    [dir="rtl"] .main-layout__content--with-sidebar,
+    [dir="rtl"] .main-layout__content--sidebar-collapsed {
+        margin-right: 0;
     }
 
     .main-layout__content-inner {
@@ -80,15 +99,15 @@
 
 /* Content Area Variants */
 .main-layout__content--dashboard {
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    background: var(--dashboard-bg, linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%));
 }
 
 .main-layout__content--settings {
-    background: #ffffff;
+    background: var(--card-bg, #ffffff);
 }
 
 .main-layout__content--reports {
-    background: linear-gradient(135deg, #fef7f0 0%, #fed7aa 100%);
+    background: var(--reports-bg, linear-gradient(135deg, #fef7f0 0%, #fed7aa 100%));
 }
 
 /* Animation for content transitions */
@@ -131,7 +150,7 @@
         left: -100%;
         width: 100%;
         height: 2px;
-        background: linear-gradient(90deg, transparent, #60a5fa, transparent);
+        background: linear-gradient(90deg, transparent, var(--primary-color, #60a5fa), transparent);
         animation: loadingBar 2s infinite;
         z-index: 1000;
     }
@@ -152,21 +171,21 @@
 }
 
 .main-layout__content::-webkit-scrollbar-track {
-    background: #f1f5f9;
+    background: var(--scrollbar-track, #f1f5f9);
 }
 
 .main-layout__content::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: var(--scrollbar-thumb, #cbd5e1);
     border-radius: 3px;
 }
 
     .main-layout__content::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+        background: var(--scrollbar-thumb-hover, #94a3b8);
     }
 
 /* Focus and Accessibility */
 .main-layout__content:focus-within {
-    outline: 2px solid #60a5fa;
+    outline: 2px solid var(--primary-color, #60a5fa);
     outline-offset: 2px;
 }
 
@@ -174,6 +193,7 @@
 @media print {
     .main-layout__content {
         margin-left: 0 !important;
+        margin-right: 0 !important;
         background: white !important;
     }
 
@@ -200,29 +220,23 @@
     }
 }
 
-/* Dark Theme Support */
-@media (prefers-color-scheme: dark) {
-    .main-layout {
-        background: #0f172a;
+/* Dark Theme Support - Now handled through CSS variables */
+:root.dark-mode .main-layout__content--dashboard {
+    background: var(--dashboard-bg-dark, linear-gradient(135deg, #1e293b 0%, #334155 100%));
+}
+
+:root.dark-mode .main-layout__content::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-dark, #1e293b);
+}
+
+:root.dark-mode .main-layout__content::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-dark, #475569);
+}
+
+    :root.dark-mode .main-layout__content::-webkit-scrollbar-thumb:hover {
+        background: var(--scrollbar-thumb-hover-dark, #64748b);
     }
 
-    .main-layout__content {
-        background: #0f172a;
-    }
-
-    .main-layout__content--dashboard {
-        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    }
-
-    .main-layout__content::-webkit-scrollbar-track {
-        background: #1e293b;
-    }
-
-    .main-layout__content::-webkit-scrollbar-thumb {
-        background: #475569;
-    }
-
-        .main-layout__content::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
+:root.dark-mode .main-layout__overlay {
+    background: rgba(0, 0, 0, 0.7);
 }
