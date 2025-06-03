@@ -14,7 +14,7 @@ namespace React_Rentify.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     public class GPSController : ControllerBase
     {
         private readonly GpsDbContext _context;

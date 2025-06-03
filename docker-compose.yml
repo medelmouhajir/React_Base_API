@@ -158,6 +158,25 @@ services:
         aliases:
           - generator
 
+  rentify-gps-listener:
+    build:
+      context: .
+      dockerfile: Rentify_GPS_Service_Worker/Dockerfile
+    container_name: rentify-gps-listener
+    ports:
+      - "5000:5000/udp" 
+    environment:
+      # Point EF Core at the 'rentify_gps_db_1' database within the same 'db' container
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=rentify_gps_db_1;Username=postgres;Password=postgres
+      - GpsListener__Port=5000
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - db
+    networks:
+      react-lawyer-network:
+        aliases:
+          - rentify_gps_listener
+
   # Database service (PostgreSQL as an example)
   db:
     image: postgres:15

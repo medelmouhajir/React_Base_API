@@ -32,6 +32,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "react_rentify.client", "Rea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "React_Rentify.Server", "React_Rentify\React_Rentify.Server\React_Rentify.Server.csproj", "{066346EF-689B-4303-8243-2BD57AB8B318}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rentify_GPS_Service_Worker", "Rentify_GPS_Service_Worker\Rentify_GPS_Service_Worker.csproj", "{EA99001C-A494-4FB4-9B39-55D8F306D316}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +78,10 @@ Global
 		{066346EF-689B-4303-8243-2BD57AB8B318}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{066346EF-689B-4303-8243-2BD57AB8B318}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{066346EF-689B-4303-8243-2BD57AB8B318}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA99001C-A494-4FB4-9B39-55D8F306D316}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA99001C-A494-4FB4-9B39-55D8F306D316}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA99001C-A494-4FB4-9B39-55D8F306D316}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA99001C-A494-4FB4-9B39-55D8F306D316}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

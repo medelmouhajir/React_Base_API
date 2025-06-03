@@ -11,7 +11,7 @@ namespace React_Rentify.Server
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -71,6 +71,49 @@ namespace React_Rentify.Server
             builder.Services.AddHttpClient();
 
             var app = builder.Build();
+
+
+            // Apply pending migrations and seed roles
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<MainDbContext>();
+                    var userManager = services.GetRequiredService<UserManager<User>>();
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                    // Apply migrations
+                    await context.Database.MigrateAsync();
+
+                    // Seed roles and admin user
+                    await SeedRolesAndAdminUser(userManager, roleManager);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while migrating the database or seeding data.");
+                }
+            }
+
+            // Apply pending migrations and seed roles
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<GpsDbContext>();
+
+                    // Apply migrations
+                    await context.Database.MigrateAsync();
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while migrating the database or seeding data.");
+                }
+            }
+
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -178,6 +221,44 @@ namespace React_Rentify.Server
                 options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("OwnerOrManager", policy => policy.RequireRole("Manager", "Owner"));
             });
+        }
+        private static async Task SeedRolesAndAdminUser(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            // Seed roles
+            var roles = new[] { "Admin", "Manager", "Customer" };
+
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
+
+            // Seed admin user
+            const string adminEmail = "admin@mangati.com";
+            const string adminPassword = "Admin123!";
+
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+            if (adminUser == null)
+            {
+                adminUser = new User
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    FullName = "Administrator",
+                    Role = User_Role.Admin,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(adminUser, adminPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                }
+            }
         }
     }
 }

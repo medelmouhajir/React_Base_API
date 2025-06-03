@@ -13,7 +13,7 @@ namespace React_Rentify.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize(Roles = "PlatformAdmin,Owner")]
+    [Authorize(Roles = "Admin")]
     public class CarFiltersController : ControllerBase
     {
         private readonly MainDbContext _context;
