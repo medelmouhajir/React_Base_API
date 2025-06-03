@@ -50,6 +50,31 @@ services:
         aliases:
           - react_mangati.server
 
+  react_rentify.server:
+    build:
+      context: .
+      dockerfile: React_Rentify/React_Rentify.Server/Dockerfile
+    container_name: react-rentify-api
+    ports:
+      - "7069:8081"  # HTTPS port
+      - "5249:8080"  # HTTP port
+    volumes:
+      - ./React_Rentify/React_Rentify.Server:/app/rentify/server/
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080;https://+:8081
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      # Enable debugging
+      - DOTNET_EnableDiagnostics=1
+    depends_on:
+      - db
+    networks:
+      react-lawyer-network:
+        aliases:
+          - react_rentify.server
+
   # Frontend React client service
   react_lawyer.client:
     build:
@@ -95,6 +120,28 @@ services:
         aliases:
           - react_mangati.client
 
+  react_rentify.client:
+    build:
+      context: ./React_Rentify/react_rentify.client
+      dockerfile: Dockerfile
+    container_name: react-rentify-client
+    ports:
+      - "54350:54350"
+    volumes:
+      - ./React_Rentify/react_rentify.client:/app/rentify
+      - /app/rentify/node_modules
+    environment:
+      - DEV_SERVER_PORT=54350
+      - ASPNETCORE_HTTPS_PORT=8081
+      - ASPNETCORE_URLS=https://+:8081;http://+:8080
+      - DOCKER_CONTAINER=true
+    depends_on:
+      - react_rentify.server
+    networks:
+      react-lawyer-network:
+        aliases:
+          - react_rentify.client
+
   document_generator:
     build:
       context: .
@@ -122,7 +169,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: reactlawyerdb
-      POSTGRES_MULTIPLE_DATABASES: lawyerdocumentgeneratordb,mangati_db_1
+      POSTGRES_MULTIPLE_DATABASES: lawyerdocumentgeneratordb,mangati_db_1,rentify_db_1,rentify_gps_db_1
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

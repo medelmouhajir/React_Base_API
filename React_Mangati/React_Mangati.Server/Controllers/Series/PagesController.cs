@@ -64,7 +64,7 @@ namespace React_Mangati.Server.Controllers.Series
         }
 
         [HttpPost("Reorder")]
-        public async Task<IActionResult> Reorder(List<Page> reorderedPages)
+        public async Task<IActionResult> Reorder(List<PageOrder> reorderedPages)
         {
             foreach (var page in reorderedPages)
             {
@@ -89,5 +89,11 @@ namespace React_Mangati.Server.Controllers.Series
             await _context.SaveChangesAsync();
             return Ok();
         }
+    }
+
+    public class PageOrder
+    {
+        public int Id { get; set; }
+        public int Order { get; set; }
     }
 }

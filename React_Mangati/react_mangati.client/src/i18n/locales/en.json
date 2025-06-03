@@ -296,6 +296,9 @@
     "searchPlaceholder": "Search your favorites...",
     "loading": "Loading your favorites...",
     "remove": "Remove from favorites",
+    "add": "Add to favorites",
+    "removed": "Removed from favorites with success",
+    "added": "Added to favorites with success",
     "removeError": "Failed to remove from favorites",
     "addedOn": "Added on",
     "explore": "Explore Series",
@@ -318,7 +321,9 @@
     "useFilters": "Use the search bar and filters to find manga series",
     "trending": "Trending Series",
     "errorLoadingFilters": "Failed to load filters",
-    "errorSearching": "An error occurred while searching"
+    "errorSearching": "An error occurred while searching",
+    "hideFilters": "Hide Filters",
+    "showFilters": "Show Filters"
   },
   "account": {
     "title": "My Account",
@@ -407,6 +412,22 @@
     "Admin": "Administrator",
     "Writer": "Writer",
     "Reader": "Reader"
+  },
+  "chapter": {
+    "confirmDelete": "Are you sure you want to delete this chapter?",
+    "orderSaved": "Chapter order saved successfully.",
+    "uploadFailed": "Failed to upload.",
+    "deleteFailed": "Failed to delete.",
+    "reorderFailed": "Failed to reorder pages.",
+    "editPages": "Edit Pages",
+    "uploadPages": "Upload Pages",
+    "noPages": "No pages to display.",
+    "pageItem": "Page",
+    "pageImageAlt": "Page image",
+    "moveDown": "Move page down",
+    "moveUp": "Move page up",
+    "delete": "Delete",
+    "saveOrder": "Save order"
   },
 
   "theme": {

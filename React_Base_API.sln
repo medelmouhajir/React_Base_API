@@ -28,6 +28,10 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "react_mangati.client", "Rea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "React_Mangati.Server", "React_Mangati\React_Mangati.Server\React_Mangati.Server.csproj", "{08A9F1BE-6994-41CA-AFA1-931BBCA9BB04}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "react_rentify.client", "React_Rentify\react_rentify.client\react_rentify.client.esproj", "{8B6F8E5F-BAA1-2789-DA57-2795AF45B392}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "React_Rentify.Server", "React_Rentify\React_Rentify.Server\React_Rentify.Server.csproj", "{066346EF-689B-4303-8243-2BD57AB8B318}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +66,16 @@ Global
 		{08A9F1BE-6994-41CA-AFA1-931BBCA9BB04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08A9F1BE-6994-41CA-AFA1-931BBCA9BB04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08A9F1BE-6994-41CA-AFA1-931BBCA9BB04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B6F8E5F-BAA1-2789-DA57-2795AF45B392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B6F8E5F-BAA1-2789-DA57-2795AF45B392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B6F8E5F-BAA1-2789-DA57-2795AF45B392}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8B6F8E5F-BAA1-2789-DA57-2795AF45B392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B6F8E5F-BAA1-2789-DA57-2795AF45B392}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B6F8E5F-BAA1-2789-DA57-2795AF45B392}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{066346EF-689B-4303-8243-2BD57AB8B318}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{066346EF-689B-4303-8243-2BD57AB8B318}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{066346EF-689B-4303-8243-2BD57AB8B318}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{066346EF-689B-4303-8243-2BD57AB8B318}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,310 @@
+/* src/pages/Viewer/components/Toolbar/ViewerToolbar.css */
+.viewer-toolbar {
+    position: fixed;
+    top: 64px; /* Position below main navigation */
+    left: 0;
+    right: 0;
+    z-index: 999;
+    display: flex;
+    width: 100%;
+    max-width: 100% !important;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 1.5rem;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(8px);
+}
+
+.toolbar-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.toolbar-section--left {
+    flex: 0 0 auto;
+}
+
+.toolbar-section--center {
+    flex: 1;
+    justify-content: center;
+}
+
+.toolbar-section--right {
+    flex: 0 0 auto;
+    justify-content: flex-end;
+}
+
+/* Toolbar Buttons */
+.toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+    .toolbar-btn:hover:not(:disabled) {
+        background: rgba(96, 165, 250, 0.2);
+        border-color: rgba(96, 165, 250, 0.3);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .toolbar-btn:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    .toolbar-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+.toolbar-btn--icon {
+    width: 40px;
+    padding: 0;
+}
+
+    .toolbar-btn--icon svg {
+        width: 18px;
+        height: 18px;
+    }
+
+.toolbar-btn--text {
+    min-width: 60px;
+    font-weight: 600;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 24px;
+    background: linear-gradient(to bottom, transparent, rgba(148, 163, 184, 0.3), transparent);
+    margin: 0 0.5rem;
+}
+
+/* Chapter Title */
+.chapter-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin: 0;
+    color: #f8fafc;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+
+/* Mode Selector */
+.mode-selector {
+    display: flex;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+    .mode-btn:hover {
+        color: #e2e8f0;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+.mode-btn--active {
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    color: white;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.mode-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.mode-btn span {
+    font-size: 0.75rem;
+}
+
+/* Zoom Controls */
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Navigation Controls */
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.page-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    height: 32px;
+    padding: 0 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .viewer-toolbar {
+        height: 50px;
+        padding: 0 0.5rem;
+        top: 56px; /* Adjust for mobile nav height */
+        overflow-x: auto;
+        overflow-y: hidden;
+        justify-content: flex-start;
+        gap: 0;
+        scroll-behavior: smooth;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+        scroll-snap-type: x mandatory;
+    }
+
+        .viewer-toolbar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+    .toolbar-section {
+        gap: 0.5rem;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+        padding: 0 0.25rem;
+    }
+
+    .toolbar-section--left {
+        min-width: fit-content;
+        padding-right: 0.75rem;
+        border-right: 1px solid rgba(148, 163, 184, 0.2);
+        margin-right: 0.75rem;
+    }
+
+    .toolbar-section--center {
+        min-width: fit-content;
+        flex: 0 0 auto;
+        padding: 0 0.5rem;
+    }
+
+    .toolbar-section--right {
+        min-width: fit-content;
+        padding-left: 0.75rem;
+        border-left: 1px solid rgba(148, 163, 184, 0.2);
+        margin-left: 0.75rem;
+    }
+
+    .toolbar-btn {
+        min-width: 36px;
+        height: 36px;
+        padding: 0 8px;
+        font-size: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .toolbar-btn--icon {
+        width: 36px;
+        padding: 0;
+    }
+
+        .toolbar-btn--icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+    .toolbar-btn--text {
+        min-width: 50px;
+        white-space: nowrap;
+    }
+
+    .chapter-title {
+        font-size: 0.875rem;
+        max-width: none;
+        min-width: 120px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .mode-selector {
+        flex-shrink: 0;
+        min-width: fit-content;
+    }
+
+    .mode-btn {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+        .mode-btn span {
+            display: none;
+        }
+
+    .zoom-controls {
+        flex-shrink: 0;
+        min-width: fit-content;
+    }
+
+    .nav-controls {
+        flex-shrink: 0;
+        min-width: fit-content;
+        gap: 0.25rem;
+    }
+
+    .page-indicator {
+        min-width: 50px;
+        font-size: 0.75rem;
+        height: 28px;
+        padding: 0 8px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .toolbar-divider {
+        height: 20px;
+        margin: 0 0.25rem;
+        flex-shrink: 0;
+    }
+}

@@ -277,12 +277,6 @@ const SerieDetails = () => {
                                     {isAuthor ? (
                                         <>
                                             <button
-                                                className="btn btn-secondary"
-                                                onClick={() => navigate(`/series/${id}/chapters/${chapter.id}`)}
-                                            >
-                                                {t('series.chapters.details')}
-                                            </button>
-                                            <button
                                                 className="btn btn-primary"
                                                 onClick={() => navigate(`/viewer/${chapter.id}`)}
                                             >

@@ -22,8 +22,10 @@ namespace React_Mangati.Server.Models.Series
         public string? CoverImageUrl { get; set; }
 
         [Required]
-        public Serie_Status Status { get; set; } 
+        public Serie_Status Status { get; set; }
 
+        //[defv(false)]
+        //public bool Is_For_Studio { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }

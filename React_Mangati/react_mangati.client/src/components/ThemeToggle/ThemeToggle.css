@@ -33,15 +33,6 @@
 .theme-toggle:hover .theme-toggle__icon {
     transform: rotate(12deg) scale(1.1);
 }
-
-.theme-toggle--dark .theme-toggle__icon {
-    color: #ffd700; /* Gold color for sun icon */
-}
-
-.theme-toggle--light .theme-toggle__icon {
-    color: #f0f0f0; /* Light color for moon icon */
-}
-
 /* Focus state for accessibility */
 .theme-toggle:focus {
     outline: 2px solid #60a5fa;
@@ -97,4 +88,25 @@
     .theme-toggle::after {
         transition: none;
     }
+}
+.theme-toggle svg {
+    width: 20px !important;
+    height: 20px !important;
+    stroke-width: 2px !important;
+    stroke-linecap: round !important;
+    stroke-linejoin: round !important;
+    fill: none !important;
+    display: block !important;
+    z-index: 10 !important;
+    position: relative !important;
+}
+
+.theme-toggle--dark .theme-toggle__icon {
+    stroke: #ffd700 !important;
+    color: #ffd700 !important;
+}
+
+.theme-toggle--light .theme-toggle__icon {
+    stroke: #f0f0f0 !important;
+    color: #f0f0f0 !important;
 }

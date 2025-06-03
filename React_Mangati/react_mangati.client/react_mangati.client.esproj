@@ -11,5 +11,9 @@
   <ItemGroup>
     <Folder Include="src\components\Layout\Navigation\" />
     <Folder Include="src\components\ThemeToggle\" />
+    <Folder Include="src\pages\Viewer\components\NavigationControls\" />
+    <Folder Include="src\pages\Viewer\components\ViewingModes\" />
+    <Folder Include="src\pages\Viewer\components\Toolbar\" />
+    <Folder Include="src\pages\Viewer\hooks\" />
   </ItemGroup>
 </Project>

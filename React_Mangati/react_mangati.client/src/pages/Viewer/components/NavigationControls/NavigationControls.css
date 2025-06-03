@@ -1,0 +1,105 @@
+/* src/pages/Viewer/components/NavigationControls/NavigationControls.css */
+/* Navigation Arrows */
+.nav-arrow {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 100px;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(51, 65, 85, 0.9));
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    color: #e2e8f0;
+    cursor: pointer;
+    z-index: 998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    user-select: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+    .nav-arrow svg {
+        width: 24px;
+        height: 24px;
+    }
+
+.nav-arrow--left {
+    left: 20px;
+}
+
+.nav-arrow--right {
+    right: 20px;
+}
+
+.nav-arrow--top {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 60px;
+}
+
+.nav-arrow--bottom {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 60px;
+}
+
+.nav-arrow:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(96, 165, 250, 0.9));
+    border-color: rgba(96, 165, 250, 0.4);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+}
+
+.nav-arrow--top:hover:not(:disabled),
+.nav-arrow--bottom:hover:not(:disabled) {
+    transform: translateX(-50%) scale(1.05);
+}
+
+.nav-arrow:active:not(:disabled) {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.nav-arrow--top:active:not(:disabled),
+.nav-arrow--bottom:active:not(:disabled) {
+    transform: translateX(-50%) scale(0.95);
+}
+
+.nav-arrow:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+    .nav-arrow {
+        width: 50px;
+        height: 80px;
+        border-radius: 8px;
+    }
+
+    .nav-arrow--left {
+        left: 10px;
+    }
+
+    .nav-arrow--right {
+        right: 10px;
+    }
+
+    .nav-arrow--top,
+    .nav-arrow--bottom {
+        width: 80px;
+        height: 50px;
+    }
+
+    .nav-arrow svg {
+        width: 20px;
+        height: 20px;
+    }
+}

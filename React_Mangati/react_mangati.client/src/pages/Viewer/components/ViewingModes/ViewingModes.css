@@ -1,0 +1,258 @@
+/* src/pages/Viewer/components/ViewingModes/ViewingModes.css */
+/* Common Viewer Mode Styles */
+.viewer-mode {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Horizontal Mode */
+.horizontal-mode {
+    padding: 2rem;
+    max-height: calc(100vh - 124px);
+}
+
+    .horizontal-mode .page-container {
+        max-width: 100%;
+        max-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease;
+        transform-origin: center;
+    }
+
+/* Vertical Mode */
+.vertical-mode {
+    flex-direction: column;
+    padding: 2rem;
+    max-height: calc(100vh - 124px);
+}
+
+    .vertical-mode .page-container {
+        max-width: 100%;
+        max-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease;
+        transform-origin: center;
+    }
+
+/* Infinite Mode */
+.infinite-mode {
+    width: 100%;
+    padding: 1rem 0;
+}
+
+.infinite-scroll-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    transition: transform 0.3s ease;
+    transform-origin: center top;
+}
+
+.page-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0;
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+    .page-wrapper:nth-child(odd) {
+        animation-delay: 0.1s;
+    }
+
+    .page-wrapper:nth-child(even) {
+        animation-delay: 0.2s;
+    }
+
+.page-number {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Page Display */
+.manga-page {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    background: #000;
+    transition: all 0.3s ease;
+}
+
+.manga-page--loading {
+    opacity: 0;
+}
+
+.manga-page--loaded {
+    opacity: 1;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.manga-page:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Placeholder styles for lazy loading */
+.manga-page-placeholder {
+    width: 100%;
+    min-height: 300px;
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    color: #cbd5e1;
+    position: relative;
+    overflow: hidden;
+}
+
+.manga-page-placeholder--light {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    opacity: 0.6;
+    min-height: 200px;
+    height: 40vh;
+}
+
+.manga-page-placeholder--error {
+    background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+    color: #fecaca;
+}
+
+.placeholder-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(203, 213, 225, 0.2);
+    border-top-color: #60a5fa;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.placeholder-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: inherit;
+    text-align: center;
+    padding: 0 1rem;
+}
+
+.placeholder-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.placeholder-retry {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .placeholder-retry:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .placeholder-retry:active {
+        transform: translateY(0);
+    }
+
+/* Loading shimmer effect */
+.manga-page-placeholder::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient( 90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.05) 20%, rgba(255, 255, 255, 0.1) 60%, rgba(255, 255, 255, 0) );
+    animation: shimmer 2s infinite;
+}
+
+.manga-page-placeholder--light::after {
+    animation: shimmer 3s infinite;
+}
+
+.manga-page-placeholder--error::after {
+    display: none;
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .horizontal-mode,
+    .vertical-mode {
+        padding: 1rem;
+    }
+
+    .infinite-scroll-container {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .infinite-scroll-container {
+        padding: 0 0.5rem;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
