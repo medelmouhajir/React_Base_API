@@ -1,6 +1,6 @@
 // File: src/components/ProtectedRoute.jsx
 import { useAuth } from '../contexts/AuthContext';
-import AuthPage from '../pages/auth/Login';
+import AuthPage from '../pages/Auth/Login';
 
 const ProtectedRoute = ({
     children,
