@@ -1,5 +1,5 @@
 // src/components/navigation/Sidebar.jsx
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';

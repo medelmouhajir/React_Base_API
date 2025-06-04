@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../contexts/ThemeContext';
-import '../ui/ui.css';
+import './ui.css';
 
 const SearchBar = ({ className = '' }) => {
     const [searchTerm, setSearchTerm] = useState('');

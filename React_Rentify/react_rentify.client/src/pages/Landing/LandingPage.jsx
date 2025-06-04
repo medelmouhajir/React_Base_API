@@ -1,128 +1,311 @@
-﻿// src/pages/LandingPage.jsx
-import { useNavigate } from 'react-router-dom';
+﻿// src/pages/Landing/LandingPage.jsx
+import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../contexts/ThemeContext';
-
-// Feature icons
-const features = [
-    {
-        id: 'fleet',
-        icon: (
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 4h-4a2 2 0 00-2 2v12a2 2 0 002 2h4a2 2 0 002-2V6a2 2 0 00-2-2zm0 0H5a2 2 0 00-2 2v12a2 2 0 002 2h4a2 2 0 002-2V6a2 2 0 00-2-2z"></path>
-            </svg>
-        )
-    },
-    {
-        id: 'reservations',
-        icon: (
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-        )
-    },
-    {
-        id: 'customers',
-        icon: (
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-            </svg>
-        )
-    },
-    {
-        id: 'gps',
-        icon: (
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-        )
-    },
-    {
-        id: 'reports',
-        icon: (
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-        )
-    },
-    {
-        id: 'maintenance',
-        icon: (
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-        )
-    }
-];
-
-// Pricing tiers
-const pricingTiers = [
-    {
-        id: 'basic',
-        price: 299,
-        features: ['basic.feature1', 'basic.feature2', 'basic.feature3', 'basic.feature4']
-    },
-    {
-        id: 'pro',
-        price: 599,
-        features: ['pro.feature1', 'pro.feature2', 'pro.feature3', 'pro.feature4', 'pro.feature5', 'pro.feature6']
-    },
-    {
-        id: 'enterprise',
-        price: 999,
-        features: ['enterprise.feature1', 'enterprise.feature2', 'enterprise.feature3', 'enterprise.feature4', 'enterprise.feature5', 'enterprise.feature6', 'enterprise.feature7']
-    }
-];
+import './LandingPage.css';
 
 const LandingPage = () => {
     const { t } = useTranslation();
     const { isDarkMode } = useTheme();
-    const navigate = useNavigate();
+    const [activeFeature, setActiveFeature] = useState(0);
+    const heroRef = useRef(null);
+    const featuresRef = useRef(null);
+    const benefitsRef = useRef(null);
+    const pricingRef = useRef(null);
+    const contactRef = useRef(null);
+
+    // Animation on scroll
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+
+        document.querySelectorAll('.animate-on-scroll').forEach((el) => {
+            observer.observe(el);
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
+    // Feature carousel
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setActiveFeature((prev) => (prev + 1) % features.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Scroll to section when hash changes
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash;
+            if (hash === '#features' && featuresRef.current) {
+                featuresRef.current.scrollIntoView({ behavior: 'smooth' });
+            } else if (hash === '#benefits' && benefitsRef.current) {
+                benefitsRef.current.scrollIntoView({ behavior: 'smooth' });
+            } else if (hash === '#pricing' && pricingRef.current) {
+                pricingRef.current.scrollIntoView({ behavior: 'smooth' });
+            } else if (hash === '#contact' && contactRef.current) {
+                contactRef.current.scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+
+        window.addEventListener('hashchange', handleHashChange);
+        // Handle initial hash on page load
+        if (window.location.hash) {
+            setTimeout(handleHashChange, 500);
+        }
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
+    // Mock data for features
+    const features = [
+        {
+            id: 1,
+            title: t('landing.featureFleetTitle'),
+            description: t('landing.featureFleetDesc'),
+            icon: (
+                <svg className="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            ),
+        },
+        {
+            id: 2,
+            title: t('landing.featureGpsTitle'),
+            description: t('landing.featureGpsDesc'),
+            icon: (
+                <svg className="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+            ),
+        },
+        {
+            id: 3,
+            title: t('landing.featureCustomerTitle'),
+            description: t('landing.featureCustomerDesc'),
+            icon: (
+                <svg className="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            ),
+        },
+        {
+            id: 4,
+            title: t('landing.featureReportsTitle'),
+            description: t('landing.featureReportsDesc'),
+            icon: (
+                <svg className="feature-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+            ),
+        },
+    ];
+
+    // Mock data for benefits
+    const benefits = [
+        {
+            id: 1,
+            title: t('landing.benefitTimeTitle'),
+            description: t('landing.benefitTimeDesc'),
+            icon: (
+                <svg className="benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            ),
+        },
+        {
+            id: 2,
+            title: t('landing.benefitCostTitle'),
+            description: t('landing.benefitCostDesc'),
+            icon: (
+                <svg className="benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            ),
+        },
+        {
+            id: 3,
+            title: t('landing.benefitInsightsTitle'),
+            description: t('landing.benefitInsightsDesc'),
+            icon: (
+                <svg className="benefit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+            ),
+        },
+    ];
+
+    // Mock data for pricing plans
+    const pricingPlans = [
+        {
+            id: 'basic',
+            name: t('landing.pricingBasicName'),
+            price: '99',
+            currency: t('landing.pricingCurrency'),
+            period: t('landing.pricingPeriod'),
+            description: t('landing.pricingBasicDesc'),
+            features: [
+                t('landing.pricingBasicFeature1'),
+                t('landing.pricingBasicFeature2'),
+                t('landing.pricingBasicFeature3'),
+                t('landing.pricingBasicFeature4'),
+            ],
+            cta: t('landing.pricingBasicCta'),
+            popular: false,
+        },
+        {
+            id: 'pro',
+            name: t('landing.pricingProName'),
+            price: '199',
+            currency: t('landing.pricingCurrency'),
+            period: t('landing.pricingPeriod'),
+            description: t('landing.pricingProDesc'),
+            features: [
+                t('landing.pricingProFeature1'),
+                t('landing.pricingProFeature2'),
+                t('landing.pricingProFeature3'),
+                t('landing.pricingProFeature4'),
+                t('landing.pricingProFeature5'),
+            ],
+            cta: t('landing.pricingProCta'),
+            popular: true,
+        },
+        {
+            id: 'enterprise',
+            name: t('landing.pricingEnterpriseName'),
+            price: '399',
+            currency: t('landing.pricingCurrency'),
+            period: t('landing.pricingPeriod'),
+            description: t('landing.pricingEnterpriseDesc'),
+            features: [
+                t('landing.pricingEnterpriseFeature1'),
+                t('landing.pricingEnterpriseFeature2'),
+                t('landing.pricingEnterpriseFeature3'),
+                t('landing.pricingEnterpriseFeature4'),
+                t('landing.pricingEnterpriseFeature5'),
+                t('landing.pricingEnterpriseFeature6'),
+            ],
+            cta: t('landing.pricingEnterpriseCta'),
+            popular: false,
+        },
+    ];
 
     return (
-        <div className="space-y-20">
-            {/* Hero section */}
-            <section className="relative overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-                    <div className="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
-                        <div className="sm:text-center lg:text-left">
-                            <h1 className="text-4xl tracking-tight font-extrabold sm:text-5xl md:text-6xl">
-                                <span className="block">{t('landing.hero.title1')}</span>
-                                <span className="block text-primary-600">{t('landing.hero.title2')}</span>
-                            </h1>
-                            <p className={`mt-3 text-base sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto lg:mx-0 md:text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                {t('landing.hero.description')}
-                            </p>
-                            <div className="mt-8 sm:mt-10 sm:flex sm:justify-center lg:justify-start">
-                                <div className="rounded-md shadow">
-                                    <a
-                                        href="/register"
-                                        className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 md:py-4 md:text-lg md:px-10"
-                                    >
-                                        {t('landing.hero.cta')}
-                                    </a>
-                                </div>
-                                <div className="mt-3 sm:mt-0 sm:ml-3">
-                                    <a
-                                        href="#features"
-                                        className={`w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md ${isDarkMode
-                                                ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                            } md:py-4 md:text-lg md:px-10`}
-                                    >
-                                        {t('landing.hero.learnMore')}
-                                    </a>
-                                </div>
-                            </div>
+        <div className="landing-page">
+            {/* Hero Section */}
+            <section className="hero-section" ref={heroRef}>
+                <div className="hero-content">
+                    <h1 className="hero-title animate-on-scroll">{t('landing.heroTitle')}</h1>
+                    <p className="hero-subtitle animate-on-scroll">{t('landing.heroSubtitle')}</p>
+                    <div className="hero-cta animate-on-scroll">
+                        <Link to="/register" className="cta-button primary">
+                            {t('landing.heroCta')}
+                        </Link>
+                        <a href="#features" className="cta-button secondary">
+                            {t('landing.heroLearnMore')}
+                        </a>
+                    </div>
+                </div>
+                <div className="hero-image animate-on-scroll">
+                    <div className="hero-image-container">
+                        <img
+                            src="/assets/dashboard-preview.png"
+                            alt="Rentify Dashboard Preview"
+                            className="dashboard-preview"
+                        />
+                        <div className="blob-shape"></div>
+                    </div>
+                </div>
+                <div className="hero-scroll-indicator">
+                    <a href="#features">
+                        <span className="scroll-text">{t('landing.scrollDown')}</span>
+                        <span className="scroll-arrow">↓</span>
+                    </a>
+                </div>
+            </section>
+
+            {/* Trusted by companies */}
+            <section className="trusted-section">
+                <h3 className="trusted-title animate-on-scroll">{t('landing.trustedBy')}</h3>
+                <div className="trusted-logos">
+                    <div className="trusted-logo animate-on-scroll">
+                        <svg className="company-logo" width="120" height="40" viewBox="0 0 120 40">
+                            <path d="M20 10h80v20H20z" fill="none" stroke="currentColor" strokeWidth="2" />
+                            <text x="60" y="25" textAnchor="middle" fontSize="12" fill="currentColor">Company A</text>
+                        </svg>
+                    </div>
+                    <div className="trusted-logo animate-on-scroll">
+                        <svg className="company-logo" width="120" height="40" viewBox="0 0 120 40">
+                            <path d="M20 10h80v20H20z" fill="none" stroke="currentColor" strokeWidth="2" />
+                            <text x="60" y="25" textAnchor="middle" fontSize="12" fill="currentColor">Company B</text>
+                        </svg>
+                    </div>
+                    <div className="trusted-logo animate-on-scroll">
+                        <svg className="company-logo" width="120" height="40" viewBox="0 0 120 40">
+                            <path d="M20 10h80v20H20z" fill="none" stroke="currentColor" strokeWidth="2" />
+                            <text x="60" y="25" textAnchor="middle" fontSize="12" fill="currentColor">Company C</text>
+                        </svg>
+                    </div>
+                    <div className="trusted-logo animate-on-scroll">
+                        <svg className="company-logo" width="120" height="40" viewBox="0 0 120 40">
+                            <path d="M20 10h80v20H20z" fill="none" stroke="currentColor" strokeWidth="2" />
+                            <text x="60" y="25" textAnchor="middle" fontSize="12" fill="currentColor">Company D</text>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            {/* Features Section */}
+            <section className="features-section" id="features" ref={featuresRef}>
+                <div className="section-header animate-on-scroll">
+                    <h2 className="section-title">{t('landing.featuresTitle')}</h2>
+                    <p className="section-description">{t('landing.featuresDescription')}</p>
+                </div>
+
+                <div className="features-container">
+                    <div className="features-tabs">
+                        {features.map((feature, index) => (
+                            <button
+                                key={feature.id}
+                                className={`feature-tab animate-on-scroll ${activeFeature === index ? 'active' : ''}`}
+                                onClick={() => setActiveFeature(index)}
+                            >
+                                {feature.icon}
+                                <span>{feature.title}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="feature-details animate-on-scroll">
+                        <div className="feature-content">
+                            <h3 className="feature-title">{features[activeFeature].title}</h3>
+                            <p className="feature-description">{features[activeFeature].description}</p>
+                            <Link to="/register" className="feature-cta">
+                                {t('landing.featuresCta')}
+                                <svg className="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </Link>
                         </div>
-                        <div className="mt-12 sm:mt-16 lg:mt-0 lg:relative">
-                            <div className="sm:max-w-md sm:mx-auto lg:max-w-none">
+                        <div className="feature-showcase">
+                            <div className={`feature-image feature-image-${activeFeature}`}>
                                 <img
-                                    className="w-full rounded-lg shadow-xl"
-                                    src="/dashboard-preview.png"
-                                    alt="Dashboard preview"
+                                    src={`/assets/feature-${activeFeature + 1}.png`}
+                                    alt={features[activeFeature].title}
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = '/assets/feature-placeholder.png';
+                                    }}
                                 />
                             </div>
                         </div>
@@ -130,263 +313,230 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* Features section */}
-            <section id="features" className={`py-12 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-extrabold sm:text-4xl">
-                            {t('landing.features.title')}
-                        </h2>
-                        <p className={`mt-3 max-w-2xl mx-auto text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                            {t('landing.features.subtitle')}
-                        </p>
-                    </div>
+            {/* Benefits Section */}
+            <section className="benefits-section" id="benefits" ref={benefitsRef}>
+                <div className="section-header animate-on-scroll">
+                    <h2 className="section-title">{t('landing.benefitsTitle')}</h2>
+                    <p className="section-description">{t('landing.benefitsDescription')}</p>
+                </div>
 
-                    <div className="mt-12">
-                        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                            {features.map((feature) => (
-                                <div key={feature.id} className={`pt-6 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-lg overflow-hidden`}>
-                                    <div className="px-6">
-                                        <div className={`${isDarkMode ? 'text-primary-400' : 'text-primary-600'}`}>
-                                            {feature.icon}
-                                        </div>
-                                        <h3 className="mt-4 text-lg font-medium">{t(`landing.features.${feature.id}.title`)}</h3>
-                                        <p className={`mt-2 text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                            {t(`landing.features.${feature.id}.description`)}
-                                        </p>
-                                    </div>
-                                    <div className="px-6 pt-4 pb-6">
-                                        <a
-                                            href={`#${feature.id}`}
-                                            className={`text-base font-medium ${isDarkMode ? 'text-primary-400' : 'text-primary-600'} hover:underline`}
-                                        >
-                                            {t('landing.features.learnMore')} →
-                                        </a>
-                                    </div>
-                                </div>
-                            ))}
+                <div className="benefits-container">
+                    {benefits.map((benefit) => (
+                        <div key={benefit.id} className="benefit-card animate-on-scroll">
+                            <div className="benefit-icon-container">{benefit.icon}</div>
+                            <h3 className="benefit-title">{benefit.title}</h3>
+                            <p className="benefit-description">{benefit.description}</p>
                         </div>
-                    </div>
+                    ))}
+                </div>
+
+                <div className="benefits-cta animate-on-scroll">
+                    <Link to="/register" className="cta-button primary">
+                        {t('landing.benefitsCta')}
+                    </Link>
                 </div>
             </section>
 
-            {/* Benefits section */}
-            <section id="benefits" className="py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-extrabold sm:text-4xl">
-                            {t('landing.benefits.title')}
-                        </h2>
-                        <p className={`mt-3 max-w-2xl mx-auto text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                            {t('landing.benefits.subtitle')}
-                        </p>
+            {/* Testimonials Section */}
+            <section className="testimonials-section">
+                <div className="section-header animate-on-scroll">
+                    <h2 className="section-title">{t('landing.testimonialsTitle')}</h2>
+                    <p className="section-description">{t('landing.testimonialsDescription')}</p>
+                </div>
+
+                <div className="testimonials-container animate-on-scroll">
+                    <div className="testimonial-card">
+                        <div className="testimonial-rating">★★★★★</div>
+                        <p className="testimonial-text">{t('landing.testimonial1')}</p>
+                        <div className="testimonial-author">
+                            <img
+                                src="/assets/testimonial-1.jpg"
+                                alt="Testimonial Author"
+                                className="testimonial-avatar"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/assets/avatar-placeholder.png';
+                                }}
+                            />
+                            <div className="testimonial-info">
+                                <h4 className="testimonial-name">Ahmed Hassan</h4>
+                                <p className="testimonial-role">{t('landing.testimonialRole1')}</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="mt-16">
-                        <div className="lg:grid lg:grid-cols-3 lg:gap-8">
-                            <div>
-                                <div className={`flex items-center justify-center h-12 w-12 rounded-md ${isDarkMode ? 'bg-primary-800 text-primary-300' : 'bg-primary-500 text-white'}`}>
-                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </div>
-                                <div className="mt-5">
-                                    <h3 className="text-lg font-medium">{t('landing.benefits.timeTitle')}</h3>
-                                    <p className={`mt-2 text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                        {t('landing.benefits.timeDescription')}
-                                    </p>
-                                </div>
+                    <div className="testimonial-card">
+                        <div className="testimonial-rating">★★★★★</div>
+                        <p className="testimonial-text">{t('landing.testimonial2')}</p>
+                        <div className="testimonial-author">
+                            <img
+                                src="/assets/testimonial-2.jpg"
+                                alt="Testimonial Author"
+                                className="testimonial-avatar"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/assets/avatar-placeholder.png';
+                                }}
+                            />
+                            <div className="testimonial-info">
+                                <h4 className="testimonial-name">Fatima Zahra</h4>
+                                <p className="testimonial-role">{t('landing.testimonialRole2')}</p>
                             </div>
+                        </div>
+                    </div>
 
-                            <div className="mt-10 lg:mt-0">
-                                <div className={`flex items-center justify-center h-12 w-12 rounded-md ${isDarkMode ? 'bg-primary-800 text-primary-300' : 'bg-primary-500 text-white'}`}>
-                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                    </svg>
-                                </div>
-                                <div className="mt-5">
-                                    <h3 className="text-lg font-medium">{t('landing.benefits.moneyTitle')}</h3>
-                                    <p className={`mt-2 text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                        {t('landing.benefits.moneyDescription')}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="mt-10 lg:mt-0">
-                                <div className={`flex items-center justify-center h-12 w-12 rounded-md ${isDarkMode ? 'bg-primary-800 text-primary-300' : 'bg-primary-500 text-white'}`}>
-                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                    </svg>
-                                </div>
-                                <div className="mt-5">
-                                    <h3 className="text-lg font-medium">{t('landing.benefits.securityTitle')}</h3>
-                                    <p className={`mt-2 text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                        {t('landing.benefits.securityDescription')}
-                                    </p>
-                                </div>
+                    <div className="testimonial-card">
+                        <div className="testimonial-rating">★★★★★</div>
+                        <p className="testimonial-text">{t('landing.testimonial3')}</p>
+                        <div className="testimonial-author">
+                            <img
+                                src="/assets/testimonial-3.jpg"
+                                alt="Testimonial Author"
+                                className="testimonial-avatar"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/assets/avatar-placeholder.png';
+                                }}
+                            />
+                            <div className="testimonial-info">
+                                <h4 className="testimonial-name">Karim Benali</h4>
+                                <p className="testimonial-role">{t('landing.testimonialRole3')}</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Pricing section */}
-            <section id="pricing" className={`py-12 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-extrabold sm:text-4xl">
-                            {t('landing.pricing.title')}
-                        </h2>
-                        <p className={`mt-3 max-w-2xl mx-auto text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                            {t('landing.pricing.subtitle')}
-                        </p>
-                    </div>
+            {/* Pricing Section */}
+            <section className="pricing-section" id="pricing" ref={pricingRef}>
+                <div className="section-header animate-on-scroll">
+                    <h2 className="section-title">{t('landing.pricingTitle')}</h2>
+                    <p className="section-description">{t('landing.pricingDescription')}</p>
+                </div>
 
-                    <div className="mt-12 space-y-4 sm:mt-16 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:grid-cols-3">
-                        {pricingTiers.map((tier) => (
-                            <div
-                                key={tier.id}
-                                className={`${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-lg divide-y ${isDarkMode ? 'divide-gray-600' : 'divide-gray-200'}`}
+                <div className="pricing-container">
+                    {pricingPlans.map((plan) => (
+                        <div
+                            key={plan.id}
+                            className={`pricing-card animate-on-scroll ${plan.popular ? 'popular' : ''}`}
+                        >
+                            {plan.popular && (
+                                <div className="pricing-popular-badge">{t('landing.pricingPopular')}</div>
+                            )}
+                            <h3 className="pricing-name">{plan.name}</h3>
+                            <div className="pricing-price">
+                                <span className="currency">{plan.currency}</span>
+                                <span className="amount">{plan.price}</span>
+                                <span className="period">/{plan.period}</span>
+                            </div>
+                            <p className="pricing-description">{plan.description}</p>
+                            <ul className="pricing-features">
+                                {plan.features.map((feature, index) => (
+                                    <li key={index} className="pricing-feature">
+                                        <svg className="feature-check" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        {feature}
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link
+                                to="/register"
+                                className={`pricing-cta ${plan.popular ? 'primary' : 'secondary'}`}
                             >
-                                <div className="p-6">
-                                    <h2 className="text-2xl font-medium">{t(`landing.pricing.${tier.id}.title`)}</h2>
-                                    <p className={`mt-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                        {t(`landing.pricing.${tier.id}.description`)}
-                                    </p>
-                                    <p className="mt-8">
-                                        <span className="text-4xl font-extrabold">{tier.price}</span>
-                                        <span className={`ml-1 text-xl font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                            MAD
-                                        </span>
-                                        <span className={`ml-1 text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                            /{t('landing.pricing.perMonth')}
-                                        </span>
-                                    </p>
-                                    <a
-                                        href="/register"
-                                        className={`mt-8 block w-full py-3 px-6 border border-transparent rounded-md text-center font-medium ${tier.id === 'pro'
-                                                ? 'text-white bg-primary-600 hover:bg-primary-700'
-                                                : isDarkMode
-                                                    ? 'bg-gray-600 text-white hover:bg-gray-500'
-                                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                            }`}
-                                    >
-                                        {t('landing.pricing.getStarted')}
-                                    </a>
-                                </div>
-                                <div className="pt-6 pb-8 px-6">
-                                    <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                                        {t('landing.pricing.includes')}
-                                    </h3>
-                                    <ul className="mt-6 space-y-4">
-                                        {tier.features.map((feature, index) => (
-                                            <li key={index} className="flex">
-                                                <svg className="flex-shrink-0 h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                                                </svg>
-                                                <span className={`ml-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                                                    {t(`landing.pricing.${feature}`)}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        ))}
+                                {plan.cta}
+                            </Link>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="pricing-note animate-on-scroll">
+                    <p>{t('landing.pricingNote')}</p>
+                </div>
+            </section>
+
+            {/* Call to Action Section */}
+            <section className="cta-section">
+                <div className="cta-container animate-on-scroll">
+                    <h2 className="cta-title">{t('landing.ctaTitle')}</h2>
+                    <p className="cta-description">{t('landing.ctaDescription')}</p>
+                    <div className="cta-buttons">
+                        <Link to="/register" className="cta-button primary">
+                            {t('landing.ctaButtonPrimary')}
+                        </Link>
+                        <Link to="/login" className="cta-button secondary">
+                            {t('landing.ctaButtonSecondary')}
+                        </Link>
                     </div>
                 </div>
             </section>
 
-            {/* Contact section */}
-            <section id="contact" className="py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-extrabold sm:text-4xl">
-                            {t('landing.contact.title')}
-                        </h2>
-                        <p className={`mt-3 max-w-2xl mx-auto text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                            {t('landing.contact.subtitle')}
-                        </p>
+            {/* Contact Section */}
+            <section className="contact-section" id="contact" ref={contactRef}>
+                <div className="section-header animate-on-scroll">
+                    <h2 className="section-title">{t('landing.contactTitle')}</h2>
+                    <p className="section-description">{t('landing.contactDescription')}</p>
+                </div>
+
+                <div className="contact-container">
+                    <div className="contact-form-container animate-on-scroll">
+                        <form className="contact-form">
+                            <div className="form-group">
+                                <label htmlFor="name">{t('landing.contactName')}</label>
+                                <input type="text" id="name" name="name" required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="email">{t('landing.contactEmail')}</label>
+                                <input type="email" id="email" name="email" required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="subject">{t('landing.contactSubject')}</label>
+                                <input type="text" id="subject" name="subject" required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="message">{t('landing.contactMessage')}</label>
+                                <textarea id="message" name="message" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" className="contact-submit">
+                                {t('landing.contactSubmit')}
+                            </button>
+                        </form>
                     </div>
 
-                    <div className="mt-12 max-w-lg mx-auto">
-                        <form className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8">
-                            <div>
-                                <label htmlFor="firstName" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                    {t('landing.contact.firstName')}
-                                </label>
-                                <div className="mt-1">
-                                    <input
-                                        type="text"
-                                        name="firstName"
-                                        id="firstName"
-                                        autoComplete="given-name"
-                                        className={`py-3 px-4 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 ${isDarkMode
-                                                ? 'bg-gray-700 border-gray-600 text-white'
-                                                : 'bg-white border-gray-300 text-gray-900'
-                                            } rounded-md`}
-                                    />
-                                </div>
+                    <div className="contact-info animate-on-scroll">
+                        <div className="contact-card">
+                            <div className="contact-card-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
                             </div>
-                            <div>
-                                <label htmlFor="lastName" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                    {t('landing.contact.lastName')}
-                                </label>
-                                <div className="mt-1">
-                                    <input
-                                        type="text"
-                                        name="lastName"
-                                        id="lastName"
-                                        autoComplete="family-name"
-                                        className={`py-3 px-4 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 ${isDarkMode
-                                                ? 'bg-gray-700 border-gray-600 text-white'
-                                                : 'bg-white border-gray-300 text-gray-900'
-                                            } rounded-md`}
-                                    />
-                                </div>
+                            <h3 className="contact-card-title">{t('landing.contactPhoneTitle')}</h3>
+                            <p className="contact-card-text">+212 522 123 456</p>
+                            <p className="contact-card-text">+212 661 789 012</p>
+                        </div>
+
+                        <div className="contact-card">
+                            <div className="contact-card-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
                             </div>
-                            <div className="sm:col-span-2">
-                                <label htmlFor="email" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                    {t('landing.contact.email')}
-                                </label>
-                                <div className="mt-1">
-                                    <input
-                                        id="email"
-                                        name="email"
-                                        type="email"
-                                        autoComplete="email"
-                                        className={`py-3 px-4 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 ${isDarkMode
-                                                ? 'bg-gray-700 border-gray-600 text-white'
-                                                : 'bg-white border-gray-300 text-gray-900'
-                                            } rounded-md`}
-                                    />
-                                </div>
+                            <h3 className="contact-card-title">{t('landing.contactEmailTitle')}</h3>
+                            <p className="contact-card-text">info@rentify.ma</p>
+                            <p className="contact-card-text">support@rentify.ma</p>
+                        </div>
+
+                        <div className="contact-card">
+                            <div className="contact-card-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
                             </div>
-                            <div className="sm:col-span-2">
-                                <label htmlFor="message" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                    {t('landing.contact.message')}
-                                </label>
-                                <div className="mt-1">
-                                    <textarea
-                                        id="message"
-                                        name="message"
-                                        rows="4"
-                                        className={`py-3 px-4 block w-full shadow-sm focus:ring-primary-500 focus:border-primary-500 ${isDarkMode
-                                                ? 'bg-gray-700 border-gray-600 text-white'
-                                                : 'bg-white border-gray-300 text-gray-900'
-                                            } rounded-md`}
-                                    ></textarea>
-                                </div>
-                            </div>
-                            <div className="sm:col-span-2">
-                                <button
-                                    type="submit"
-                                    className="w-full inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                                >
-                                    {t('landing.contact.send')}
-                                </button>
-                            </div>
-                        </form>
+                            <h3 className="contact-card-title">{t('landing.contactAddressTitle')}</h3>
+                            <p className="contact-card-text">{t('landing.contactAddressLine1')}</p>
+                            <p className="contact-card-text">{t('landing.contactAddressLine2')}</p>
+                        </div>
                     </div>
                 </div>
             </section>
