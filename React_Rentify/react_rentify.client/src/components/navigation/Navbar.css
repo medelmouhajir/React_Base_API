@@ -1,0 +1,207 @@
+/* src/components/navigation/Navbar.css */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+/* Adds shadow when scrolling */
+.navbar-scrolled {
+    box-shadow: var(--shadow-md);
+}
+
+/* Navbar Container */
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    height: 4rem;
+}
+
+/* Left Section */
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+/* Hamburger Button Animation */
+.hamburger-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 1.5rem;
+    height: 1.25rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.hamburger-line {
+    width: 100%;
+    height: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.hamburger-active .hamburger-line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger-active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-active .hamburger-line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Search Bar */
+.navbar-search {
+    position: relative;
+    flex-grow: 1;
+    max-width: 32rem;
+    margin: 0 1rem;
+}
+
+@media (max-width: 768px) {
+    .navbar-search {
+        display: none;
+    }
+}
+
+/* User Menu */
+.navbar-user-menu {
+    position: relative;
+}
+
+.user-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .user-avatar:hover {
+        opacity: 0.9;
+        transform: scale(1.05);
+    }
+
+.user-menu-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
+    width: 15rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+    transition: all 0.2s ease;
+    transform-origin: top right;
+}
+
+.user-menu-enter {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.user-menu-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+.user-menu-exit {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.user-menu-exit-active {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+/* Notification Bell */
+.notification-bell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .notification-bell:hover {
+        transform: scale(1.05);
+    }
+
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    height: 1.25rem;
+    min-width: 1.25rem;
+    border-radius: 9999px;
+    background-color: var(--color-error);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25rem;
+}
+
+/* Action Buttons */
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+}
+
+    .navbar-action-button:hover {
+        background-color: rgba(209, 213, 219, 0.2);
+    }
+
+.dark .navbar-action-button:hover {
+    background-color: rgba(55, 65, 81, 0.5);
+}
+
+/* Mobile Navigation */
+@media (max-width: 640px) {
+    .navbar-container {
+        padding: 0.5rem;
+    }
+
+    .navbar-logo-text {
+        display: none;
+    }
+
+    .navbar-actions {
+        gap: 0.25rem;
+    }
+
+    .navbar-action-button {
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+}

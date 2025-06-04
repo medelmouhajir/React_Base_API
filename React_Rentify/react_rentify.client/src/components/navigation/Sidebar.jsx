@@ -4,8 +4,10 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useHammer } from '../../contexts/HammerContext';
+import './Sidebar.css';
 
-// Icons for menu items
+// Menu item icons using SVG for better customization
 const icons = {
     dashboard: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -14,7 +16,8 @@ const icons = {
     ),
     cars: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 4h-4a2 2 0 00-2 2v12a2 2 0 002 2h4a2 2 0 002-2V6a2 2 0 00-2-2zm0 0H5a2 2 0 00-2 2v12a2 2 0 002 2h4a2 2 0 002-2V6a2 2 0 00-2-2z"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4.5A2.5 2.5 0 017.5 2H16a2.5 2.5 0 012.5 2.5M5 20a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v13a2 2 0 01-2 2H5z"></path>
         </svg>
     ),
     customers: (
@@ -72,9 +75,23 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
     const { isDarkMode } = useTheme();
     const { t } = useTranslation();
     const location = useLocation();
+    const { attachSwipeHandler } = useHammer();
 
     // Menu items based on user role
     const [menuItems, setMenuItems] = useState([]);
+    const sidebarRef = React.useRef(null);
+
+    // Setup swipe handlers for mobile
+    useEffect(() => {
+        if (isMobile && sidebarRef.current) {
+            // Close sidebar on swipe left
+            const cleanup = attachSwipeHandler(sidebarRef.current, 'left', () => {
+                if (isOpen) toggleSidebar();
+            });
+
+            return cleanup;
+        }
+    }, [isMobile, isOpen, toggleSidebar, attachSwipeHandler]);
 
     // Handle menu items based on user role
     useEffect(() => {
@@ -128,84 +145,80 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
         return location.pathname === path || location.pathname.startsWith(`${path}/`);
     };
 
-    // Render sidebar with transition
+    // Render sidebar with improved classes
     return (
         <>
-            {/* Sidebar for desktop */}
+            {/* Sidebar for desktop and mobile */}
             <aside
+                ref={sidebarRef}
                 id="sidebar"
-                className={`fixed top-0 left-0 z-30 h-screen transition-transform ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-                    } ${isMobile ? 'w-64' : 'w-64 lg:w-20 hover:w-64'
-                    } ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
-                    } border-r ${isDarkMode ? 'border-gray-700' : 'border-gray-200'
-                    } lg:block`}
+                className={`sidebar fixed top-0 left-0 h-screen ${isOpen ? 'sidebar-open' : ''} 
+                    ${isMobile ? 'w-64' : 'lg:w-20 hover:w-64'} 
+                    ${!isOpen && !isMobile ? 'sidebar-collapsed' : ''} 
+                    ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} 
+                    border-r ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}
                 aria-label="Sidebar"
-                style={{ transition: 'width 0.3s ease-in-out, transform 0.3s ease-in-out' }}
             >
-                <div className="h-full flex flex-col justify-between overflow-y-auto">
-                    <div>
-                        {/* Logo and company name */}
-                        <div className={`flex items-center justify-between px-3 py-4 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} border-b`}>
-                            <div className="flex items-center">
-                                <img src="/logo.png" className="h-8 w-8" alt="Rentify Logo" />
-                                <span className={`ml-2 text-xl font-bold transition-opacity duration-200 ${isMobile || isOpen ? 'opacity-100' : 'lg:opacity-0 lg:group-hover:opacity-100'}`}>
-                                    Rentify
-                                </span>
-                            </div>
-                            {isMobile && (
-                                <button
-                                    type="button"
-                                    className="lg:hidden text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-                                    onClick={toggleSidebar}
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
-                            )}
+                <div className="h-full flex flex-col overflow-y-auto">
+                    {/* Logo and company name */}
+                    <div className={`sidebar-logo-container flex items-center justify-between px-3 py-4 
+                        ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} border-b`}>
+                        <div className="flex items-center">
+                            <img src="/logo.png" className="h-8 w-8" alt="Rentify Logo" />
+                            <span className={`sidebar-logo-text ml-2 text-xl font-bold`}>
+                                Rentify
+                            </span>
                         </div>
+                        {isMobile && (
+                            <button
+                                type="button"
+                                className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                                onClick={toggleSidebar}
+                                aria-label="Close sidebar"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        )}
+                    </div>
 
-                        {/* Navigation items */}
+                    {/* Navigation items */}
+                    <nav className="flex-1">
                         <ul className="space-y-1 px-3 py-4">
                             {menuItems.map(item => (
-                                <li key={item.id} className="group">
+                                <li key={item.id}>
                                     <NavLink
                                         to={item.path}
                                         className={({ isActive }) =>
-                                            `flex items-center p-2 rounded-lg ${isActive
-                                                ? `${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-900'}`
-                                                : `${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`
-                                            } transition-colors`
+                                            `sidebar-item flex items-center p-2 rounded-lg ${isActive ? 'active' : ''}`
                                         }
                                     >
                                         <span className="inline-flex items-center justify-center w-6 h-6">
                                             {item.icon}
                                         </span>
-                                        <span
-                                            className={`ml-3 transition-opacity duration-200 ${isMobile || isOpen ? 'opacity-100' : 'lg:opacity-0 lg:group-hover:opacity-100'
-                                                }`}
-                                        >
+                                        <span className="sidebar-item-text ml-3">
                                             {item.label}
                                         </span>
                                     </NavLink>
                                 </li>
                             ))}
                         </ul>
-                    </div>
+                    </nav>
 
                     {/* User info at bottom */}
-                    <div className={`mt-auto px-3 py-4 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} border-t`}>
+                    <div className="sidebar-profile mt-auto">
                         <div className="flex items-center">
                             {user?.picture ? (
-                                <img className="w-8 h-8 rounded-full" src={user.picture} alt="User" />
+                                <img className="sidebar-profile-image" src={user.picture} alt="User" />
                             ) : (
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                                    <span className="text-lg font-medium">
+                                <div className={`sidebar-profile-placeholder ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                                    <span>
                                         {user?.fullName?.charAt(0) || user?.email?.charAt(0) || 'U'}
                                     </span>
                                 </div>
                             )}
-                            <div className={`ml-3 transition-opacity duration-200 ${isMobile || isOpen ? 'opacity-100' : 'lg:opacity-0 lg:group-hover:opacity-100'}`}>
+                            <div className="sidebar-profile-details ml-3">
                                 <p className="text-sm font-medium truncate">{user?.fullName}</p>
                                 <p className="text-xs text-gray-500 truncate">{user?.role}</p>
                             </div>

@@ -4,8 +4,11 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useHammer } from '../contexts/HammerContext';
 import Navbar from '../components/navigation/Navbar';
 import Sidebar from '../components/navigation/Sidebar';
+import Loading from '../components/Loading/Loading';
+import './MainLayout.css';
 
 const MainLayout = () => {
     const { user, loading } = useAuth();
@@ -16,6 +19,31 @@ const MainLayout = () => {
 
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+    const [pageLoading, setPageLoading] = useState(true);
+
+    // Handle swipe gestures for mobile
+    useEffect(() => {
+        // Add swipe event listeners for mobile
+        const handleSwipeRight = () => {
+            if (isMobile && !sidebarOpen) {
+                setSidebarOpen(true);
+            }
+        };
+
+        const handleSwipeLeft = () => {
+            if (isMobile && sidebarOpen) {
+                setSidebarOpen(false);
+            }
+        };
+
+        document.addEventListener('app:swiperight', handleSwipeRight);
+        document.addEventListener('app:swipeleft', handleSwipeLeft);
+
+        return () => {
+            document.removeEventListener('app:swiperight', handleSwipeRight);
+            document.removeEventListener('app:swipeleft', handleSwipeLeft);
+        };
+    }, [isMobile, sidebarOpen]);
 
     // Close sidebar by default on mobile
     useEffect(() => {
@@ -24,6 +52,8 @@ const MainLayout = () => {
             setIsMobile(mobile);
             if (mobile) {
                 setSidebarOpen(false);
+            } else {
+                setSidebarOpen(true);
             }
         };
 
@@ -45,6 +75,14 @@ const MainLayout = () => {
         if (isMobile) {
             setSidebarOpen(false);
         }
+
+        // Simulate page loading effect
+        setPageLoading(true);
+        const timer = setTimeout(() => {
+            setPageLoading(false);
+        }, 500);
+
+        return () => clearTimeout(timer);
     }, [location.pathname, isMobile]);
 
     const toggleSidebar = () => {
@@ -55,7 +93,7 @@ const MainLayout = () => {
     if (loading) {
         return (
             <div className={`flex items-center justify-center h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                <Loading type="pulse" showText={true} text={t('common.loading')} />
             </div>
         );
     }
@@ -66,7 +104,7 @@ const MainLayout = () => {
     }
 
     return (
-        <div className={`flex h-screen overflow-hidden ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+        <div className={`main-layout ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
             {/* Sidebar */}
             <Sidebar
                 isOpen={sidebarOpen}
@@ -75,17 +113,25 @@ const MainLayout = () => {
             />
 
             {/* Main content */}
-            <div className="flex flex-col flex-1 overflow-hidden">
+            <div className={`main-content ${isMobile ? '' : (sidebarOpen ? 'main-content-with-sidebar' : 'main-content-with-collapsed-sidebar')}`}>
                 <Navbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
 
-                <main className="flex-1 overflow-y-auto p-4 md:p-6">
+                <main className="main-content-area">
                     <div className="max-w-7xl mx-auto">
-                        <Outlet />
+                        {pageLoading ? (
+                            <div className="min-h-[70vh] flex items-center justify-center">
+                                <Loading type="dots" showText={false} />
+                            </div>
+                        ) : (
+                            <div className="page-transition-enter page-transition-enter-active">
+                                <Outlet />
+                            </div>
+                        )}
                     </div>
                 </main>
 
                 {/* Footer */}
-                <footer className={`py-4 px-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                <footer className={`main-footer ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                     <div className="text-center text-sm text-gray-500">
                         &copy; {new Date().getFullYear()} Rentify. {t('common.allRightsReserved')}
                     </div>
@@ -93,9 +139,9 @@ const MainLayout = () => {
             </div>
 
             {/* Mobile sidebar overlay */}
-            {isMobile && sidebarOpen && (
+            {isMobile && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-20"
+                    className={`sidebar-overlay ${sidebarOpen ? 'sidebar-overlay-visible' : ''}`}
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
