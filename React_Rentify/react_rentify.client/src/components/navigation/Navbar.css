@@ -1,207 +1,146 @@
 /* src/components/navigation/Navbar.css */
-
 .navbar {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    @apply z-30 sticky top-0 w-full flex items-center h-16 px-4 transition-all duration-300 ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Adds shadow when scrolling */
 .navbar-scrolled {
-    box-shadow: var(--shadow-md);
+    @apply backdrop-blur-md bg-white/90 dark:bg-gray-800/90;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Navbar Container */
 .navbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    height: 4rem;
+    @apply w-full flex items-center justify-between;
 }
 
-/* Left Section */
 .navbar-left {
-    display: flex;
-    align-items: center;
+    @apply flex items-center;
 }
 
-/* Hamburger Button Animation */
-.hamburger-button {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 1.5rem;
-    height: 1.25rem;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 10;
-    transition: all 0.3s ease;
-}
-
-.hamburger-line {
-    width: 100%;
-    height: 2px;
-    transition: all 0.3s ease;
-    transform-origin: center;
-}
-
-.hamburger-active .hamburger-line:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-}
-
-.hamburger-active .hamburger-line:nth-child(2) {
-    opacity: 0;
-}
-
-.hamburger-active .hamburger-line:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-}
-
-/* Search Bar */
 .navbar-search {
-    position: relative;
-    flex-grow: 1;
-    max-width: 32rem;
-    margin: 0 1rem;
+    @apply hidden sm:flex flex-1 px-6 max-w-md lg:max-w-lg;
 }
 
-@media (max-width: 768px) {
-    .navbar-search {
-        display: none;
-    }
-}
-
-/* User Menu */
-.navbar-user-menu {
-    position: relative;
-}
-
-.user-avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 9999px;
-    object-fit: cover;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-    .user-avatar:hover {
-        opacity: 0.9;
-        transform: scale(1.05);
-    }
-
-.user-menu-dropdown {
-    position: absolute;
-    right: 0;
-    top: 100%;
-    margin-top: 0.5rem;
-    width: 15rem;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    z-index: 50;
-    transition: all 0.2s ease;
-    transform-origin: top right;
-}
-
-.user-menu-enter {
-    opacity: 0;
-    transform: scale(0.95);
-}
-
-.user-menu-enter-active {
-    opacity: 1;
-    transform: scale(1);
-    transition: opacity 0.1s ease, transform 0.1s ease;
-}
-
-.user-menu-exit {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.user-menu-exit-active {
-    opacity: 0;
-    transform: scale(0.95);
-    transition: opacity 0.1s ease, transform 0.1s ease;
-}
-
-/* Notification Bell */
-.notification-bell {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-    .notification-bell:hover {
-        transform: scale(1.05);
-    }
-
-.notification-badge {
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    height: 1.25rem;
-    min-width: 1.25rem;
-    border-radius: 9999px;
-    background-color: var(--color-error);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 0.25rem;
-}
-
-/* Action Buttons */
 .navbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    @apply flex items-center space-x-1 md:space-x-2;
 }
 
 .navbar-action-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 9999px;
-    transition: all 0.2s ease;
+    @apply relative p-2.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500;
 }
 
-    .navbar-action-button:hover {
-        background-color: rgba(209, 213, 219, 0.2);
-    }
-
-.dark .navbar-action-button:hover {
-    background-color: rgba(55, 65, 81, 0.5);
+/* Hamburger Menu Button */
+.hamburger-button {
+    @apply p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none;
 }
 
-/* Mobile Navigation */
+.hamburger-line {
+    @apply block h-0.5 w-5 rounded-sm transition-all duration-300 ease-in-out;
+}
+
+.hamburger-button .hamburger-line:nth-child(1) {
+    @apply mb-1.5;
+}
+
+.hamburger-button .hamburger-line:nth-child(2) {
+    @apply mb-1.5;
+}
+
+/* Animated hamburger when active */
+.hamburger-active .hamburger-line:nth-child(1) {
+    @apply transform rotate-45 translate-y-2;
+}
+
+.hamburger-active .hamburger-line:nth-child(2) {
+    @apply opacity-0;
+}
+
+.hamburger-active .hamburger-line:nth-child(3) {
+    @apply transform -rotate-45 -translate-y-2;
+}
+
+/* Logo */
+.navbar-logo-text {
+    @apply text-gray-900 dark:text-white;
+}
+
+/* Notification bell */
+.notification-bell {
+    @apply relative;
+}
+
+.notification-badge {
+    @apply absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs font-medium text-white bg-red-500 rounded-full;
+    box-shadow: 0 0 0 2px var(--bg-color);
+}
+
+/* User menu */
+.navbar-user-menu {
+    @apply relative ml-2;
+}
+
+.user-avatar {
+    @apply flex overflow-hidden w-9 h-9 rounded-full border-2 border-transparent hover:border-primary-500 transition-all duration-200;
+}
+
+.user-menu-dropdown {
+    @apply absolute right-0 mt-2 w-56 rounded-md shadow-lg z-50;
+}
+
+/* Mobile adaptations */
 @media (max-width: 640px) {
-    .navbar-container {
-        padding: 0.5rem;
-    }
-
-    .navbar-logo-text {
-        display: none;
-    }
-
-    .navbar-actions {
-        gap: 0.25rem;
+    .navbar {
+        @apply h-14 px-2;
     }
 
     .navbar-action-button {
-        width: 2.25rem;
-        height: 2.25rem;
+        @apply p-2;
     }
+
+    .user-avatar {
+        @apply w-8 h-8;
+    }
+}
+
+/* Dropdown animations */
+.dropdown-content {
+    animation: dropdown-slide 0.2s ease-out forwards;
+    transform-origin: top right;
+}
+
+@keyframes dropdown-slide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Touch feedback */
+@media (hover: none) {
+    .navbar-action-button:active,
+    .hamburger-button:active {
+        @apply bg-gray-200 dark:bg-gray-700 transition duration-150;
+    }
+}
+
+/* RTL support */
+[dir="rtl"] .navbar-search {
+    @apply pl-6 pr-0;
+}
+
+[dir="rtl"] .navbar-actions {
+    @apply space-x-reverse;
+}
+
+[dir="rtl"] .notification-badge {
+    @apply -right-auto -left-1;
+}
+
+[dir="rtl"] .user-menu-dropdown {
+    @apply right-auto left-0;
 }

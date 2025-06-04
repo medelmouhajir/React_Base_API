@@ -1,178 +1,160 @@
 /* src/components/Loading/Loading.css */
 
-.loading-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(255, 255, 255, 0.75);
-    z-index: 50;
-    transition: opacity 0.3s ease;
-}
-
-.dark .loading-overlay {
-    background-color: rgba(17, 24, 39, 0.75);
-}
-
+/* Spinner loading animation */
 .loading-spinner {
-    display: inline-block;
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    border: 3px solid rgba(14, 165, 233, 0.2);
+    @apply inline-block h-8 w-8 rounded-full border-4 border-gray-200 dark:border-gray-700 animate-spin;
     border-top-color: var(--color-primary-600);
-    animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
+/* Pulse loading animation */
 .loading-pulse {
-    display: inline-block;
-    position: relative;
-    width: 80px;
-    height: 80px;
+    @apply relative inline-flex;
 }
 
     .loading-pulse div {
-        position: absolute;
-        border: 4px solid var(--color-primary-600);
-        opacity: 1;
-        border-radius: 50%;
-        animation: loading-pulse 1.5s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+        @apply absolute top-0 left-0 h-20 w-20 rounded-full border-4 border-primary-500 dark:border-primary-400 opacity-100;
+        animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
         .loading-pulse div:nth-child(2) {
-            animation-delay: -0.5s;
+            animation-delay: 0.75s;
         }
 
-@keyframes loading-pulse {
+@keyframes pulse {
     0% {
-        top: 36px;
-        left: 36px;
-        width: 0;
-        height: 0;
+        transform: scale(0);
         opacity: 1;
     }
 
     100% {
-        top: 0px;
-        left: 0px;
-        width: 72px;
-        height: 72px;
+        transform: scale(1.5);
         opacity: 0;
     }
 }
 
+/* Dots loading animation */
 .loading-dots {
-    display: inline-block;
-    position: relative;
-    width: 80px;
-    height: 20px;
+    @apply flex items-center space-x-1;
 }
 
     .loading-dots div {
-        position: absolute;
-        top: 8px;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--color-primary-600);
-        animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        @apply h-2.5 w-2.5 rounded-full bg-primary-600 dark:bg-primary-400;
+        animation: dots 1.4s infinite ease-in-out both;
     }
 
         .loading-dots div:nth-child(1) {
-            left: 10px;
-            animation: loading-dots1 0.6s infinite;
+            animation-delay: -0.32s;
         }
 
         .loading-dots div:nth-child(2) {
-            left: 10px;
-            animation: loading-dots2 0.6s infinite;
+            animation-delay: -0.16s;
         }
 
         .loading-dots div:nth-child(3) {
-            left: 30px;
-            animation: loading-dots2 0.6s infinite;
+            animation-delay: 0s;
         }
 
         .loading-dots div:nth-child(4) {
-            left: 50px;
-            animation: loading-dots3 0.6s infinite;
+            animation-delay: 0.16s;
         }
 
-@keyframes loading-dots1 {
-    0% {
+@keyframes dots {
+    0%, 80%, 100% {
         transform: scale(0);
     }
 
-    100% {
+    40% {
         transform: scale(1);
     }
 }
 
-@keyframes loading-dots2 {
-    0% {
-        transform: translate(0, 0);
-    }
-
-    100% {
-        transform: translate(20px, 0);
-    }
-}
-
-@keyframes loading-dots3 {
-    0% {
-        transform: scale(1);
-    }
-
-    100% {
-        transform: scale(0);
-    }
-}
-
-.loading-text {
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-top: 1rem;
-    color: var(--text-secondary);
-}
-
-/* Loading Skeleton */
+/* Skeleton loading animation */
 .loading-skeleton {
-    display: inline-block;
-    position: relative;
-    overflow: hidden;
-    background-color: rgba(209, 213, 219, 0.3);
-    border-radius: 0.25rem;
+    @apply bg-gray-200 dark:bg-gray-700 rounded-md;
+    background-image: linear-gradient( 90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 100% );
+    background-size: 40px 100%;
+    background-repeat: no-repeat;
+    background-position: left -40px top 0;
+    animation: skeleton 1.5s ease infinite;
 }
-
-    .loading-skeleton::after {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        transform: translateX(-100%);
-        background-image: linear-gradient( 90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0) );
-        animation: shimmer 2s infinite;
-        content: '';
-    }
 
 .dark .loading-skeleton {
-    background-color: rgba(55, 65, 81, 0.3);
+    background-image: linear-gradient( 90deg, rgba(0, 0, 0, 0) 0, rgba(55, 65, 81, 0.5) 50%, rgba(0, 0, 0, 0) 100% );
 }
 
-    .dark .loading-skeleton::after {
-        background-image: linear-gradient( 90deg, rgba(17, 24, 39, 0) 0, rgba(17, 24, 39, 0.2) 20%, rgba(17, 24, 39, 0.5) 60%, rgba(17, 24, 39, 0) );
+@keyframes skeleton {
+    to {
+        background-position: right -40px top 0;
+    }
+}
+
+/* Loading text */
+.loading-text {
+    @apply mt-3 text-sm font-medium text-gray-600 dark:text-gray-300;
+}
+
+/* Overlay loading */
+.loading-overlay {
+    @apply fixed inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50;
+}
+
+/* For table layouts */
+.table-container {
+    @apply w-full overflow-x-auto;
+}
+
+.table {
+    @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
+}
+
+    .table th {
+        @apply px-6 py-3 bg-gray-50 dark:bg-gray-800 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider;
     }
 
-@keyframes shimmer {
-    100% {
-        transform: translateX(100%);
+    .table td {
+        @apply px-6 py-4 whitespace-nowrap;
+    }
+
+/* Card layout */
+.card {
+    @apply bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden;
+}
+
+.card-body {
+    @apply p-5;
+}
+
+/* Animation for page transitions */
+.page-fade-enter {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* For improved touch experience */
+@media (hover: none) {
+    .loading-dots div {
+        @apply h-3 w-3;
+    }
+}
+
+/* Responsive adaptations */
+@media (max-width: 640px) {
+    .loading-spinner {
+        @apply h-7 w-7;
+    }
+
+    .loading-pulse div {
+        @apply h-16 w-16;
     }
 }
