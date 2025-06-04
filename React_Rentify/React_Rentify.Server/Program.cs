@@ -126,7 +126,8 @@ namespace React_Rentify.Server
             }
 
             //app.UseHttpsRedirection();
-
+            app.UseCors("AllowReactApp");
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

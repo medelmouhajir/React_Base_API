@@ -1,4 +1,3 @@
-// src/main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -6,8 +5,8 @@ import App from './App';
 // Initialize i18n
 import './i18n/config';
 
-// Tailwind CSS
-import './index.css';
+// CSS
+import './App.css';
 
 // Hammer.js for touch gestures
 import { HammerProvider } from './contexts/HammerContext';

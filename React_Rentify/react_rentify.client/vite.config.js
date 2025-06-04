@@ -23,7 +23,7 @@ if (!isDocker) {
             ? `${process.env.APPDATA}/ASP.NET/https`
             : `${process.env.HOME}/.aspnet/https`;
 
-    const certificateName = "react_mangati.client";
+    const certificateName = "react_rentify.client";
     const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
     const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
