@@ -47,26 +47,21 @@ const LanguageSelector = ({ className = '' }) => {
     };
 
     return (
-        <div className={`language-selector relative ${className}`} ref={dropdownRef}>
+        <div className={`language-selector ${className}`} ref={dropdownRef}>
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center p-2.5 rounded-lg text-sm font-medium ${isDarkMode
-                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
+                className={`language-selector-toggle ${isDarkMode ? 'dark' : ''}`}
                 aria-expanded={isOpen}
                 title={t('language.selectLanguage')}
             >
-                <span className="flex items-center">
-                    <span className="text-xl mr-1">{currentLanguage.flag}</span>
-                    <span className="sr-only">{currentLanguage.name}</span>
-                </span>
+                <span className="language-flag">{currentLanguage.flag}</span>
+                <span className="sr-only">{currentLanguage.name}</span>
             </button>
 
             {isOpen && (
                 <div className="language-menu">
-                    {languages.map(language => (
+                    {languages.map((language) => (
                         <button
                             key={language.code}
                             type="button"
@@ -74,21 +69,26 @@ const LanguageSelector = ({ className = '' }) => {
                             className={`language-item ${i18n.language === language.code ? 'active' : ''}`}
                             dir={language.direction}
                         >
-                            <span className="text-xl">{language.flag}</span>
-                            <span className="flex flex-col items-start">
-                                <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{language.name}</span>
-                                <span className="text-xs text-gray-500">{language.native !== language.name ? language.native : ''}</span>
-                            </span>
+                            <span className="language-flag">{language.flag}</span>
+                            <div className="language-names">
+                                <span className={`language-name ${isDarkMode ? 'dark' : ''}`}>{language.name}</span>
+                                <span className="language-native">
+                                    {language.native !== language.name ? language.native : ''}
+                                </span>
+                            </div>
                             {i18n.language === language.code && (
-                                <svg className="w-4 h-4 ml-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
+                                <svg className="language-check" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clipRule="evenodd"
+                                    />
                                 </svg>
                             )}
                         </button>
                     ))}
 
-                    {/* Language information */}
-                    <div className={`px-3 py-2 text-xs border-t ${isDarkMode ? 'border-gray-700 text-gray-400' : 'border-gray-200 text-gray-500'}`}>
+                    <div className={`language-info ${isDarkMode ? 'dark' : ''}`}>
                         {t('language.changeInfo')}
                     </div>
                 </div>

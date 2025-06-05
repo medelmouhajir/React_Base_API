@@ -1,0 +1,203 @@
+/* src/components/ProtectedRoute.css */
+
+/* Loading screen wrapper */
+.pr-loading-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: #f3f4f6; /* light background */
+}
+
+    .pr-loading-wrapper.dark {
+        background-color: #111827; /* dark background */
+    }
+
+.pr-loading-content {
+    text-align: center;
+}
+
+.pr-verifying-text {
+    margin-top: 1rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #6b7280; /* gray-500 */
+}
+
+.pr-loading-wrapper.dark .pr-verifying-text {
+    color: #9ca3af; /* gray-400 */
+}
+
+/* Access denied wrapper */
+.pr-denied-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+    background-color: #f9fafb; /* gray-50 */
+    color: #111827; /* gray-900 */
+}
+
+    .pr-denied-wrapper.dark {
+        background-color: #111827; /* gray-900 */
+        color: #f9fafb; /* gray-50 */
+    }
+
+/* Card container */
+.pr-card {
+    max-width: 32rem; /* roughly 512px */
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    text-align: center;
+}
+
+.pr-denied-wrapper.dark .pr-card {
+    background-color: #1f2937; /* gray-800 */
+}
+
+/* Icon circle */
+.pr-icon-circle {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto 1.5rem auto;
+    border-radius: 50%;
+    background-color: #fee2e2; /* red-100 */
+    color: #dc2626; /* red-500 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pr-denied-wrapper.dark .pr-icon-circle {
+    background-color: #7f1d1d; /* red-900 */
+    color: #fca5a5; /* red-300 */
+}
+
+.pr-icon {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Heading */
+.pr-heading {
+    font-size: 1.5rem; /* text-2xl */
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Message */
+.pr-message {
+    font-size: 1rem; /* text-base */
+    color: #6b7280; /* gray-500 */
+    margin-bottom: 1.5rem;
+}
+
+.pr-denied-wrapper.dark .pr-message {
+    color: #9ca3af; /* gray-400 */
+}
+
+/* Info box */
+.pr-info {
+    background-color: #f9fafb; /* gray-50 */
+    padding: 1rem;
+    border-radius: 0.375rem; /* rounded-md */
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.pr-denied-wrapper.dark .pr-info {
+    background-color: #374151; /* gray-700 */
+}
+
+.pr-info-line {
+    font-size: 0.875rem; /* text-sm */
+    color: #4b5563; /* gray-600 */
+    margin-bottom: 0.5rem;
+}
+
+.pr-denied-wrapper.dark .pr-info-line {
+    color: #d1d5db; /* gray-300 */
+}
+
+.pr-info-value {
+    font-weight: 500;
+}
+
+/* Actions container */
+.pr-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* space-y-3 */
+    justify-content: center;
+}
+
+@media (min-width: 640px) {
+    .pr-actions {
+        flex-direction: row;
+        gap: 1rem; /* sm:space-x-4 */
+    }
+}
+
+/* Primary button */
+.pr-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    background-color: #2563eb; /* blue-600 */
+    color: #ffffff;
+    border: none;
+    border-radius: 0.375rem; /* rounded-md */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .pr-btn-primary:hover {
+        background-color: #1d4ed8; /* blue-700 */
+    }
+
+/* Secondary button/link */
+.pr-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    background-color: transparent;
+    color: #374151; /* gray-700 */
+    border: 1px solid #d1d5db; /* gray-300 */
+    border-radius: 0.375rem; /* rounded-md */
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+    .pr-btn-secondary:hover {
+        background-color: #f3f4f6; /* gray-50 */
+    }
+
+.pr-denied-wrapper.dark .pr-btn-secondary {
+    border-color: #4b5563; /* gray-600 */
+    color: #d1d5db; /* gray-300 */
+}
+
+    .pr-denied-wrapper.dark .pr-btn-secondary:hover {
+        background-color: #374151; /* gray-700 */
+    }
+
+/* Button icon */
+.pr-btn-icon {
+    width: 1rem; /* w-4 */
+    height: 1rem; /* h-4 */
+    margin-right: 0.5rem; /* mr-2 */
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}

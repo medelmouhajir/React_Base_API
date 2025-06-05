@@ -1,0 +1,379 @@
+/* src/pages/Dashboard.css */
+
+/* Container */
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+    font-family: sans-serif;
+    max-width:100%;
+    width:100%;
+}
+
+    /* Light / Dark Modes */
+    .dashboard-container.light {
+        background-color: transparent;
+        color: #1f1f1f;
+    }
+
+    .dashboard-container.dark {
+        background-color: transparent;
+        color: #e0e0e0;
+    }
+
+/* Loading Spinner */
+.loading-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+}
+
+.spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 0.4rem solid transparent;
+    border-top-color: #4a90e2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Welcome Card */
+.welcome-card {
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .welcome-card.light {
+        background-color: #ffffff;
+    }
+
+    .welcome-card.dark {
+        background-color: #2e2e2e;
+    }
+
+.welcome-title {
+    font-size: 1.75rem;
+    margin: 0;
+}
+
+.welcome-date {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: inherit;
+    opacity: 0.8;
+}
+
+/* Section Headings */
+.section-heading {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Quick Shortcuts */
+.shortcuts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.shortcut-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.light .shortcut-button {
+    background-color: #ffffff;
+    color: #1f1f1f;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .light .shortcut-button:hover {
+        background-color: #f0f0f0;
+    }
+
+.dark .shortcut-button {
+    background-color: #2e2e2e;
+    color: #e0e0e0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+    .dark .shortcut-button:hover {
+        background-color: #3a3a3a;
+    }
+
+/* Alerts */
+.alerts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.alerts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.alert-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.alert-date {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.alert-message {
+    margin-left: 1rem;
+    flex: 1;
+}
+
+.alerts-footer {
+    text-align: right;
+}
+
+.view-all-link {
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.light .view-all-link {
+    color: #4a90e2;
+}
+
+.dark .view-all-link {
+    color: #7cb4f8;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+/* Individual Stat Card */
+.stat-card {
+    display: flex;
+    gap: 1rem;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .stat-card.light {
+        background-color: #ffffff;
+    }
+
+    .stat-card.dark {
+        background-color: #2e2e2e;
+    }
+
+.stat-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Example icon backgrounds */
+.stat-icon-cars {
+    background-color: #e0f7fa;
+}
+
+.dark .stat-icon-cars {
+    background-color: #004d40;
+}
+
+.stat-icon-reservations {
+    background-color: #e8f5e9;
+}
+
+.dark .stat-icon-reservations {
+    background-color: #1b5e20;
+}
+
+.stat-icon-revenue {
+    background-color: #f3e5f5;
+}
+
+.dark .stat-icon-revenue {
+    background-color: #4a148c;
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0.25rem 0;
+}
+
+.stat-sub {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+}
+
+.sub-label {
+    opacity: 0.8;
+}
+
+.sub-value {
+    font-weight: 500;
+}
+
+/* Tables */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+    .data-table th,
+    .data-table td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+.light .data-table th {
+    background-color: #f1f1f1;
+    color: #1f1f1f;
+}
+
+.dark .data-table th {
+    background-color: #383838;
+    color: #e0e0e0;
+}
+
+.light .data-table td {
+    background-color: #ffffff;
+    color: #1f1f1f;
+}
+
+.dark .data-table td {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+}
+
+.data-table tr:hover td.light {
+    background-color: #f9f9f9;
+}
+
+.data-table tr:hover td.dark {
+    background-color: #3a3a3a;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+}
+
+.status-confirmed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-ongoing {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-available {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-rented {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.status-maintenance {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+/* Near Reservations & Car Status Sections */
+.near-reservations-section,
+.car-status-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.table-footer {
+    text-align: right;
+    margin-top: 0.5rem;
+}

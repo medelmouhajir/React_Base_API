@@ -11,9 +11,30 @@
   <ItemGroup>
     <Folder Include="src\components\Loading\" />
     <Folder Include="src\hooks\" />
+    <Folder Include="src\pages\Agencies\Details\" />
+    <Folder Include="src\pages\Agencies\Create\" />
+    <Folder Include="src\pages\Agencies\List\" />
+    <Folder Include="src\pages\Agencies\Stuff\" />
+    <Folder Include="src\pages\Cars\Add\" />
+    <Folder Include="src\pages\Cars\List\" />
+    <Folder Include="src\pages\Cars\Edit\" />
+    <Folder Include="src\pages\Customers\Add\" />
+    <Folder Include="src\pages\Customers\List\" />
+    <Folder Include="src\pages\Customers\Edit\" />
+    <Folder Include="src\pages\Filters\CarModels\" />
+    <Folder Include="src\pages\Filters\Manufacturer\" />
+    <Folder Include="src\pages\Filters\CarYear\" />
     <Folder Include="src\pages\Home\" />
     <Folder Include="src\pages\Auth\" />
     <Folder Include="src\pages\Dashboard\" />
+    <Folder Include="src\pages\Invoices\Add\" />
+    <Folder Include="src\pages\Invoices\List\" />
+    <Folder Include="src\pages\Invoices\Details\" />
     <Folder Include="src\pages\Landing\" />
+    <Folder Include="src\pages\Maintenances\List\" />
+    <Folder Include="src\pages\Maintenances\Edit\" />
+    <Folder Include="src\pages\Reservations\Add\" />
+    <Folder Include="src\pages\Reservations\Edit\" />
+    <Folder Include="src\pages\Reservations\List\" />
   </ItemGroup>
 </Project>

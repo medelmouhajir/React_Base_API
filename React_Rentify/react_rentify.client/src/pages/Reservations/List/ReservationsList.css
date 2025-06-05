@@ -1,0 +1,282 @@
+/* ------------------------------------------------------------
+   Container & Header
+   ------------------------------------------------------------ */
+.reservationlist-container {
+    padding: 1rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-height: 100vh;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+    .reservationlist-container.light {
+        background-color: transparent;
+        color: #1a1a1a;
+    }
+
+    .reservationlist-container.dark {
+        background-color: transparent;
+        color: #e4e4e7;
+    }
+
+/* Header Row */
+.reservationlist-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.reservationlist-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+}
+
+/* Controls: Add Button, Search Bar, Toggle Filters */
+.reservationlist-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: space-between;
+}
+
+/* Add Button */
+.add-button {
+    background-color: #d32f2f;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.375rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .add-button:hover {
+        background-color: #b71c1c;
+    }
+
+/* Search Bar */
+.search-bar {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+
+    .search-bar:focus {
+        outline: none;
+        border-color: #4a90e2;
+    }
+
+/* Toggle Filters Button */
+.toggle-filters-button {
+    background-color: transparent;
+    color: inherit;
+    border: 1px solid currentColor;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+    .toggle-filters-button:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+/* ------------------------------------------------------------
+   Filter Card
+   ------------------------------------------------------------ */
+.filter-card {
+    background-color: inherit;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.reservationlist-container.light .filter-card {
+    background-color: #ffffff;
+    border-color: #ddd;
+}
+
+.reservationlist-container.dark .filter-card {
+    background-color: #2a2a2a;
+    border-color: #3a3a3a;
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 180px;
+}
+
+    .filter-group label {
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .filter-group input,
+    .filter-group select {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+        border: 1px solid #ccc;
+        border-radius: 0.375rem;
+        transition: border-color 0.2s, background-color 0.2s;
+    }
+
+.reservationlist-container.light .filter-group input,
+.reservationlist-container.light .filter-group select {
+    background-color: #fafafa;
+    border-color: #ccc;
+    color: #1a1a1a;
+}
+
+.reservationlist-container.dark .filter-group input,
+.reservationlist-container.dark .filter-group select {
+    background-color: #3a3a3a;
+    border-color: #555;
+    color: #e4e4e7;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+/* Filter Actions */
+.filter-actions {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.clear-filters-button {
+    background-color: transparent;
+    color: inherit;
+    border: 1px solid currentColor;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+    .clear-filters-button:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+/* ------------------------------------------------------------
+   Table Styles
+   ------------------------------------------------------------ */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.reservations-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+    .reservations-table th,
+    .reservations-table td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid #ccc;
+        font-size: 0.9rem;
+    }
+
+    .reservations-table th {
+        background-color: #e0e0e0;
+        font-weight: 500;
+    }
+
+.reservationlist-container.dark .reservations-table th {
+    background-color: #3a3a3a;
+}
+
+.reservationlist-container.light .reservations-table th {
+    background-color: #e0e0e0;
+}
+
+.reservations-table tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.reservationlist-container.dark .reservations-table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.reservations-table tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.reservationlist-container.dark .reservations-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* No Data Row */
+.no-data {
+    text-align: center;
+    padding: 1rem;
+    font-style: italic;
+    color: #888;
+}
+
+/* ------------------------------------------------------------
+   Action Buttons
+   ------------------------------------------------------------ */
+.details-button {
+    background-color: #4a90e2;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.375rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .details-button:hover {
+        background-color: #357ab8;
+    }
+
+/* ------------------------------------------------------------
+   Responsive
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+    .reservationlist-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-row {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        flex: 1 1 100%;
+    }
+
+    .reservations-table {
+        font-size: 0.85rem;
+    }
+}

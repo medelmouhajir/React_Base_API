@@ -1,0 +1,156 @@
+/* src/components/ui/LoadingScreen.css */
+
+/* ===== CONTAINER ===== */
+.ls-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f9fafb; /* light: bg-gray-50 */
+}
+
+    .ls-container.dark {
+        background-color: #111827; /* dark: bg-gray-900 */
+    }
+
+/* ===== LOGO + PULSE ===== */
+.ls-logo-wrapper {
+    position: relative;
+    width: 5rem; /* 80px */
+    height: 5rem; /* 80px */
+    margin-bottom: 2rem; /* spacing before spinner */
+}
+
+.ls-pulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5rem;
+    height: 5rem;
+}
+
+    .ls-pulse div {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5rem;
+        height: 5rem;
+        border: 4px solid #3b82f6; /* light primary-500 */
+        border-radius: 50%;
+        opacity: 1;
+        animation: ls-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+        .ls-pulse div:nth-child(2) {
+            animation-delay: 0.75s;
+        }
+
+.ls-container.dark .ls-pulse div {
+    border-color: #60a5fa; /* dark primary-400 */
+}
+
+/* Centered logo over pulse */
+.ls-logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 5rem; /* 80px */
+    height: 5rem; /* 80px */
+    object-fit: contain;
+}
+
+/* ===== SPINNER ===== */
+.ls-spinner-wrapper {
+    margin-top: 2rem; /* spacing below logo */
+}
+
+.ls-spinner {
+    width: 2rem; /* 32px */
+    height: 2rem; /* 32px */
+    border: 4px solid #e5e7eb; /* light border-gray-200 */
+    border-top-color: #3b82f6; /* light primary-600 */
+    border-radius: 50%;
+    animation: ls-spin 1s linear infinite;
+}
+
+.ls-container.dark .ls-spinner {
+    border-color: #374151; /* dark border-gray-700 */
+    border-top-color: #3b82f6; /* keep primary-600 */
+}
+
+/* ===== LOADING TEXT ===== */
+.ls-text {
+    margin-top: 1.5rem; /* spacing below spinner */
+    font-size: 1.125rem; /* 18px */
+    font-weight: 500;
+    color: #111827; /* light text-gray-900 */
+}
+
+    .ls-text.dark-text {
+        color: #ffffff; /* dark text-white */
+    }
+
+/* ===== LOADING DOTS ===== */
+.ls-dots-wrapper {
+    display: flex;
+    gap: 0.5rem; /* 8px */
+    margin-top: 0.5rem; /* spacing below text */
+}
+
+.ls-dot {
+    width: 0.5rem; /* 8px */
+    height: 0.5rem; /* 8px */
+    border-radius: 50%;
+    background-color: #2563eb; /* light primary-600 */
+    opacity: 0;
+    animation: ls-dots 1.4s infinite ease-in-out both;
+}
+
+    .ls-dot.delay-1 {
+        animation-delay: -0.32s;
+    }
+
+    .ls-dot.delay-2 {
+        animation-delay: -0.16s;
+    }
+
+    .ls-dot.delay-3 {
+        animation-delay: 0s;
+    }
+
+.ls-container.dark .ls-dot {
+    background-color: #60a5fa; /* dark primary-400 */
+}
+
+/* ===== KEYFRAMES ===== */
+@keyframes ls-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes ls-pulse {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+@keyframes ls-dots {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

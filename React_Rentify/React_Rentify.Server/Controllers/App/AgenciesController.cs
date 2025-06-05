@@ -72,17 +72,34 @@ namespace React_Rentify.Server.Controllers
         /// Creates a new agency. Expects the Agency object in the request body.
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> CreateAgency([FromBody] Agency agency)
+        public async Task<IActionResult> CreateAgency([FromBody] AgengyDTO dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
+            var agency = new Agency
+            {
+                Id = Guid.NewGuid(),
+                Name = dto.Name,
+                Address = dto.Address,
+                PhoneOne = dto.PhoneOne,
+                PhoneTwo = dto.PhoneTwo,
+                Email = dto.Email,
+                LogoUrl = "",
+                
+            };
 
-            agency.Id = Guid.NewGuid();
+            try
+            {
+                _context.Set<Agency>().Add(agency);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
 
-            _context.Set<Agency>().Add(agency);
-            await _context.SaveChangesAsync();
+                return BadRequest();
+            }
 
             return CreatedAtAction(nameof(GetAgency), new { id = agency.Id }, agency);
         }
@@ -172,4 +189,15 @@ namespace React_Rentify.Server.Controllers
             return NoContent();
         }
     }
+
+    #region DTOs
+    public class AgengyDTO
+    {
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string PhoneOne { get; set; }
+        public string? PhoneTwo { get; set; }
+        public string? Email { get; set; }
+    }
+    #endregion
 }

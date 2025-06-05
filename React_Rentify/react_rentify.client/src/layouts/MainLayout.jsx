@@ -4,7 +4,6 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useHammer } from '../contexts/HammerContext';
 import Navbar from '../components/navigation/Navbar';
 import Sidebar from '../components/navigation/Sidebar';
 import Loading from '../components/Loading/Loading';
@@ -23,13 +22,11 @@ const MainLayout = () => {
 
     // Handle swipe gestures for mobile
     useEffect(() => {
-        // Add swipe event listeners for mobile
         const handleSwipeRight = () => {
             if (isMobile && !sidebarOpen) {
                 setSidebarOpen(true);
             }
         };
-
         const handleSwipeLeft = () => {
             if (isMobile && sidebarOpen) {
                 setSidebarOpen(false);
@@ -53,7 +50,7 @@ const MainLayout = () => {
             if (mobile) {
                 setSidebarOpen(false);
             } else {
-                setSidebarOpen(true);
+                setSidebarOpen(false);
             }
         };
 
@@ -86,13 +83,13 @@ const MainLayout = () => {
     }, [location.pathname, isMobile]);
 
     const toggleSidebar = () => {
-        setSidebarOpen(prev => !prev);
+        setSidebarOpen((prev) => !prev);
     };
 
     // Show loading spinner while checking authentication
     if (loading) {
         return (
-            <div className={`flex items-center justify-center h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+            <div className={`loading-screen-wrapper ${isDarkMode ? 'dark' : ''}`}>
                 <Loading type="pulse" showText={true} text={t('common.loading')} />
             </div>
         );
@@ -104,22 +101,27 @@ const MainLayout = () => {
     }
 
     return (
-        <div className={`main-layout ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+        <div className={`main-layout ${isDarkMode ? 'dark' : ''}`}>
             {/* Sidebar */}
-            <Sidebar
-                isOpen={sidebarOpen}
-                toggleSidebar={toggleSidebar}
-                isMobile={isMobile}
-            />
+            <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} isMobile={isMobile} />
 
             {/* Main content */}
-            <div className={`main-content ${isMobile ? '' : (sidebarOpen ? 'main-content-with-sidebar' : 'main-content-with-collapsed-sidebar')}`}>
+            <div
+                className={`main-content ${isMobile
+                        ? ''
+                        : sidebarOpen
+                            ? 'main-content-with-sidebar'
+                            : 'main-content-with-collapsed-sidebar'
+                    }`}
+            >
+                {/* Navbar */}
                 <Navbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
 
+                {/* Page area */}
                 <main className="main-content-area">
-                    <div className="max-w-7xl mx-auto">
+                    <div className="content-inner-wrapper">
                         {pageLoading ? (
-                            <div className="min-h-[70vh] flex items-center justify-center">
+                            <div className="loading-container">
                                 <Loading type="dots" showText={false} />
                             </div>
                         ) : (
@@ -131,8 +133,8 @@ const MainLayout = () => {
                 </main>
 
                 {/* Footer */}
-                <footer className={`main-footer ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-                    <div className="text-center text-sm text-gray-500">
+                <footer className={`main-footer ${isDarkMode ? 'dark' : ''}`}>
+                    <div className="footer-text">
                         &copy; {new Date().getFullYear()} Rentify. {t('common.allRightsReserved')}
                     </div>
                 </footer>

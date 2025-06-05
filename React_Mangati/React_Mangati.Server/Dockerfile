@@ -2,7 +2,6 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
@@ -13,6 +12,10 @@ RUN apt-get update
 RUN apt-get install curl -y
 RUN curl -sL https://deb.nodesource.com/setup_20.x | bash
 RUN apt-get -y install nodejs
+
+# Create directory and generate developer certificate in the SDK stage
+RUN mkdir -p /https && \
+    dotnet dev-certs https -ep /https/aspnetapp.pfx -p password
 
 FROM with-node AS build
 ARG BUILD_CONFIGURATION=Release
@@ -48,4 +51,20 @@ RUN dotnet publish "./React_Mangati.Server.csproj" -c $BUILD_CONFIGURATION -o /a
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Copy the certificate from the SDK stage
+COPY --from=with-node /https /https
+
+# Fix permissions for the certificate
+RUN chmod -R 755 /https && \
+    chown -R $APP_UID:$APP_UID /https
+
+# Set environment variables for the certificate
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password=password
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+
+# Don't run as root
+USER $APP_UID
+
 ENTRYPOINT ["dotnet", "React_Mangati.Server.dll"]
+

@@ -1,47 +1,103 @@
 /* src/layouts/MainLayout.css */
+
+/* Main layout container */
 .main-layout {
-    @apply flex min-h-screen;
+    display: flex;
+    min-height: 100vh;
+    width:100%;
+    max-width:100%;
 }
 
-/* Main content area - adapts to sidebar state */
+/* Main content wrapper */
 .main-content {
-    @apply flex-1 flex flex-col transition-all duration-300 ease-in-out;
+    flex: 1 1 0%;
+    display: flex;
+    flex-direction: column;
+    transition-property: all;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 100%;
 }
 
-.main-content-with-sidebar {
-    @apply lg:ml-64;
+/* When sidebar is expanded (large screens and above) */
+@media (min-width: 1024px) {
+    .main-content-with-sidebar {
+        margin-left: 16rem; /* lg:ml-64 */
+    }
+
+    .main-content-with-collapsed-sidebar {
+        margin-left: 5rem; /* lg:ml-20 */
+    }
 }
 
-.main-content-with-collapsed-sidebar {
-    @apply lg:ml-20;
+/* RTL support for large screens */
+@media (min-width: 1024px) {
+    [dir="rtl"] .main-content-with-sidebar {
+        margin-left: 0;
+        margin-right: 16rem; /* lg:mr-64 */
+    }
+
+    [dir="rtl"] .main-content-with-collapsed-sidebar {
+        margin-left: 0;
+        margin-right: 5rem; /* lg:mr-20 */
+    }
 }
 
 /* Main content area */
 .main-content-area {
-    @apply flex-1 px-4 py-6 md:px-6 md:py-8 overflow-y-auto;
-    min-height: calc(100vh - 9rem); /* Adjust for navbar and footer */
+    flex: 1 1 0%;
+    padding-left: 1rem; /* px-4 */
+    padding-right: 1rem; /* px-4 */
+    padding-top: 1.5rem; /* py-6 */
+    padding-bottom: 1.5rem; /* py-6 */
+    overflow-y: auto;
+    max-width:100%;
+    min-height: calc(100vh - 9rem); /* Adjust for navbar (4rem) + footer (1rem) + extra spacing (4rem) */
+}
+
+/* Medium screens and above adjust padding */
+@media (min-width: 768px) {
+    .main-content-area {
+        padding-left: 1.5rem; /* md:px-6 */
+        padding-right: 1.5rem; /* md:px-6 */
+        padding-top: 2rem; /* md:py-8 */
+        padding-bottom: 2rem; /* md:py-8 */
+    }
 }
 
 /* Footer */
 .main-footer {
-    @apply py-4 px-6 border-t;
+    padding-top: 1rem; /* py-4 */
+    padding-bottom: 1rem; /* py-4 */
+    padding-left: 1.5rem; /* px-6 */
+    padding-right: 1.5rem; /* px-6 */
+    border-top: 1px solid #E5E7EB; /* border-t (default border-color gray-200) */
 }
 
-/* Sidebar overlay for mobile */
+/* Mobile sidebar overlay */
 .sidebar-overlay {
-    @apply fixed inset-0 bg-black bg-opacity-50 z-10 opacity-0 invisible transition-opacity duration-300;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* bg-black bg-opacity-50 */
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition-property: opacity;
+    transition-duration: 300ms;
     backdrop-filter: blur(2px);
 }
 
+/* Show overlay */
 .sidebar-overlay-visible {
-    @apply opacity-100 visible;
+    opacity: 1;
+    visibility: visible;
 }
 
-/* Page transitions */
-.page-transition-enter {
-    animation: fadeIn 0.3s ease-out;
-}
-
+/* Page transition animations */
+.page-transition-enter,
 .page-transition-enter-active {
     animation: fadeIn 0.3s ease-out;
 }
@@ -58,7 +114,7 @@
     }
 }
 
-/* For enhanced touch experience */
+/* Enhanced touch experience */
 @media (hover: none) {
     .main-content-area {
         -webkit-overflow-scrolling: touch;
@@ -66,24 +122,32 @@
     }
 }
 
-/* Additional responsive behaviors */
+/* Responsive adjustments below certain breakpoints */
+/* Remove left margin when under large screens */
 @media (max-width: 1023px) {
     .main-content {
-        @apply ml-0;
+        margin-left: 0;
     }
 }
 
+/* Adjust padding for small screens */
 @media (max-width: 768px) {
     .main-content-area {
-        @apply px-3 py-4;
+        padding-left: 0.75rem; /* px-3 */
+        padding-right: 0.75rem; /* px-3 */
+        padding-top: 1rem; /* py-4 */
+        padding-bottom: 1rem; /* py-4 */
     }
 
     .main-footer {
-        @apply py-3 px-4;
+        padding-top: 0.75rem; /* py-3 */
+        padding-bottom: 0.75rem; /* py-3 */
+        padding-left: 1rem; /* px-4 */
+        padding-right: 1rem; /* px-4 */
     }
 }
 
-/* For reduced motion preference */
+/* Respect user’s reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
     .main-content,
     .page-transition-enter,
@@ -93,16 +157,7 @@
     }
 }
 
-/* RTL Support */
-[dir="rtl"] .main-content-with-sidebar {
-    @apply lg:ml-0 lg:mr-64;
-}
-
-[dir="rtl"] .main-content-with-collapsed-sidebar {
-    @apply lg:ml-0 lg:mr-20;
-}
-
-/* Dark mode enhanced visuals */
+/* Dark-mode scrollbar styles */
 .dark .main-content-area {
     scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
 }
@@ -115,7 +170,7 @@
         background-color: rgba(17, 24, 39, 0.1);
     }
 
-/* Hide scrollbar in mobile */
+/* Hide scrollbar on very small screens */
 @media (max-width: 640px) {
     .main-content-area::-webkit-scrollbar {
         display: none;

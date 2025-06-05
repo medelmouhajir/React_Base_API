@@ -137,6 +137,9 @@ namespace React_Rentify.Server.Controllers
             var cars = await _context.Set<Car>()
                 .Where(c => c.AgencyId == agencyId)
                 .Include(c => c.Car_Attachments)
+                .Include(x=> x.Car_Model)
+                .ThenInclude(x => x.Manufacturer)
+                .Include(x=> x.Car_Year)
                 .ToListAsync();
 
             var dtoList = cars.Select(c => new CarDto
@@ -161,7 +164,13 @@ namespace React_Rentify.Server.Controllers
                         FilePath = a.FilePath,
                         UploadedAt = a.UploadedAt
                     })
-                    .ToList()
+                    .ToList(),
+                Fields = new Car_Fields
+                {
+                    Manufacturer = c.Car_Model.Manufacturer.Name,
+                    Model = c.Car_Model.Name,
+                    Year = c.Car_Year.YearValue
+                }
             }).ToList();
 
             _logger.LogInformation("Retrieved {Count} cars for Agency {AgencyId}", dtoList.Count, agencyId);
@@ -486,6 +495,15 @@ namespace React_Rentify.Server.Controllers
         public string? DeviceSerialNumber { get; set; }
         public bool IsTrackingActive { get; set; }
         public List<CarAttachmentDto>? Attachments { get; set; }
+
+        public Car_Fields? Fields { get; set; }
+    }
+
+    public class Car_Fields
+    {
+        public string Manufacturer { get; set; }
+        public string Model { get; set; }
+        public int Year { get; set; }
     }
 
     public class CreateCarDto

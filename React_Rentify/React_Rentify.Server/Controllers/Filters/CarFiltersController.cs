@@ -13,7 +13,7 @@ namespace React_Rentify.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     public class CarFiltersController : ControllerBase
     {
         private readonly MainDbContext _context;
@@ -56,9 +56,10 @@ namespace React_Rentify.Server.Controllers
         /// Adds a new manufacturer.
         /// </summary>
         [HttpPost("manufacturers")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddManufacturer([FromBody] CreateManufacturerDto dto)
         {
-            _logger.LogInformation("Adding new manufacturer with Id {ManufacturerId}", dto.Id);
+            _logger.LogInformation("Adding new manufacturer with Id {ManufacturerId}", dto.Name);
 
             if (!ModelState.IsValid)
             {
@@ -68,11 +69,11 @@ namespace React_Rentify.Server.Controllers
 
             // Check for duplicate Id or Name
             var existsById = await _context.Set<Manufacturer>()
-                                           .AnyAsync(m => m.Id == dto.Id);
+                                           .AnyAsync(m => m.Id == dto.Name.ToLower());
             if (existsById)
             {
-                _logger.LogWarning("Manufacturer with Id {ManufacturerId} already exists", dto.Id);
-                return Conflict(new { message = $"Manufacturer with Id '{dto.Id}' already exists." });
+                _logger.LogWarning("Manufacturer with Id {ManufacturerId} already exists", dto.Name);
+                return Conflict(new { message = $"Manufacturer with Id '{dto.Name}' already exists." });
             }
 
             var existsByName = await _context.Set<Manufacturer>()
@@ -85,7 +86,7 @@ namespace React_Rentify.Server.Controllers
 
             var manufacturer = new Manufacturer
             {
-                Id = dto.Id,
+                Id = dto.Name.ToLower(),
                 Name = dto.Name,
                 Car_Models = new List<Car_Model>()
             };
@@ -93,7 +94,7 @@ namespace React_Rentify.Server.Controllers
             _context.Set<Manufacturer>().Add(manufacturer);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Added manufacturer {ManufacturerId}", dto.Id);
+            _logger.LogInformation("Added manufacturer {ManufacturerId}", manufacturer.Id);
             return CreatedAtAction(nameof(GetManufacturers), new { id = manufacturer.Id }, new ManufacturerDto
             {
                 Id = manufacturer.Id,
@@ -106,6 +107,7 @@ namespace React_Rentify.Server.Controllers
         /// Removes a manufacturer (only if no models exist under it).
         /// </summary>
         [HttpDelete("manufacturers/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveManufacturer(string id)
         {
             _logger.LogInformation("Removing manufacturer {ManufacturerId}", id);
@@ -165,9 +167,10 @@ namespace React_Rentify.Server.Controllers
         /// Adds a new car model under a manufacturer.
         /// </summary>
         [HttpPost("models")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddCarModel([FromBody] CreateCarModelDto dto)
         {
-            _logger.LogInformation("Adding new car model with Id {ModelId}", dto.Id);
+            _logger.LogInformation("Adding new car model with Id {ModelId}", dto.Name);
 
             if (!ModelState.IsValid)
             {
@@ -177,11 +180,11 @@ namespace React_Rentify.Server.Controllers
 
             // Check for duplicate Id or Name under same manufacturer
             var existsById = await _context.Set<Car_Model>()
-                                           .AnyAsync(m => m.Id == dto.Id);
+                                           .AnyAsync(m => m.Id == dto.Name.ToLower());
             if (existsById)
             {
-                _logger.LogWarning("Car_MODEL with Id {ModelId} already exists", dto.Id);
-                return Conflict(new { message = $"Car model with Id '{dto.Id}' already exists." });
+                _logger.LogWarning("Car_MODEL with Id {ModelId} already exists", dto.Name);
+                return Conflict(new { message = $"Car model with Id '{dto.Name}' already exists." });
             }
 
             var existsByName = await _context.Set<Car_Model>()
@@ -203,7 +206,7 @@ namespace React_Rentify.Server.Controllers
 
             var carModel = new Car_Model
             {
-                Id = dto.Id,
+                Id = dto.Name.ToLower(),
                 Name = dto.Name,
                 ManufacturerId = dto.ManufacturerId
             };
@@ -211,7 +214,7 @@ namespace React_Rentify.Server.Controllers
             _context.Set<Car_Model>().Add(carModel);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Added car model {ModelId}", dto.Id);
+            _logger.LogInformation("Added car model {ModelId}", carModel.Id);
             return CreatedAtAction(nameof(GetCarModels), new { id = carModel.Id }, new CarModelDto
             {
                 Id = carModel.Id,
@@ -226,6 +229,7 @@ namespace React_Rentify.Server.Controllers
         /// Removes a car model (only if no cars reference it).
         /// </summary>
         [HttpDelete("models/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveCarModel(string id)
         {
             _logger.LogInformation("Removing car model {ModelId}", id);
@@ -283,6 +287,7 @@ namespace React_Rentify.Server.Controllers
         /// Adds a new car year.
         /// </summary>
         [HttpPost("years")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddCarYear([FromBody] CreateCarYearDto dto)
         {
             _logger.LogInformation("Adding new car year {YearValue}", dto.YearValue);
@@ -323,6 +328,7 @@ namespace React_Rentify.Server.Controllers
         /// Removes a car year (only if no cars reference it).
         /// </summary>
         [HttpDelete("years/{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RemoveCarYear(int id)
         {
             _logger.LogInformation("Removing car year {YearId}", id);
@@ -360,7 +366,6 @@ namespace React_Rentify.Server.Controllers
 
     public class CreateManufacturerDto
     {
-        public string Id { get; set; }
         public string Name { get; set; }
     }
 
@@ -374,7 +379,6 @@ namespace React_Rentify.Server.Controllers
 
     public class CreateCarModelDto
     {
-        public string Id { get; set; }
         public string Name { get; set; }
         public string ManufacturerId { get; set; }
     }

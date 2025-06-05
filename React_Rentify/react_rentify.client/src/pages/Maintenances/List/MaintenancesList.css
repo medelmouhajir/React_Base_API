@@ -1,0 +1,462 @@
+﻿/*------------------------------------------------------------
+  Basic Theme Variables (you likely have these globally already)
+  ------------------------------------------------------------*/
+:root {
+    --bg-color: #ffffff;
+    --text-color: #111827;
+    --border-color: #d1d5db;
+    --input-bg: #f9fafb;
+    --input-text: #111827;
+    --placeholder-color: #6b7280;
+    --primary-color: #4a90e2;
+    --primary-hover: #3b78c3;
+    --btn-secondary-bg: transparent;
+    --btn-secondary-text: #4a4a4a;
+    --btn-secondary-border: #d1d5db;
+    --error-bg: #f8d7da;
+    --error-text: #b91c1c;
+    --shadow-default: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --border-radius: 0.5rem;
+    --transition-speed: 0.25s;
+}
+
+[data-theme='dark'] {
+    --bg-color: #1f2937;
+    --text-color: #f9fafb;
+    --border-color: #4b5563;
+    --input-bg: #374151;
+    --input-text: #f9fafb;
+    --placeholder-color: #9ca3af;
+    --primary-color: #2563eb;
+    --primary-hover: #1e40af;
+    --btn-secondary-text: #d1d5db;
+    --btn-secondary-border: #4b5563;
+    --error-bg: #78191f;
+    --error-text: #fca5a5;
+    --shadow-default: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/*---------------------------------------------
+  Container & Header
+---------------------------------------------*/
+.maintList-container {
+    max-width: 100%;
+    width: 100%;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color:transparent;
+    color: var(--text-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-default);
+    display: flex;
+    flex-direction: column;
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.maintList-title {
+    font-size: 1.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--text-color);
+}
+
+/*---------------------------------------------
+  Add Button
+---------------------------------------------*/
+.add-button {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: calc(var(--border-radius) / 1.2);
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .add-button:hover:not(:disabled) {
+        background-color: var(--primary-hover);
+    }
+
+    .add-button:disabled {
+        background-color: rgba(74, 144, 226, 0.5);
+        cursor: not-allowed;
+    }
+
+/*---------------------------------------------
+  Error Message
+---------------------------------------------*/
+.maintList-error {
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    padding: 0.75rem 1rem;
+    border-radius: calc(var(--border-radius) / 1.2);
+    font-size: 0.95rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/*---------------------------------------------
+  Filters Section
+---------------------------------------------*/
+.filters-toggle {
+    display: none;
+    background-color: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--btn-secondary-border);
+    border-radius: calc(var(--border-radius) / 1.2);
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    margin-bottom: 0.75rem;
+}
+
+    .filters-toggle:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .filters-toggle.open {
+        /* Optionally change icon or rotate arrow */
+    }
+
+.filters-container {
+    overflow: hidden;
+    transition: max-height var(--transition-speed), opacity var(--transition-speed);
+    max-height: 1000px;
+    opacity: 1;
+}
+
+    .filters-container.expanded {
+        max-height: 1000px;
+        opacity: 1;
+    }
+
+    .filters-container:not(.expanded) {
+        max-height: 0;
+        opacity: 0;
+    }
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1.5rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+    .filter-group label {
+        margin-bottom: 0.4rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .filter-group select,
+    .filter-group input {
+        padding: 0.65rem 0.9rem;
+        font-size: 0.95rem;
+        background-color: var(--input-bg);
+        color: var(--input-text);
+        border: 1px solid var(--border-color);
+        border-radius: calc(var(--border-radius) / 1.2);
+        transition: border-color var(--transition-speed), background-color var(--transition-speed), color var(--transition-speed);
+    }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+.filter-actions {
+    display: flex;
+    align-items: flex-end;
+}
+
+.clear-filters {
+    background-color: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--btn-secondary-border);
+    border-radius: calc(var(--border-radius) / 1.2);
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    width: 100%;
+}
+
+    .clear-filters:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+/*---------------------------------------------
+  Loading Placeholder
+---------------------------------------------*/
+.loading {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-color);
+    padding: 2rem 0;
+}
+
+/*---------------------------------------------
+  TABLE STYLES (visible on desktop)
+---------------------------------------------*/
+.desktop-table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.maintList-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+    background-color: var(--bg-color);
+}
+
+    .maintList-table th,
+    .maintList-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        text-align: left;
+        color: var(--text-color);
+        font-size: 0.95rem;
+    }
+
+    .maintList-table th {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .maintList-table tr:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+.desc-cell {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.no-data {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--placeholder-color);
+    font-style: italic;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Action Buttons in Table */
+.small-btn {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.5rem 0.9rem;
+    border-radius: calc(var(--border-radius) / 1.5);
+    border: 1px solid var(--btn-secondary-border);
+    background-color: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    cursor: pointer;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+    touch-action: manipulation; /* ensure smooth tap on mobile */
+}
+
+    .small-btn:hover:not(.delete-btn) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+.delete-btn {
+    border-color: #e53e3e;
+    color: #e53e3e;
+}
+
+    .delete-btn:hover {
+        background-color: rgba(229, 62, 62, 0.1);
+    }
+
+/*---------------------------------------------
+  CARD LIST (visible on mobile)
+---------------------------------------------*/
+.mobile-cards {
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-default);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.card-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.card-label {
+    font-weight: 600;
+    margin-right: 0.25rem;
+    color: var(--text-color);
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+/* No data on mobile */
+.no-data-mobile {
+    text-align: center;
+    font-style: italic;
+    color: var(--placeholder-color);
+    padding: 2rem 0;
+}
+
+/*---------------------------------------------
+  RESPONSIVE BREAKPOINTS
+---------------------------------------------*/
+@media (max-width: 1024px) {
+    .desc-cell {
+        max-width: 140px;
+    }
+}
+
+/* For tablets and smaller, collapse into cards */
+@media (max-width: 768px) {
+    /* Show toggle button to collapse/expand filters */
+    .filters-toggle {
+        display: block;
+    }
+
+    /* Hide desktop table */
+    .desktop-table {
+        display: none;
+    }
+
+    /* Show mobile cards */
+    .mobile-cards {
+        display: flex;
+    }
+
+    /* Make container margins/padding smaller */
+    .maintList-container {
+        padding: 1rem;
+        margin: 1rem auto;
+    }
+
+    /* Collapse filters by default */
+    .filters-container {
+        max-height: 0;
+        opacity: 0;
+    }
+
+        /* When expanded, show filters */
+        .filters-container.expanded {
+            max-height: 500px; /* big enough to show all filter fields */
+            opacity: 1;
+        }
+
+    /* Stack filter groups */
+    .filters-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-actions {
+        width: 100%;
+    }
+
+    /* Buttons full width */
+    .add-button,
+    .clear-filters {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Table headers/rows hidden on mobile */
+    .maintList-table th,
+    .maintList-table td {
+        padding: 0.6rem 0.8rem;
+    }
+
+    /* Card font size adjustments */
+    .card-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .card {
+        padding: 0.9rem;
+    }
+
+    .small-btn {
+        flex: 1; /* make each button expand */
+        text-align: center;
+        padding: 0.6rem;
+    }
+
+    .card-actions {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+/* Extra‐small phones */
+@media (max-width: 480px) {
+    .maintList-title {
+        font-size: 1.5rem;
+    }
+
+    .add-button {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+    }
+
+    .small-btn {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+
+    .filters-toggle {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.9rem;
+    }
+}

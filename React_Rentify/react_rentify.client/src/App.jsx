@@ -26,28 +26,50 @@ const ForgotPassword = lazy(() => import('./pages/Auth/ForgotPassword'));
 
 // Main App
 const Dashboard = lazy(() => import('./pages/Dashboard/Dashboard'));
-//const Cars = lazy(() => import('./pages/cars/Cars'));
+const CarsList = lazy(() => import('./pages/Cars/List/CarsList'));
 //const Customers = lazy(() => import('./pages/customers/Customers'));
-//const Reservations = lazy(() => import('./pages/reservations/Reservations'));
-//const Invoices = lazy(() => import('./pages/invoices/Invoices'));
+const ReservationsList = lazy(() => import('./pages/Reservations/List/ReservationsList'));
+const MaintenancesList = lazy(() => import('./pages/Maintenances/List/MaintenancesList'));
+const InvoicesList = lazy(() => import('./pages/Invoices/List/InvoicesList'));
 //const Profile = lazy(() => import('./pages/Profile'));
 //const Settings = lazy(() => import('./pages/Settings'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-//// Child routes for Cars
+
+const AgencyCreate = lazy(() => import('./pages/Agencies/Create/AgencyCreate'));
+const AgenciesList = lazy(() => import('./pages/Agencies/List/AgenciesList'));
+const AgencyStuff = lazy(() => import('./pages/Agencies/Stuff/AgencyStuff'));
+
+
+const Filters = lazy(() => import('./pages/Filters/Filters'));
+const Manufacturer = lazy(() => import('./pages/Filters/Manufacturer/Manufacturer'));
+const Models = lazy(() => import('./pages/Filters/CarModels/Models'));
+const CarYear = lazy(() => import('./pages/Filters/CarYear/CarYear'));
+
+
+// Child routes for Cars
 //const CarDetails = lazy(() => import('./pages/cars/CarDetails'));
-//const CarForm = lazy(() => import('./pages/cars/CarForm'));
+const AddCar = lazy(() => import('./pages/Cars/Add/AddCar'));
+const EditCar = lazy(() => import('./pages/Cars/Edit/EditCar'));
 
 //// Child routes for Customers
 //const CustomerDetails = lazy(() => import('./pages/customers/CustomerDetails'));
-//const CustomerForm = lazy(() => import('./pages/customers/CustomerForm'));
+const AddCustomer = lazy(() => import('./pages/Customers/Add/AddCustomer'));
+const CustomerEdit = lazy(() => import('./pages/Customers/Edit/CustomerEdit'));
+const CustomersList = lazy(() => import('./pages/Customers/List/CustomersList'));
 
 //// Child routes for Reservations
 //const ReservationDetails = lazy(() => import('./pages/reservations/ReservationDetails'));
-//const ReservationForm = lazy(() => import('./pages/reservations/ReservationForm'));
+const ReservationAdd = lazy(() => import('./pages/Reservations/Add/ReservationAdd'));
+
+
+
+const AddMaintenance = lazy(() => import('./pages/Maintenances/Add/AddMaintenance'));
+const EditMaintenance = lazy(() => import('./pages/Maintenances/Edit/EditMaintenance'));
 
 //// Child route for Invoices
-//const InvoiceDetails = lazy(() => import('./pages/invoices/InvoiceDetails'));
+const AddInvoice = lazy(() => import('./pages/Invoices/Add/AddInvoice'));
+const InvoiceDetails = lazy(() => import('./pages/Invoices/Details/InvoiceDetails'));
 
 //// Other standalone pages
 //const MaintenancePage = lazy(() => import('./pages/maintenance/Maintenance'));
@@ -82,27 +104,45 @@ function App() {
                             >
                                 <Route path="/dashboard" element={<Dashboard />} />
 
+                                <Route path="/agencies" element={<AgenciesList />} />
+                                <Route path="/agencies/create" element={<AgencyCreate />} />
+                                <Route path="/agencies/:id/stuff" element={<AgencyStuff />} />
+
+
+                                <Route path="/filters" element={<Filters />} />
+                                <Route path="/filters/manufacturer" element={<Manufacturer />} />
+                                <Route path="/filters/models" element={<Models />} />
+                                <Route path="/filters/caryear" element={<CarYear />} />
+
+
                                 {/* Cars */}
-                                {/*<Route path="/cars" element={<Cars />} />*/}
+                                <Route path="/cars" element={<CarsList />} />
                                 {/*<Route path="/cars/:id" element={<CarDetails />} />*/}
-                                {/*<Route path="/cars/add" element={<CarForm />} />*/}
-                                {/*<Route path="/cars/:id/edit" element={<CarForm />} />*/}
+                                <Route path="/cars/add" element={<AddCar />} />
+                                <Route path="/cars/:id/edit" element={<EditCar />} />
 
                                 {/* Customers */}
-                                {/*<Route path="/customers" element={<Customers />} />*/}
+                                <Route path="/customers" element={<CustomersList />} />
                                 {/*<Route path="/customers/:id" element={<CustomerDetails />} />*/}
-                                {/*<Route path="/customers/add" element={<CustomerForm />} />*/}
-                                {/*<Route path="/customers/:id/edit" element={<CustomerForm />} />*/}
+                                <Route path="/customers/add" element={<AddCustomer />} />
+                                <Route path="/customers/:id/edit" element={<CustomerEdit />} />
 
                                 {/* Reservations */}
-                                {/*<Route path="/reservations" element={<Reservations />} />*/}
+                                <Route path="/reservations" element={<ReservationsList />} />
                                 {/*<Route path="/reservations/:id" element={<ReservationDetails />} />*/}
-                                {/*<Route path="/reservations/add" element={<ReservationForm />} />*/}
+                                <Route path="/reservations/add" element={<ReservationAdd />} />
                                 {/*<Route path="/reservations/:id/edit" element={<ReservationForm />} />*/}
 
+                                {/* maintenances */}
+                                <Route path="/maintenances" element={<MaintenancesList />} />
+                                {/*<Route path="/reservations/:id" element={<ReservationDetails />} />*/}
+                                <Route path="/maintenances/add" element={<AddMaintenance />} />
+                                <Route path="/maintenances/:id/edit" element={<EditMaintenance />} />
+
                                 {/* Invoices */}
-                                {/*<Route path="/invoices" element={<Invoices />} />*/}
-                                {/*<Route path="/invoices/:id" element={<InvoiceDetails />} />*/}
+                                <Route path="/invoices" element={<InvoicesList />} />
+                                <Route path="/invoices/add" element={<AddInvoice />} />
+                                <Route path="/invoices/:id" element={<InvoiceDetails />} />
 
                                 {/* Maintenance */}
                                 {/*<Route path="/maintenance" element={<MaintenancePage />} />*/}

@@ -20,7 +20,7 @@ FROM with-node AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["React_Rentify/React_Rentify.Server/React_Rentify.Server.csproj", "React_Rentify/React_Rentify.Server/"]
-COPY ["react_rentify.client/react_rentify.client.esproj", "react_rentify.client/"]
+COPY ["React_Rentify/react_rentify.client/react_rentify.client.esproj", "React_Rentify/react_rentify.client/"]
 RUN dotnet restore "./React_Rentify/React_Rentify.Server/React_Rentify.Server.csproj"
 COPY . .
 WORKDIR "/src/React_Rentify/React_Rentify.Server"

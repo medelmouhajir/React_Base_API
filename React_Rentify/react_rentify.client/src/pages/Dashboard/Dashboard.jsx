@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import './Dashboard.css';
 
 // Mock data for dashboard widgets
 const mockReservations = [
@@ -26,6 +27,12 @@ const mockStats = {
     monthlyRevenue: 24500,
 };
 
+const mockAlerts = [
+    { id: 1, message: 'Car #12345-A-5 due for service in 2 days', type: 'warning', date: '2025-06-03' },
+    { id: 2, message: 'Reservation #2 is overdue', type: 'danger', date: '2025-06-04' },
+    { id: 3, message: 'New user registered: Youssef El Idrissi', type: 'info', date: '2025-06-04' },
+];
+
 const Dashboard = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
@@ -34,23 +41,18 @@ const Dashboard = () => {
     const [stats, setStats] = useState(mockStats);
     const [recentReservations, setRecentReservations] = useState([]);
     const [carStatus, setCarStatus] = useState([]);
+    const [alerts, setAlerts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     // Fetch dashboard data
     useEffect(() => {
-        // Simulate API call
         const fetchDashboardData = async () => {
             try {
-                // In a real app, these would be API calls
-                // const statsResponse = await dashboardService.getStats();
-                // const reservationsResponse = await reservationService.getRecent();
-                // const carsResponse = await carService.getStatus();
-
-                // For demo, use mock data with a delay
                 setTimeout(() => {
                     setStats(mockStats);
                     setRecentReservations(mockReservations);
                     setCarStatus(mockCars);
+                    setAlerts(mockAlerts);
                     setIsLoading(false);
                 }, 1000);
             } catch (error) {
@@ -62,139 +64,131 @@ const Dashboard = () => {
         fetchDashboardData();
     }, []);
 
-    // Show loading state
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            <div className="loading-wrapper">
+                <div className="spinner" />
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
-            {/* Welcome message */}
-            <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow`}>
-                <h1 className="text-2xl font-bold">
+        <div className={`dashboard-container ${isDarkMode ? 'dark' : 'light'}`}>
+            {/* Welcome Message */}
+            <section className={`welcome-card ${isDarkMode ? 'dark' : 'light'}`}>
+                <h1 className="welcome-title">
                     {t('dashboard.welcomeMessage', { name: user?.fullName || t('common.user') })}
                 </h1>
-                <p className={`mt-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                <p className="welcome-date">
                     {new Date().toLocaleDateString(undefined, {
                         weekday: 'long',
                         year: 'numeric',
                         month: 'long',
-                        day: 'numeric'
+                        day: 'numeric',
                     })}
                 </p>
-            </div>
+            </section>
 
-            {/* Stats grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* Cars stats */}
-                <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow`}>
-                    <div className="flex items-center">
-                        <div className={`p-3 rounded-full ${isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-600'}`}>
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 4h-4a2 2 0 00-2 2v12a2 2 0 002 2h4a2 2 0 002-2V6a2 2 0 00-2-2zm0 0H5a2 2 0 00-2 2v12a2 2 0 002 2h4a2 2 0 002-2V6a2 2 0 00-2-2z"></path>
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-                                {t('dashboard.totalCars')}
-                            </p>
-                            <p className="text-2xl font-semibold">{stats.totalCars}</p>
-                        </div>
-                    </div>
-                    <div className="mt-4 flex justify-between">
-                        <div>
-                            <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-                                {t('dashboard.availableCars')}
-                            </p>
-                            <p className="text-xl font-semibold text-green-500">{stats.availableCars}</p>
-                        </div>
-                        <div>
-                            <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-                                {t('dashboard.maintenanceCars')}
-                            </p>
-                            <p className="text-xl font-semibold text-yellow-500">{stats.upcomingMaintenance}</p>
+            {/* Quick Shortcuts */}
+            <section className="shortcuts-section">
+                <h2 className="section-heading">{t('dashboard.quickShortcuts')}</h2>
+                <div className="shortcuts">
+                    <button className="shortcut-button">
+                        📋 {t('dashboard.viewCars')}
+                    </button>
+                    <button className="shortcut-button">
+                        🚗 {t('dashboard.viewReservations')}
+                    </button>
+                    <button className="shortcut-button">
+                        📊 {t('dashboard.viewStats')}
+                    </button>
+                    <button className="shortcut-button">
+                        ⚙️ {t('dashboard.settings')}
+                    </button>
+                </div>
+            </section>
+
+            {/* Alerts */}
+            <section className="alerts-section">
+                <h2 className="section-heading">{t('dashboard.alerts')}</h2>
+                <ul className="alerts-list">
+                    {alerts.map(alert => (
+                        <li key={alert.id} className={`alert-item alert-${alert.type}`}>
+                            <span className="alert-date">{alert.date}</span>
+                            <span className="alert-message">{alert.message}</span>
+                        </li>
+                    ))}
+                </ul>
+                <div className="alerts-footer">
+                    <a href="/alerts" className="view-all-link">
+                        {t('common.viewAll')} →
+                    </a>
+                </div>
+            </section>
+
+            {/* Stats Grid */}
+            <section className="stats-grid">
+                <div className={`stat-card ${isDarkMode ? 'dark' : 'light'}`}>
+                    <div className="stat-icon stat-icon-cars" />
+                    <div className="stat-content">
+                        <p className="stat-label">{t('dashboard.totalCars')}</p>
+                        <p className="stat-value">{stats.totalCars}</p>
+                        <div className="stat-sub">
+                            <span className="sub-label">{t('dashboard.availableCars')}</span>
+                            <span className="sub-value">{stats.availableCars}</span>
+                            <span className="sub-label">{t('dashboard.maintenanceDue')}</span>
+                            <span className="sub-value">{stats.upcomingMaintenance}</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Reservations stats */}
-                <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow`}>
-                    <div className="flex items-center">
-                        <div className={`p-3 rounded-full ${isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-600'}`}>
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-                                {t('dashboard.activeReservations')}
-                            </p>
-                            <p className="text-2xl font-semibold">{stats.activeReservations}</p>
+                <div className={`stat-card ${isDarkMode ? 'dark' : 'light'}`}>
+                    <div className="stat-icon stat-icon-reservations" />
+                    <div className="stat-content">
+                        <p className="stat-label">{t('dashboard.activeReservations')}</p>
+                        <p className="stat-value">{stats.activeReservations}</p>
+                        <div className="stat-sub">
+                            <span className="sub-label">{t('dashboard.pendingReservations')}</span>
+                            <span className="sub-value">{stats.pendingReservations}</span>
                         </div>
                     </div>
-                    <div className="mt-4">
-                        <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-                            {t('dashboard.pendingReservations')}
+                </div>
+
+                <div className={`stat-card ${isDarkMode ? 'dark' : 'light'}`}>
+                    <div className="stat-icon stat-icon-revenue" />
+                    <div className="stat-content">
+                        <p className="stat-label">{t('dashboard.monthlyRevenue')}</p>
+                        <p className="stat-value">
+                            {new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD' }).format(stats.monthlyRevenue)}
                         </p>
-                        <p className="text-xl font-semibold text-yellow-500">{stats.pendingReservations}</p>
                     </div>
                 </div>
+            </section>
 
-                {/* Revenue stats */}
-                <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow`}>
-                    <div className="flex items-center">
-                        <div className={`p-3 rounded-full ${isDarkMode ? 'bg-purple-900 text-purple-300' : 'bg-purple-100 text-purple-600'}`}>
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
-                                {t('dashboard.monthlyRevenue')}
-                            </p>
-                            <p className="text-2xl font-semibold">
-                                {new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD' }).format(stats.monthlyRevenue)}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Recent reservations */}
-            <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow`}>
-                <h2 className="text-lg font-medium mb-4">{t('dashboard.recentReservations')}</h2>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                        <thead className={`text-xs uppercase ${isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-50 text-gray-700'}`}>
+            {/* Near Reservations */}
+            <section className="near-reservations-section">
+                <h2 className="section-heading">{t('dashboard.nearReservations')}</h2>
+                <div className="table-wrapper">
+                    <table className="data-table">
+                        <thead>
                             <tr>
-                                <th scope="col" className="px-6 py-3">{t('reservations.customer')}</th>
-                                <th scope="col" className="px-6 py-3">{t('reservations.car')}</th>
-                                <th scope="col" className="px-6 py-3">{t('reservations.startDate')}</th>
-                                <th scope="col" className="px-6 py-3">{t('reservations.endDate')}</th>
-                                <th scope="col" className="px-6 py-3">{t('reservations.status')}</th>
+                                <th>{t('reservations.customer')}</th>
+                                <th>{t('reservations.car')}</th>
+                                <th>{t('reservations.startDate')}</th>
+                                <th>{t('reservations.endDate')}</th>
+                                <th>{t('reservations.status')}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {recentReservations.map(reservation => (
-                                <tr
-                                    key={reservation.id}
-                                    className={`border-b ${isDarkMode ? 'border-gray-600 hover:bg-gray-600' : 'border-gray-200 hover:bg-gray-50'
-                                        }`}
-                                >
-                                    <td className="px-6 py-4">{reservation.customer}</td>
-                                    <td className="px-6 py-4">{reservation.car}</td>
-                                    <td className="px-6 py-4">{reservation.startDate}</td>
-                                    <td className="px-6 py-4">{reservation.endDate}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${reservation.status === 'Confirmed' ? 'bg-green-100 text-green-800' :
-                                                reservation.status === 'Ongoing' ? 'bg-blue-100 text-blue-800' :
-                                                    'bg-yellow-100 text-yellow-800'
-                                            }`}>
-                                            {reservation.status}
+                            {recentReservations.map(res => (
+                                <tr key={res.id}>
+                                    <td>{res.customer}</td>
+                                    <td>{res.car}</td>
+                                    <td>{res.startDate}</td>
+                                    <td>{res.endDate}</td>
+                                    <td>
+                                        <span className={`status-badge status-${res.status.toLowerCase()}`}>
+                                            {res.status}
                                         </span>
                                     </td>
                                 </tr>
@@ -202,55 +196,48 @@ const Dashboard = () => {
                         </tbody>
                     </table>
                 </div>
-                <div className="mt-4 text-right">
-                    <a href="/reservations" className="text-primary-600 hover:underline font-medium text-sm">
+                <div className="table-footer">
+                    <a href="/reservations" className="view-all-link">
                         {t('common.viewAll')} →
                     </a>
                 </div>
-            </div>
+            </section>
 
-            {/* Car status */}
-            <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-white'} shadow`}>
-                <h2 className="text-lg font-medium mb-4">{t('dashboard.carStatus')}</h2>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                        <thead className={`text-xs uppercase ${isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-50 text-gray-700'}`}>
+            {/* Car Status */}
+            <section className="car-status-section">
+                <h2 className="section-heading">{t('dashboard.carStatus')}</h2>
+                <div className="table-wrapper">
+                    <table className="data-table">
+                        <thead>
                             <tr>
-                                <th scope="col" className="px-6 py-3">{t('cars.model')}</th>
-                                <th scope="col" className="px-6 py-3">{t('cars.licensePlate')}</th>
-                                <th scope="col" className="px-6 py-3">{t('cars.status')}</th>
-                                <th scope="col" className="px-6 py-3">{t('cars.maintenanceDue')}</th>
+                                <th>{t('cars.model')}</th>
+                                <th>{t('cars.licensePlate')}</th>
+                                <th>{t('cars.status')}</th>
+                                <th>{t('cars.maintenanceDue')}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {carStatus.map(car => (
-                                <tr
-                                    key={car.id}
-                                    className={`border-b ${isDarkMode ? 'border-gray-600 hover:bg-gray-600' : 'border-gray-200 hover:bg-gray-50'
-                                        }`}
-                                >
-                                    <td className="px-6 py-4">{car.model}</td>
-                                    <td className="px-6 py-4">{car.licensePlate}</td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${car.status === 'Available' ? 'bg-green-100 text-green-800' :
-                                                car.status === 'Rented' ? 'bg-blue-100 text-blue-800' :
-                                                    'bg-yellow-100 text-yellow-800'
-                                            }`}>
+                                <tr key={car.id}>
+                                    <td>{car.model}</td>
+                                    <td>{car.licensePlate}</td>
+                                    <td>
+                                        <span className={`status-badge status-${car.status.toLowerCase()}`}>
                                             {car.status}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4">{car.maintenanceDue}</td>
+                                    <td>{car.maintenanceDue}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
-                <div className="mt-4 text-right">
-                    <a href="/cars" className="text-primary-600 hover:underline font-medium text-sm">
+                <div className="table-footer">
+                    <a href="/cars" className="view-all-link">
                         {t('common.viewAll')} →
                     </a>
                 </div>
-            </div>
+            </section>
         </div>
     );
 };

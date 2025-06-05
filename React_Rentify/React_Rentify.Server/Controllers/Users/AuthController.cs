@@ -59,14 +59,15 @@ namespace React_Rentify.Server.Controllers.Users
 
                 var token = await GenerateJwtToken(user);
 
-                return Ok(new AuthResponse
+                return Ok(new
                 {
                     Token = token,
-                    User = new UserDto
+                    User = new
                     {
                         Id = user.Id,
                         Email = user.Email,
                         FullName = user.FullName,
+                        AgencyId = user.AgencyId,
                         Role = GetRoleFromEnumToString(user.Role),
                         IsActive = user.IsActive
                     },
@@ -128,14 +129,15 @@ namespace React_Rentify.Server.Controllers.Users
             {
                 var token = await GenerateJwtToken(user);
 
-                return Ok(new AuthResponse
+                return Ok(new
                 {
                     Token = token,
-                    User = new UserDto
+                    User = new
                     {
                         Id = user.Id,
                         Email = user.Email,
                         FullName = user.FullName,
+                        user.AgencyId,
                         Role = GetRoleFromEnumToString(user.Role),
                         IsActive = user.IsActive
                     },
@@ -161,14 +163,15 @@ namespace React_Rentify.Server.Controllers.Users
 
             var token = await GenerateJwtToken(user);
 
-            return Ok(new AuthResponse
+            return Ok(new
             {
                 Token = token,
-                User = new UserDto
+                User = new
                 {
                     Id = user.Id,
                     Email = user.Email,
                     FullName = user.FullName,
+                    user.AgencyId,
                     Role = GetRoleFromEnumToString(user.Role),
                     IsActive = user.IsActive
                 },
@@ -189,11 +192,12 @@ namespace React_Rentify.Server.Controllers.Users
                 return NotFound();
             }
 
-            return Ok(new UserDto
+            return Ok(new
             {
                 Id = user.Id,
                 Email = user.Email,
                 FullName = user.FullName,
+                AgencyId = user.AgencyId,
                 Role = GetRoleFromEnumToString(user.Role),
                 IsActive = user.IsActive
             });
@@ -226,11 +230,12 @@ namespace React_Rentify.Server.Controllers.Users
 
             if (result.Succeeded)
             {
-                return Ok(new UserDto
+                return Ok(new
                 {
                     Id = user.Id,
                     Email = user.Email,
                     FullName = user.FullName,
+                    AgencyId = user.AgencyId,
                     Role = GetRoleFromEnumToString(user.Role),
                     IsActive = user.IsActive
                 });
@@ -277,6 +282,8 @@ namespace React_Rentify.Server.Controllers.Users
                 new Claim(ClaimTypes.Name, $"{user.FullName}"),
                 new Claim("fullName", user.FullName ?? ""),
             };
+            if( user.AgencyId.HasValue )
+                claims.Add(new Claim("agencyId" , user.AgencyId.Value.ToString()));
 
             // Add role claims
             foreach (var role in roles)

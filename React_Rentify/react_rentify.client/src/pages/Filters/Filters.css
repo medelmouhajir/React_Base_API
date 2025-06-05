@@ -1,0 +1,76 @@
+/* src/pages/filters/Filters.css */
+
+/* Container */
+.filters-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Page Title */
+.filters-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+}
+
+/* Grid of cards */
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+}
+
+/* Individual card */
+.filter-card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+    .filter-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+/* Card content */
+.card-content {
+    text-align: center;
+}
+
+.card-text {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filters-container {
+        padding: 0.75rem;
+    }
+
+    .filters-title {
+        font-size: 1.5rem;
+    }
+
+    .filter-card {
+        padding: 1rem;
+    }
+
+    .card-text {
+        font-size: 1rem;
+    }
+}

@@ -1,0 +1,206 @@
+/* src/pages/NotFound.css */
+
+/* ===== CONTAINER ===== */
+.nf-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+    background-color: #f9fafb; /* gray-50 */
+    color: #1f2937; /* gray-900 */
+}
+
+    .nf-container.dark {
+        background-color: #111827; /* gray-900 */
+        color: #f9fafb; /* gray-50 */
+    }
+
+/* ===== CONTENT WRAPPER ===== */
+.nf-content {
+    max-width: 28rem;
+    width: 100%;
+    text-align: center;
+}
+
+/* ===== ANIMATED ICON ===== */
+.nf-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 1s ease, opacity 0.7s ease;
+}
+
+.nf-icon {
+    width: 8rem; /* 32 */
+    height: 8rem; /* 32 */
+    color: #4338ca; /* primary-600 */
+    opacity: 1;
+    transition: transform 0.7s ease, opacity 0.7s ease;
+}
+
+/* Pulse animation */
+@keyframes nf-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+}
+
+.nf-icon-pulse {
+    animation: nf-pulse 0.7s ease-in-out infinite;
+}
+
+.nf-icon-animating {
+    transform: scale(1.1);
+}
+
+/* ===== TEXT APPEARANCE ===== */
+.nf-text-wrapper {
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.nf-text-hidden {
+    opacity: 0;
+    transform: translateY(2.5rem);
+}
+
+.nf-text-show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== HEADINGS & TEXT ===== */
+.nf-heading {
+    font-size: 6rem; /* 96px */
+    font-weight: 800;
+    margin: 1rem 0 0.5rem;
+    color: #4338ca; /* primary-600 */
+}
+
+.nf-container.dark .nf-heading {
+    color: #a5b4fc; /* primary-300 */
+}
+
+.nf-title {
+    font-size: 1.75rem; /* 28px */
+    font-weight: 700;
+    margin: 0.5rem 0;
+}
+
+.nf-description {
+    margin: 0.5rem 0 1.5rem;
+    font-size: 1rem; /* 16px */
+    color: #6b7280; /* gray-500 */
+}
+
+.nf-container.dark .nf-description {
+    color: #9ca3af; /* gray-400 */
+}
+
+/* ===== BUTTONS ===== */
+.nf-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (min-width: 640px) {
+    .nf-buttons {
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+}
+
+.nf-button-primary,
+.nf-button-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 0.375rem; /* rounded-md */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nf-button-primary {
+    background-color: #4338ca; /* primary-600 */
+    color: #ffffff;
+}
+
+    .nf-button-primary:hover {
+        background-color: #3730a3; /* primary-700 */
+    }
+
+.nf-button-secondary {
+    background-color: transparent;
+    color: #1f2937; /* gray-900 */
+    border: 1px solid #d1d5db; /* gray-300 */
+}
+
+    .nf-button-secondary:hover {
+        background-color: #f3f4f6; /* gray-100 */
+    }
+
+.nf-container.dark .nf-button-secondary {
+    color: #f9fafb; /* gray-50 */
+    border-color: #374151; /* gray-700 */
+}
+
+    .nf-container.dark .nf-button-secondary:hover {
+        background-color: #374151; /* gray-700 */
+    }
+
+/* Button icon */
+.nf-button-icon {
+    width: 1.25rem; /* 20px */
+    height: 1.25rem;
+    margin-right: 0.5rem;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ===== EASTER EGG ===== */
+.nf-easter-egg {
+    margin-top: 2rem;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+    .nf-easter-egg:hover {
+        opacity: 1;
+    }
+
+.nf-easter-text {
+    font-size: 0.875rem; /* 14px */
+    font-style: italic;
+    color: #6b7280; /* gray-500 */
+}
+
+.nf-container.dark .nf-easter-text {
+    color: #9ca3af; /* gray-400 */
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+/* Adjust heading on small screens */
+@media (max-width: 639px) {
+    .nf-heading {
+        font-size: 4rem; /* 64px */
+    }
+
+    .nf-icon {
+        width: 6rem; /* 24 */
+        height: 6rem; /* 24 */
+    }
+}
