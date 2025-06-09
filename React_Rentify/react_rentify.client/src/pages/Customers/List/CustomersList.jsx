@@ -95,6 +95,12 @@ const CustomersList = () => {
                                 </td>
                                 <td className="customerlist-actions">
                                     <Link
+                                        to={`/customers/${customer.id}`}
+                                        className="btn-edit"
+                                    >
+                                        {t('common.details')}
+                                    </Link>
+                                    <Link
                                         to={`/customers/${customer.id}/edit`}
                                         className="btn-edit"
                                     >

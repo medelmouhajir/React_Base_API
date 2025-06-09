@@ -4,6 +4,10 @@ using React_Mangati.Server.Models.Favorites;
 using React_Mangati.Server.Models.Languages;
 using React_Mangati.Server.Models.Series;
 using React_Mangati.Server.Models.Series.Chapters;
+using React_Mangati.Server.Models.Studio.Characters;
+using React_Mangati.Server.Models.Studio.Characters.Groups;
+using React_Mangati.Server.Models.Studio.Places;
+using React_Mangati.Server.Models.Studio.Places.Goups;
 using React_Mangati.Server.Models.Tags;
 using React_Mangati.Server.Models.Users;
 using React_Mangati.Server.Models.Viewer;
@@ -33,6 +37,14 @@ namespace React_Mangati.Server.Data
 
         public DbSet<Reading_Progress> Reading_Progresses { get; set; }
         public DbSet<Reading_Settings> Reading_Settings { get; set; }
+
+        public DbSet<Character> Characters { get; set; }
+        public DbSet<Character_Image> Character_Images { get; set; }
+        public DbSet<Characters_Group> Characters_Groups { get; set; }
+
+        public DbSet<Place_Scene> Place_Scenes { get; set; }
+        public DbSet<Place_Scene_Image> Place_Scene_Images { get; set; }
+        public DbSet<Places_Group> Places_Groups { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

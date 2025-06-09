@@ -165,6 +165,7 @@ services:
     container_name: rentify-gps-listener
     ports:
       - "5000:5000/udp" 
+      - "5000:5000/tcp"
     environment:
       # Point EF Core at the 'rentify_gps_db_1' database within the same 'db' container
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=rentify_gps_db_1;Username=postgres;Password=postgres

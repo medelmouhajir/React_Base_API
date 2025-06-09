@@ -13,7 +13,7 @@ namespace React_Mangati.Server.Models.Studio.Places
         public int SerieId { get; set; }
         public virtual Serie? Serie { get; set; }
 
-        public Guid Places_GroupId { get; set; }
+        public Guid? Places_GroupId { get; set; }
         public virtual Places_Group? Places_Group { get; set; }
 
 

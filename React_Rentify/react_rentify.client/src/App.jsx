@@ -53,7 +53,7 @@ const AddCar = lazy(() => import('./pages/Cars/Add/AddCar'));
 const EditCar = lazy(() => import('./pages/Cars/Edit/EditCar'));
 
 //// Child routes for Customers
-//const CustomerDetails = lazy(() => import('./pages/customers/CustomerDetails'));
+const CustomerDetails = lazy(() => import('./pages/Customers/Details/CustomerDetails'));
 const AddCustomer = lazy(() => import('./pages/Customers/Add/AddCustomer'));
 const CustomerEdit = lazy(() => import('./pages/Customers/Edit/CustomerEdit'));
 const CustomersList = lazy(() => import('./pages/Customers/List/CustomersList'));
@@ -73,7 +73,7 @@ const InvoiceDetails = lazy(() => import('./pages/Invoices/Details/InvoiceDetail
 
 //// Other standalone pages
 //const MaintenancePage = lazy(() => import('./pages/maintenance/Maintenance'));
-//const GpsTracking = lazy(() => import('./pages/gps/GpsTracking'));
+const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
 //const ReportsPage = lazy(() => import('./pages/reports/Reports'));
 //const AgenciesPage = lazy(() => import('./pages/admin/Agencies'));
 //const StaffPage = lazy(() => import('./pages/admin/Staff'));
@@ -123,7 +123,7 @@ function App() {
 
                                 {/* Customers */}
                                 <Route path="/customers" element={<CustomersList />} />
-                                {/*<Route path="/customers/:id" element={<CustomerDetails />} />*/}
+                                <Route path="/customers/:id" element={<CustomerDetails />} />
                                 <Route path="/customers/add" element={<AddCustomer />} />
                                 <Route path="/customers/:id/edit" element={<CustomerEdit />} />
 
@@ -148,7 +148,7 @@ function App() {
                                 {/*<Route path="/maintenance" element={<MaintenancePage />} />*/}
 
                                 {/* GPS Tracking */}
-                                {/*<Route path="/gps" element={<GpsTracking />} />*/}
+                                <Route path="/gps" element={<GpsHome />} />
 
                                 {/* Reports */}
                                 {/*<Route path="/reports" element={<ReportsPage />} />*/}

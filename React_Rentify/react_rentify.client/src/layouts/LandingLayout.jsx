@@ -67,7 +67,7 @@ const LandingLayout = () => {
                 <div className="landing-header-container">
                     {/* Logo */}
                     <a href="#" className="landing-logo">
-                        <img src="/logo.png" alt="Rentify" />
+                        <img src="/vite.svg" alt="Rentify" />
                         <span className={`landing-logo-text ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Rentify</span>
                     </a>
 

@@ -18,7 +18,7 @@ const LoadingScreen = ({ message = null }) => {
                     <div></div>
                 </div>
                 <img
-                    src="/logo.png"
+                    src="/vite.svg"
                     alt="Rentify"
                     className="ls-logo"
                 />
