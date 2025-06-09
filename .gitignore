@@ -392,3 +392,6 @@ FodyWeavers.xsd
 /React_Mangati/react_mangati.client/public/icons/maskable-icon-512x512.png
 /React_Mangati/React_Mangati.Server/wwwroot/uploads/series/680c53c6-d0e1-4a9c-b919-2df0d0b0d09d.png
 /React_Mangati/React_Mangati.Server/appsettings.json
+/React_Mangati/React_Mangati.Server/Migrations/20250609131219_ai_studio_Migration.cs
+/React_Mangati/React_Mangati.Server/Migrations/20250609131219_ai_studio_Migration.Designer.cs
+/React_Mangati/React_Mangati.Server/Migrations/ApplicationDbContextModelSnapshot.cs
