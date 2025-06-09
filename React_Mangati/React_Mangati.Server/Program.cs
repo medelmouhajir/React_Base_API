@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using React_Mangati.Server.Data;
 using React_Mangati.Server.Models.Users;
+using React_Mangati.Server.Studio.AI.Models;
 using System.Text;
 
 namespace React_Mangati.Server
@@ -16,6 +17,16 @@ namespace React_Mangati.Server
 
             // Add services to the container.
             builder.Services.AddControllers();
+
+
+            // Register AI Services
+            builder.Services.AddHttpClient<GeminiService>();
+            builder.Services.AddHttpClient<ChatGPTService>();
+            builder.Services.AddHttpClient<SoraService>();
+
+            // Register the factory
+            builder.Services.AddSingleton<IAIServiceFactory, AIServiceFactory>();
+
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

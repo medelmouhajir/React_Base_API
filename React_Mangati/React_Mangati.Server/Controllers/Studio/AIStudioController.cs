@@ -1,0 +1,178 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using React_Mangati.Server.Studio.AI.Models;
+
+namespace React_Mangati.Server.Controllers.Studio
+{
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AIStudioController : ControllerBase
+    {
+        private readonly IAIServiceFactory _aiServiceFactory;
+        private readonly ILogger<AIStudioController> _logger;
+
+        public AIStudioController(IAIServiceFactory aiServiceFactory, ILogger<AIStudioController> logger)
+        {
+            _aiServiceFactory = aiServiceFactory;
+            _logger = logger;
+        }
+
+        [HttpPost("generate-image")]
+        public async Task<IActionResult> GenerateImage([FromBody] GenerateImageRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.Prompt))
+                {
+                    return BadRequest("Prompt is required");
+                }
+
+                var aiService = _aiServiceFactory.GetService(request.Provider);
+
+                var options = new AIImageOptions
+                {
+                    Width = request.Width ?? 1024,
+                    Height = request.Height ?? 1024,
+                    Style = request.Style,
+                    Quality = request.Quality ?? "standard",
+                    Count = request.Count ?? 1
+                };
+
+                var result = await aiService.GenerateImageFromTextAsync(request.Prompt, options);
+
+                if (result.Success)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        imageUrl = result.ImageUrl,
+                        base64Image = result.Base64Image,
+                        metadata = result.Metadata
+                    });
+                }
+
+                return BadRequest(new { success = false, error = result.Error });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating image");
+                return StatusCode(500, new { success = false, error = "Internal server error" });
+            }
+        }
+
+        [HttpPost("generate-image-with-references")]
+        public async Task<IActionResult> GenerateImageWithReferences([FromBody] GenerateImageWithReferencesRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(request.Prompt))
+                {
+                    return BadRequest("Prompt is required");
+                }
+
+                if (request.ReferenceImages == null || request.ReferenceImages.Count == 0)
+                {
+                    return BadRequest("At least one reference image is required");
+                }
+
+                var aiService = _aiServiceFactory.GetService(request.Provider);
+
+                var options = new AIImageOptions
+                {
+                    Width = request.Width ?? 1024,
+                    Height = request.Height ?? 1024,
+                    Style = request.Style,
+                    Quality = request.Quality ?? "standard"
+                };
+
+                var result = await aiService.GenerateImageFromTextAndImagesAsync(
+                    request.Prompt,
+                    request.ReferenceImages,
+                    options
+                );
+
+                if (result.Success)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        imageUrl = result.ImageUrl,
+                        base64Image = result.Base64Image,
+                        metadata = result.Metadata
+                    });
+                }
+
+                return BadRequest(new { success = false, error = result.Error });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating image with references");
+                return StatusCode(500, new { success = false, error = "Internal server error" });
+            }
+        }
+
+        [HttpGet("providers")]
+        public IActionResult GetAvailableProviders()
+        {
+            var providers = Enum.GetValues<AIProvider>()
+                .Select(p => new
+                {
+                    value = p.ToString(),
+                    name = p.ToString(),
+                    features = GetProviderFeatures(p)
+                });
+
+            return Ok(providers);
+        }
+
+        private object GetProviderFeatures(AIProvider provider)
+        {
+            return provider switch
+            {
+                AIProvider.Gemini => new
+                {
+                    textToImage = false, // Not yet available
+                    imageWithReferences = true,
+                    multimodal = true,
+                    notes = "Gemini can analyze images but doesn't generate them yet"
+                },
+                AIProvider.ChatGPT => new
+                {
+                    textToImage = true,
+                    imageWithReferences = true,
+                    multimodal = true,
+                    models = new[] { "dall-e-2", "dall-e-3" }
+                },
+                AIProvider.Sora => new
+                {
+                    textToImage = false,
+                    imageWithReferences = false,
+                    videoGeneration = true,
+                    notes = "Sora is for video generation, not static images"
+                },
+                _ => new { }
+            };
+        }
+    }
+
+    public class GenerateImageRequest
+    {
+        public string Prompt { get; set; }
+        public AIProvider Provider { get; set; } = AIProvider.ChatGPT;
+        public int? Width { get; set; }
+        public int? Height { get; set; }
+        public string Style { get; set; }
+        public string Quality { get; set; }
+        public int? Count { get; set; }
+    }
+
+    public class GenerateImageWithReferencesRequest : GenerateImageRequest
+    {
+        public List<string> ReferenceImages { get; set; }
+    }
+}
