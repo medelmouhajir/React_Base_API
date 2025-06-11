@@ -460,5 +460,53 @@
       "tags": "الوسوم",
       "submit": "إنشاء السلسلة"
     }
+  },
+  "studio": {
+    "selectSerie": "اختر سلسلة",
+    "yourStudioSeries": "سلاسل الاستوديو الخاصة بك",
+    "createNewSerie": "إنشاء سلسلة جديدة",
+    "exitStudio": "الخروج من الاستوديو",
+    "settings": "الإعدادات",
+    "sidebar": {
+      "aiTools": "أدوات الذكاء الاصطناعي",
+      "aiGenerate": "التوليد بالذكاء الاصطناعي",
+      "textToImage": "نص إلى صورة",
+      "imageEnhancement": "تحسين الصورة",
+      "resources": "الموارد",
+      "characters": "الشخصيات",
+      "scenes": "المشاهد",
+      "studioSettings": "إعدادات الاستوديو",
+      "settings": "الإعدادات",
+      "aiCredits": "رصيد الذكاء الاصطناعي"
+    },
+    "characters": {
+      "mainImage": "الصورة الرئيسية",
+      "untitled": "بدون عنوان",
+      "setAsMain": "تعيين كصورة رئيسية",
+      "confirmDelete": "انقر مرة أخرى للتأكيد",
+      "delete": "حذف",
+      "loadError": "فشل تحميل بيانات الشخصية",
+      "imageDeleted": "تم حذف الصورة بنجاح",
+      "deleteError": "خطأ أثناء حذف الصورة",
+      "mainImageSet": "تم تعيين الصورة الرئيسية",
+      "mainImageError": "خطأ أثناء تعيين الصورة الرئيسية",
+      "loading": "جاري التحميل…",
+      "error": "خطأ",
+      "backToList": "العودة إلى القائمة",
+      "notFound": "لم يتم العثور على الشخصية",
+      "back": "رجوع",
+      "addImage": "إضافة صورة",
+      "edit": "تعديل",
+      "noMainImage": "لا توجد صورة رئيسية",
+      "name": "الاسم",
+      "height": "الطول",
+      "weight": "الوزن",
+      "group": "المجموعة",
+      "description": "الوصف",
+      "images": "الصور",
+      "imagesCount": "الصور",
+      "noImagesYet": "لا توجد صور بعد",
+      "addFirstImage": "أضف أول صورة"
+    }
   }
 }

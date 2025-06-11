@@ -8,6 +8,7 @@ using React_Mangati.Server.Models.Studio.Characters;
 using React_Mangati.Server.Models.Studio.Characters.Groups;
 using React_Mangati.Server.Models.Studio.Places;
 using React_Mangati.Server.Models.Studio.Places.Goups;
+using React_Mangati.Server.Models.Studio.Uploads;
 using React_Mangati.Server.Models.Tags;
 using React_Mangati.Server.Models.Users;
 using React_Mangati.Server.Models.Viewer;
@@ -45,6 +46,9 @@ namespace React_Mangati.Server.Data
         public DbSet<Place_Scene> Place_Scenes { get; set; }
         public DbSet<Place_Scene_Image> Place_Scene_Images { get; set; }
         public DbSet<Places_Group> Places_Groups { get; set; }
+
+
+        public DbSet<Serie_Upload> Serie_Uploads { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

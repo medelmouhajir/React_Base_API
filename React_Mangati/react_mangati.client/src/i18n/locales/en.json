@@ -459,5 +459,53 @@
       "tags": "Tags",
       "submit": "Create Series"
     }
+  },
+  "studio": {
+    "selectSerie": "Select a series",
+    "yourStudioSeries": "Your studio series",
+    "createNewSerie": "Create new series",
+    "exitStudio": "Exit studio",
+    "settings": "Settings",
+    "sidebar": {
+      "aiTools": "AI Tools",
+      "aiGenerate": "AI Generate",
+      "textToImage": "Text to Image",
+      "imageEnhancement": "Image Enhancement",
+      "resources": "Resources",
+      "characters": "Characters",
+      "scenes": "Scenes",
+      "studioSettings": "Studio Settings",
+      "settings": "Settings",
+      "aiCredits": "AI Credits"
+    },
+    "characters": {
+      "mainImage": "Main image",
+      "untitled": "Untitled",
+      "setAsMain": "Set as main",
+      "confirmDelete": "Click again to confirm",
+      "delete": "Delete",
+      "loadError": "Failed to load character data",
+      "imageDeleted": "Image deleted successfully",
+      "deleteError": "Error deleting image",
+      "mainImageSet": "Main image set",
+      "mainImageError": "Error setting main image",
+      "loading": "Loading…",
+      "error": "Error",
+      "backToList": "Back to list",
+      "notFound": "Character not found",
+      "back": "Back",
+      "addImage": "Add image",
+      "edit": "Edit",
+      "noMainImage": "No main image",
+      "name": "Name",
+      "height": "Height",
+      "weight": "Weight",
+      "group": "Group",
+      "description": "Description",
+      "images": "Images",
+      "imagesCount": "Images",
+      "noImagesYet": "No images yet",
+      "addFirstImage": "Add first image"
+    }
   }
 }

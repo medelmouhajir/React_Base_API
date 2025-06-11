@@ -11,10 +11,31 @@ const studioAssetsService = {
           params: { serieId }
           });
           return response.data;
+    },
+
+  async getUploads(serieId) {
+      const response = await apiClient.get('/studio/assets/uploads', {
+          params: { serieId }
+          });
+          return response.data;
+      },
+
+  async getCharacter(characterId) {
+      const response = await apiClient.get('/studio/assets/character', {
+          params: { characterId }
+          });
+          return response.data;
       },
 
   async createCharacter(serieId , formData) {
       const response = await apiClient.post('/studio/assets/characters/create/' + serieId, formData);
+          return response.data;
+      },
+
+  async createUpload(serieId , fileData) {
+      const response = await apiClient.post('/studio/assets/uploads/create/' + serieId, {
+          params: { fileData }
+      });
           return response.data;
       },
 

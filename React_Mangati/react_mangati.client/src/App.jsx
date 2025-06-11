@@ -27,6 +27,7 @@ import MySeries from './pages/Series/MySeries';
 import StudioHome from './pages/Studio/Home/StudioHome';
 import CharactersList from './pages/Studio/Characters/CharactersList';
 import CreateCharacter from './pages/Studio/Characters/CreateCharacter';
+import CharacterDetails from './pages/Studio/Characters/CharacterDetails';
 
 //import Settings from './pages/Settings/Settings';
 //import NotFound from './pages/NotFound/NotFound';
@@ -75,6 +76,7 @@ function App() {
                                 <Route path="/" element={<StudioHome />} />
                                 <Route path="/characters" element={<CharactersList />} />
                                 <Route path="/characters/create" element={<CreateCharacter />} />
+                                <Route path="/characters/:id/details" element={<CharacterDetails />} />
                                 {/* Add other studio routes here */}
                             </Routes>
                         </StudioLayout>

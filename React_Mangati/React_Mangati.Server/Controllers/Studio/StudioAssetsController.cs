@@ -10,6 +10,7 @@ using React_Mangati.Server.Data;
 using React_Mangati.Server.Models.Studio.Characters;
 using React_Mangati.Server.Models.Studio.Places;
 using Microsoft.AspNetCore.Authorization;
+using React_Mangati.Server.Models.Studio.Uploads;
 
 namespace React_Mangati.Server.Controllers.Studio
 {
@@ -36,6 +37,23 @@ namespace React_Mangati.Server.Controllers.Studio
             return Ok(characters);
         }
 
+        [HttpGet("uploads")]
+        public async Task<IActionResult> GetUploads(int serieId)
+        {
+            var uploads = await _context.Serie_Uploads
+                .Where(c => c.SerieId == serieId)
+                .ToListAsync();
+            return Ok(uploads);
+        }
+
+        [HttpGet("character")]
+        public async Task<IActionResult> GetCharacter(Guid characterId)
+        {
+            var character = await _context.Characters
+                .FirstOrDefaultAsync(c => c.Id == characterId);
+            return Ok(character);
+        }
+
         [HttpPost("characters/create/{serieId}")]
         public async Task<IActionResult> CreateCharacter(int serieId , Character_DTO _DTO )
         {
@@ -53,6 +71,38 @@ namespace React_Mangati.Server.Controllers.Studio
             await _context.SaveChangesAsync();
 
             return Ok(character);
+        }
+
+
+        [HttpPost("uploads/create/{serieId}")]
+        public async Task<IActionResult> CreateUpload(int serieId , IFormFile file )
+        {
+            var upload = new Serie_Upload
+            {
+                SerieId = serieId,
+                Path = "",
+                Date_Uploaded = DateTime.UtcNow,
+            };
+
+            _context.Serie_Uploads.Add(upload);
+            await _context.SaveChangesAsync();
+
+            return Ok(upload);
+        }
+
+
+        [HttpDelete("uploads/delete/{serieId}")]
+        public async Task<IActionResult> RemoveUpload(Guid uploadId )
+        {
+            var upload = await _context.Serie_Uploads.FirstOrDefaultAsync(x => x.Id == uploadId);
+
+            if (upload != null)
+            {
+                _context.Serie_Uploads.Remove(upload);
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok();
         }
 
         [HttpGet("scenes")]

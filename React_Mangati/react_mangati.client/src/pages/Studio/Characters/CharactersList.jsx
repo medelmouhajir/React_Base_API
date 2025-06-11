@@ -61,6 +61,8 @@ const CharactersList = () => {
     navigate(`/studio/characters/create`);
   const goEdit = id =>
     navigate(`/studio/characters/${id}/edit`);
+  const goDetails = id =>
+    navigate(`/studio/characters/${id}/details`);
 
   return (
     <div className={`characters-list ${isDarkMode ? 'dark' : 'light'}`}>
@@ -89,7 +91,7 @@ const CharactersList = () => {
             <div
               key={char.id}
               className="characters-list__card"
-              onClick={() => goEdit(char.id)}
+              onClick={() => goDetails(char.id)}
             >
               <div className="characters-list__image-wrapper">
                 {char.mainImageUrl ? (

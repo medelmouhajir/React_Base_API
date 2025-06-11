@@ -27,8 +27,8 @@ const StudioSidebar = ({
             setActiveMenu('characters');
         } else if (path.includes('/studio/places')) {
             setActiveMenu('places');
-        } else if (path.includes('/studio/ai-generate')) {
-            setActiveMenu('ai-generate');
+        } else if (path.includes('/studio/ai-generate-character')) {
+            setActiveMenu('ai-generate-character');
         } else if (path.includes('/studio/text-to-image')) {
             setActiveMenu('text-to-image');
         } else if (path.includes('/studio/image-enhancement')) {
@@ -67,14 +67,14 @@ const StudioSidebar = ({
             expandable: true,
             items: [
                 {
-                    id: 'ai-generate',
-                    title: t('studio.sidebar.aiGenerate'),
+                    id: 'ai-generate-character',
+                    title: t('studio.sidebar.ai.character'),
                     icon: (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                         </svg>
                     ),
-                    href: '/studio/ai-generate',
+                    href: '/studio/ai/character',
                     badge: { text: 'AI', type: 'ai' }
                 },
                 {
@@ -106,8 +106,8 @@ const StudioSidebar = ({
             title: t('studio.sidebar.resources'),
             items: [
                 {
-                    id: 'templates',
-                    title: t('studio.sidebar.templates'),
+                    id: 'characters',
+                    title: t('studio.sidebar.characters'),
                     icon: (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -115,17 +115,27 @@ const StudioSidebar = ({
                             <line x1="9" y1="9" x2="21" y2="9"></line>
                         </svg>
                     ),
-                    href: '/studio/templates'
+                    href: '/studio/characters'
                 },
                 {
-                    id: 'gallery',
-                    title: t('studio.sidebar.gallery'),
+                    id: 'scenes',
+                    title: t('studio.sidebar.scenes'),
                     icon: (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"></path>
                         </svg>
                     ),
-                    href: '/studio/gallery'
+                    href: '/studio/scenes'
+                },
+                {
+                    id: 'uploads',
+                    title: t('studio.sidebar.uploads'),
+                    icon: (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"></path>
+                        </svg>
+                    ),
+                    href: '/studio/uploads'
                 }
             ]
         },
