@@ -14,7 +14,7 @@ const studioAssetsService = {
       },
 
   async createCharacter(serieId , formData) {
-      const response = await apiClient.post('/studio/assets/characters/create/' + serieId, {formData});
+      const response = await apiClient.post('/studio/assets/characters/create/' + serieId, formData);
           return response.data;
       },
 
