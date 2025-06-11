@@ -45,7 +45,7 @@ namespace React_Mangati.Server.Controllers
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 PhoneNumber = model.PhoneNumber,
-                Role = ( model.Role != null && string.IsNullOrEmpty(model.Role) && (model.Role == "Reader" || model.Role == "Writer")) ? model.Role : "Reader",
+                Role = ( model.Role != null && string.IsNullOrEmpty(model.Role) && (model.Role == "Reader" || model.Role == "Writer")) ? model.Role : "Writer",
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow

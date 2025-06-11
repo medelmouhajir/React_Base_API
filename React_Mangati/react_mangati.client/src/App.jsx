@@ -1,11 +1,12 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from './components';
+import { StudioLayout } from './components/Studio/StudioLayout/StudioLayout';
+import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './contexts/AuthContext';
 import AuthPage from './pages/auth/AuthPage';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Account from './pages/Account/Account';
 import Home from './pages/Home/Home';
-
 
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,20 +15,18 @@ import Create from './pages/Series/Create';
 import SeriesList from './pages/Series/SeriesList';
 import SerieDetails from './pages/Series/SerieDetails';
 
-
 import ChapterEdit from './pages/Chapters/ChapterEdit';
-
 
 import Viewer from './pages/Viewer/Viewer';
 
-
 import Search from './pages/Search/Search';
-
 
 import Favorites from './pages/Favorites/Favorites';
 import MySeries from './pages/Series/MySeries';
 
-
+import StudioHome from './pages/Studio/Home/StudioHome';
+import CharactersList from './pages/Studio/Characters/CharactersList';
+import CreateCharacter from './pages/Studio/Characters/CreateCharacter';
 
 //import Settings from './pages/Settings/Settings';
 //import NotFound from './pages/NotFound/NotFound';
@@ -65,36 +64,50 @@ function App() {
 
     // User is authenticated, show main app with routing
     return (
-        <MainLayout>
-            <Routes>
-                {/* Default redirect to dashboard */}
-                <Route path="/" element={<Navigate to="/home" replace />} />
+        <Routes>
+            {/* Studio Routes */}
+            <Route
+                path="/studio/*"
+                element={
+                    <ProtectedRoute requiredRole="Writer">
+                        <StudioLayout>
+                            <Routes>
+                                <Route path="/" element={<StudioHome />} />
+                                <Route path="/characters" element={<CharactersList />} />
+                                <Route path="/characters/create" element={<CreateCharacter />} />
+                                {/* Add other studio routes here */}
+                            </Routes>
+                        </StudioLayout>
+                    </ProtectedRoute>
+                }
+            />
 
-                {/* Main application routes */}
-                <Route path="/home" element={<Home />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/account" element={<Account />} />
-                <Route path="/series" element={<SeriesList />} />
-                <Route path="/series/:id" element={<SerieDetails />} />
-                <Route path="/series/create" element={<Create />} />
-
-                <Route path="/series/:id/chapters/:id/edit" element={<ChapterEdit />} />
-
-                <Route path="/viewer/:id" element={<Viewer />} />
-
-                <Route path="/search" element={<Search />} />
-
-                
-                <Route path="/favorites" element={<Favorites />} />
-                <Route path="/myseries" element={<MySeries />} />
-
-                                {/*<Route path="/settings" element={<Settings />} />*/}
-                {/*<Route path="/settings/:section" element={<Settings />} />*/}
-
-                {/* 404 Not Found */}
-                {/*<Route path="*" element={<NotFound />} />*/}
-            </Routes>
-        </MainLayout>
+            {/* Main App Routes */}
+            <Route
+                path="/*"
+                element={
+                    <MainLayout>
+                        <Routes>
+                            <Route path="/" element={<Navigate to="/home" replace />} />
+                            <Route path="/home" element={<Home />} />
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            <Route path="/account" element={<Account />} />
+                            <Route path="/series" element={<SeriesList />} />
+                            <Route path="/series/:id" element={<SerieDetails />} />
+                            <Route path="/series/create" element={<Create />} />
+                            <Route path="/series/:id/chapters/:id/edit" element={<ChapterEdit />} />
+                            <Route path="/viewer/:id" element={<Viewer />} />
+                            <Route path="/search" element={<Search />} />
+                            <Route path="/favorites" element={<Favorites />} />
+                            <Route path="/myseries" element={<MySeries />} />
+                            {/*<Route path="/settings" element={<Settings />} />*/}
+                            {/*<Route path="/settings/:section" element={<Settings />} />*/}
+                            {/*<Route path="*" element={<NotFound />} />*/}
+                        </Routes>
+                    </MainLayout>
+                }
+            />
+        </Routes>
     );
 }
 

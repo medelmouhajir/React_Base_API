@@ -1,0 +1,75 @@
+/* src/pages/Studio/Characters/CreateCharacter.css */
+.create-character {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--studio-card-bg);
+    color: var(--studio-text-color);
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+.create-character__title {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.create-character__form .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.create-character__form .form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.create-character__form label {
+    margin-bottom: 0.5rem;
+}
+
+.create-character__form input,
+.create-character__form textarea {
+    padding: 0.5rem;
+    border: 1px solid var(--studio-border-color);
+    border-radius: 0.375rem;
+    background: var(--studio-bg-color);
+    color: var(--studio-text-color);
+}
+
+.create-character__form textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.create-character__submit {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--studio-accent-color);
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+    .create-character__submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .create-character__submit:hover:not(:disabled) {
+        background: var(--studio-accent-hover);
+    }
+
+.create-character__error {
+    margin-top: 1rem;
+    color: var(--studio-danger-color);
+}
+
+.create-character__message {
+    text-align: center;
+    color: #94a3b8;
+}

@@ -1,0 +1,249 @@
+/* src/components/Studio/StudioLayout/StudioLayout.css */
+.studio-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--studio-bg-color, #0f0f23);
+    color: var(--studio-text-color, #e0e0e0);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Studio specific theme variables */
+:root {
+    --studio-bg-color: #0f0f23;
+    --studio-text-color: #e0e0e0;
+    --studio-header-bg: linear-gradient(135deg, #1a1a3e 0%, #2d1b69 100%);
+    --studio-sidebar-bg: linear-gradient(180deg, #16213e 0%, #0f172a 100%);
+    --studio-sidebar-text: #cbd5e1;
+    --studio-card-bg: #1a1a3e;
+    --studio-border-color: #2d2d5f;
+    --studio-accent-color: #9333ea;
+    --studio-accent-hover: #a855f7;
+    --studio-success-color: #10b981;
+    --studio-warning-color: #f59e0b;
+    --studio-danger-color: #ef4444;
+}
+
+    :root.dark-mode {
+        --studio-bg-color: #0a0a1f;
+        --studio-text-color: rgba(255, 255, 255, 0.95);
+        --studio-header-bg: linear-gradient(135deg, #0f0f2e 0%, #1a0f4a 100%);
+        --studio-sidebar-bg: linear-gradient(180deg, #0a0a1f 0%, #050510 100%);
+        --studio-card-bg: #0f0f2e;
+        --studio-border-color: #1a1a4a;
+    }
+
+.studio-layout__body {
+    flex: 1;
+    display: flex;
+    position: relative;
+}
+
+/* Content Area Styles */
+.studio-layout__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    background: var(--studio-bg-color);
+    color: var(--studio-text-color);
+    min-height: calc(100vh - 4rem); /* Subtract header height */
+    position: relative;
+}
+
+.studio-layout__content--with-sidebar {
+    margin-left: 18rem; /* Slightly wider sidebar for studio */
+}
+
+.studio-layout__content--sidebar-collapsed {
+    margin-left: 4rem; /* Collapsed sidebar width */
+}
+
+.studio-layout__content--full-width {
+    margin-left: 0;
+}
+
+.studio-layout__content-inner {
+    flex: 1;
+    padding: 2rem;
+    max-width: 100%;
+    overflow-x: auto;
+    animation: contentFadeIn 0.4s ease;
+}
+
+/* Mobile Overlay */
+.studio-layout__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 998;
+    backdrop-filter: blur(4px);
+    animation: overlayFadeIn 0.3s ease;
+}
+
+/* Studio-specific enhancements */
+.studio-layout__content-inner {
+    background: radial-gradient(ellipse at top right, rgba(147, 51, 234, 0.1) 0%, transparent 50%), radial-gradient(ellipse at bottom left, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+}
+
+/* Grid background pattern for studio */
+.studio-layout__content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(rgba(147, 51, 234, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(147, 51, 234, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* RTL Support */
+[dir="rtl"] .studio-layout__content--with-sidebar {
+    margin-left: 0;
+    margin-right: 18rem;
+}
+
+[dir="rtl"] .studio-layout__content--sidebar-collapsed {
+    margin-left: 0;
+    margin-right: 4rem;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+    .studio-layout__content--with-sidebar,
+    .studio-layout__content--sidebar-collapsed {
+        margin-left: 0;
+    }
+
+    [dir="rtl"] .studio-layout__content--with-sidebar,
+    [dir="rtl"] .studio-layout__content--sidebar-collapsed {
+        margin-right: 0;
+    }
+
+    .studio-layout__content-inner {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .studio-layout__content-inner {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .studio-layout__content-inner {
+        padding: 0.75rem;
+    }
+}
+
+/* Animations */
+@keyframes contentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes overlayFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Loading States */
+.studio-layout__content--loading {
+    position: relative;
+    overflow: hidden;
+}
+
+    .studio-layout__content--loading::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--studio-accent-color), transparent);
+        animation: loadingBar 2s infinite;
+        z-index: 1000;
+    }
+
+@keyframes loadingBar {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* Scrollbar Customization */
+.studio-layout__content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.studio-layout__content::-webkit-scrollbar-track {
+    background: var(--studio-bg-color);
+}
+
+.studio-layout__content::-webkit-scrollbar-thumb {
+    background: var(--studio-accent-color);
+    border-radius: 4px;
+}
+
+    .studio-layout__content::-webkit-scrollbar-thumb:hover {
+        background: var(--studio-accent-hover);
+    }
+
+/* Print Styles */
+@media print {
+    .studio-layout__content {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        background: white !important;
+    }
+
+    .studio-layout__content-inner {
+        padding: 0 !important;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .studio-layout {
+        background: black;
+        color: white;
+    }
+
+    .studio-layout__content {
+        background: black;
+        border: 2px solid white;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .studio-layout__content,
+    .studio-layout__content-inner,
+    .studio-layout__overlay {
+        transition: none;
+        animation: none;
+    }
+}

@@ -10,7 +10,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\components\Layout\Navigation\" />
+    <Folder Include="src\components\Studio\StudioSidebar\" />
+    <Folder Include="src\components\Studio\StudioHeader\" />
+    <Folder Include="src\components\Studio\StudioLayout\" />
     <Folder Include="src\components\ThemeToggle\" />
+    <Folder Include="src\pages\Studio\Home\" />
+    <Folder Include="src\pages\Studio\Characters\" />
     <Folder Include="src\pages\Viewer\components\NavigationControls\" />
     <Folder Include="src\pages\Viewer\components\ViewingModes\" />
     <Folder Include="src\pages\Viewer\components\Toolbar\" />

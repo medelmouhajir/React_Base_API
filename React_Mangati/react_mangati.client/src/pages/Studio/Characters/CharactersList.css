@@ -1,0 +1,122 @@
+/* src/pages/Studio/Characters/CharactersList.css */
+
+.characters-list {
+    padding: 1.5rem;
+    width: 100%;
+}
+
+/* Header */
+.characters-list__header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.characters-list__search {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--studio-border-color);
+    border-radius: 0.5rem;
+    background: var(--studio-card-bg);
+    color: var(--studio-text-color);
+    font-size: 1rem;
+}
+
+    .characters-list__search::placeholder {
+        color: #94a3b8;
+    }
+
+.characters-list__create-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--studio-accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+    .characters-list__create-btn:hover {
+        background: var(--studio-accent-hover);
+    }
+
+/* Status messages */
+.characters-list__status {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 1rem;
+    margin-top: 2rem;
+}
+
+/* Grid of cards */
+.characters-list__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Individual card */
+.characters-list__card {
+    background: var(--studio-card-bg);
+    border: 1px solid var(--studio-border-color);
+    border-radius: 1rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+    .characters-list__card:hover {
+        transform: translateY(-4px);
+    }
+
+.characters-list__image-wrapper {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: var(--studio-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.characters-list__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.characters-list__placeholder {
+    color: #94a3b8;
+    font-size: 0.875rem;
+}
+
+.characters-list__name {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    text-align: center;
+    color: var(--studio-text-color);
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .characters-list__grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .characters-list__search {
+        font-size: 0.875rem;
+    }
+
+    .characters-list__create-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+}
