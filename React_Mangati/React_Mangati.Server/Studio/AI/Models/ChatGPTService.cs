@@ -172,7 +172,7 @@ namespace React_Mangati.Server.Studio.AI.Models
                     if (item.GetProperty("type").GetString() == "image_generation_call")
                     {
                         var result = item.GetProperty("result").GetString();
-                        return new AIImageResponse { Base64Image = result };
+                        return new AIImageResponse { Success = true, Base64Image = result };
                     }
                 }
             }

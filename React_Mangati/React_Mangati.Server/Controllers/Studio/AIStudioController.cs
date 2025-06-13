@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using React_Mangati.Server.Models.Series;
 using React_Mangati.Server.Studio.AI.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace React_Mangati.Server.Controllers.Studio
 {
@@ -15,11 +16,13 @@ namespace React_Mangati.Server.Controllers.Studio
     {
         private readonly IAIServiceFactory _aiServiceFactory;
         private readonly ILogger<AIStudioController> _logger;
+        private readonly IWebHostEnvironment _env;
 
-        public AIStudioController(IAIServiceFactory aiServiceFactory, ILogger<AIStudioController> logger)
+        public AIStudioController(IAIServiceFactory aiServiceFactory, ILogger<AIStudioController> logger, IWebHostEnvironment env)
         {
             _aiServiceFactory = aiServiceFactory;
             _logger = logger;
+            _env = env;
         }
 
         [HttpPost("generate-image")]
@@ -98,10 +101,12 @@ namespace React_Mangati.Server.Controllers.Studio
 
                 if (result.Success)
                 {
+                    var path = await Save_Image_Result(result.Base64Image);
+
                     return Ok(new
                     {
                         success = true,
-                        imageUrl = result.ImageUrl,
+                        imageUrl = path,
                         base64Image = result.Base64Image,
                         metadata = result.Metadata
                     });
@@ -114,6 +119,31 @@ namespace React_Mangati.Server.Controllers.Studio
                 _logger.LogError(ex, "Error generating image with references");
                 return StatusCode(500, new { success = false, error = "Internal server error" });
             }
+        }
+
+
+        private async Task<string> Save_Image_Result(string base64)
+        {
+            // 1. Build disk path and ensure directory exists
+            var uploadDir = Path.Combine(_env.ContentRootPath, "wwwroot", "uploads", "studio", "generated");
+            Directory.CreateDirectory(uploadDir);
+
+            // 2. Generate a unique filename
+            var fileName = $"{Guid.NewGuid()}.png";
+            var fullPath = Path.Combine(uploadDir, fileName);
+
+            // 3. Strip off data URL prefix if present
+            var commaIndex = base64.IndexOf(',');
+            var rawBase64 = commaIndex >= 0
+                ? base64.Substring(commaIndex + 1)
+                : base64;
+
+            // 4. Decode and write to disk
+            var imageBytes = Convert.FromBase64String(rawBase64);
+            await System.IO.File.WriteAllBytesAsync(fullPath, imageBytes);
+
+            // 5. Return the path where we saved it
+            return $"/uploads/studio/generated/{fileName}";
         }
 
         [HttpGet("providers")]
