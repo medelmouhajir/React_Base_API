@@ -506,6 +506,38 @@
       "imagesCount": "Images",
       "noImagesYet": "No images yet",
       "addFirstImage": "Add first image"
+    },
+    "ai": {
+      "character": {
+        "serieLoadError": "Failed to load selected series",
+        "charactersLoadError": "Failed to load characters",
+        "dataLoadError": "Failed to load character data",
+        "promptRequired": "Please enter a prompt",
+        "generateSuccess": "Image generated successfully",
+        "generateError": "Failed to generate image",
+        "saveSuccess": "Image saved successfully",
+        "saveError": "Failed to save image",
+        "selectCharacter": "Select a character",
+        "loadingCharacters": "Loading characters…",
+        "noCharacters": "No characters found",
+        "createCharacter": "Create character",
+        "back": "Back",
+        "generateFor": "Generate image for",
+        "prompt": "Prompt",
+        "promptPlaceholder": "Enter a prompt…",
+        "characterImages": "Character images",
+        "loadingImages": "Loading images…",
+        "noImages": "No images available",
+        "uploadReferences": "Upload reference images",
+        "loadingUploads": "Loading uploads…",
+        "noUploads": "No uploads available",
+        "generating": "Generating…",
+        "generate": "Generate",
+        "generatedImage": "Generated image",
+        "regenerate": "Regenerate",
+        "saving": "Saving…",
+        "saveToCharacter": "Save to character"
+      }
     }
   }
 }

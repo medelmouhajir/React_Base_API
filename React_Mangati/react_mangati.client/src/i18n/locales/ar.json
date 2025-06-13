@@ -507,6 +507,38 @@
       "imagesCount": "الصور",
       "noImagesYet": "لا توجد صور بعد",
       "addFirstImage": "أضف أول صورة"
+    },
+    "ai": {
+      "character": {
+        "serieLoadError": "فشل تحميل السلسلة المحددة",
+        "charactersLoadError": "فشل تحميل الشخصيات",
+        "dataLoadError": "فشل تحميل بيانات الشخصية",
+        "promptRequired": "يرجى إدخال الوصف",
+        "generateSuccess": "تم توليد الصورة بنجاح",
+        "generateError": "فشل توليد الصورة",
+        "saveSuccess": "تم حفظ الصورة بنجاح",
+        "saveError": "فشل حفظ الصورة",
+        "selectCharacter": "اختر شخصية",
+        "loadingCharacters": "جاري تحميل الشخصيات…",
+        "noCharacters": "لا توجد شخصيات",
+        "createCharacter": "إنشاء شخصية",
+        "back": "رجوع",
+        "generateFor": "توليد الصورة لـ",
+        "prompt": "الوصف",
+        "promptPlaceholder": "أدخل الوصف…",
+        "characterImages": "صور الشخصية",
+        "loadingImages": "جاري تحميل الصور…",
+        "noImages": "لا توجد صور متاحة",
+        "uploadReferences": "رفع الصور المرجعية",
+        "loadingUploads": "جاري تحميل الملفات…",
+        "noUploads": "لا توجد ملفات مرفوعة",
+        "generating": "جاري التوليد…",
+        "generate": "توليد",
+        "generatedImage": "الصورة المولدة",
+        "regenerate": "توليد مرة أخرى",
+        "saving": "جاري الحفظ…",
+        "saveToCharacter": "حفظ للشخصية"
+      }
     }
   }
 }

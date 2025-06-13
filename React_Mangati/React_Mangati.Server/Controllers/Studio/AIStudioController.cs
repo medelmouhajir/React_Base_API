@@ -32,7 +32,7 @@ namespace React_Mangati.Server.Controllers.Studio
                     return BadRequest("Prompt is required");
                 }
 
-                var aiService = _aiServiceFactory.GetService(request.Provider);
+                var aiService = _aiServiceFactory.GetService(AIProvider.ChatGPT);
 
                 var options = new AIImageOptions
                 {
@@ -80,13 +80,13 @@ namespace React_Mangati.Server.Controllers.Studio
                     return BadRequest("At least one reference image is required");
                 }
 
-                var aiService = _aiServiceFactory.GetService(request.Provider);
+                var aiService = _aiServiceFactory.GetService( AIProvider.ChatGPT );
 
                 var options = new AIImageOptions
                 {
                     Width = request.Width ?? 1024,
                     Height = request.Height ?? 1024,
-                    Style = request.Style,
+                    Style = "vivid",
                     Quality = request.Quality ?? "standard"
                 };
 
@@ -163,7 +163,6 @@ namespace React_Mangati.Server.Controllers.Studio
     public class GenerateImageRequest
     {
         public string Prompt { get; set; }
-        public AIProvider Provider { get; set; } = AIProvider.ChatGPT;
         public int? Width { get; set; }
         public int? Height { get; set; }
         public string Style { get; set; }

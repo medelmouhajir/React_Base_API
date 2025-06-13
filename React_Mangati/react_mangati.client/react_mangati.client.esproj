@@ -16,6 +16,7 @@
     <Folder Include="src\components\ThemeToggle\" />
     <Folder Include="src\pages\Studio\Home\" />
     <Folder Include="src\pages\Studio\Characters\" />
+    <Folder Include="src\pages\Studio\AI\" />
     <Folder Include="src\pages\Viewer\components\NavigationControls\" />
     <Folder Include="src\pages\Viewer\components\ViewingModes\" />
     <Folder Include="src\pages\Viewer\components\Toolbar\" />

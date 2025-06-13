@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -16,72 +18,277 @@ namespace React_Mangati.Server.Studio.AI.Models
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly ILogger<ChatGPTService> _logger;
+        private readonly IWebHostEnvironment _env;
         private readonly string _apiKey;
         private readonly string _baseUrl = "https://api.openai.com/v1";
 
-        public ChatGPTService(HttpClient httpClient, IConfiguration configuration, ILogger<ChatGPTService> logger)
+        public ChatGPTService(
+            HttpClient httpClient,
+            IConfiguration configuration,
+            ILogger<ChatGPTService> logger,
+            IWebHostEnvironment env)
         {
             _httpClient = httpClient;
             _configuration = configuration;
             _logger = logger;
+            _env = env;
             _apiKey = _configuration["AISettings:OpenAI:ApiKey"];
 
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _apiKey);
         }
 
-        public async Task<AIImageResponse> GenerateImageFromTextAsync(string prompt, AIImageOptions options = null)
+        public async Task<AIImageResponse> GenerateImageFromTextAsync(
+            string prompt,
+            AIImageOptions options = null)
         {
+            options ??= new AIImageOptions();
+
+            var requestBody = new
+            {
+                model = options.Model ?? "dall-e-3",
+                prompt = prompt,
+                n = options.Count,
+                size = $"{options.Width}x{options.Height}",
+                quality = options.Quality,
+                style = options.Style ?? "vivid"
+            };
+
+            var content = new StringContent(
+                JsonSerializer.Serialize(requestBody),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(
+                $"{_baseUrl}/images/generations",
+                content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var err = await response.Content.ReadAsStringAsync();
+                _logger.LogError($"DALL·E API error: {err}");
+                return new AIImageResponse
+                {
+                    Success = false,
+                    Error = $"API Error: {response.StatusCode} - {err}"
+                };
+            }
+
+            var body = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<DallEResponse>(body);
+
+            return new AIImageResponse
+            {
+                Success = true,
+                ImageUrl = result.data.First().url,
+                Metadata = new Dictionary<string, object>
+                {
+                    ["model"] = options.Model ?? "dall-e-3",
+                    ["revised_prompt"] = result.data.First().revised_prompt
+                }
+            };
+        }
+
+
+        public async Task<AIImageResponse> GenerateImageFromTextAndImagesAsync( string prompt, List<string> images, AIImageOptions options = null)
+        {
+            if (string.IsNullOrWhiteSpace(prompt))
+                throw new ArgumentException("Prompt is required", nameof(prompt));
+
+            // Build the content list: first the prompt, then each image as base64 data URI
+            var contentList = new List<object>
+            {
+                new { type = "input_text", text = prompt }
+            };
+
+            foreach (var imagePath2 in images ?? Enumerable.Empty<string>())
+            {
+                var imagePath = imagePath2.Replace("http://localhost:5229", "");
+                if (!File.Exists(imagePath))
+                {
+                    _logger.LogWarning("Image file not found: {ImagePath}", imagePath);
+                    continue;
+                }
+
+                // Encode file to base64
+                var imageBytes = await File.ReadAllBytesAsync(imagePath);
+                var ext = Path.GetExtension(imagePath).TrimStart('.').ToLower();
+                var mimeType = ext switch
+                {
+                    "jpg" or "jpeg" => "image/jpeg",
+                    "png" => "image/png",
+                    _ => "application/octet-stream"
+                };
+                var base64 = Convert.ToBase64String(imageBytes);
+                var dataUri = $"data:{mimeType};base64,{base64}";
+
+                contentList.Add(new
+                {
+                    type = "input_image",
+                    image_url = dataUri
+                });
+            }
+
+            // Build request payload
+            var payload = new
+            {
+                model = "gpt-4.1",
+                input = new[]
+                {
+                    new
+                    {
+                        role = "user",
+                        content = contentList
+                    }
+                },
+                tools = new[]
+                {
+                    new { type = "image_generation" }
+                }
+                // TODO: incorporate options.Width, options.Height if needed
+            };
+
+            var jsonContent = JsonSerializer.Serialize(payload);
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"{_baseUrl}/responses")
+            {
+                Content = new StringContent(jsonContent, Encoding.UTF8, "application/json")
+            };
+
+            var response = await _httpClient.SendAsync(requestMessage);
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("OpenAI API error: {StatusCode} - {Body}", response.StatusCode, responseJson);
+                throw new HttpRequestException($"OpenAI API returned {response.StatusCode}: {responseJson}");
+            }
+
+            // Parse output for image_generation_call
+            using var doc = JsonDocument.Parse(responseJson);
+            if (doc.RootElement.TryGetProperty("output", out var outputs) && outputs.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var item in outputs.EnumerateArray())
+                {
+                    if (item.GetProperty("type").GetString() == "image_generation_call")
+                    {
+                        var result = item.GetProperty("result").GetString();
+                        return new AIImageResponse { Base64Image = result };
+                    }
+                }
+            }
+
+            _logger.LogWarning("No image generation result found in response.");
+            return null;
+        }
+
+
+        public async Task<AIImageResponse> GenerateImageFromTextAndImagesAsync3( string prompt, List<string> images, AIImageOptions options = null)
+        {
+            options ??= new AIImageOptions();
             try
             {
-                options ??= new AIImageOptions();
-
-                var requestBody = new
+                // Convert images to base64 if they're file paths
+                var base64Images = new List<string>();
+                foreach (var image2 in images)
                 {
-                    model = options.Model ?? "dall-e-3",
+                    var image = image2.Replace("http://localhost:5229", "");
+                    if (image.StartsWith("http"))
+                    {
+                        // Download and convert URL images to base64
+                        using var response1 = await _httpClient.GetAsync(image);
+                        var imageBytes = await response1.Content.ReadAsByteArrayAsync();
+                        var base64 = Convert.ToBase64String(imageBytes);
+                        var mimeType = GetMimeType(image);
+                        base64Images.Add($"data:{mimeType};base64,{base64}");
+                    }
+                    else if (image.StartsWith("/") || image.StartsWith("\\"))
+                    {
+                        // Handle local web path (e.g., /uploads/images/ggg.png)
+                        var physicalPath = Path.Combine(_env.WebRootPath, image.TrimStart('/', '\\'));
+
+                        if (File.Exists(physicalPath))
+                        {
+                            var imageBytes = await File.ReadAllBytesAsync(physicalPath);
+                            var base64 = Convert.ToBase64String(imageBytes);
+                            var mimeType = GetMimeType(physicalPath);
+                            base64Images.Add($"data:{mimeType};base64,{base64}");
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"Image file not found: {physicalPath}");
+                            continue;
+                        }
+                    }
+                    else if (File.Exists(image))
+                    {
+                        // Handle absolute file paths
+                        var imageBytes = await File.ReadAllBytesAsync(image);
+                        var base64 = Convert.ToBase64String(imageBytes);
+                        var mimeType = GetMimeType(image);
+                        base64Images.Add($"data:{mimeType};base64,{base64}");
+                    }
+                    else if (image.StartsWith("data:"))
+                    {
+                        // Already base64 encoded
+                        base64Images.Add(image);
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Unrecognized image format: {image}");
+                        continue;
+                    }
+                }
+
+                // Build the request for gpt-image-1 with reference images
+                var imageGenerationRequest = new
+                {
+                    model = "gpt-image-1", // Use the new model
                     prompt = prompt,
-                    n = options.Count,
-                    size = $"{options.Width}x{options.Height}",
-                    quality = options.Quality,
-                    style = options.Style ?? "vivid"
+                    image = base64Images.Take(10).ToArray(), // Maximum 10 reference images
+                    size = "1024x1024",
+                    quality = "medium", // low, medium, high, auto
+                    n = 1,
+                    output_format = "png" // png, jpeg, webp
                 };
 
-                var json = JsonSerializer.Serialize(requestBody);
+                var json = JsonSerializer.Serialize(imageGenerationRequest);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync($"{_baseUrl}/images/generations", content);
+                // POST to the correct endpoint
+                var response = await _httpClient.PostAsync(_baseUrl, content);
 
-                if (response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
                 {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<DallEResponse>(responseContent);
-
-                    return new AIImageResponse
-                    {
-                        Success = true,
-                        ImageUrl = result.data.FirstOrDefault()?.url,
-                        Metadata = new Dictionary<string, object>
-                        {
-                            ["model"] = options.Model ?? "dall-e-3",
-                            ["revised_prompt"] = result.data.FirstOrDefault()?.revised_prompt
-                        }
-                    };
-                }
-                else
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-                    _logger.LogError($"DALL-E API error: {error}");
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("Image generation API error: {status} {body}",
+                        response.StatusCode, errorContent);
 
                     return new AIImageResponse
                     {
                         Success = false,
-                        Error = $"API Error: {response.StatusCode} - {error}"
+                        Error = $"API Error: {response.StatusCode} - {errorContent}"
                     };
                 }
+
+                // Parse the response
+                var responseBody = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(responseBody);
+
+                // Get the generated image URL from the response
+                var imageUrl = doc.RootElement
+                    .GetProperty("data")[0]
+                    .GetProperty("url")
+                    .GetString();
+
+                return new AIImageResponse
+                {
+                    Success = true,
+                    ImageUrl = imageUrl
+                };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error generating image with DALL-E");
+                _logger.LogError(ex, "Error generating image with references");
                 return new AIImageResponse
                 {
                     Success = false,
@@ -90,18 +297,114 @@ namespace React_Mangati.Server.Studio.AI.Models
             }
         }
 
-        public async Task<AIImageResponse> GenerateImageFromTextAndImagesAsync(string prompt, List<string> images, AIImageOptions options = null)
+        private string GetMimeType(string fileName)
         {
+            var extension = Path.GetExtension(fileName).ToLowerInvariant();
+            return extension switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".webp" => "image/webp",
+                ".bmp" => "image/bmp",
+                _ => "image/jpeg" // Default fallback
+            };
+        }
+
+        public async Task<AIImageResponse> GenerateImageFromTextAndImagesAsync2( string prompt, List<string> images, AIImageOptions options = null)
+        {
+            options ??= new AIImageOptions();
+
             try
             {
-                // First, use GPT-4 Vision to analyze the images
-                var imageAnalysis = await AnalyzeImagesWithGPT4Vision(prompt, images);
+                // 1. Build a single chat request with prompt + inline images as data URLs
+                var contentList = new List<object>();
 
-                // Then generate an enhanced prompt based on the analysis
-                var enhancedPrompt = await GenerateEnhancedPrompt(prompt, imageAnalysis);
+                //foreach (var relativePath in images)
+                //{
+                //    // Strip any URL prefix and map to wwwroot
+                //    var clean = relativePath
+                //        .Replace("http://localhost:5229", "")
+                //        .TrimStart('/')
+                //        .Replace('/', Path.DirectorySeparatorChar);
 
-                // Finally, generate the image with DALL-E
-                return await GenerateImageFromTextAsync(enhancedPrompt, options);
+                //    var fullPath = Path.Combine(_env.WebRootPath, clean);
+
+                //    // Read and encode
+                //    var bytes = await File.ReadAllBytesAsync(fullPath);
+                //    var b64 = Convert.ToBase64String(bytes);
+
+                //    // Determine MIME type from extension
+                //    var ext = Path.GetExtension(fullPath).ToLowerInvariant();
+                //    var mime = ext switch
+                //    {
+                //        ".png" => "image/png",
+                //        ".jpg" => "image/jpeg",
+                //        ".jpeg" => "image/jpeg",
+                //        _ => "application/octet-stream"
+                //    };
+
+                //    // Prepend the data URL prefix
+                //    var dataUrl = $"data:{mime};base64,{b64}";
+
+                //    contentList.Add(new
+                //    {
+                //        type = "image_url",
+                //        image_url = new { url = dataUrl }
+                //    });
+                //}
+
+                contentList.Add(new
+                {
+                    type = "image_url",
+                    image_url = new { 
+                        url = "https://i.ibb.co/CS233Qv/294998186-3292852927611817-5382728139934738121-n.jpg",
+                        detail = "high"
+                    }
+                });
+
+
+                // 2. Send to the multimodal chat endpoint
+                var chatRequest = new
+                {
+                    model = "gpt-image-1",
+                    prompt = prompt,
+                    input = new[]
+                    {
+                        new
+                        {
+                            role    = "user",
+                            content = contentList
+                        }
+                    }
+                };
+
+                var chatJson = JsonSerializer.Serialize(chatRequest);
+                var chatContent = new StringContent(chatJson, Encoding.UTF8, "application/json");
+                var chatResp = await _httpClient.PostAsync($"{_baseUrl}", chatContent);
+
+                if (!chatResp.IsSuccessStatusCode)
+                {
+                    var err = await chatResp.Content.ReadAsStringAsync();
+                    _logger.LogError($"Chat API error: {err}");
+                    return new AIImageResponse
+                    {
+                        Success = false,
+                        Error = $"Chat API Error: {chatResp.StatusCode} - {err}"
+                    };
+                }
+
+                // 3. Extract the expanded prompt from the chat response
+                var chatBody = await chatResp.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(chatBody);
+                var detailedPrompt = doc.RootElement
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
+                    .GetProperty("content")
+                    .GetString();
+
+                // 4. Finally call DALL·E to generate the new image
+                return await GenerateImageFromTextAsync(detailedPrompt, options);
             }
             catch (Exception ex)
             {
@@ -114,88 +417,6 @@ namespace React_Mangati.Server.Studio.AI.Models
             }
         }
 
-        private async Task<string> AnalyzeImagesWithGPT4Vision(string prompt, List<string> images)
-        {
-            var messages = new List<object>
-            {
-                new
-                {
-                    role = "user",
-                    content = new List<object>
-                    {
-                        new { type = "text", text = $"Analyze these images and describe what you see in relation to this prompt: {prompt}" }
-                    }
-                }
-            };
-
-            // Add images to the message
-            var contentList = messages[0].GetType().GetProperty("content").GetValue(messages[0]) as List<object>;
-            foreach (var image in images)
-            {
-                contentList.Add(new
-                {
-                    type = "image_url",
-                    image_url = new { url = image }
-                });
-            }
-
-            var requestBody = new
-            {
-                model = "gpt-4-vision-preview",
-                messages = messages,
-                max_tokens = 300
-            };
-
-            var json = JsonSerializer.Serialize(requestBody);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync($"{_baseUrl}/chat/completions", content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                // Parse and extract the analysis
-                return "Image analysis from GPT-4 Vision";
-            }
-
-            return "Unable to analyze images";
-        }
-
-        private async Task<string> GenerateEnhancedPrompt(string originalPrompt, string imageAnalysis)
-        {
-            var requestBody = new
-            {
-                model = "gpt-4",
-                messages = new[]
-                {
-                    new
-                    {
-                        role = "system",
-                        content = "You are an expert at creating detailed image generation prompts for DALL-E."
-                    },
-                    new
-                    {
-                        role = "user",
-                        content = $"Based on this original prompt: '{originalPrompt}' and this image analysis: '{imageAnalysis}', create an enhanced, detailed prompt for DALL-E image generation."
-                    }
-                },
-                max_tokens = 200
-            };
-
-            var json = JsonSerializer.Serialize(requestBody);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync($"{_baseUrl}/chat/completions", content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                // Parse and extract the enhanced prompt
-                return originalPrompt + " [Enhanced]";
-            }
-
-            return originalPrompt;
-        }
 
         private class DallEResponse
         {

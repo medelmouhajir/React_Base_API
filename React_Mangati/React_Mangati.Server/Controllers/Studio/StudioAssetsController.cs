@@ -75,20 +75,49 @@ namespace React_Mangati.Server.Controllers.Studio
 
 
         [HttpPost("uploads/create/{serieId}")]
-        public async Task<IActionResult> CreateUpload(int serieId , IFormFile file )
+        public async Task<IActionResult> CreateUpload(int serieId, IFormFile fileData)
         {
+            // 1. Validate
+            if (fileData == null || fileData.Length == 0)
+                return BadRequest("File is required.");
+
+            // 2. Create DB record with a new Id
             var upload = new Serie_Upload
             {
+                Id = Guid.NewGuid(),
                 SerieId = serieId,
-                Path = "",
                 Date_Uploaded = DateTime.UtcNow,
+                Path = ""  // will set below
             };
-
             _context.Serie_Uploads.Add(upload);
             await _context.SaveChangesAsync();
 
-            return Ok(upload);
+            // 3. Build disk path and ensure directory exists
+            var uploadDir = Path.Combine(_env.ContentRootPath, "wwwroot", "uploads", "studio", "series", serieId.ToString(), "uploads");
+            Directory.CreateDirectory(uploadDir);
+
+            // 4. Save file named by the upload.Id
+            var fileName = $"{upload.Id}{Path.GetExtension(fileData.FileName)}";
+            var fullPath = Path.Combine(uploadDir, fileName);
+            using (var stream = System.IO.File.Create(fullPath))
+            {
+                await fileData.CopyToAsync(stream);
+            }
+
+            // 5. Store the relative URL path in DB
+            //    e.g. "/uploads/studio/series/123/uploads/abcde-... .png"
+            upload.Path = $"/uploads/studio/series/{serieId}/uploads/{fileName}";
+            _context.Serie_Uploads.Update(upload);
+            await _context.SaveChangesAsync();
+
+            // 6. Return 201 Created at your GetUploads action
+            return CreatedAtAction(
+                nameof(GetUploads),
+                new { serieId },
+                upload
+            );
         }
+
 
 
         [HttpDelete("uploads/delete/{serieId}")]

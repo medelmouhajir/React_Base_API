@@ -67,18 +67,24 @@ const aiStudioService = {
     // Generate image with reference images
     async generateImageWithReferences(prompt, referenceImages, options = {}) {
         try {
-            const response = await apiClient.post('/AIStudio/generate-image-with-references', {
+            const payload = {
                 prompt,
                 referenceImages,
-                provider: options.provider || this.AIProvider.ChatGPT,
+                provider: options.provider || this.AIProvider.Gemini,
                 width: options.width || 1024,
                 height: options.height || 1024,
-                style: options.style,
-                quality: options.quality || 'standard'
-            });
+                style: options.style || 'anime',
+                quality: options.quality || 'standard',
+                count: options.count || 1
+            };
+            const response = await apiClient.post('/AIStudio/generate-image-with-references',payload);
             return response.data;
         } catch (error) {
             console.error('Error generating image with references:', error);
+            console.error(
+                'Error generating image with references:',
+                error.response?.data || error
+            );
             throw error;
         }
     },

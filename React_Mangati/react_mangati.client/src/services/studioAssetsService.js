@@ -32,12 +32,18 @@ const studioAssetsService = {
           return response.data;
       },
 
-  async createUpload(serieId , fileData) {
-      const response = await apiClient.post('/studio/assets/uploads/create/' + serieId, {
-          params: { fileData }
-      });
-          return response.data;
-      },
+    async createUpload(serieId, formData) {
+        // formData must be the FormData you built in your component,
+        // *not* wrapped inside another object.
+        const response = await apiClient.post(
+            `/studio/assets/uploads/create/${serieId}`,  // matches [HttpPost("uploads/create/{serieId}")]
+            formData,                                      // <-- raw FormData
+            {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            }
+        );
+        return response.data;
+    },
 
   /**
    * Fetch all scenes for a given series

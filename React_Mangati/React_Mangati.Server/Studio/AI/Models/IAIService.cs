@@ -30,6 +30,7 @@ namespace React_Mangati.Server.Studio.AI.Models
         public string Base64Image { get; set; }
         public string Error { get; set; }
         public Dictionary<string, object> Metadata { get; set; }
+        public string GeneratedText { get; set; } // Add this for Gemini text responses
     }
 
     public class AIImageOptions
@@ -40,5 +41,11 @@ namespace React_Mangati.Server.Studio.AI.Models
         public string Quality { get; set; } = "standard";
         public int Count { get; set; } = 1;
         public string Model { get; set; }
+
+        // Gemini-specific options
+        public double Temperature { get; set; } = 0.4;
+        public int TopK { get; set; } = 32;
+        public double TopP { get; set; } = 1;
+        public int MaxTokens { get; set; } = 2048;
     }
 }
