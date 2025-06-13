@@ -3,20 +3,21 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: var(--studio-bg-color, #0f0f23);
-    color: var(--studio-text-color, #e0e0e0);
+    background: var(--studio-bg-color);
+    color: var(--studio-text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Studio specific theme variables */
 :root {
-    --studio-bg-color: #0f0f23;
-    --studio-text-color: #e0e0e0;
-    --studio-header-bg: linear-gradient(135deg, #1a1a3e 0%, #2d1b69 100%);
-    --studio-sidebar-bg: linear-gradient(180deg, #16213e 0%, #0f172a 100%);
-    --studio-sidebar-text: #cbd5e1;
-    --studio-card-bg: #1a1a3e;
-    --studio-border-color: #2d2d5f;
+    /* Light mode (default) */
+    --studio-bg-color: #f8fafc;
+    --studio-text-color: #1e293b;
+    --studio-header-bg: linear-gradient(135deg, #818cf8 0%, #9333ea 100%);
+    --studio-sidebar-bg: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+    --studio-sidebar-text: #334155;
+    --studio-card-bg: #ffffff;
+    --studio-border-color: #e2e8f0;
     --studio-accent-color: #9333ea;
     --studio-accent-hover: #a855f7;
     --studio-success-color: #10b981;
@@ -44,11 +45,12 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: var(--studio-bg-color);
     color: var(--studio-text-color);
     min-height: calc(100vh - 4rem); /* Subtract header height */
     position: relative;
+    overflow-x: hidden;
 }
 
 .studio-layout__content--with-sidebar {
@@ -69,6 +71,8 @@
     max-width: 100%;
     overflow-x: auto;
     animation: contentFadeIn 0.4s ease;
+    position: relative;
+    z-index: 1;
 }
 
 /* Mobile Overlay */
@@ -82,10 +86,15 @@
     z-index: 998;
     backdrop-filter: blur(4px);
     animation: overlayFadeIn 0.3s ease;
+    touch-action: none; /* Prevents scrolling on mobile when overlay is active */
 }
 
 /* Studio-specific enhancements */
 .studio-layout__content-inner {
+    background: radial-gradient(ellipse at top right, rgba(147, 51, 234, 0.05) 0%, transparent 50%), radial-gradient(ellipse at bottom left, rgba(168, 85, 247, 0.03) 0%, transparent 50%);
+}
+
+:root.dark-mode .studio-layout__content-inner {
     background: radial-gradient(ellipse at top right, rgba(147, 51, 234, 0.1) 0%, transparent 50%), radial-gradient(ellipse at bottom left, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
 }
 
@@ -100,7 +109,14 @@
     background-image: linear-gradient(rgba(147, 51, 234, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(147, 51, 234, 0.03) 1px, transparent 1px);
     background-size: 50px 50px;
     pointer-events: none;
-    opacity: 0.5;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+/* Darker grid in dark mode */
+:root.dark-mode .studio-layout__content::before {
+    opacity: 0.2;
+    background-image: linear-gradient(rgba(147, 51, 234, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(147, 51, 234, 0.05) 1px, transparent 1px);
 }
 
 /* RTL Support */
@@ -197,6 +213,7 @@
 /* Scrollbar Customization */
 .studio-layout__content::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
 }
 
 .studio-layout__content::-webkit-scrollbar-track {
@@ -212,16 +229,39 @@
         background: var(--studio-accent-hover);
     }
 
+/* Touch-specific enhancements */
+@media (hover: none) and (pointer: coarse) {
+    .studio-layout__content::-webkit-scrollbar {
+        width: 4px; /* Thinner scrollbars on touch devices */
+    }
+
+    .studio-layout__content-inner {
+        padding-bottom: 4rem; /* Extra padding at bottom for comfortable scrolling */
+    }
+
+    /* Larger touch targets */
+    .studio-layout button,
+    .studio-layout a {
+        min-height: 44px; /* Apple's recommended minimum touch target size */
+        min-width: 44px;
+    }
+}
+
 /* Print Styles */
 @media print {
     .studio-layout__content {
         margin-left: 0 !important;
         margin-right: 0 !important;
         background: white !important;
+        color: black !important;
     }
 
     .studio-layout__content-inner {
         padding: 0 !important;
+    }
+
+    .studio-layout__content::before {
+        display: none !important;
     }
 }
 
@@ -236,6 +276,11 @@
         background: black;
         border: 2px solid white;
     }
+
+        .studio-layout__content::before {
+            opacity: 0.8;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+        }
 }
 
 /* Reduced Motion Support */
@@ -244,6 +289,43 @@
     .studio-layout__content-inner,
     .studio-layout__overlay {
         transition: none;
-        animation: none;
+        animation: none !important;
+    }
+
+    .studio-layout__content--loading::after {
+        animation: none !important;
+        display: none !important;
+    }
+}
+
+/* Safari-specific fixes */
+@supports (-webkit-touch-callout: none) {
+    .studio-layout__content {
+        /* Fix for Safari issues with position: sticky */
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Mobile gesture optimizations */
+.studio-layout__content {
+    overscroll-behavior: contain; /* Prevents bounce effect on some browsers */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    touch-action: pan-y; /* Enables vertical scrolling but prevents horizontal */
+}
+
+/* Dark theme-specific optimizations */
+:root.dark-mode .studio-layout__content::before {
+    opacity: 0.2; /* Subtler grid in dark mode */
+}
+
+/* Light theme adjustments */
+:root:not(.dark-mode) .studio-layout__content-inner {
+    box-shadow: inset 0 0 30px rgba(147, 51, 234, 0.03);
+}
+
+/* Battery-saving optimizations for OLED screens in dark mode */
+@media (prefers-color-scheme: dark) {
+    :root.dark-mode {
+        --studio-bg-color: #000000; /* True black for OLED screens */
     }
 }

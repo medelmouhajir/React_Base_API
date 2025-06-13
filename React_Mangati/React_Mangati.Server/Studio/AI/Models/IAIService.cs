@@ -29,6 +29,7 @@ namespace React_Mangati.Server.Studio.AI.Models
         public string ImageUrl { get; set; }
         public string Base64Image { get; set; }
         public string Error { get; set; }
+        public int Tokens { get; set; } = 0;
         public Dictionary<string, object> Metadata { get; set; }
         public string GeneratedText { get; set; } // Add this for Gemini text responses
     }

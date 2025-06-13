@@ -2,6 +2,7 @@
 using React_Mangati.Server.Models.Series.Chapters;
 using React_Mangati.Server.Models.Studio.Characters;
 using React_Mangati.Server.Models.Studio.Characters.Groups;
+using React_Mangati.Server.Models.Studio.Generations;
 using React_Mangati.Server.Models.Studio.Places;
 using React_Mangati.Server.Models.Studio.Places.Goups;
 using React_Mangati.Server.Models.Studio.Uploads;
@@ -49,6 +50,9 @@ namespace React_Mangati.Server.Models.Series
         public virtual ICollection<Place_Scene>? Place_Scenes { get; set; }
         public virtual ICollection<Places_Group>? Places_Groups { get; set; }
         public virtual ICollection<Serie_Upload>? Serie_Uploads { get; set; }
+
+
+        public virtual ICollection<Image_Generation>? Image_Generations { get; set; }
     }
 
     public enum Serie_Status

@@ -74,7 +74,8 @@
     "favorites": "Favorites",
     "close": "Close Sidebar",
     "statusOnline": "Online",
-    "userMenu": "User menu"
+    "userMenu": "User menu",
+    "studio": "Studio series"
   },
   "auth": {
     "continueWithGoogle": "Continue with Google",
@@ -473,6 +474,7 @@
       "imageEnhancement": "Image Enhancement",
       "resources": "Resources",
       "characters": "Characters",
+      "uploads": "Uploads",
       "scenes": "Scenes",
       "studioSettings": "Studio Settings",
       "settings": "Settings",
@@ -505,39 +507,124 @@
       "images": "Images",
       "imagesCount": "Images",
       "noImagesYet": "No images yet",
-      "addFirstImage": "Add first image"
+      "addFirstImage": "Add first image",
+      "createNew": "Create new"
     },
     "ai": {
-      "character": {
-        "serieLoadError": "Failed to load selected series",
-        "charactersLoadError": "Failed to load characters",
-        "dataLoadError": "Failed to load character data",
-        "promptRequired": "Please enter a prompt",
-        "generateSuccess": "Image generated successfully",
-        "generateError": "Failed to generate image",
-        "saveSuccess": "Image saved successfully",
-        "saveError": "Failed to save image",
-        "selectCharacter": "Select a character",
-        "loadingCharacters": "Loading characters…",
-        "noCharacters": "No characters found",
-        "createCharacter": "Create character",
-        "back": "Back",
-        "generateFor": "Generate image for",
-        "prompt": "Prompt",
-        "promptPlaceholder": "Enter a prompt…",
-        "characterImages": "Character images",
-        "loadingImages": "Loading images…",
-        "noImages": "No images available",
-        "uploadReferences": "Upload reference images",
-        "loadingUploads": "Loading uploads…",
-        "noUploads": "No uploads available",
-        "generating": "Generating…",
-        "generate": "Generate",
-        "generatedImage": "Generated image",
-        "regenerate": "Regenerate",
-        "saving": "Saving…",
-        "saveToCharacter": "Save to character"
+      "selectReferenceImages": "Select reference images",
+      "characterImages": "Character images",
+      "noReferenceImages": "No reference images uploaded",
+      "noCharacterImages": "No character images available",
+      "saveGeneratedImage": "Save generated image",
+      "imageName": "Image name",
+      "setAsMainImage": "Set as main image",
+      "saveImage": "Save image",
+      "selectCharacter": "Select a character",
+      "noCharactersFound": "No characters found",
+      "back": "Back",
+      "generateImageFor": "Generate image for",
+      "promptDetails": "Prompt details",
+      "promptPlaceholder": "Enter detailed prompt here…",
+      "generationOptions": "Generation options",
+      "model": "Model",
+      "resolution": "Resolution",
+      "quality": "Quality",
+      "style": "Style",
+      "referenceImages": "Reference images",
+      "referenceImagesDescription": "Use existing images as references to guide the generation",
+      "viewCharacterImages": "View character images",
+      "generating": "Generating…",
+      "generateImage": "Generate image",
+      "generatedImageFor": "Generated image for",
+      "generationDetails": "Generation details",
+      "prompt": "Prompt",
+      "referenceImagesCount": "Reference images",
+      "regenerate": "Regenerate",
+      "saveToCharacter": "Save to character"
+    },
+    "uploads": {
+      "title": "Uploads",
+      "loading": "Loading…",
+      "search": "Search uploads…",
+      "gridView": "Grid view",
+      "listView": "List view",
+      "upload": "Upload",
+      "delete": "Delete",
+      "refresh": "Refresh",
+      "refreshing": "Refreshing…",
+      "sortBy": "Sort by",
+      "date": "Date",
+      "name": "Name",
+      "type": "Type",
+      "file": "File",
+      "uploadDate": "Upload date",
+      "selected": "{{count}} selected",
+      "count": "{{count}} uploads",
+      "selectAll": "Select all",
+      "noUploads": "No uploads yet",
+      "noSearchResults": "No results found",
+      "deleteConfirmation": "Confirm deletion",
+      "deleteWarning": "Are you sure you want to delete {{count}} upload(s)?",
+      "deleteWarningPermanent": "This action cannot be undone.",
+      "confirmDelete": "Delete",
+      "errors": {
+        "loadingSeries": "Failed to load selected series",
+        "noSeriesSelected": "No series selected",
+        "loadingUploads": "Failed to load uploads",
+        "uploadFailed": "Failed to upload files",
+        "deleteFailed": "Failed to delete uploads"
       }
     }
+  },
+  "errors": {
+    "invalidSerieData": "Invalid series data",
+    "noSerieSelected": "No series selected",
+    "loadingCharacters": "Error loading characters",
+    "creatingGroup": "Error creating group",
+    "deletingCharacter": "Error deleting character"
+  },
+  "validation": {
+    "groupNameRequired": "Group name is required"
+  },
+  "success": {
+    "groupCreated": "Group created successfully",
+    "characterDeleted": "Character deleted successfully"
+  },
+  "confirm": {
+    "deleteCharacter": "Are you sure you want to delete this character?"
+  },
+  "actions": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter"
+  },
+  "groups": {
+    "createNew": "Create new group",
+    "name": "Group name",
+    "namePlaceholder": "Enter group name"
+  },
+  "characters": {
+    "title": "Characters",
+    "createNew": "Create new character"
+  },
+  "status": {
+    "loading": "Loading…",
+    "noResults": "No results found",
+    "noCharacters": "No characters available"
+  },
+  "filters": {
+    "group": "Group",
+    "allGroups": "All groups",
+    "noGroup": "No group",
+    "sortBy": "Sort by",
+    "name": "Name",
+    "height": "Height",
+    "weight": "Weight",
+    "order": "Order",
+    "ascending": "Ascending",
+    "descending": "Descending"
   }
 }

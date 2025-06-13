@@ -6,6 +6,7 @@ using React_Mangati.Server.Models.Series;
 using React_Mangati.Server.Models.Series.Chapters;
 using React_Mangati.Server.Models.Studio.Characters;
 using React_Mangati.Server.Models.Studio.Characters.Groups;
+using React_Mangati.Server.Models.Studio.Generations;
 using React_Mangati.Server.Models.Studio.Places;
 using React_Mangati.Server.Models.Studio.Places.Goups;
 using React_Mangati.Server.Models.Studio.Uploads;
@@ -49,6 +50,10 @@ namespace React_Mangati.Server.Data
 
 
         public DbSet<Serie_Upload> Serie_Uploads { get; set; }
+
+
+        public DbSet<Image_Generation> Image_Generations { get; set; }
+        public DbSet<Image_Generation_Reference> Image_Generation_References { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

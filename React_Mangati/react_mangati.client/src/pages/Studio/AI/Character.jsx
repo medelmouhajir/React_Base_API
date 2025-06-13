@@ -157,7 +157,8 @@ const Character = () => {
                         style: generationOptions.style,
                         quality: generationOptions.quality,
                         model: generationOptions.model
-                    }
+                    },
+                    selectedSerie.id
                 );
 
                 if (result.success) {

@@ -46,6 +46,16 @@ namespace React_Mangati.Server.Controllers.Studio
             return Ok(uploads);
         }
 
+        [HttpGet("images-generated")]
+        public async Task<IActionResult> GetGeneratedImages(int serieId)
+        {
+            var generations = await _context.Image_Generations
+                .Include(x=> x.Image_Generation_References)
+                .Where(c => c.SerieId == serieId)
+                .ToListAsync();
+            return Ok(generations);
+        }
+
         [HttpGet("character")]
         public async Task<IActionResult> GetCharacter(Guid characterId)
         {

@@ -12,6 +12,12 @@ const studioAssetsService = {
           });
           return response.data;
     },
+  async getImagesGenerations(serieId) {
+      const response = await apiClient.get('/studio/assets/images-generated', {
+          params: { serieId }
+          });
+          return response.data;
+    },
 
   async getUploads(serieId) {
       const response = await apiClient.get('/studio/assets/uploads', {

@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using React_Mangati.Server.Data;
 using React_Mangati.Server.Models.Series;
+using React_Mangati.Server.Models.Studio.Generations;
 using React_Mangati.Server.Studio.AI.Models;
 using System;
 using System.Collections.Generic;
@@ -17,12 +20,14 @@ namespace React_Mangati.Server.Controllers.Studio
         private readonly IAIServiceFactory _aiServiceFactory;
         private readonly ILogger<AIStudioController> _logger;
         private readonly IWebHostEnvironment _env;
+        private readonly ApplicationDbContext _context;
 
-        public AIStudioController(IAIServiceFactory aiServiceFactory, ILogger<AIStudioController> logger, IWebHostEnvironment env)
+        public AIStudioController(IAIServiceFactory aiServiceFactory, ILogger<AIStudioController> logger, IWebHostEnvironment env , ApplicationDbContext context)
         {
             _aiServiceFactory = aiServiceFactory;
             _logger = logger;
             _env = env;
+            _context = context;
         }
 
         [HttpPost("generate-image")]
@@ -83,6 +88,18 @@ namespace React_Mangati.Server.Controllers.Studio
                     return BadRequest("At least one reference image is required");
                 }
 
+                var generation = new Image_Generation
+                {
+                    Id = Guid.NewGuid(),
+                    Date_Created = DateTime.UtcNow,
+                    Prompt = request.Prompt,
+                    SerieId = request.SerieId,
+                    Tokens = 0
+                };
+
+                await _context.Image_Generations.AddAsync(generation);
+                await _context.SaveChangesAsync();
+
                 var aiService = _aiServiceFactory.GetService( AIProvider.ChatGPT );
 
                 var options = new AIImageOptions
@@ -102,6 +119,13 @@ namespace React_Mangati.Server.Controllers.Studio
                 if (result.Success)
                 {
                     var path = await Save_Image_Result(result.Base64Image);
+
+                    generation.Date_Completed = DateTime.UtcNow;
+                    generation.Result_Path = path;
+                    generation.Tokens = result.Tokens;
+
+                    _context.Image_Generations.Update(generation);
+                    await _context.SaveChangesAsync();
 
                     return Ok(new
                     {
@@ -198,6 +222,8 @@ namespace React_Mangati.Server.Controllers.Studio
         public string Style { get; set; }
         public string Quality { get; set; }
         public int? Count { get; set; }
+
+        public int SerieId { get; set; }
     }
 
     public class GenerateImageWithReferencesRequest : GenerateImageRequest

@@ -65,7 +65,7 @@ const aiStudioService = {
     },
 
     // Generate image with reference images
-    async generateImageWithReferences(prompt, referenceImages, options = {}) {
+    async generateImageWithReferences(prompt, referenceImages, options = {} , serieId) {
         try {
             const payload = {
                 prompt,
@@ -75,7 +75,8 @@ const aiStudioService = {
                 height: options.height || 1024,
                 style: options.style || 'anime',
                 quality: options.quality || 'standard',
-                count: options.count || 1
+                count: options.count || 1,
+                serieId: serieId
             };
             const response = await apiClient.post('/AIStudio/generate-image-with-references',payload);
             return response.data;

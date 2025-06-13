@@ -1,3 +1,4 @@
+// src/App.jsx - Modified version with landing page
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from './components';
 import { StudioLayout } from './components/Studio/StudioLayout/StudioLayout';
@@ -27,8 +28,14 @@ import MySeries from './pages/Series/MySeries';
 import StudioHome from './pages/Studio/Home/StudioHome';
 import CharactersList from './pages/Studio/Characters/CharactersList';
 import CreateCharacter from './pages/Studio/Characters/CreateCharacter';
+
 import CharacterDetails from './pages/Studio/Characters/CharacterDetails';
+
+import UploadsList from './pages/Studio/Uploads/UploadsList';
+
 import Character from './pages/Studio/AI/Character';
+
+import LandingPage from './pages/Landing/LandingPage';
 
 //import Settings from './pages/Settings/Settings';
 //import NotFound from './pages/NotFound/NotFound';
@@ -59,9 +66,15 @@ function App() {
         );
     }
 
-    // Show auth page if user is not authenticated
+    // Public routes that don't require authentication
     if (!user) {
-        return <AuthPage />;
+        return (
+            <Routes>
+                <Route path="/auth" element={<AuthPage />} />
+                <Route path="/" element={<LandingPage />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        );
     }
 
     // User is authenticated, show main app with routing
@@ -78,7 +91,11 @@ function App() {
                                 <Route path="/characters" element={<CharactersList />} />
                                 <Route path="/characters/create" element={<CreateCharacter />} />
                                 <Route path="/characters/:id/details" element={<CharacterDetails />} />
+
                                 <Route path="/ai/character" element={<Character />} />
+
+
+                                <Route path="/uploads" element={<UploadsList />} />
                                 {/* Add other studio routes here */}
                             </Routes>
                         </StudioLayout>
@@ -93,6 +110,7 @@ function App() {
                     <MainLayout>
                         <Routes>
                             <Route path="/" element={<Navigate to="/home" replace />} />
+                            <Route path="/auth" element={<Navigate to="/home" replace />} />
                             <Route path="/home" element={<Home />} />
                             <Route path="/dashboard" element={<Dashboard />} />
                             <Route path="/account" element={<Account />} />

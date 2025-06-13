@@ -1,5 +1,5 @@
 // src/components/Studio/StudioSidebar/StudioSidebar.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -18,7 +18,23 @@ const StudioSidebar = ({
     const { user } = useAuth();
     const [activeMenu, setActiveMenu] = useState('dashboard');
     const [expandedSections, setExpandedSections] = useState(['ai-tools']);
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
+    const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 1024);
+    const sidebarRef = useRef(null);
     const image_base_url = import.meta.env.VITE_API_URL;
+
+    // Track window size changes
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobileView(window.innerWidth <= 1024);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     // Update active menu based on current path
     useEffect(() => {
@@ -37,13 +53,62 @@ const StudioSidebar = ({
             setActiveMenu('dashboard');
         } else if (path.includes('/studio/settings')) {
             setActiveMenu('settings');
+        } else if (path.includes('/studio/uploads')) {
+            setActiveMenu('uploads');
+        } else if (path.includes('/studio/scenes')) {
+            setActiveMenu('scenes');
+        } else if (path.includes('/studio/ai/character')) {
+            setActiveMenu('ai-generate-character');
         }
     }, [location]);
 
+    // Close sidebar when clicking outside on mobile
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (isMobileOpen && sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+                onClose && onClose();
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isMobileOpen, onClose]);
+
+    // Handle touch gestures for swipe to close/open
+    const handleTouchStart = (e) => {
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchMove = (e) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > 50; // Minimum swipe distance
+        const isRightSwipe = distance < -50;
+
+        if (isLeftSwipe && (isOpen || isMobileOpen)) {
+            // Swipe left to close
+            onClose && onClose();
+        } else if (isRightSwipe && !isOpen && !isMobileOpen) {
+            // Swipe right to open
+            onToggle && onToggle();
+        }
+
+        // Reset touch coordinates
+        setTouchStart(null);
+        setTouchEnd(null);
+    };
+
     // Toggle section expansion
     const toggleSection = (sectionId) => {
-        setExpandedSections(prev => 
-            prev.includes(sectionId) 
+        setExpandedSections(prev =>
+            prev.includes(sectionId)
                 ? prev.filter(id => id !== sectionId)
                 : [...prev, sectionId]
         );
@@ -110,9 +175,8 @@ const StudioSidebar = ({
                     title: t('studio.sidebar.characters'),
                     icon: (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="9" y1="3" x2="9" y2="21"></line>
-                            <line x1="9" y1="9" x2="21" y2="9"></line>
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     ),
                     href: '/studio/characters'
@@ -122,7 +186,9 @@ const StudioSidebar = ({
                     title: t('studio.sidebar.scenes'),
                     icon: (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"></path>
+                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
                         </svg>
                     ),
                     href: '/studio/scenes'
@@ -132,7 +198,9 @@ const StudioSidebar = ({
                     title: t('studio.sidebar.uploads'),
                     icon: (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"></path>
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
                         </svg>
                     ),
                     href: '/studio/uploads'
@@ -149,7 +217,7 @@ const StudioSidebar = ({
                     icon: (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M12 1v6m0 6v6m0-6l5.2 3m-10.4 0L12 13m0 0l-5.2 3m10.4 0L12 13"></path>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                         </svg>
                     ),
                     href: '/studio/settings'
@@ -168,11 +236,13 @@ const StudioSidebar = ({
         );
     };
 
-    // Define sidebar classes
+    // Define sidebar classes based on screen size and states
     const sidebarClasses = [
         'studio-sidebar',
-        isOpen ? 'studio-sidebar--open' : 'studio-sidebar--closed',
-        isMobileOpen ? 'studio-sidebar--mobile-open' : ''
+        // In mobile view, only apply --mobile-open when needed
+        isMobileView
+            ? (isMobileOpen ? 'studio-sidebar--mobile-open' : '')
+            : (isOpen ? 'studio-sidebar--open' : 'studio-sidebar--closed')
     ].filter(Boolean).join(' ');
 
     return (
@@ -187,14 +257,22 @@ const StudioSidebar = ({
             )}
 
             {/* Sidebar */}
-            <aside className={sidebarClasses} role="navigation" aria-label="Studio navigation">
+            <aside
+                className={sidebarClasses}
+                role="navigation"
+                aria-label="Studio navigation"
+                ref={sidebarRef}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
                 {/* Sidebar Header */}
                 <div className="studio-sidebar__header">
                     {selectedSerie && (
                         <div className="studio-sidebar__serie-info">
                             {selectedSerie.coverImageUrl && (
-                                <img 
-                                    src={image_base_url + selectedSerie.coverImageUrl} 
+                                <img
+                                    src={image_base_url + selectedSerie.coverImageUrl}
                                     alt={selectedSerie.title}
                                     className="studio-sidebar__serie-image"
                                 />
@@ -212,6 +290,7 @@ const StudioSidebar = ({
                             className="studio-sidebar__close-btn"
                             onClick={onClose}
                             aria-label={t('sidebar.close')}
+                            type="button"
                         >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -225,19 +304,28 @@ const StudioSidebar = ({
                 <nav className="studio-sidebar__nav">
                     {menuSections.map((section) => (
                         <div key={section.id} className="studio-sidebar__section">
-                            {isOpen && (
-                                <div 
+                            {(isOpen || isMobileOpen) && (
+                                <div
                                     className="studio-sidebar__section-header"
                                     onClick={() => section.expandable && toggleSection(section.id)}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            section.expandable && toggleSection(section.id);
+                                        }
+                                    }}
+                                    aria-expanded={expandedSections.includes(section.id)}
                                 >
                                     <span className="studio-sidebar__section-title">{section.title}</span>
                                     {section.expandable && (
-                                        <svg 
+                                        <svg
                                             className={`studio-sidebar__section-arrow ${expandedSections.includes(section.id) ? 'studio-sidebar__section-arrow--expanded' : ''}`}
-                                            viewBox="0 0 24 24" 
-                                            fill="none" 
-                                            stroke="currentColor" 
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
                                             strokeWidth="2"
+                                            aria-hidden="true"
                                         >
                                             <polyline points="6 9 12 15 18 9"></polyline>
                                         </svg>
@@ -252,8 +340,9 @@ const StudioSidebar = ({
                                             <button
                                                 className={`studio-sidebar__menu-button ${activeMenu === item.id ? 'studio-sidebar__menu-button--active' : ''}`}
                                                 onClick={() => handleNavigation(item.href)}
-                                                title={!isOpen ? item.title : ''}
-                                                disabled={!selectedSerie && ['characters', 'places'].includes(item.id)}
+                                                title={!isOpen && !isMobileOpen ? item.title : undefined}
+                                                disabled={!selectedSerie && ['characters', 'places', 'scenes', 'uploads'].includes(item.id)}
+                                                type="button"
                                             >
                                                 <span className="studio-sidebar__menu-icon">
                                                     {item.icon}
@@ -286,7 +375,7 @@ const StudioSidebar = ({
                 <div className="studio-sidebar__footer">
                     <div className="studio-sidebar__ai-credit">
                         <div className="studio-sidebar__ai-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                                 <path d="M12 8V16M8 12H16"></path>
                                 <circle cx="12" cy="12" r="10"></circle>
                             </svg>
