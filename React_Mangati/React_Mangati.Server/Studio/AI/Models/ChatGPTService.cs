@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using React_Mangati.Server.Models.Series;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,9 +11,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace React_Mangati.Server.Studio.AI.Models
 {
@@ -89,6 +90,176 @@ namespace React_Mangati.Server.Studio.AI.Models
             };
         }
 
+        public async Task<AIImageResponse> GenerateImageFromTextAndImagesAsync00( string prompt, List<string> images, AIImageOptions options = null)
+        {
+            if (string.IsNullOrWhiteSpace(prompt))
+                throw new ArgumentException("Prompt is required", nameof(prompt));
+
+            try
+            {
+                // Build the content list with the correct format for OpenAI's API
+                var contentList = new List<object>();
+
+                // Add the text prompt
+                contentList.Add(new { type = "text", text = prompt });
+
+                // Process and add images
+                foreach (var imagePath2 in images ?? Enumerable.Empty<string>())
+                {
+                    var imagePath = imagePath2.Replace("http://localhost:5229", "");
+
+                    string base64String;
+                    string mimeType;
+
+                    // Handle local file paths
+                    if (!imagePath.StartsWith("http"))
+                    {
+                        var fullPath = Path.Combine(_env.WebRootPath, imagePath.TrimStart('/'));
+
+                        if (!File.Exists(fullPath))
+                        {
+                            _logger.LogWarning("Image file not found: {ImagePath}", fullPath);
+                            continue;
+                        }
+
+                        var imageBytes = await File.ReadAllBytesAsync(fullPath);
+                        base64String = Convert.ToBase64String(imageBytes);
+
+                        var ext = Path.GetExtension(fullPath).TrimStart('.').ToLower();
+                        mimeType = ext switch
+                        {
+                            "jpg" or "jpeg" => "image/jpeg",
+                            "png" => "image/png",
+                            "gif" => "image/gif",
+                            "webp" => "image/webp",
+                            _ => "image/jpeg"
+                        };
+                    }
+                    else
+                    {
+                        // Handle URLs - download the image
+                        using var response = await _httpClient.GetAsync(imagePath2);
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            _logger.LogWarning("Failed to download image from URL: {Url}", imagePath2);
+                            continue;
+                        }
+
+                        var imageBytes = await response.Content.ReadAsByteArrayAsync();
+                        base64String = Convert.ToBase64String(imageBytes);
+                        mimeType = "image/jpeg"; // Default, or detect from Content-Type header
+                    }
+
+                    // Create data URI
+                    var dataUri = $"data:{mimeType};base64,{base64String}";
+
+                    // Add image with correct format
+                    contentList.Add(new
+                    {
+                        type = "image_url",
+                        image_url = new { url = dataUri }
+                    });
+                }
+
+                // First, use GPT-4o to analyze the images and create an enhanced prompt
+                var visionRequest = new
+                {
+                    model = "gpt-4o", // Use the current vision-capable model
+                    messages = new[]
+                    {
+                new
+                {
+                    role = "user",
+                    content = contentList.ToArray()
+                }
+            },
+                    max_tokens = 300
+                };
+
+                var visionJson = JsonSerializer.Serialize(visionRequest);
+                var visionContent = new StringContent(visionJson, Encoding.UTF8, "application/json");
+
+                var visionResponse = await _httpClient.PostAsync(
+                    $"{_baseUrl}/chat/completions",
+                    visionContent
+                );
+
+                if (!visionResponse.IsSuccessStatusCode)
+                {
+                    var error = await visionResponse.Content.ReadAsStringAsync();
+                    _logger.LogError("Vision API error: {Error}", error);
+                    return new AIImageResponse
+                    {
+                        Success = false,
+                        Error = $"Vision API Error: {visionResponse.StatusCode} - {error}"
+                    };
+                }
+
+                var visionBody = await visionResponse.Content.ReadAsStringAsync();
+                using var visionDoc = JsonDocument.Parse(visionBody);
+
+                var analysisResult = visionDoc.RootElement
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
+                    .GetProperty("content")
+                    .GetString();
+
+                // Now use DALL-E to generate the image based on the analysis
+                var imageRequest = new
+                {
+                    model = "dall-e-3",
+                    prompt = $"{prompt}\n\nBased on reference analysis: {analysisResult}",
+                    n = 1,
+                    size = $"{options?.Width ?? 1024}x{options?.Height ?? 1024}",
+                    quality = options?.Quality ?? "standard",
+                    style = options?.Style ?? "vivid"
+                };
+
+                var imageJson = JsonSerializer.Serialize(imageRequest);
+                var imageContent = new StringContent(imageJson, Encoding.UTF8, "application/json");
+
+                var imageResponse = await _httpClient.PostAsync(
+                    $"{_baseUrl}/images/generations",
+                    imageContent
+                );
+
+                if (!imageResponse.IsSuccessStatusCode)
+                {
+                    var error = await imageResponse.Content.ReadAsStringAsync();
+                    _logger.LogError("DALL-E API error: {Error}", error);
+                    return new AIImageResponse
+                    {
+                        Success = false,
+                        Error = $"Image Generation Error: {imageResponse.StatusCode} - {error}"
+                    };
+                }
+
+                var imageBody = await imageResponse.Content.ReadAsStringAsync();
+                var imageResult = JsonSerializer.Deserialize<DallEResponse>(imageBody);
+
+                return new AIImageResponse
+                {
+                    Success = true,
+                    ImageUrl = imageResult.data.First().url,
+                    Metadata = new Dictionary<string, object>
+                    {
+                        ["model"] = options?.Model ?? "dall-e-3",
+                        ["revised_prompt"] = imageResult.data.First().revised_prompt,
+                        ["vision_analysis"] = analysisResult,
+                        ["reference_image_count"] = images.Count
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating image with references");
+                return new AIImageResponse
+                {
+                    Success = false,
+                    Error = ex.Message
+                };
+            }
+        }
 
         public async Task<AIImageResponse> GenerateImageFromTextAndImagesAsync( string prompt, List<string> images, AIImageOptions options = null)
         {
@@ -103,7 +274,8 @@ namespace React_Mangati.Server.Studio.AI.Models
 
             foreach (var imagePath2 in images ?? Enumerable.Empty<string>())
             {
-                var imagePath = imagePath2.Replace("http://localhost:5229", "");
+                var imagePath = Path.Combine(_env.ContentRootPath, "wwwroot", imagePath2.Replace("http://localhost:5229", ""));
+
                 if (!File.Exists(imagePath))
                 {
                     _logger.LogWarning("Image file not found: {ImagePath}", imagePath);
