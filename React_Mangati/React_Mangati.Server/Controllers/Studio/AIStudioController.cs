@@ -132,7 +132,8 @@ namespace React_Mangati.Server.Controllers.Studio
                         success = true,
                         imageUrl = path,
                         base64Image = result.Base64Image,
-                        metadata = result.Metadata
+                        metadata = result.Metadata,
+                        generationId = generation.Id,
                     });
                 }
 

@@ -83,6 +83,29 @@ namespace React_Mangati.Server.Controllers.Studio
             return Ok(character);
         }
 
+        [HttpPost("characters/create/{characterId}/generation/{generationId}/{isMain}/{generationName}")]
+        public async Task<IActionResult> CreateCharacterImage(Guid characterId , Guid generationId , bool isMain , string generationName )
+        {
+            var generation = await _context.Image_Generations.FirstOrDefaultAsync(x => x.Id == generationId);
+
+            if (generation == null)
+                return BadRequest();
+
+            var character = new Character_Image
+            {
+                Id = Guid.NewGuid(),
+                CharacterId = characterId,
+                Is_Main = isMain ,
+                Title = generationName,
+                Image_Path = generation.Result_Path
+            };
+
+            _context.Character_Images.Add(character);
+            await _context.SaveChangesAsync();
+
+            return Ok(character);
+        }
+
 
         [HttpPost("uploads/create/{serieId}")]
         public async Task<IActionResult> CreateUpload(int serieId, IFormFile fileData)

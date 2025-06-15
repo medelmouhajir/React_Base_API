@@ -130,15 +130,14 @@ const Character = () => {
         }
 
         setIsGenerating(true);
-        const generationId = Date.now().toString();
-        setGenerationId(generationId);
+        const toastId = Date.now().toString();
 
         try {
             // Generate with reference images if selected
             if (selectedRefImages.length > 0) {
                 toast.info('Generating image with reference images... This may take a moment.', {
                     autoClose: false,
-                    toastId: generationId
+                    toastId: toastId
                 });
 
                 // Map selected reference image IDs to actual image paths
@@ -163,14 +162,17 @@ const Character = () => {
 
                 if (result.success) {
                     setGeneratedImage(image_base_url + result.imageUrl);
+                    setGenerationId(result.generationId);
+
+
                     setStep('preview');
-                    toast.update(generationId, {
+                    toast.update(toastId, {
                         type: toast.TYPE.SUCCESS,
                         render: 'Image generated successfully!',
                         autoClose: 5000
                     });
                 } else {
-                    toast.update(generationId, {
+                    toast.update(toastId, {
                         type: toast.TYPE.ERROR,
                         render: `Error: ${result.error || 'Failed to generate image'}`,
                         autoClose: 5000
@@ -180,7 +182,7 @@ const Character = () => {
                 // Generate without reference images
                 toast.info('Generating image... This may take a moment.', {
                     autoClose: false,
-                    toastId: generationId
+                    toastId: toastId
                 });
 
                 const result = await aiStudioService.generateImage(
@@ -198,13 +200,13 @@ const Character = () => {
                 if (result.success) {
                     setGeneratedImage(result.imageUrl || result.base64Image);
                     setStep('preview');
-                    toast.update(generationId, {
+                    toast.update(toastId, {
                         type: toast.TYPE.SUCCESS,
                         render: 'Image generated successfully!',
                         autoClose: 5000
                     });
                 } else {
-                    toast.update(generationId, {
+                    toast.update(toastId, {
                         type: toast.TYPE.ERROR,
                         render: `Error: ${result.error || 'Failed to generate image'}`,
                         autoClose: 5000
@@ -213,7 +215,7 @@ const Character = () => {
             }
         } catch (error) {
             console.error('Error generating image:', error);
-            toast.update(generationId, {
+            toast.update(toastId, {
                 type: toast.TYPE.ERROR,
                 render: `Error: ${error.message || 'Failed to generate image'}`,
                 autoClose: 5000
@@ -261,17 +263,10 @@ const Character = () => {
         }
 
         try {
-            // Convert image URL or base64 to file
-            const response = await fetch(generatedImage);
-            const blob = await response.blob();
-            const file = new File([blob], `${selectedCharacter.name}-${Date.now()}.png`, { type: 'image/png' });
 
             // Save image to character
-            await studioAssetsService.createCharacterImage(
-                selectedCharacter.id,
-                file,
-                imageName || `${selectedCharacter.name} - AI Generated`,
-                isMainImage
+            await studioAssetsService.createCharacterImageFromGeneration(
+                selectedCharacter.id, generationId, isMainImage, imageName || `${selectedCharacter.name} - AI Generated`
             );
 
             toast.success('Image saved to character successfully');
