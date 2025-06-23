@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
 import ThemeToggle from '../../ThemeToggle/ThemeToggle';
+import BackgroundTasksIndicator from '../BackgroundTasksIndicator/BackgroundTasksIndicator';
 import aiStudioService from '../../../services/aiStudioService';
 import './StudioHeader.css';
 
@@ -157,34 +158,13 @@ const StudioHeader = ({
                     )}
                 </div>
 
-                {/* Studio Stats */}
+                {/* Studio Stats - Now contains BackgroundTasksIndicator */}
                 <div className="studio-header__stats">
-                    <div className="studio-header__stat">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                        <span>0</span>
-                    </div>
-                    <div className="studio-header__stat">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        <span>0</span>
-                    </div>
+                    <BackgroundTasksIndicator />
                 </div>
 
                 {/* Controls */}
                 <div className="studio-header__controls">
-                    {/* AI Status Indicator */}
-                    <div className="studio-header__ai-status">
-                        <div className="studio-header__ai-indicator studio-header__ai-indicator--active"></div>
-                        <span>AI Ready</span>
-                    </div>
-
                     {/* Theme Toggle */}
                     <ThemeToggle className="studio-header__theme-toggle" />
 

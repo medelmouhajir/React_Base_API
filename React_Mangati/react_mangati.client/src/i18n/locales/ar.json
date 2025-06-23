@@ -542,7 +542,14 @@
       "prompt": "الوصف",
       "referenceImagesCount": "الصور المرجعية",
       "regenerate": "إعادة التوليد",
-      "saveToCharacter": "حفظ في الشخصية"
+      "saveToCharacter": "حفظ في الشخصية",
+      "tasks": {
+        "title": "المهام الخلفية",
+        "status": {
+          "ready": "جاهز",
+          "busy": "مشغول"
+        }
+      }
     },
     "uploads": {
       "title": "الملفات المرفوعة",

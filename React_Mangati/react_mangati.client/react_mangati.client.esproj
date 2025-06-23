@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\components\Layout\Navigation\" />
+    <Folder Include="src\components\Studio\BackgroundTasksIndicator\" />
     <Folder Include="src\components\Studio\StudioSidebar\" />
     <Folder Include="src\components\Studio\StudioHeader\" />
     <Folder Include="src\components\Studio\StudioLayout\" />

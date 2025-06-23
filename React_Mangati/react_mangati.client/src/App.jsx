@@ -8,6 +8,7 @@ import AuthPage from './pages/auth/AuthPage';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Account from './pages/Account/Account';
 import Home from './pages/Home/Home';
+import { ImageGenerationProvider } from './contexts/ImageGenerationContext';
 
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -88,22 +89,24 @@ function App() {
                 path="/studio/*"
                 element={
                     <ProtectedRoute requiredRole="Writer">
-                        <StudioLayout>
-                            <Routes>
-                                <Route path="/" element={<StudioHome />} />
-                                <Route path="/characters" element={<CharactersList />} />
-                                <Route path="/characters/create" element={<CreateCharacter />} />
-                                <Route path="/characters/:id/details" element={<CharacterDetails />} />
+                        <ImageGenerationProvider>
+                            <StudioLayout>
+                                <Routes>
+                                    <Route path="/" element={<StudioHome />} />
+                                    <Route path="/characters" element={<CharactersList />} />
+                                    <Route path="/characters/create" element={<CreateCharacter />} />
+                                    <Route path="/characters/:id/details" element={<CharacterDetails />} />
 
-                                <Route path="/ai/character" element={<Character />} />
+                                    <Route path="/ai/character" element={<Character />} />
 
 
-                                <Route path="/uploads" element={<UploadsList />} />
+                                    <Route path="/uploads" element={<UploadsList />} />
 
-                                <Route path="/generations" element={<GenerationsList />} />
-                                {/* Add other studio routes here */}
-                            </Routes>
-                        </StudioLayout>
+                                    <Route path="/generations" element={<GenerationsList />} />
+                                    {/* Add other studio routes here */}
+                                </Routes>
+                            </StudioLayout>
+                        </ImageGenerationProvider>
                     </ProtectedRoute>
                 }
             />

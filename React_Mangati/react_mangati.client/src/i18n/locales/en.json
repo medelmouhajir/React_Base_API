@@ -541,7 +541,14 @@
       "prompt": "Prompt",
       "referenceImagesCount": "Reference images",
       "regenerate": "Regenerate",
-      "saveToCharacter": "Save to character"
+      "saveToCharacter": "Save to character",
+      "tasks": {
+        "title": "Background Tasks",
+        "status": {
+          "ready" : "Ready",
+          "busy" : "Busy"
+        }
+      }
     },
     "uploads": {
       "title": "Uploads",

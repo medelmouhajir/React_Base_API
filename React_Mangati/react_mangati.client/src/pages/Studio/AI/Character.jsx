@@ -6,12 +6,14 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { toast } from 'react-toastify';
 import aiStudioService from '../../../services/aiStudioService';
 import studioAssetsService from '../../../services/studioAssetsService';
+import { useImageGeneration } from '../../../contexts/ImageGenerationContext';
 import './Character.css';
 
 const Character = () => {
     const { t } = useTranslation();
     const { isDarkMode } = useTheme();
     const navigate = useNavigate();
+    const { generateImageInBackground } = useImageGeneration();
 
     // State for the selected series
     const [selectedSerie, setSelectedSerie] = useState(null);
@@ -111,7 +113,6 @@ const Character = () => {
         setStep('input-details');
 
         // Initialize prompt with character details
-        const basePrompt = `Create a high-quality portrait image of character named ${character.name}.`;
         const detailsPrompt = character.description
             ? `\nCharacter description: ${character.description}`
             : '';
@@ -119,107 +120,92 @@ const Character = () => {
             ? `\nPhysical attributes: ${character.height ? `Height: ${character.height}cm, ` : ''}${character.weight ? `Weight: ${character.weight}kg` : ''}`
             : '';
 
-        setPrompt(`${basePrompt}${detailsPrompt}${physicalPrompt}\n\nPlease create in anime style, with vibrant colors and detailed facial features.`);
+        setPrompt(`${detailsPrompt}${physicalPrompt}\n\nTransform the input photograph (<INPUT_IMAGE>) into a full-body Korean manhwa–style illustration reminiscent of Solo Leveling.  
+– Style: high-contrast line art with dynamic shading, rich colors, and dramatic lighting.  
+– Character: full-body pose, natural anatomy and proportions, preserving the exact facial details and expression of the original photo.  
+– Background: fully transparent (alpha channel only).  
+– Quality: ultra-detailed, 4K resolution, crisp edges, smooth gradients.  
+– Mood: heroic, slightly dramatic, with subtle motion lines or energy effects typical of manhwa covers.`);
     };
 
     // Handle image generation
+
     const handleGenerateImage = async () => {
-        if (!prompt) {
-            toast.warning('Please enter a prompt');
+        if (!prompt.trim()) {
+            toast.error('Please enter a prompt');
             return;
         }
 
+        // Prevent multiple generations
+        if (isGenerating) return;
         setIsGenerating(true);
-        const toastId = Date.now().toString();
 
         try {
-            // Generate with reference images if selected
-            if (selectedRefImages.length > 0) {
-                toast.info('Generating image with reference images... This may take a moment.', {
-                    autoClose: false,
-                    toastId: toastId
-                });
+            // Define the image generation function based on whether reference images are selected
+            const generateFn = async () => {
+                if (selectedRefImages.length > 0) {
+                    // Map selected reference image IDs to actual image paths
+                    const imageUrls = selectedRefImages.map(id => {
+                        const image = referenceImages.find(img => img.id === id);
+                        return image ? `${import.meta.env.VITE_API_URL}${image.path}` : null;
+                    }).filter(Boolean);
 
-                // Map selected reference image IDs to actual image paths
-                const imageUrls = selectedRefImages.map(id => {
-                    const image = referenceImages.find(img => img.id === id);
-                    return image ? `${import.meta.env.VITE_API_URL}${image.path}` : null;
-                }).filter(Boolean);
-
-                const result = await aiStudioService.generateImageWithReferences(
-                    prompt,
-                    imageUrls,
-                    {
-                        provider: aiStudioService.AIProvider.ChatGPT,
-                        width: parseInt(generationOptions.resolution.split('x')[0]),
-                        height: parseInt(generationOptions.resolution.split('x')[1]),
-                        style: generationOptions.style,
-                        quality: generationOptions.quality,
-                        model: generationOptions.model
-                    },
-                    selectedSerie.id
-                );
-
-                if (result.success) {
-                    setGeneratedImage(image_base_url + result.imageUrl);
-                    setGenerationId(result.generationId);
-
-
-                    setStep('preview');
-                    toast.update(toastId, {
-                        type: toast.TYPE.SUCCESS,
-                        render: 'Image generated successfully!',
-                        autoClose: 5000
-                    });
+                    return await aiStudioService.generateImageWithReferences(
+                        prompt,
+                        imageUrls,
+                        {
+                            provider: aiStudioService.AIProvider.ChatGPT,
+                            width: parseInt(generationOptions.resolution.split('x')[0]),
+                            height: parseInt(generationOptions.resolution.split('x')[1]),
+                            style: generationOptions.style,
+                            quality: generationOptions.quality,
+                            model: generationOptions.model
+                        },
+                        selectedSerie.id
+                    );
                 } else {
-                    toast.update(toastId, {
-                        type: toast.TYPE.ERROR,
-                        render: `Error: ${result.error || 'Failed to generate image'}`,
-                        autoClose: 5000
-                    });
+                    // Generate without reference images
+                    return await aiStudioService.generateImage(
+                        prompt,
+                        {
+                            provider: aiStudioService.AIProvider.ChatGPT,
+                            width: parseInt(generationOptions.resolution.split('x')[0]),
+                            height: parseInt(generationOptions.resolution.split('x')[1]),
+                            style: generationOptions.style,
+                            quality: generationOptions.quality,
+                            model: generationOptions.model,
+                            serieId: selectedSerie.id
+                        }
+                    );
                 }
-            } else {
-                // Generate without reference images
-                toast.info('Generating image... This may take a moment.', {
-                    autoClose: false,
-                    toastId: toastId
-                });
+            };
 
-                const result = await aiStudioService.generateImage(
-                    prompt,
-                    {
-                        provider: aiStudioService.AIProvider.ChatGPT,
-                        width: parseInt(generationOptions.resolution.split('x')[0]),
-                        height: parseInt(generationOptions.resolution.split('x')[1]),
-                        style: generationOptions.style,
-                        quality: generationOptions.quality,
-                        model: generationOptions.model
+            // Generate the image in background
+            await generateImageInBackground(
+                generateFn,
+                {
+                    title: `Generating Character Image: ${selectedCharacter.name}`,
+                    description: `Prompt: ${prompt.substring(0, 50)}${prompt.length > 50 ? '...' : ''}`,
+                    onNotificationClick: (result) => {
+                        // Handle notification click - navigate to the character page or set the result
+                        if (result.success) {
+                            setGeneratedImage(image_base_url + result.imageUrl || result.base64Image);
+                            setGenerationId(result.generationId);
+                            setStep('preview');
+                        }
                     }
-                );
-
-                if (result.success) {
-                    setGeneratedImage(result.imageUrl || result.base64Image);
-                    setStep('preview');
-                    toast.update(toastId, {
-                        type: toast.TYPE.SUCCESS,
-                        render: 'Image generated successfully!',
-                        autoClose: 5000
-                    });
-                } else {
-                    toast.update(toastId, {
-                        type: toast.TYPE.ERROR,
-                        render: `Error: ${result.error || 'Failed to generate image'}`,
-                        autoClose: 5000
-                    });
                 }
-            }
+            ).then(result => {
+                if (result.success) {
+                    setGeneratedImage(image_base_url + result.imageUrl || result.base64Image);
+                    setGenerationId(result.generationId);
+                    setStep('preview');
+                }
+            });
+
         } catch (error) {
             console.error('Error generating image:', error);
-            toast.update(toastId, {
-                type: toast.TYPE.ERROR,
-                render: `Error: ${error.message || 'Failed to generate image'}`,
-                autoClose: 5000
-            });
+            toast.error(`Error: ${error.message || 'Failed to generate image'}`);
         } finally {
             setIsGenerating(false);
         }
