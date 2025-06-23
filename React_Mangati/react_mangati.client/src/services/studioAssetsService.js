@@ -49,6 +49,36 @@ const studioAssetsService = {
         }
     },
 
+    async regenerateImage(imageId) {
+        try {
+            const response = await apiClient.post(`/studio/assets/images-generated/regenerate/${imageId}`);
+            return response.status === 204;
+        } catch (error) {
+            console.error(`❌ Error regenerating generated image ${imageId}:`, error);
+            throw error;
+        }
+    },
+
+    async setAsScenePlaceImage(imageId , sceneId) {
+        try {
+            const response = await apiClient.post(`/studio/assets/scenes/${sceneId}/set-image/${imageId}`);
+            return response.status === 204;
+        } catch (error) {
+            console.error(`❌ Error setting generated image ${imageId} as a scene's image':`, error);
+            throw error;
+        }
+    },
+
+    async setAsCharacterImage(imageId , characterId) {
+        try {
+            const response = await apiClient.post(`/studio/assets/characters/${characterId}/set-image/${imageId}`);
+            return response.status === 204;
+        } catch (error) {
+            console.error(`❌ Error setting generated image ${imageId} as a character's image':`, error);
+            throw error;
+        }
+    },
+
   async getUploads(serieId) {
       const response = await apiClient.get('/studio/assets/uploads', {
           params: { serieId }
