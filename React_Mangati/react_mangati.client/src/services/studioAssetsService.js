@@ -12,17 +12,41 @@ const studioAssetsService = {
           });
           return response.data;
     },
-  async getGenerations(serieId) {
-      const response = await apiClient.get('/studio/assets/images-generated', {
-          params: { serieId }
-          });
-          return response.data;
-    },
   async getImagesGenerations(serieId) {
       const response = await apiClient.get('/studio/assets/images-generated', {
           params: { serieId }
           });
           return response.data;
+    },
+
+    /**
+     * Get image generation details
+     * @param {string} id - ID of the generated image
+     * @returns {Promise} - API response with image details
+     */
+    getGenerationDetails: async (id) => {
+        return apiClient.get(`studio/assets/images-generated/${id}`);
+    },
+
+    /**
+     * Download a generated image
+     * @param {string} id - ID of the generated image
+     * @returns {Promise} - API response with download URL or blob
+     */
+    downloadGeneratedImage: async (id) => {
+        return apiClient.get(`studio/assets/images-generated/${id}/download`, {
+            responseType: 'blob'
+        });
+    },
+
+    async removeGenerationImage(imageId) {
+        try {
+            const response = await apiClient.delete(`/studio/assets/images-generated/${imageId}`);
+            return response.status === 204;
+        } catch (error) {
+            console.error(`❌ Error deleting generated image ${imageId}:`, error);
+            throw error;
+        }
     },
 
   async getUploads(serieId) {

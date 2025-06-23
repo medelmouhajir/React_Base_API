@@ -115,3 +115,58 @@ body {
     margin-right: 0;
     margin-left: 0.5rem;
 }
+/* Add these form input styles to themes.css */
+
+/* Form inputs for both light and dark mode */
+select,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+textarea {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+        border-color: var(--primary-color, #9333ea);
+        box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.2);
+        outline: none;
+    }
+
+/* Dark mode specific adjustments for select elements */
+:root.dark-mode select {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+/* Fix for select dropdown arrows in dark mode */
+:root.dark-mode select {
+    /* Creates a custom select arrow that respects dark mode */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e2e8f0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    padding-right: 2rem;
+}
+
+/* Light mode select dropdown arrow */
+:root:not(.dark-mode) select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231e293b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    padding-right: 2rem;
+}
+
+/* Ensure placeholder text is properly styled */
+:root.dark-mode input::placeholder,
+:root.dark-mode textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}

@@ -33,12 +33,15 @@ import CharacterDetails from './pages/Studio/Characters/CharacterDetails';
 
 import UploadsList from './pages/Studio/Uploads/UploadsList';
 
+import GenerationsList from './pages/Studio/Generations/GenerationsList';
+
 import Character from './pages/Studio/AI/Character';
 
 import LandingPage from './pages/Landing/LandingPage';
 
 //import Settings from './pages/Settings/Settings';
-//import NotFound from './pages/NotFound/NotFound';
+
+import NotFound from './pages/NotFound/NotFound';
 import './App.css';
 
 function App() {
@@ -96,6 +99,8 @@ function App() {
 
 
                                 <Route path="/uploads" element={<UploadsList />} />
+
+                                <Route path="/generations" element={<GenerationsList />} />
                                 {/* Add other studio routes here */}
                             </Routes>
                         </StudioLayout>
@@ -124,7 +129,9 @@ function App() {
                             <Route path="/myseries" element={<MySeries />} />
                             {/*<Route path="/settings" element={<Settings />} />*/}
                             {/*<Route path="/settings/:section" element={<Settings />} />*/}
-                            {/*<Route path="*" element={<NotFound />} />*/}
+
+
+                            <Route path="*" element={<NotFound />} />
                         </Routes>
                     </MainLayout>
                 }

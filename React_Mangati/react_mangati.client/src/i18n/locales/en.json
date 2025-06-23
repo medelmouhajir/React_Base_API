@@ -478,7 +478,8 @@
       "scenes": "Scenes",
       "studioSettings": "Studio Settings",
       "settings": "Settings",
-      "aiCredits": "AI Credits"
+      "aiCredits": "AI Credits",
+      "generations": "Generations"
     },
     "characters": {
       "mainImage": "Main image",
@@ -626,5 +627,82 @@
     "order": "Order",
     "ascending": "Ascending",
     "descending": "Descending"
+  },
+  "generations": {
+    "title": "Generations",
+    "loading": "Loading…",
+    "refreshing": "Refreshing…",
+    "createNew": "Create new generation",
+    "searchPlaceholder": "Search generations…",
+    "noGenerations": "No generations found",
+    "createFirst": "Create your first generation",
+    "generatedImage": "Generated image",
+    "noPrompt": "No prompt provided",
+    "remove": "Remove",
+    "setAsCharacter": "Set as character image",
+    "setAsScene": "Set as scene image",
+    "regenerate": "Regenerate",
+    "fetchError": "Error fetching generations",
+    "imageRemoved": "Image removed successfully",
+    "removeError": "Error removing image",
+    "imageRegenerated": "Image regenerated successfully",
+    "regenerateError": "Error regenerating image",
+    "setAsSceneSuccess": "Image set as scene successfully",
+    "setAsCharacterError": "Error setting image as character",
+    "setAsSceneError": "Error setting image as scene",
+    "confirmRemove": "Confirm remove generation",
+    "confirmSetAsCharacter": "Confirm set as character image",
+    "confirmSetAsScene": "Confirm set as scene image",
+    "confirmRegenerate": "Confirm regenerate image",
+    "confirmRemoveBody": "Are you sure you want to remove this generated image?",
+    "confirmSetAsCharacterBody": "Are you sure you want to set this image as the character image?",
+    "confirmSetAsSceneBody": "Are you sure you want to set this image as the scene image?",
+    "confirmRegenerateBody": "Are you sure you want to regenerate this image?"
+  },
+  "landing": {
+    "pageTitle": "Welcome",
+    "hero": {
+      "title": "Discover, Read, and Create Manga",
+      "subtitle": "Join our community of manga enthusiasts to discover new series, read your favorites, and even create your own stories.",
+      "cta": "Get Started",
+      "secondary": "Learn More"
+    },
+    "features": {
+      "title": "What We Offer",
+      "subtitle": "Everything you need to enjoy and create manga, all in one platform.",
+      "discover": {
+        "title": "Discover Manga",
+        "description": "Explore a vast library of manga series across various genres."
+      },
+      "read": {
+        "title": "Read Anywhere",
+        "description": "Enjoy your favorite manga on any device, anytime."
+      },
+      "create": {
+        "title": "Create Content",
+        "description": "For writers and artists, publish your own manga series with our creation tools."
+      }
+    },
+    "cta": {
+      "title": "Ready to Start Your Manga Journey?",
+      "subtitle": "Join thousands of manga fans and creators on our platform.",
+      "button": "Sign Up Now"
+    },
+    "footer": {
+      "tagline": "Your ultimate manga platform.",
+      "company": "Company",
+      "about": "About",
+      "careers": "Careers",
+      "press": "Press",
+      "resources": "Resources",
+      "blog": "Blog",
+      "help": "Help Center",
+      "contact": "Contact",
+      "legal": "Legal",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "cookies": "Cookies",
+      "rightsReserved": "All rights reserved."
+    }
   }
 }

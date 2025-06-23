@@ -661,3 +661,30 @@
     --danger-hover: #dc2626;
     --text-secondary: #64748b;
 }
+.uploads-list__search {
+    padding: 0.625rem 2.5rem 0.625rem 1rem;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    color: var(--studio-text-color);
+    width: 15rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+    .uploads-list__search:focus {
+        outline: none;
+        border-color: var(--studio-accent-color);
+        box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.2);
+    }
+
+/* Make sure dark mode properly applies to the search input */
+:root.dark-mode .uploads-list__search {
+    background: var(--input-bg);
+    color: var(--studio-text-color);
+    border-color: var(--border-color);
+}
+
+    :root.dark-mode .uploads-list__search::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }

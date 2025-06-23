@@ -1,5 +1,5 @@
 // src/pages/Landing/LandingPage.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './LandingPage.css';
@@ -9,6 +9,41 @@ const LandingPage = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [activeFeature, setActiveFeature] = useState(0);
+    const [isVisible, setIsVisible] = useState({
+        hero: false,
+        features: false,
+        testimonials: false,
+        cta: false,
+        footer: false
+    });
+
+    // Handle intersection observer for animation on scroll
+    useEffect(() => {
+        const observerOptions = {
+            threshold: 0.2,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const handleIntersection = (entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    setIsVisible(prev => ({ ...prev, [entry.target.dataset.section]: true }));
+                    observer.unobserve(entry.target);
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(handleIntersection, observerOptions);
+
+        const sections = document.querySelectorAll('.animate-on-scroll');
+        sections.forEach(section => observer.observe(section));
+
+        return () => sections.forEach(section => observer.disconnect());
+    }, []);
+
+    useEffect(() => {
+        document.title = `${t('landing.pageTitle', 'Welcome')} - Mangati`;
+    }, [t]);
 
     const features = [
         {
@@ -55,53 +90,41 @@ const LandingPage = () => {
         },
     ];
 
-    const handleLoginClick = () => {
-        navigate('/auth');
-    };
-
     return (
         <div className="landing-page">
             {/* Header */}
             <header className="landing-header">
                 <div className="landing-container">
-                    <div className="landing-header__logo">
+                    <Link to="/" className="landing-header__logo">
                         <img src={logo} alt="Mangati" />
                         <span>Mangati</span>
-                    </div>
+                    </Link>
                     <div className="landing-header__actions">
-                        <Link to="/auth?mode=login" className="landing-button landing-button--secondary">
-                            {t('landing.login', 'Login')}
+                        <Link to="/auth" className="landing-button landing-button--secondary">
+                            {t('auth.login.title', 'Login')}
                         </Link>
-                        <Link to="/auth?mode=register" className="landing-button landing-button--primary">
-                            {t('landing.getStarted', 'Get Started')}
+                        <Link to="/auth?signup=true" className="landing-button landing-button--primary">
+                            {t('auth.register.title', 'Sign Up')}
                         </Link>
                     </div>
                 </div>
             </header>
 
             {/* Hero Section */}
-            <section className="landing-hero">
+            <section className={`landing-hero animate-on-scroll ${isVisible.hero ? 'visible' : ''}`} data-section="hero">
                 <div className="landing-container">
                     <div className="landing-hero__content">
-                        <h1 className="landing-hero__title">
-                            {t('landing.hero.title', 'Your Ultimate Manga Experience')}
-                        </h1>
+                        <h1 className="landing-hero__title">{t('landing.hero.title', 'Discover, Read, and Create Manga')}</h1>
                         <p className="landing-hero__subtitle">
-                            {t(
-                                'landing.hero.subtitle',
-                                'Discover, read, and create manga all in one platform.'
-                            )}
+                            {t('landing.hero.subtitle', 'Join our community of manga enthusiasts to discover new series, read your favorites, and even create your own stories.')}
                         </p>
                         <div className="landing-hero__actions">
-                            <button
-                                className="landing-button landing-button--primary landing-button--large"
-                                onClick={handleLoginClick}
-                            >
-                                {t('landing.hero.cta', 'Start Reading Now')}
-                            </button>
-                            <a href="#features" className="landing-button landing-button--secondary landing-button--large">
-                                {t('landing.hero.learnMore', 'Learn More')}
-                            </a>
+                            <Link to="/auth?signup=true" className="landing-button landing-button--primary landing-button--large">
+                                {t('landing.hero.cta', 'Get Started')}
+                            </Link>
+                            <Link to="/auth" className="landing-button landing-button--secondary landing-button--large">
+                                {t('landing.hero.secondary', 'Learn More')}
+                            </Link>
                         </div>
                     </div>
                     <div className="landing-hero__image">
@@ -111,97 +134,96 @@ const LandingPage = () => {
             </section>
 
             {/* Features Section */}
-            <section id="features" className="landing-features">
+            <section className={`landing-features animate-on-scroll ${isVisible.features ? 'visible' : ''}`} data-section="features">
                 <div className="landing-container">
-                    <h2 className="landing-section-title">
-                        {t('landing.features.title', 'Experience Manga Like Never Before')}
-                    </h2>
+                    <div className="landing-section-header">
+                        <h2 className="landing-section-title">{t('landing.features.title', 'What We Offer')}</h2>
+                        <p className="landing-section-subtitle">
+                            {t('landing.features.subtitle', 'Everything you need to enjoy and create manga, all in one platform.')}
+                        </p>
+                    </div>
+
                     <div className="landing-features__content">
                         <div className="landing-features__tabs">
                             {features.map((feature, index) => (
                                 <button
                                     key={index}
-                                    className={`landing-features__tab ${activeFeature === index ? 'landing-features__tab--active' : ''
-                                        }`}
+                                    className={`landing-features__tab ${index === activeFeature ? 'active' : ''}`}
                                     onClick={() => setActiveFeature(index)}
                                 >
                                     <div className="landing-features__tab-icon">{feature.icon}</div>
-                                    <div className="landing-features__tab-text">
-                                        <h3>{feature.title}</h3>
-                                    </div>
+                                    <h3>{feature.title}</h3>
                                 </button>
                             ))}
                         </div>
+
                         <div className="landing-features__detail">
-                            <h3 className="landing-features__detail-title">{features[activeFeature].title}</h3>
-                            <p className="landing-features__detail-description">
-                                {features[activeFeature].description}
-                            </p>
+                            <h3>{features[activeFeature].title}</h3>
+                            <p>{features[activeFeature].description}</p>
+                            <div className="landing-features__detail-icon">{features[activeFeature].icon}</div>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* CTA Section */}
-            <section className="landing-cta">
+            <section className={`landing-cta animate-on-scroll ${isVisible.cta ? 'visible' : ''}`} data-section="cta">
                 <div className="landing-container">
                     <div className="landing-cta__content">
-                        <h2 className="landing-cta__title">
-                            {t('landing.cta.title', 'Ready to Start Your Manga Journey?')}
-                        </h2>
-                        <p className="landing-cta__description">
-                            {t(
-                                'landing.cta.description',
-                                'Join thousands of readers and creators on Mangati today.'
-                            )}
+                        <h2 className="landing-cta__title">{t('landing.cta.title', 'Ready to Start Your Manga Journey?')}</h2>
+                        <p className="landing-cta__subtitle">
+                            {t('landing.cta.subtitle', 'Join thousands of manga fans and creators on our platform.')}
                         </p>
-                        <div className="landing-cta__actions">
-                            <Link to="/auth?mode=register" className="landing-button landing-button--primary landing-button--large">
-                                {t('landing.cta.button', 'Create Free Account')}
-                            </Link>
-                        </div>
+                        <Link to="/auth?signup=true" className="landing-button landing-button--primary landing-button--large">
+                            {t('landing.cta.button', 'Sign Up Now')}
+                        </Link>
                     </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="landing-footer">
+            <footer className={`landing-footer animate-on-scroll ${isVisible.footer ? 'visible' : ''}`} data-section="footer">
                 <div className="landing-container">
                     <div className="landing-footer__content">
                         <div className="landing-footer__logo">
                             <img src={logo} alt="Mangati" />
                             <span>Mangati</span>
+                            <p>{t('landing.footer.tagline', 'Your ultimate manga platform.')}</p>
                         </div>
+
                         <div className="landing-footer__links">
                             <div className="landing-footer__links-group">
-                                <h3>{t('landing.footer.about', 'About')}</h3>
+                                <h3>{t('landing.footer.company', 'Company')}</h3>
                                 <ul>
-                                    <li><a href="#">{t('landing.footer.aboutUs', 'About Us')}</a></li>
-                                    <li><a href="#">{t('landing.footer.contact', 'Contact')}</a></li>
+                                    <li><a href="#">{t('landing.footer.about', 'About')}</a></li>
                                     <li><a href="#">{t('landing.footer.careers', 'Careers')}</a></li>
+                                    <li><a href="#">{t('landing.footer.press', 'Press')}</a></li>
                                 </ul>
                             </div>
+
+                            <div className="landing-footer__links-group">
+                                <h3>{t('landing.footer.resources', 'Resources')}</h3>
+                                <ul>
+                                    <li><a href="#">{t('landing.footer.blog', 'Blog')}</a></li>
+                                    <li><a href="#">{t('landing.footer.help', 'Help Center')}</a></li>
+                                    <li><a href="#">{t('landing.footer.contact', 'Contact')}</a></li>
+                                </ul>
+                            </div>
+
                             <div className="landing-footer__links-group">
                                 <h3>{t('landing.footer.legal', 'Legal')}</h3>
                                 <ul>
-                                    <li><a href="#">{t('landing.footer.terms', 'Terms of Service')}</a></li>
-                                    <li><a href="#">{t('landing.footer.privacy', 'Privacy Policy')}</a></li>
-                                    <li><a href="#">{t('landing.footer.cookies', 'Cookie Policy')}</a></li>
-                                </ul>
-                            </div>
-                            <div className="landing-footer__links-group">
-                                <h3>{t('landing.footer.support', 'Support')}</h3>
-                                <ul>
-                                    <li><a href="#">{t('landing.footer.help', 'Help Center')}</a></li>
-                                    <li><a href="#">{t('landing.footer.faq', 'FAQ')}</a></li>
-                                    <li><a href="#">{t('landing.footer.community', 'Community')}</a></li>
+                                    <li><a href="#">{t('landing.footer.terms', 'Terms')}</a></li>
+                                    <li><a href="#">{t('landing.footer.privacy', 'Privacy')}</a></li>
+                                    <li><a href="#">{t('landing.footer.cookies', 'Cookies')}</a></li>
                                 </ul>
                             </div>
                         </div>
                     </div>
+
                     <div className="landing-footer__bottom">
                         <p className="landing-footer__copyright">
-                            &copy; {new Date().getFullYear()} Mangati. {t('landing.footer.rightsReserved', 'All rights reserved.')}
+                            © {new Date().getFullYear()} Mangati. {t('landing.footer.rightsReserved', 'All rights reserved.')}
                         </p>
                         <div className="landing-footer__social">
                             <a href="#" aria-label="Twitter">

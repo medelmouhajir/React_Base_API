@@ -15,9 +15,11 @@
     <Folder Include="src\components\Studio\StudioLayout\" />
     <Folder Include="src\components\ThemeToggle\" />
     <Folder Include="src\pages\Landing\" />
+    <Folder Include="src\pages\NotFound\" />
     <Folder Include="src\pages\Studio\Home\" />
     <Folder Include="src\pages\Studio\Characters\" />
     <Folder Include="src\pages\Studio\AI\" />
+    <Folder Include="src\pages\Studio\Generations\" />
     <Folder Include="src\pages\Studio\Uploads\" />
     <Folder Include="src\pages\Viewer\components\NavigationControls\" />
     <Folder Include="src\pages\Viewer\components\ViewingModes\" />
