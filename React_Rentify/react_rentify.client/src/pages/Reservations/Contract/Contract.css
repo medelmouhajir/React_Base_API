@@ -1,0 +1,187 @@
+/* src/pages/Reservations/Contract/Contract.css */
+
+/* General layout and page setup */
+.contract-page {
+    background-color: #fff;
+    color: #333;
+    padding: 20px;
+    font-family: 'Public Sans', sans-serif;
+}
+
+.contract-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.btn-back,
+.btn-print {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    border: none;
+}
+
+.btn-back {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.btn-print {
+    background-color: #0f172a;
+    color: white;
+}
+
+/* Main invoice print area */
+.invoice-print {
+    background-color: white;
+    padding: 30px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid layout */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.col-4 {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+    position: relative;
+}
+
+.col-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+    position: relative;
+}
+
+.col-8 {
+    flex: 0 0 66.666667%;
+    max-width: 66.666667%;
+    position: relative;
+}
+
+/* Text alignments */
+.text-center {
+    text-align: center;
+}
+
+/* Tables */
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+    border-collapse: collapse;
+}
+
+.table-bordered {
+    border: 1px solid #dee2e6;
+}
+
+    .table-bordered th,
+    .table-bordered td {
+        border: 1px solid #dee2e6;
+        padding: 0.75rem;
+    }
+
+/* Logo positioning */
+.logo-container {
+    position: relative;
+}
+
+.right-logo {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+/* Car images */
+.car-image {
+    object-fit: cover;
+    width: 100%;
+}
+
+/* Remarks section */
+.remarks-cell {
+    position: relative;
+}
+
+.remarks-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    white-space: pre-line;
+}
+
+.fuel-image {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 30%;
+}
+
+/* Signature section */
+.signature-cell {
+    position: relative;
+}
+
+    .signature-cell p {
+        position: absolute;
+        top: 0;
+    }
+
+/* Error states */
+.contract-error {
+    text-align: center;
+    padding: 40px;
+}
+
+/* Add a specific class to the body when on the contract page */
+body.contract-print-page {
+    background-color: #f8f9fa;
+}
+
+/* When printing from a page with this class */
+@media print {
+    /* hide everything */
+    body.contract-print-page *:not(.invoice-print):not(.invoice-print *) {
+        display: none !important;
+    }
+
+    /* then make the contract fill the page */
+    .invoice-print {
+        display: block !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        padding: 10px !important;
+    }
+
+    /* make sure your “no-print” buttons stay hidden */
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+    }
+
+    .col-4, .col-6, .col-8 {
+        max-width: 100%;
+        flex: 0 0 100%;
+    }
+
+    .invoice-print {
+        padding: 10px;
+    }
+}

@@ -32,6 +32,7 @@ namespace React_Rentify.Server.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Car> Cars { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<Reservation_Customer> Reservation_Customers { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Maintenance_Record> MaintenanceRecords { get; set; }

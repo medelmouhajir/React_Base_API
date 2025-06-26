@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace React_Rentify.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class first_Migration : Migration
+    public partial class Multiple_Customers_Migration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -411,7 +411,6 @@ namespace React_Rentify.Server.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AgencyId = table.Column<Guid>(type: "uuid", nullable: false),
                     CarId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
                     StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ActualStartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -424,7 +423,8 @@ namespace React_Rentify.Server.Migrations
                     FuelLevelStart = table.Column<float>(type: "real", nullable: true),
                     FuelLevelEnd = table.Column<float>(type: "real", nullable: true),
                     PickupLocation = table.Column<string>(type: "text", nullable: true),
-                    DropoffLocation = table.Column<string>(type: "text", nullable: true)
+                    DropoffLocation = table.Column<string>(type: "text", nullable: true),
+                    CustomerId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -445,8 +445,7 @@ namespace React_Rentify.Server.Migrations
                         name: "FK_Reservations_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -490,6 +489,32 @@ namespace React_Rentify.Server.Migrations
                     table.PrimaryKey("PK_Invoices", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Invoices_Reservations_ReservationId",
+                        column: x => x.ReservationId,
+                        principalTable: "Reservations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reservation_Customers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    CustomerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ReservationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Date_Added = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reservation_Customers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reservation_Customers_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Reservation_Customers_Reservations_ReservationId",
                         column: x => x.ReservationId,
                         principalTable: "Reservations",
                         principalColumn: "Id",
@@ -622,6 +647,16 @@ namespace React_Rentify.Server.Migrations
                 column: "InvoiceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Reservation_Customers_CustomerId",
+                table: "Reservation_Customers",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservation_Customers_ReservationId",
+                table: "Reservation_Customers",
+                column: "ReservationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reservations_AgencyId",
                 table: "Reservations",
                 column: "AgencyId");
@@ -677,6 +712,9 @@ namespace React_Rentify.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "Payments");
+
+            migrationBuilder.DropTable(
+                name: "Reservation_Customers");
 
             migrationBuilder.DropTable(
                 name: "ServiceAlerts");

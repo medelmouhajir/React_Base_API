@@ -611,7 +611,7 @@ namespace React_Rentify.Server.Migrations
                     b.Property<Guid>("CarId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CustomerId")
+                    b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("DropoffLocation")
@@ -654,6 +654,30 @@ namespace React_Rentify.Server.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Reservations");
+                });
+
+            modelBuilder.Entity("React_Rentify.Server.Models.Reservations.Reservation_Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Date_Added")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ReservationId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("ReservationId");
+
+                    b.ToTable("Reservation_Customers");
                 });
 
             modelBuilder.Entity("React_Rentify.Server.Models.Users.User", b =>
@@ -937,17 +961,32 @@ namespace React_Rentify.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("React_Rentify.Server.Models.Customers.Customer", "Customer")
+                    b.HasOne("React_Rentify.Server.Models.Customers.Customer", null)
                         .WithMany("Reservations")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerId");
 
                     b.Navigation("Agency");
 
                     b.Navigation("Car");
+                });
+
+            modelBuilder.Entity("React_Rentify.Server.Models.Reservations.Reservation_Customer", b =>
+                {
+                    b.HasOne("React_Rentify.Server.Models.Customers.Customer", "Customer")
+                        .WithMany("Reservation_Customers")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("React_Rentify.Server.Models.Reservations.Reservation", "Reservation")
+                        .WithMany("Reservation_Customers")
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Reservation");
                 });
 
             modelBuilder.Entity("React_Rentify.Server.Models.Users.User", b =>
@@ -987,6 +1026,8 @@ namespace React_Rentify.Server.Migrations
                 {
                     b.Navigation("Customer_Attachments");
 
+                    b.Navigation("Reservation_Customers");
+
                     b.Navigation("Reservations");
                 });
 
@@ -1013,6 +1054,8 @@ namespace React_Rentify.Server.Migrations
             modelBuilder.Entity("React_Rentify.Server.Models.Reservations.Reservation", b =>
                 {
                     b.Navigation("Invoice");
+
+                    b.Navigation("Reservation_Customers");
                 });
 #pragma warning restore 612, 618
         }

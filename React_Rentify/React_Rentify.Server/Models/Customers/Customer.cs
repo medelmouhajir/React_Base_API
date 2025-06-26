@@ -46,5 +46,6 @@ namespace React_Rentify.Server.Models.Customers
         /// File attachments (e.g., scanned ID, proof of address, signed contract).
         /// </summary>
         public ICollection<Customer_Attachment>? Customer_Attachments { get; set; }
+        public ICollection<Reservation_Customer>? Reservation_Customers { get; set; }
     }
 }

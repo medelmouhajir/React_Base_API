@@ -1,2 +1,185 @@
 {
+  "language": {
+    "selectLanguage": "اختر اللغة",
+    "changeInfo": "يمكنك تغيير اللغة في أي وقت"
+  },
+  "search": {
+    "all": "الكل",
+    "cars": "السيارات",
+    "customers": "العملاء",
+    "reservations": "الحجوزات"
+  },
+  "common": {
+    "saving": "جارٍ الحفظ..."
+  },
+  "landing": {
+    "features": "الميزات",
+    "benefits": "الفوائد",
+    "pricing": "الأسعار",
+    "contact": "اتصل بنا",
+    "featureFleetTitle": "إدارة الأسطول",
+    "featureFleetDesc": "قم بإدارة أسطول مركباتك بكفاءة باستخدام أدواتنا الشاملة",
+    "featureGpsTitle": "تتبع نظام تحديد المواقع",
+    "featureGpsDesc": "تابع مركباتك في الوقت الفعلي باستخدام نظام GPS المتقدم لدينا",
+    "featureCustomerTitle": "إدارة العملاء",
+    "featureCustomerDesc": "قم ببناء والحفاظ على علاقات العملاء بسهولة",
+    "featureReportsTitle": "التقارير والتحليلات",
+    "featureReportsDesc": "اتخذ قرارات قائمة على البيانات باستخدام أدوات التقارير القوية لدينا",
+    "benefitsTitle": "لماذا تختار Rentify",
+    "benefitsDescription": "اكتشف كيف يمكن لنظام إدارة تأجير السيارات لدينا أن يحول عملك",
+    "benefitTimeTitle": "توفير الوقت",
+    "benefitTimeDesc": "قم بأتمتة المهام الروتينية وركز على تنمية عملك",
+    "benefitCostTitle": "خفض التكاليف",
+    "benefitCostDesc": "قم بتحسين العمليات والقضاء على النفقات غير الضرورية",
+    "benefitInsightsTitle": "اكتساب رؤى",
+    "benefitInsightsDesc": "احصل على تحليلات قوية لاتخاذ قرارات تجارية أذكى",
+    "benefitsCta": "ابدأ اليوم",
+    "testimonialsTitle": "ماذا يقول عملاؤنا",
+    "testimonialsDescription": "استمع إلى آراء الشركات التي حوّلت عملياتها باستخدام Rentify",
+    "testimonial1": "لقد قام Rentify بتبسيط عمليات التأجير بالكامل. شهدنا زيادة بنسبة 30٪ في الكفاءة ويحب عملاؤنا هذه التجربة السلسة.",
+    "pricingTitle": "خطط أسعار مرنة",
+    "pricingDescription": "اختر الخطة المثالية لاحتياجات عملك",
+    "pricingCurrency": "دولار أمريكي",
+    "pricingPeriod": "/الشهر",
+    "pricingNote": "جميع الخطط تشمل دعمًا على مدار الساعة وتحديثات منتظمة",
+    "pricingBasicName": "أساسي",
+    "pricingBasicDesc": "مثالي للأعمال الصغيرة في مجال التأجير",
+    "pricingBasicFeature1": "حتى 10 مركبات",
+    "pricingBasicFeature2": "تقارير أساسية",
+    "pricingBasicFeature3": "إدارة العملاء",
+    "pricingBasicFeature4": "دعم عبر البريد الإلكتروني",
+    "pricingBasicCta": "ابدأ بالأساسي",
+    "pricingProName": "احترافي",
+    "pricingProDesc": "مثالي للأعمال النامية",
+    "pricingProFeature1": "حتى 50 مركبة",
+    "pricingProFeature2": "تقارير متقدمة",
+    "pricingProFeature3": "إدارة العملاء",
+    "pricingProFeature4": "دعم مميز",
+    "pricingProFeature5": "تتبع GPS",
+    "pricingProCta": "اختر الاحترافي",
+    "pricingEnterpriseName": "المؤسسي",
+    "pricingEnterpriseDesc": "للعمليات على نطاق واسع",
+    "pricingEnterpriseFeature1": "مركبات غير محدودة",
+    "pricingEnterpriseFeature2": "تقارير مخصصة",
+    "pricingEnterpriseFeature3": "إدارة العملاء",
+    "pricingEnterpriseFeature4": "دعم مخصص على مدار الساعة",
+    "pricingEnterpriseFeature5": "تتبع GPS",
+    "pricingEnterpriseFeature6": "تكاملات مخصصة",
+    "pricingEnterpriseCta": "تواصل مع المبيعات",
+    "ctaTitle": "هل أنت جاهز لتحويل عملك في التأجير؟",
+    "ctaDescription": "انضم إلى آلاف الشركات التي تستخدم Rentify بالفعل",
+    "ctaButtonPrimary": "ابدأ الآن",
+    "ctaButtonSecondary": "تسجيل الدخول",
+    "contactTitle": "تواصل معنا",
+    "contactDescription": "هل لديك أسئلة؟ تواصل مع فريقنا",
+    "contactName": "اسمك",
+    "contactEmail": "البريد الإلكتروني",
+    "contactMessage": "الرسالة",
+    "contactSubmit": "إرسال الرسالة"
+  },
+  "auth": {
+    "welcomeBack": "مرحبًا بعودتك",
+    "loginToContinue": "سجل الدخول للمتابعة في استخدام Rentify",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "passwordTooShort": "يجب أن تكون كلمة المرور مكونة من 6 أحرف على الأقل",
+    "passwordsDontMatch": "كلمتا المرور غير متطابقتين",
+    "rememberMe": "تذكرني",
+    "forgotPassword": "هل نسيت كلمة المرور؟",
+    "login": "تسجيل الدخول",
+    "loginSuccess": "تم تسجيل الدخول بنجاح",
+    "orContinueWith": "أو المتابعة عبر",
+    "continueWithGoogle": "المتابعة عبر Google",
+    "noAccount": "لا تملك حسابًا؟",
+    "register": "إنشاء حساب",
+    "genericError": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "googleAuthError": "خطأ في المصادقة عبر Google",
+    "alreadyHaveAccount": "هل لديك حساب بالفعل؟",
+    "registrationSuccess": "تم إنشاء الحساب بنجاح",
+    "mustAgreeTerms": "يجب الموافقة على الشروط والأحكام",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "checkYourEmail": "تحقق من بريدك الإلكتروني للحصول على تعليمات إعادة التعيين",
+    "enterYourEmail": "أدخل بريدك الإلكتروني لتلقي رابط إعادة تعيين كلمة المرور",
+    "resetLinkSent": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني"
+  },
+  "filters": {
+    "pageTitle": "إعدادات الفلترة",
+    "manufacturer": {
+      "title": "المصنعون",
+      "fetchError": "خطأ في تحميل بيانات المصنعين",
+      "confirmRemove": "هل أنت متأكد أنك تريد إزالة هذا المُصنّع؟",
+      "removeError": "خطأ في إزالة المصنع"
+    },
+    "models": {
+      "title": "طرازات السيارات",
+      "fetchError": "خطأ في تحميل طرازات السيارات",
+      "confirmRemove": "هل أنت متأكد أنك تريد إزالة هذا الطراز؟"
+    },
+    "years": {
+      "title": "سنوات السيارات",
+      "fetchError": "خطأ في تحميل سنوات السيارات",
+      "confirmRemove": "هل أنت متأكد أنك تريد إزالة هذه السنة؟",
+      "removeError": "خطأ في إزالة السنة"
+    }
+  },
+  "maintenance": {
+    "list": {
+      "title": "سجلات الصيانة",
+      "addButton": "إضافة صيانة",
+      "deleteError": "خطأ في حذف سجل الصيانة",
+      "filter": {
+        "show": "عرض الفلاتر",
+        "hide": "إخفاء الفلاتر",
+        "car": "تصفية حسب السيارة",
+        "allCars": "جميع السيارات",
+        "date": "تصفية حسب التاريخ",
+        "clear": "مسح الفلاتر"
+      }
+    }
+  },
+  "reservation": {
+    "list": {
+      "filter": {
+        "selectStatus": "جميع الحالات",
+        "clear": "مسح الفلاتر"
+      },
+      "table": {
+        "customer": "العميل",
+        "car": "السيارة",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء",
+        "status": "الحالة",
+        "actions": "الإجراءات"
+      }
+    }
+  },
+  "customerDetails": {
+    "attachmentsHeading": "المرفقات",
+    "addBlacklistBtn": "إضافة إلى القائمة السوداء"
+  },
+  "agency": {
+    "list": {
+      "fetchError": "خطأ في تحميل الوكالات"
+    }
+  },
+  "footer": {
+    "company": "الشركة",
+    "about": "من نحن",
+    "careers": "الوظائف",
+    "blog": "المدونة",
+    "services": "الخدمات",
+    "carRental": "تأجير السيارات",
+    "fleetManagement": "إدارة الأسطول",
+    "maintenance": "الصيانة",
+    "support": "الدعم",
+    "help": "مركز المساعدة",
+    "faq": "الأسئلة الشائعة",
+    "contact": "اتصل بنا",
+    "legal": "القانونية",
+    "terms": "شروط الخدمة",
+    "privacy": "سياسة الخصوصية"
+  }
 }

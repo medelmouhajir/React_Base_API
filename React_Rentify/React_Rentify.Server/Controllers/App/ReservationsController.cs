@@ -40,7 +40,7 @@ namespace React_Rentify.Server.Controllers.App
             var reservations = await _context.Set<Reservation>()
                 .Include(r => r.Agency)
                 .Include(r => r.Car)
-                .Include(r => r.Customer)
+                .Include(r => r.Reservation_Customers)
                 .Include(r => r.Invoice)
                 .ToListAsync();
 
@@ -58,22 +58,89 @@ namespace React_Rentify.Server.Controllers.App
         public async Task<IActionResult> GetReservationById(Guid id)
         {
             _logger.LogInformation("Retrieving reservation with Id {ReservationId}", id);
-            var reservation = await _context.Set<Reservation>()
-                .Include(r => r.Agency)
-                .Include(r => r.Car)
-                .Include(r => r.Customer)
-                .Include(r => r.Invoice)
-                .FirstOrDefaultAsync(r => r.Id == id);
-
-            if (reservation == null)
+            try
             {
-                _logger.LogWarning("Reservation with Id {ReservationId} not found", id);
-                return NotFound(new { message = $"Reservation with Id '{id}' not found." });
-            }
+                var reservation = await _context.Set<Reservation>()
+                    .Include(r => r.Agency)
+                    .Include(r => r.Car)
+                    .ThenInclude(x=> x.Car_Model)
+                    .ThenInclude(x=> x.Manufacturer)
+                    .Include(r => r.Reservation_Customers)
+                    .ThenInclude(x => x.Customer)
+                    .Include(r => r.Invoice)
+                    .Where(x=> x.Id == id)
+                    .Select(x => new
+                    {
+                        AgencyId = id,
+                        CarId = x.CarId,
+                        ActualStartTime = x.ActualStartTime,
+                        ActualEndTime = x.ActualEndTime,
+                        DropoffLocation = x.DropoffLocation,
+                        AgreedPrice = x.AgreedPrice,
+                        EndDate = x.EndDate,
+                        FinalPrice = x.FinalPrice,
+                        FuelLevelEnd = x.FuelLevelEnd,
+                        FuelLevelStart = x.FuelLevelStart,
+                        OdometerEnd = x.OdometerEnd,
+                        OdometerStart = x.OdometerStart,
+                        PickupLocation = x.PickupLocation,
+                        StartDate = x.StartDate,
+                        Status = x.Status,
+                        Agency = new Agency
+                        {
+                            Id = x.Agency.Id,
+                            Name = x.Agency.Name,
+                            Address = x.Agency.Address,
+                            Email = x.Agency.Email,
+                            LogoUrl = x.Agency.LogoUrl,
+                            PhoneOne = x.Agency.PhoneOne,
+                            PhoneTwo = x.Agency.PhoneTwo
+                        },
+                        Customers = x.Reservation_Customers.Select(c=> 
+                            new Customer
+                            {
+                                Id = c.CustomerId,
+                                FullName = c.Customer.FullName,
+                                PhoneNumber = c.Customer.PhoneNumber,
+                                LicenseNumber = c.Customer.LicenseNumber,
+                                DateOfBirth = c.Customer.DateOfBirth,
+                                Address = c.Customer.Address,
+                                NationalId = c.Customer.NationalId,
+                                PassportId = c.Customer.PassportId,
+                                Email = c.Customer.Email,
+                            }
+                        ),
+                        Car = new Car
+                        {
+                            Id = x.CarId,
+                            LicensePlate = x.Car.LicensePlate,
+                            Car_Model = new Models.Filters.Cars.Car_Model
+                            {
+                                Id = x.Car.Car_ModelId,
+                                Name = x.Car.Car_Model.Name,
+                                Manufacturer = new Models.Filters.Cars.Manufacturer
+                                {
+                                    Id = x.Car.Car_Model.ManufacturerId,
+                                    Name = x.Car.Car_Model.Manufacturer.Name
+                                }
+                            }
+                        }
+                    })
+                    .FirstOrDefaultAsync();
 
-            var dto = MapToDto(reservation);
-            _logger.LogInformation("Retrieved reservation {ReservationId}", id);
-            return Ok(dto);
+                if (reservation == null)
+                {
+                    _logger.LogWarning("Reservation with Id {ReservationId} not found", id);
+                    return NotFound(new { message = $"Reservation with Id '{id}' not found." });
+                }
+                
+                _logger.LogInformation("Retrieved reservation {ReservationId}", id);
+                return Ok(reservation);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
@@ -93,16 +160,23 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Agency with Id '{agencyId}' does not exist." });
             }
 
-            var reservations = await _context.Set<Reservation>()
-                .Where(r => r.AgencyId == agencyId)
-                .Include(r => r.Car)
-                .Include(r => r.Customer)
-                .Include(r => r.Invoice)
-                .ToListAsync();
+            try
+            {
+                var reservations = await _context.Set<Reservation>()
+                    .Where(r => r.AgencyId == agencyId)
+                    .Include(r => r.Car)
+                    .Include(r => r.Reservation_Customers)
+                    .Include(r => r.Invoice)
+                    .ToListAsync();
 
-            var dtoList = reservations.Select(r => MapToDto(r)).ToList();
-            _logger.LogInformation("Retrieved {Count} reservations for Agency {AgencyId}", dtoList.Count, agencyId);
-            return Ok(dtoList);
+                var dtoList = reservations.Select(r => MapToDto(r)).ToList();
+                _logger.LogInformation("Retrieved {Count} reservations for Agency {AgencyId}", dtoList.Count, agencyId);
+                return Ok(dtoList);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
@@ -123,7 +197,7 @@ namespace React_Rentify.Server.Controllers.App
             }
 
             var reservations = await _context.Set<Reservation>()
-                .Where(r => r.CustomerId == customerId)
+                .Where(r => r.Reservation_Customers.Any( x=> x.Id == customerId))
                 .Include(r => r.Agency)
                 .Include(r => r.Car)
                 .Include(r => r.Invoice)
@@ -178,7 +252,6 @@ namespace React_Rentify.Server.Controllers.App
                 Id = Guid.NewGuid(),
                 AgencyId = dto.AgencyId,
                 CarId = dto.CarId,
-                CustomerId = dto.CustomerId,
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
                 Status = dto.Status ?? "Reserved",
@@ -188,6 +261,8 @@ namespace React_Rentify.Server.Controllers.App
             };
 
             _context.Set<Reservation>().Add(reservation);
+
+            _context.Set<Reservation_Customer>().Add(new Reservation_Customer { CustomerId = dto.CustomerId , ReservationId = reservation.Id});
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Created reservation {ReservationId}", reservation.Id);
@@ -250,7 +325,7 @@ namespace React_Rentify.Server.Controllers.App
             }
 
             // If Customer changed, verify it
-            if (existing.CustomerId != dto.CustomerId)
+            if (existing.Reservation_Customers.Any(x=> x.Id != dto.CustomerId))
             {
                 var customerExistsUpdate = await _context.Set<Customer>().AnyAsync(c => c.Id == dto.CustomerId);
                 if (!customerExistsUpdate)
@@ -263,7 +338,6 @@ namespace React_Rentify.Server.Controllers.App
             // Update scalar properties
             existing.AgencyId = dto.AgencyId;
             existing.CarId = dto.CarId;
-            existing.CustomerId = dto.CustomerId;
             existing.StartDate = dto.StartDate;
             existing.EndDate = dto.EndDate;
             existing.ActualStartTime = dto.ActualStartTime;
@@ -323,8 +397,7 @@ namespace React_Rentify.Server.Controllers.App
                 AgencyName = r.Agency?.Name,
                 CarId = r.CarId,
                 CarLicensePlate = r.Car?.LicensePlate,
-                CustomerId = r.CustomerId,
-                CustomerName = r.Customer?.FullName,
+                Customers = r.Reservation_Customers.Select(x=> x.Customer).ToList(),
                 StartDate = r.StartDate,
                 EndDate = r.EndDate,
                 ActualStartTime = r.ActualStartTime,
@@ -357,8 +430,8 @@ namespace React_Rentify.Server.Controllers.App
             public string? AgencyName { get; set; }
             public Guid CarId { get; set; }
             public string? CarLicensePlate { get; set; }
-            public Guid CustomerId { get; set; }
-            public string? CustomerName { get; set; }
+
+            public List<Customer>? Customers { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
             public DateTime? ActualStartTime { get; set; }

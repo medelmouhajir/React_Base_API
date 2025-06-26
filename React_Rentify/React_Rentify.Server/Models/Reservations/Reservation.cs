@@ -19,9 +19,6 @@ namespace React_Rentify.Server.Models.Reservations
         public Guid CarId { get; set; }
         public virtual Car? Car { get; set; }
 
-        public Guid CustomerId { get; set; }
-        public virtual Customer? Customer { get; set; }
-
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
@@ -45,5 +42,6 @@ namespace React_Rentify.Server.Models.Reservations
         /// Link to the generated invoice (1:1).
         /// </summary>
         public virtual Invoice? Invoice { get; set; }
+        public virtual ICollection<Reservation_Customer?>? Reservation_Customers { get; set; }
     }
 }

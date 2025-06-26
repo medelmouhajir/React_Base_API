@@ -67,7 +67,7 @@ i18n
         // Missing key handler (useful for development)
         missingKeyHandler: (lng, ns, key) => {
             if (import.meta.env.DEV) {
-                console.warn(`Missing translation key: ${key} for language: ${lng}`);
+                //console.warn(`Missing translation key: ${key} for language: ${lng}`);
             }
         },
     });

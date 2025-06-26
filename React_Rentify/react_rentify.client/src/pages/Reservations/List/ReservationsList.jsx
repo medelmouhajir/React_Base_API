@@ -289,6 +289,12 @@ const ReservationsList = () => {
                                         >
                                             {t('reservation.list.details', 'Details')}
                                         </button>
+                                        <button
+                                            className="details-button"
+                                            onClick={() => navigate(`/reservations/${r.id}/contract`)}
+                                        >
+                                            {t('reservation.list.contract', 'Contract')}
+                                        </button>
                                     </td>
                                 </tr>
                             ))

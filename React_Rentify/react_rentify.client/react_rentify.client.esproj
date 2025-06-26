@@ -38,5 +38,6 @@
     <Folder Include="src\pages\Reservations\Add\" />
     <Folder Include="src\pages\Reservations\Edit\" />
     <Folder Include="src\pages\Reservations\List\" />
+    <Folder Include="src\pages\Reservations\Contract\" />
   </ItemGroup>
 </Project>

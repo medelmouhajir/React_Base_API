@@ -1,2 +1,197 @@
 {
+  "language": {
+    "selectLanguage": "Select language",
+    "changeInfo": "You can change the language at any time"
+  },
+  "search": {
+    "all": "All",
+    "cars": "Cars",
+    "customers": "Customers",
+    "reservations": "Reservations"
+  },
+  "common": {
+    "saving": "Saving..."
+  },
+  "landing": {
+    "features": "Features",
+    "benefits": "Benefits",
+    "pricing": "Pricing",
+    "contact": "Contact",
+
+    "featureFleetTitle": "Fleet Management",
+    "featureFleetDesc": "Manage your vehicle fleet efficiently with our comprehensive tools",
+    "featureGpsTitle": "GPS Tracking",
+    "featureGpsDesc": "Track your vehicles in real-time with our advanced GPS system",
+    "featureCustomerTitle": "Customer Management",
+    "featureCustomerDesc": "Build and maintain customer relationships with ease",
+    "featureReportsTitle": "Reports & Analytics",
+    "featureReportsDesc": "Make data-driven decisions with our powerful reporting tools",
+
+    "benefitsTitle": "Why Choose Rentify",
+    "benefitsDescription": "Discover how our car rental management system can transform your business",
+    "benefitTimeTitle": "Save Time",
+    "benefitTimeDesc": "Automate routine tasks and focus on growing your business",
+    "benefitCostTitle": "Reduce Costs",
+    "benefitCostDesc": "Optimize operations and eliminate unnecessary expenses",
+    "benefitInsightsTitle": "Gain Insights",
+    "benefitInsightsDesc": "Access powerful analytics to make smarter business decisions",
+    "benefitsCta": "Get Started Today",
+
+    "testimonialsTitle": "What Our Clients Say",
+    "testimonialsDescription": "Hear from businesses that have transformed their operations with Rentify",
+    "testimonial1": "Rentify has completely streamlined our rental operations. We've seen a 30% increase in efficiency and our customers love the seamless experience.",
+
+    "pricingTitle": "Flexible Pricing Plans",
+    "pricingDescription": "Choose the perfect plan for your business needs",
+    "pricingCurrency": "USD",
+    "pricingPeriod": "/month",
+    "pricingNote": "All plans include 24/7 support and regular updates",
+
+    "pricingBasicName": "Basic",
+    "pricingBasicDesc": "Perfect for small rental businesses",
+    "pricingBasicFeature1": "Up to 10 vehicles",
+    "pricingBasicFeature2": "Basic reporting",
+    "pricingBasicFeature3": "Customer management",
+    "pricingBasicFeature4": "Email support",
+    "pricingBasicCta": "Start with Basic",
+
+    "pricingProName": "Professional",
+    "pricingProDesc": "Ideal for growing businesses",
+    "pricingProFeature1": "Up to 50 vehicles",
+    "pricingProFeature2": "Advanced reporting",
+    "pricingProFeature3": "Customer management",
+    "pricingProFeature4": "Priority support",
+    "pricingProFeature5": "GPS tracking",
+    "pricingProCta": "Choose Pro",
+
+    "pricingEnterpriseName": "Enterprise",
+    "pricingEnterpriseDesc": "For large-scale operations",
+    "pricingEnterpriseFeature1": "Unlimited vehicles",
+    "pricingEnterpriseFeature2": "Custom reporting",
+    "pricingEnterpriseFeature3": "Customer management",
+    "pricingEnterpriseFeature4": "24/7 dedicated support",
+    "pricingEnterpriseFeature5": "GPS tracking",
+    "pricingEnterpriseFeature6": "Custom integrations",
+    "pricingEnterpriseCta": "Contact Sales",
+
+    "ctaTitle": "Ready to transform your rental business?",
+    "ctaDescription": "Join thousands of businesses already using Rentify",
+    "ctaButtonPrimary": "Get Started",
+    "ctaButtonSecondary": "Login",
+
+    "contactTitle": "Contact Us",
+    "contactDescription": "Have questions? Get in touch with our team",
+    "contactName": "Your Name",
+    "contactEmail": "Email Address",
+    "contactMessage": "Message",
+    "contactSubmit": "Send Message"
+  },
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "loginToContinue": "Login to continue using Rentify",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "emailRequired": "Email is required",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "passwordsDontMatch": "Passwords do not match",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "login": "Login",
+    "loginSuccess": "Login successful",
+    "orContinueWith": "Or continue with",
+    "continueWithGoogle": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "register": "Register",
+    "genericError": "Something went wrong. Please try again.",
+    "googleAuthError": "Error with Google authentication",
+
+    "alreadyHaveAccount": "Already have an account?",
+    "registrationSuccess": "Registration successful",
+    "mustAgreeTerms": "You must agree to the terms and conditions",
+
+    "resetPassword": "Reset Password",
+    "checkYourEmail": "Check your email for reset instructions",
+    "enterYourEmail": "Enter your email to receive a password reset link",
+    "resetLinkSent": "Password reset link sent to your email"
+  },
+  "filters": {
+    "pageTitle": "Filter Settings",
+
+    "manufacturer": {
+      "title": "Manufacturers",
+      "fetchError": "Error loading manufacturers",
+      "confirmRemove": "Are you sure you want to remove this manufacturer?",
+      "removeError": "Error removing manufacturer"
+    },
+    "models": {
+      "title": "Car Models",
+      "fetchError": "Error loading car models",
+      "confirmRemove": "Are you sure you want to remove this model?"
+    },
+    "years": {
+      "title": "Car Years",
+      "fetchError": "Error loading car years",
+      "confirmRemove": "Are you sure you want to remove this year?",
+      "removeError": "Error removing year"
+    }
+  },
+  "maintenance": {
+    "list": {
+      "title": "Maintenance Records",
+      "addButton": "Add Maintenance",
+      "deleteError": "Error deleting maintenance record",
+      "filter": {
+        "show": "Show Filters",
+        "hide": "Hide Filters",
+        "car": "Filter by Car",
+        "allCars": "All Cars",
+        "date": "Filter by Date",
+        "clear": "Clear Filters"
+      }
+    }
+  },
+  "reservation": {
+    "list": {
+      "filter": {
+        "selectStatus": "All Statuses",
+        "clear": "Clear Filters"
+      },
+      "table": {
+        "customer": "Customer",
+        "car": "Car",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "status": "Status",
+        "actions": "Actions"
+      }
+    }
+  },
+  "customerDetails": {
+    "attachmentsHeading": "Attachments",
+    "addBlacklistBtn": "Add to Blacklist"
+  },
+  "agency": {
+    "list": {
+      "fetchError": "Error loading agencies"
+    }
+  },
+  "footer": {
+    "company": "Company",
+    "about": "About Us",
+    "careers": "Careers",
+    "blog": "Blog",
+    "services": "Services",
+    "carRental": "Car Rental",
+    "fleetManagement": "Fleet Management",
+    "maintenance": "Maintenance",
+    "support": "Support",
+    "help": "Help Center",
+    "faq": "FAQ",
+    "contact": "Contact Us",
+    "legal": "Legal",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
+  }
 }

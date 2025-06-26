@@ -31,6 +31,7 @@ const CarsList = lazy(() => import('./pages/Cars/List/CarsList'));
 const ReservationsList = lazy(() => import('./pages/Reservations/List/ReservationsList'));
 const MaintenancesList = lazy(() => import('./pages/Maintenances/List/MaintenancesList'));
 const InvoicesList = lazy(() => import('./pages/Invoices/List/InvoicesList'));
+const Contract = lazy(() => import('./pages/Reservations/Contract/Contract'));
 //const Profile = lazy(() => import('./pages/Profile'));
 //const Settings = lazy(() => import('./pages/Settings'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -131,6 +132,7 @@ function App() {
                                 <Route path="/reservations" element={<ReservationsList />} />
                                 {/*<Route path="/reservations/:id" element={<ReservationDetails />} />*/}
                                 <Route path="/reservations/add" element={<ReservationAdd />} />
+                                <Route path="/reservations/:id/contract" element={<Contract />} />
                                 {/*<Route path="/reservations/:id/edit" element={<ReservationForm />} />*/}
 
                                 {/* maintenances */}
