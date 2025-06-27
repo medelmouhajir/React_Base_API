@@ -15,7 +15,6 @@ const ReservationAdd = () => {
 
     const [formData, setFormData] = useState({
         CarId: '',
-        CustomerId: '',
         StartDate: '',
         EndDate: '',
         AgreedPrice: '',
@@ -24,6 +23,10 @@ const ReservationAdd = () => {
         Status: 'Reserved', // default
         AgencyId: agencyId || '',
     });
+
+    // Store selected customers in a separate array
+    const [selectedCustomers, setSelectedCustomers] = useState([]);
+    const [customerToAdd, setCustomerToAdd] = useState('');
 
     const [cars, setCars] = useState([]);
     const [customers, setCustomers] = useState([]);
@@ -57,8 +60,34 @@ const ReservationAdd = () => {
         }));
     };
 
+    const handleAddCustomer = () => {
+        if (!customerToAdd) return;
+        
+        // Don't add if already selected
+        if (selectedCustomers.some(c => c.id === customerToAdd)) {
+            return;
+        }
+        
+        const customer = customers.find(c => c.id === customerToAdd);
+        if (customer) {
+            setSelectedCustomers(prev => [...prev, customer]);
+            setCustomerToAdd(''); // Reset the selector
+        }
+    };
+
+    const handleRemoveCustomer = (customerId) => {
+        setSelectedCustomers(prev => prev.filter(c => c.id !== customerId));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Validate at least one customer is selected
+        if (selectedCustomers.length === 0) {
+            setError(t('reservation.add.errorNoCustomers'));
+            return;
+        }
+        
         setIsSubmitting(true);
         setError(null);
 
@@ -66,7 +95,7 @@ const ReservationAdd = () => {
             const payload = {
                 AgencyId: agencyId,
                 CarId: formData.CarId,
-                CustomerId: formData.CustomerId,
+                CustomersId: selectedCustomers.map(c => c.id), // Send array of customer IDs
                 StartDate: formData.StartDate
                     ? new Date(formData.StartDate).toISOString()
                     : null,
@@ -91,6 +120,13 @@ const ReservationAdd = () => {
 
     const handleCancel = () => {
         navigate('/reservations');
+    };
+
+    // Get available customers (those not already selected)
+    const getAvailableCustomers = () => {
+        return customers.filter(
+            customer => !selectedCustomers.some(sc => sc.id === customer.id)
+        );
     };
 
     return (
@@ -123,23 +159,62 @@ const ReservationAdd = () => {
                     </select>
                 </div>
 
-                {/* Customer Select */}
-                <div className="form-group">
-                    <label htmlFor="CustomerId">{t('reservation.fields.customer')}</label>
-                    <select
-                        id="CustomerId"
-                        name="CustomerId"
-                        value={formData.CustomerId}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">{t('reservation.placeholders.selectCustomer')}</option>
-                        {customers.map((c) => (
-                            <option key={c.id} value={c.id}>
-                                {c.fullName}
-                            </option>
-                        ))}
-                    </select>
+                {/* Multiple Customers Section */}
+                <div className="form-group customers-section">
+                    <div className="customers-header">
+                        <label className="customers-title">{t('reservation.fields.customers')}</label>
+                    </div>
+                    
+                    {/* Customers List */}
+                    {selectedCustomers.length > 0 ? (
+                        <div className="customers-list">
+                            {selectedCustomers.map(customer => (
+                                <div key={customer.id} className="customer-item">
+                                    <div className="customer-info">
+                                        <div className="customer-name">{customer.fullName}</div>
+                                        <div className="customer-details">
+                                            {customer.email} • {customer.phoneNumber}
+                                        </div>
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        className="remove-customer"
+                                        onClick={() => handleRemoveCustomer(customer.id)}
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="no-customers">
+                            {t('reservation.add.noCustomersSelected')}
+                        </div>
+                    )}
+                    
+                    {/* Add Customer Control */}
+                    <div className="add-customer-wrapper">
+                        <select
+                            className="add-customer-select"
+                            value={customerToAdd}
+                            onChange={(e) => setCustomerToAdd(e.target.value)}
+                        >
+                            <option value="">{t('reservation.placeholders.selectCustomer')}</option>
+                            {getAvailableCustomers().map((c) => (
+                                <option key={c.id} value={c.id}>
+                                    {c.fullName}
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            type="button"
+                            className="add-customer-btn"
+                            onClick={handleAddCustomer}
+                            disabled={!customerToAdd}
+                        >
+                            {t('common.add')}
+                        </button>
+                    </div>
                 </div>
 
                 {/* Start Date */}
@@ -173,26 +248,23 @@ const ReservationAdd = () => {
                     <label htmlFor="AgreedPrice">{t('reservation.fields.agreedPrice')}</label>
                     <input
                         type="number"
-                        step="0.01"
                         id="AgreedPrice"
                         name="AgreedPrice"
-                        placeholder={t('reservation.placeholders.agreedPrice')}
                         value={formData.AgreedPrice}
                         onChange={handleChange}
+                        step="0.01"
+                        min="0"
                         required
                     />
                 </div>
 
                 {/* Pickup Location */}
                 <div className="form-group">
-                    <label htmlFor="PickupLocation">
-                        {t('reservation.fields.pickupLocation')}
-                    </label>
+                    <label htmlFor="PickupLocation">{t('reservation.fields.pickupLocation')}</label>
                     <input
                         type="text"
                         id="PickupLocation"
                         name="PickupLocation"
-                        placeholder={t('reservation.placeholders.pickupLocation')}
                         value={formData.PickupLocation}
                         onChange={handleChange}
                     />
@@ -200,49 +272,32 @@ const ReservationAdd = () => {
 
                 {/* Dropoff Location */}
                 <div className="form-group">
-                    <label htmlFor="DropoffLocation">
-                        {t('reservation.fields.dropoffLocation')}
-                    </label>
+                    <label htmlFor="DropoffLocation">{t('reservation.fields.dropoffLocation')}</label>
                     <input
                         type="text"
                         id="DropoffLocation"
                         name="DropoffLocation"
-                        placeholder={t('reservation.placeholders.dropoffLocation')}
                         value={formData.DropoffLocation}
                         onChange={handleChange}
                     />
                 </div>
 
-                {/* Status (optional) */}
-                <div className="form-group">
-                    <label htmlFor="Status">{t('reservation.fields.status')}</label>
-                    <input
-                        type="text"
-                        id="Status"
-                        name="Status"
-                        placeholder={t('reservation.placeholders.status')}
-                        value={formData.Status}
-                        onChange={handleChange}
-                    />
-                </div>
-
-                {/* Actions */}
+                {/* Form Actions */}
                 <div className="form-actions">
                     <button
                         type="button"
                         className="btn-secondary"
                         onClick={handleCancel}
-                        disabled={isSubmitting}
                     >
                         {t('common.cancel')}
                     </button>
                     <button
                         type="submit"
                         className="btn-primary"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || selectedCustomers.length === 0}
                     >
                         {isSubmitting
-                            ? t('common.saving')
+                            ? t('common.submitting')
                             : t('common.save')}
                     </button>
                 </div>

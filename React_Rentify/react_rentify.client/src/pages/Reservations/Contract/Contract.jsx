@@ -244,106 +244,97 @@ const Contract = () => {
           </table>
 
           {/* Customer details */}
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th></th>
-                <th className="text-center">Chauffeur 1</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Nom</td>
-                <td className="text-center">
-                  <b>{reservation.customer?.lastName?.toUpperCase() || ''}</b>
-                </td>
-                <td dir="rtl">اسم العائلة</td>
-              </tr>
-              <tr>
-                <td>Prenon</td>
-                <td className="text-center">
-                  <b>{reservation.customer?.firstName?.toUpperCase() || ''}</b>
-                </td>
-                <td dir="rtl">الاسم الشخصي</td>
-              </tr>
-              <tr>
-                <td>Date de naissance</td>
-                <td className="text-center">
-                  <b>{formatDate(reservation.customer?.dateOfBirth)}</b>
-                </td>
-                <td dir="rtl">تاريخ الولادة</td>
-              </tr>
-              <tr>
-                <td>Adresse</td>
-                <td className="text-center">
-                  <b>{reservation.customer?.address || ''}</b>
-                </td>
-                <td dir="rtl">العنوان</td>
-              </tr>
-              {reservation.customer?.permitNumber && (
-                <>
-                  <tr>
-                    <td>Numero du permit</td>
-                    <td className="text-center">
-                      <b>{reservation.customer?.permitNumber || ''}</b>
-                    </td>
-                    <td dir="rtl">رقم رخصة القيادة</td>
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th></th>
+                  {reservation.customers.map((_, idx) => (
+                    <th key={idx} className="text-center">Chauffeur {idx + 1}</th>
+                  ))}
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { label: 'Nom',      key: 'fullName',    rtl: 'اسم العائلة',    format: v => v?.toUpperCase() },
+                  { label: 'Prénom',   key: 'firstName',   rtl: 'الاسم الشخصي',  format: v => v?.toUpperCase() },
+                  { label: 'Date de naissance', key: 'dateOfBirth', rtl: 'تاريخ الولادة', format: formatDate },
+                  { label: 'Adresse',   key: 'address',     rtl: 'العنوان',        format: v => v },
+                  { label: 'Téléphone', key: 'phone',       rtl: 'رقم الهاتف',     format: v => v },
+                ].map(({ label, key, rtl, format }) => (
+                  <tr key={key}>
+                    <td>{label}</td>
+                    {reservation.customers.map((c, i) => (
+                      <td key={i} className="text-center">
+                        <b>{format(c[key]) || ''}</b>
+                      </td>
+                    ))}
+                    <td dir="rtl">{rtl}</td>
                   </tr>
-                  <tr>
-                    <td>Date d'expiration</td>
-                    <td className="text-center">
-                      <b>{formatDate(reservation.customer?.permitDate)}</b>
-                    </td>
-                    <td dir="rtl">تاريخ انتهاء الرخصة</td>
-                  </tr>
-                </>
-              )}
-              {reservation.customer?.cin && (
-                <>
-                  <tr>
-                    <td>C.I.N</td>
-                    <td className="text-center">
-                      <b>{reservation.customer?.cin || ''}</b>
-                    </td>
-                    <td dir="rtl">رقم البطاقة الوطنية</td>
-                  </tr>
-                  <tr>
-                    <td>Date d'expiration C.I.N</td>
-                    <td className="text-center">
-                      <b>{formatDate(reservation.customer?.cinDate)}</b>
-                    </td>
-                    <td dir="rtl">تاريخ انتهاء صلاحية C.I.N</td>
-                  </tr>
-                </>
-              )}
-              {reservation.customer?.passport && (
-                <>
-                  <tr>
-                    <td>Passport</td>
-                    <td className="text-center">
-                      <b>{reservation.customer?.passport || ''}</b>
-                    </td>
-                    <td dir="rtl">جواز السفر</td>
-                  </tr>
-                  <tr>
-                    <td>Delivre le</td>
-                    <td className="text-center">
-                      <b>{formatDate(reservation.customer?.passportDate)}</b>
-                    </td>
-                    <td dir="rtl">تم التسليم في التاريخ</td>
-                  </tr>
-                </>
-              )}
-              <tr>
-                <td>Telephone</td>
-                <td className="text-center">
-                  <b>{reservation.customer?.phone || ''}</b>
-                </td>
-                <td dir="rtl">رقم الهاتف</td>
-              </tr>
-            </tbody>
-          </table>
+                ))}
+
+                {/* Permit fields */}
+                {reservation.customers.some(c => c.permitNumber) && (
+                  <>
+                    {[
+                      { label: 'Numéro du permit', key: 'permitNumber', rtl: 'رقم رخصة القيادة', format: v => v },
+                      { label: "Date d'expiration", key: 'permitDate',   rtl: 'تاريخ انتهاء الرخصة', format: formatDate },
+                    ].map(({ label, key, rtl, format }) => (
+                      <tr key={key}>
+                        <td>{label}</td>
+                        {reservation.customers.map((c, i) => (
+                          <td key={i} className="text-center">
+                            <b>{format(c[key]) || ''}</b>
+                          </td>
+                        ))}
+                        <td dir="rtl">{rtl}</td>
+                      </tr>
+                    ))}
+                  </>
+                )}
+
+                {/* C.I.N fields */}
+                {reservation.customers.some(c => c.cin) && (
+                  <>
+                    {[
+                      { label: 'C.I.N', key: 'cin', rtl: 'رقم البطاقة الوطنية', format: v => v },
+                      { label: "Date d'expiration C.I.N", key: 'cinDate', rtl: 'تاريخ انتهاء صلاحية C.I.N', format: formatDate },
+                    ].map(({ label, key, rtl, format }) => (
+                      <tr key={key}>
+                        <td>{label}</td>
+                        {reservation.customers.map((c, i) => (
+                          <td key={i} className="text-center">
+                            <b>{format(c[key]) || ''}</b>
+                          </td>
+                        ))}
+                        <td dir="rtl">{rtl}</td>
+                      </tr>
+                    ))}
+                  </>
+                )}
+
+                {/* Passport fields */}
+                {reservation.customers.some(c => c.passport) && (
+                  <>
+                    {[
+                      { label: 'Passport', key: 'passport', rtl: 'جواز السفر', format: v => v },
+                      { label: 'Délivré le', key: 'passportDate', rtl: 'تم التسليم في التاريخ', format: formatDate },
+                    ].map(({ label, key, rtl, format }) => (
+                      <tr key={key}>
+                        <td>{label}</td>
+                        {reservation.customers.map((c, i) => (
+                          <td key={i} className="text-center">
+                            <b>{format(c[key]) || ''}</b>
+                          </td>
+                        ))}
+                        <td dir="rtl">{rtl}</td>
+                      </tr>
+                    ))}
+                  </>
+                )}
+              </tbody>
+            </table>
+
         </div>
 
         {/* Car condition before and after */}
