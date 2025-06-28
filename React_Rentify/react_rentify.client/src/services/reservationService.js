@@ -21,6 +21,28 @@ export const reservationService = {
         }
     },
 
+    async getAvailableCars(startDate, endDate, currentCarId) {
+        try {
+            const dataSend = {
+                start: startDate,
+                end: endDate,
+                carId: currentCarId
+            };
+            const response = await apiClient.get(
+                '/reservations/getAvailableCars',
+                { params: dataSend }         // ← send your data here
+            );
+            return response.data;
+        } catch (error) {
+            console.error(
+                `❌ Error fetching getAvailableCars with car ID ${currentCarId}:`,
+                error
+            );
+            throw error;
+        }
+    },
+
+
     async getByAgencyId(agencyId) {
         try {
             const response = await apiClient.get(`/reservations/agency/${agencyId}`);

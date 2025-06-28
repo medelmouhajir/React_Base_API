@@ -1,0 +1,623 @@
+﻿/* src/pages/Reservation/Details/ReservationDetails.css */
+
+.reservation-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Loading and Error States */
+.reservation-loading,
+.reservation-error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40vh;
+    font-size: 1.25rem;
+}
+
+.reservation-error {
+    color: #e53935;
+}
+
+/* Header Section */
+.reservation-header {
+    background-color: var(--card-bg, #fff);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+}
+
+    .reservation-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary, #333);
+    }
+
+.car-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+    .car-info h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--text-primary, #333);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+.matricule {
+    font-size: 1rem;
+    color: var(--text-secondary, #666);
+    font-weight: 400;
+}
+
+.customer-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.customer-tag {
+    background-color: var(--primary-light, #e3f2fd);
+    color: var(--primary, #1976d2);
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+    .customer-tag:hover {
+        background-color: var(--primary, #1976d2);
+        color: white;
+    }
+
+.reservation-period {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-secondary, #666);
+}
+
+    .reservation-period time {
+        font-weight: 500;
+        color: var(--text-primary, #333);
+    }
+
+/* Actions Section */
+.reservation-actions {
+    background-color: var(--card-bg, #fff);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+}
+
+.primary-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    }
+
+.edit-dates {
+    background-color: var(--info-light, #e3f2fd);
+    color: var(--info, #0288d1);
+}
+
+    .edit-dates:hover {
+        background-color: var(--info, #0288d1);
+        color: white;
+    }
+
+.remove {
+    background-color: var(--danger-light, #ffebee);
+    color: var(--danger, #e53935);
+}
+
+    .remove:hover {
+        background-color: var(--danger, #e53935);
+        color: white;
+    }
+
+.edit-car {
+    background-color: var(--warning-light, #fff8e1);
+    color: var(--warning, #ffa000);
+}
+
+    .edit-car:hover {
+        background-color: var(--warning, #ffa000);
+        color: white;
+    }
+
+.generate-invoice {
+    background-color: var(--success-light, #e8f5e9);
+    color: var(--success, #43a047);
+}
+
+    .generate-invoice:hover {
+        background-color: var(--success, #43a047);
+        color: white;
+    }
+
+.deliver {
+    background-color: var(--primary-light, #e3f2fd);
+    color: var(--primary, #1976d2);
+}
+
+    .deliver:hover {
+        background-color: var(--primary, #1976d2);
+        color: white;
+    }
+
+.return {
+    background-color: var(--secondary-light, #f3e5f5);
+    color: var(--secondary, #8e24aa);
+}
+
+    .return:hover {
+        background-color: var(--secondary, #8e24aa);
+        color: white;
+    }
+
+.contract {
+    background-color: var(--neutral-light, #f5f5f5);
+    color: var(--neutral, #616161);
+}
+
+    .contract:hover {
+        background-color: var(--neutral, #616161);
+        color: white;
+    }
+
+/* Dropdown */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    background-color: var(--neutral-light, #f5f5f5);
+    color: var(--neutral, #616161);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .dropdown-toggle::after {
+        content: "▼";
+        font-size: 0.7rem;
+        margin-left: 0.3rem;
+    }
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    text-align: left;
+    border: none;
+    background: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .dropdown-item:hover {
+        background-color: var(--neutral-light, #f5f5f5);
+    }
+
+/* Customer Section */
+.customer-section {
+    background-color: var(--card-bg, #fff);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+}
+
+    .customer-section h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary, #333);
+    }
+
+.customer-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.customer-card {
+    background-color: var(--card-nested-bg, #f9f9f9);
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+    .customer-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary, #333);
+    }
+
+.customer-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.detail-label {
+    color: var(--text-secondary, #666);
+    min-width: 90px;
+}
+
+.detail-value {
+    color: var(--text-primary, #333);
+    font-weight: 500;
+}
+
+.edit-customer-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 0.875rem;
+    color: var(--primary, #1976d2);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+    .edit-customer-btn:hover {
+        background-color: var(--primary-light, #e3f2fd);
+    }
+
+/* Invoice Section */
+.invoice-section, .no-invoice {
+    background-color: var(--card-bg, #fff);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+}
+
+    .invoice-section h2, .no-invoice p {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary, #333);
+    }
+
+.invoice-card {
+    background-color: var(--card-nested-bg, #f9f9f9);
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.invoice-number {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary, #333);
+}
+
+.invoice-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+    .invoice-status.paid {
+        background-color: var(--success-light, #e8f5e9);
+        color: var(--success, #43a047);
+    }
+
+    .invoice-status.partially_paid {
+        background-color: var(--warning-light, #fff8e1);
+        color: var(--warning, #ffa000);
+    }
+
+    .invoice-status.unpaid {
+        background-color: var(--danger-light, #ffebee);
+        color: var(--danger, #e53935);
+    }
+
+    .invoice-status.no_invoice {
+        background-color: var(--neutral-light, #f5f5f5);
+        color: var(--neutral, #616161);
+    }
+
+.invoice-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+    .invoice-details .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color, #eee);
+    }
+
+        .invoice-details .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .invoice-details .detail-row.highlight {
+            background-color: var(--highlight-bg, #f5f5f5);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-top: 0.5rem;
+        }
+
+.detail-value.amount, .detail-value.remaining {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.detail-value.remaining {
+    color: var(--danger, #e53935);
+}
+
+.invoice-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.view-invoice-btn, .edit-invoice-btn, .print-invoice-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.view-invoice-btn {
+    background-color: var(--primary-light, #e3f2fd);
+    color: var(--primary, #1976d2);
+    border: none;
+}
+
+    .view-invoice-btn:hover {
+        background-color: var(--primary, #1976d2);
+        color: white;
+    }
+
+.edit-invoice-btn {
+    background-color: var(--warning-light, #fff8e1);
+    color: var(--warning, #ffa000);
+    border: none;
+}
+
+    .edit-invoice-btn:hover {
+        background-color: var(--warning, #ffa000);
+        color: white;
+    }
+
+.print-invoice-btn {
+    background-color: var(--neutral-light, #f5f5f5);
+    color: var(--neutral, #616161);
+    border: none;
+}
+
+    .print-invoice-btn:hover {
+        background-color: var(--neutral, #616161);
+        color: white;
+    }
+
+.no-invoice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+}
+
+.generate-invoice-btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--success, #43a047);
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .generate-invoice-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    }
+
+/* Payments Section */
+.payments-section {
+    background-color: var(--card-bg, #fff);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+    .section-header h2 {
+        font-size: 1.25rem;
+        color: var(--text-primary, #333);
+    }
+
+.add-payment-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    background-color: var(--success-light, #e8f5e9);
+    color: var(--success, #43a047);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .add-payment-btn:hover {
+        background-color: var(--success, #43a047);
+        color: white;
+    }
+
+.no-payments {
+    color: var(--text-secondary, #666);
+    font-style: italic;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.payment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.payment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: var(--card-nested-bg, #f9f9f9);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.payment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.payment-date {
+    font-size: 0.9rem;
+    color: var(--text-primary, #333);
+    font-weight: 500;
+}
+
+.payment-method {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #666);
+}
+
+.payment-amount {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--success, #43a047);
+}
+
+/* Modal Styles are imported from separate component files */
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .reservation-details {
+        padding: 1rem;
+    }
+
+    .customer-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .primary-actions {
+        flex-direction: column;
+    }
+
+    .action-btn, .dropdown-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .invoice-header, .section-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .reservation-details {
+        --card-bg: #1e1e1e;
+        --card-nested-bg: #2d2d2d;
+        --text-primary: #e0e0e0;
+        --text-secondary: #a0a0a0;
+        --border-color: #3d3d3d;
+        --highlight-bg: #2a2a2a;
+    }
+}

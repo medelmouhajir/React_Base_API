@@ -1,0 +1,149 @@
+/* src/pages/Reservation/Details/Modals/ModalStyles.css */
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
+}
+
+.form-section {
+    background-color: var(--card-nested-bg, #f9f9f9);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+    .form-section h3 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary, #333);
+    }
+
+.reservation-summary, .invoice-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+    .summary-row.highlight {
+        background-color: var(--highlight-bg, #f5f5f5);
+        border-radius: 4px;
+        font-weight: 500;
+    }
+
+.summary-label {
+    color: var(--text-secondary, #666);
+}
+
+.summary-value {
+    color: var(--text-primary, #333);
+    font-weight: 500;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+    .form-group label {
+        font-size: 0.875rem;
+        color: var(--text-primary, #333);
+        font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 0.75rem;
+        border-radius: 6px;
+        border: 1px solid var(--border-color, #ddd);
+        font-size: 0.875rem;
+        background-color: var(--input-bg, white);
+        color: var(--text-primary, #333);
+        transition: border-color 0.2s;
+    }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary, #1976d2);
+            box-shadow: 0 0 0 2px var(--primary-light, #e3f2fd);
+        }
+
+    .form-group.checkbox {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .form-group.checkbox input {
+            width: 1rem;
+            height: 1rem;
+        }
+
+.input-hint {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #666);
+    font-style: italic;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-cancel, .btn-submit {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel {
+    background-color: transparent;
+    border: 1px solid var(--border-color, #ddd);
+    color: var(--text-secondary, #666);
+}
+
+    .btn-cancel:hover {
+        background-color: var(--neutral-light, #f5f5f5);
+    }
+
+.btn-submit {
+    background-color: var(--primary, #1976d2);
+    border: none;
+    color: white;
+}
+
+    .btn-submit:hover {
+        background-color: var(--primary-dark, #1565c0);
+    }
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .modal-form {
+        --card-nested-bg: #2d2d2d;
+        --text-primary: #e0e0e0;
+        --text-secondary: #a0a0a0;
+        --border-color: #3d3d3d;
+        --highlight-bg: #2a2a2a;
+        --input-bg: #1e1e1e;
+        --primary-dark: #1565c0;
+    }
+}

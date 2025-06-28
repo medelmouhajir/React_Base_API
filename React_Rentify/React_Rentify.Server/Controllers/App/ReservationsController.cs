@@ -454,6 +454,71 @@ namespace React_Rentify.Server.Controllers.App
             return NoContent();
         }
 
+
+        [HttpGet("getAvailableCars")]
+        public async Task<IActionResult> GetAvailableCars(
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end,
+            [FromQuery] Guid carId)
+        {
+            _logger.LogInformation(
+                "Checking availability between {Start} and {End}, include Car {CarId}",
+                start, end, carId);
+
+            // Find IDs of cars booked in that period, excluding the current car
+            var busyCarIds = await _context.Set<Reservation>()
+                .Where(r =>
+                    r.CarId != carId &&
+                    r.StartDate < end &&
+                    r.EndDate > start
+                )
+                .Select(r => r.CarId)
+                .Distinct()
+                .ToListAsync();
+
+            // All cars not in busyCarIds
+            var availableCars = await _context.Set<Car>()
+                .Include(x=> x.Car_Model)
+                .ThenInclude(x=> x.Manufacturer)
+                .Include(x=> x.Car_Year)
+                .Where(c => !busyCarIds.Contains(c.Id))
+                .ToListAsync();
+
+            // Map to lightweight DTO
+            var result = availableCars.Select(c => new Car
+            {
+                Id = c.Id,
+                AgencyId = c.AgencyId,
+                Car_Model = new Models.Filters.Cars.Car_Model
+                {
+                    Id = c.Car_Model.Id,
+                    Name = c.Car_Model.Name,
+                    ManufacturerId = c.Car_Model.ManufacturerId,
+                    Manufacturer = new Models.Filters.Cars.Manufacturer
+                    {
+                        Id = c.Car_Model.ManufacturerId,
+                        Name = c.Car_Model.Manufacturer.Name
+                    }
+                },
+                Car_ModelId = c.Car_ModelId,
+                Car_YearId = c.Car_YearId,
+                Car_Year = new Models.Filters.Cars.Car_Year
+                {
+                    Id = c.Car_YearId,
+                    YearValue = c.Car_Year.YearValue
+                },
+                Color = c.Color,
+                DailyRate = c.DailyRate,
+                HourlyRate = c.HourlyRate,
+                IsAvailable = c.IsAvailable,
+                LicensePlate = c.LicensePlate,
+                Status = c.Status,
+                // add any other fields you need
+            });
+
+            return Ok(result);
+        }
+
         #region Helper Methods & DTOs
 
         private static ReservationDto MapToDto(Reservation r)
