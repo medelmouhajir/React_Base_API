@@ -1,0 +1,627 @@
+/* src/pages/Reservation/Details/Modals/SelectCarModal.css */
+
+:root {
+    /* Colors */
+    --select-card-bg: #ffffff;
+    --select-card-bg-hover: #f9f9f9;
+    --select-card-border: #e0e0e0;
+    --select-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --select-card-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --select-text-primary: #333333;
+    --select-text-secondary: #666666;
+    --select-primary: #0ea5e9;
+    --select-primary-light: #e0f2fe;
+    --select-primary-dark: #0369a1;
+    --select-success: #43a047;
+    --select-success-light: #e8f5e9;
+    --select-neutral: #616161;
+    --select-neutral-light: #f5f5f5;
+    --select-filter-bg: #f5f7fa;
+    --select-filter-border: #eaedf2;
+    /* Transitions */
+    --select-transition-fast: 150ms ease;
+    --select-transition-normal: 250ms ease;
+    /* Border Radius */
+    --select-radius-sm: 4px;
+    --select-radius-md: 8px;
+    --select-radius-lg: 12px;
+}
+
+/* Dark Mode Variables */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --select-card-bg: #1e1e1e;
+        --select-card-bg-hover: #2d2d2d;
+        --select-card-border: #3d3d3d;
+        --select-card-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        --select-card-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.3);
+        --select-text-primary: #e0e0e0;
+        --select-text-secondary: #a0a0a0;
+        --select-primary-light: #0c4a6e;
+        --select-filter-bg: #2d2d2d;
+        --select-filter-border: #3d3d3d;
+        --select-neutral-light: #2d2d2d;
+    }
+}
+
+/* Container Layout */
+.select-car-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 1rem;
+}
+
+/* Loading State */
+.select-car-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 1rem;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--select-primary-light);
+    border-top-color: var(--select-primary);
+    border-radius: 50%;
+    animation: spinner 1s linear infinite;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error State */
+.select-car-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 1rem;
+    text-align: center;
+    color: #e53935;
+}
+
+.btn-retry {
+    padding: 0.5rem 1rem;
+    background-color: #e53935;
+    color: white;
+    border: none;
+    border-radius: var(--select-radius-md);
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color var(--select-transition-fast);
+}
+
+    .btn-retry:hover {
+        background-color: #c62828;
+    }
+
+/* Toolbar Section */
+.select-car-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--select-card-border);
+}
+
+.search-container {
+    position: relative;
+    flex: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.7rem 1rem 0.7rem 2.5rem;
+    border: 1px solid var(--select-card-border);
+    border-radius: var(--select-radius-md);
+    background-color: var(--select-card-bg);
+    color: var(--select-text-primary);
+    font-size: 0.95rem;
+    transition: border-color var(--select-transition-fast), box-shadow var(--select-transition-fast);
+}
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--select-primary);
+        box-shadow: 0 0 0 2px var(--select-primary-light);
+    }
+
+.search-icon {
+    position: absolute;
+    left: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--select-text-secondary);
+    font-size: 1rem;
+}
+
+.sort-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .sort-container label {
+        font-size: 0.9rem;
+        color: var(--select-text-secondary);
+        white-space: nowrap;
+    }
+
+.sort-select {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 1px solid var(--select-card-border);
+    border-radius: var(--select-radius-md);
+    background-color: var(--select-card-bg);
+    color: var(--select-text-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+}
+
+/* Content Layout */
+.select-car-content {
+    display: flex;
+    gap: 1.5rem;
+    flex: 1;
+    min-height: 0; /* Important for nested scrolling */
+    overflow: hidden;
+}
+
+/* Filters Section */
+.filters-section {
+    width: 280px;
+    flex-shrink: 0;
+    background-color: var(--select-filter-bg);
+    border-radius: var(--select-radius-md);
+    padding: 1.25rem;
+    overflow-y: auto;
+    max-height: 100%;
+    border: 1px solid var(--select-filter-border);
+}
+
+.filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+    .filters-header h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--select-text-primary);
+    }
+
+.reset-filters-btn {
+    padding: 0.35rem 0.75rem;
+    background-color: transparent;
+    color: var(--select-primary);
+    border: 1px solid var(--select-primary);
+    border-radius: var(--select-radius-sm);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all var(--select-transition-fast);
+}
+
+    .reset-filters-btn:hover {
+        background-color: var(--select-primary);
+        color: white;
+    }
+
+    .reset-filters-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        border-color: var(--select-text-secondary);
+        color: var(--select-text-secondary);
+    }
+
+.filter-group {
+    margin-bottom: 1.25rem;
+}
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--select-text-primary);
+    }
+
+.filter-select {
+    width: 100%;
+    padding: 0.6rem 2rem 0.6rem 0.75rem;
+    border: 1px solid var(--select-card-border);
+    border-radius: var(--select-radius-md);
+    background-color: var(--select-card-bg);
+    color: var(--select-text-primary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+}
+
+    .filter-select:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        background-color: var(--select-neutral-light);
+    }
+
+.price-range {
+    margin-bottom: 1.5rem;
+}
+
+.price-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.price-input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--select-card-border);
+    border-radius: var(--select-radius-md);
+    background-color: var(--select-card-bg);
+    color: var(--select-text-primary);
+    font-size: 0.9rem;
+}
+
+.price-separator {
+    color: var(--select-text-secondary);
+    font-weight: 500;
+}
+
+.features-filter {
+    margin-bottom: 0;
+}
+
+.features-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.feature-toggle {
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    background-color: var(--select-neutral-light);
+    color: var(--select-text-secondary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all var(--select-transition-fast);
+}
+
+    .feature-toggle:hover {
+        background-color: var(--select-card-border);
+    }
+
+    .feature-toggle.active {
+        background-color: var(--select-primary);
+        color: white;
+    }
+
+/* Cars Section */
+.cars-section {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.cars-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    position: sticky;
+    top: 0;
+    background-color: var(--select-card-bg);
+    padding: 0.5rem 0;
+    z-index: 2;
+}
+
+    .cars-header h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--select-text-primary);
+    }
+
+.cars-count {
+    font-size: 0.9rem;
+    color: var(--select-text-secondary);
+}
+
+.no-cars-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+    text-align: center;
+    color: var(--select-text-secondary);
+}
+
+.btn-reset-filters {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background-color: var(--select-primary);
+    color: white;
+    border: none;
+    border-radius: var(--select-radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--select-transition-fast);
+}
+
+    .btn-reset-filters:hover {
+        background-color: var(--select-primary-dark);
+    }
+
+/* Cars Grid */
+.cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.car-card {
+    background-color: var(--select-card-bg);
+    border: 1px solid var(--select-card-border);
+    border-radius: var(--select-radius-md);
+    padding: 1.25rem;
+    cursor: pointer;
+    position: relative;
+    transition: all var(--select-transition-normal);
+    box-shadow: var(--select-card-shadow);
+}
+
+    .car-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--select-primary);
+        box-shadow: var(--select-card-shadow-hover);
+    }
+
+    .car-card.selected {
+        border-color: var(--select-primary);
+        background-color: var(--select-primary-light);
+    }
+
+    .car-card.current {
+        border-color: var(--select-success);
+    }
+
+.car-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.car-card h4 {
+    font-size: 1.1rem;
+    margin: 0;
+    color: var(--select-text-primary);
+    font-weight: 600;
+}
+
+.car-year {
+    font-size: 0.9rem;
+    color: var(--select-text-secondary);
+    font-weight: 500;
+}
+
+.car-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.car-price {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.03);
+    padding: 0.75rem;
+    border-radius: var(--select-radius-md);
+}
+
+.price-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--select-success);
+}
+
+.price-label {
+    font-size: 0.8rem;
+    color: var(--select-text-secondary);
+    margin-top: 0.25rem;
+}
+
+.car-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.car-detail {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.detail-label {
+    color: var(--select-text-secondary);
+}
+
+.detail-value {
+    color: var(--select-text-primary);
+    font-weight: 500;
+}
+
+.car-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+}
+
+.feature-tag {
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--select-radius-sm);
+    background-color: var(--select-neutral-light);
+    color: var(--select-text-secondary);
+    font-size: 0.75rem;
+}
+
+.current-indicator {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background-color: var(--select-success);
+    color: white;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--select-radius-sm);
+    font-weight: 500;
+}
+
+.selected-indicator {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--select-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Actions Section */
+.select-car-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--select-card-border);
+}
+
+.btn-cancel, .btn-submit {
+    padding: 0.7rem 1.5rem;
+    border-radius: var(--select-radius-md);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--select-transition-fast);
+}
+
+.btn-cancel {
+    background-color: transparent;
+    border: 1px solid var(--select-card-border);
+    color: var(--select-text-secondary);
+}
+
+    .btn-cancel:hover {
+        background-color: var(--select-neutral-light);
+        border-color: var(--select-text-secondary);
+    }
+
+.btn-submit {
+    background-color: var(--select-primary);
+    color: white;
+    border: none;
+}
+
+    .btn-submit:hover {
+        background-color: var(--select-primary-dark);
+    }
+
+    .btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        background-color: var(--select-neutral);
+    }
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .select-car-content {
+        flex-direction: column;
+    }
+
+    .filters-section {
+        width: 100%;
+        max-height: none;
+        border-radius: var(--select-radius-md);
+    }
+
+    .cars-section {
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .select-car-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cars-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .select-car-actions {
+        flex-direction: column;
+    }
+
+    .btn-cancel, .btn-submit {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Touch Screen Optimizations */
+@media (hover: none) {
+    .car-card {
+        padding: 1.5rem;
+    }
+
+    .feature-toggle {
+        padding: 0.5rem 0.85rem;
+    }
+
+    .btn-cancel, .btn-submit {
+        padding: 0.85rem 1.5rem;
+    }
+
+    .filter-select, .sort-select {
+        padding: 0.7rem 2rem 0.7rem 0.75rem;
+    }
+
+    .price-input {
+        padding: 0.7rem 0.75rem;
+    }
+}

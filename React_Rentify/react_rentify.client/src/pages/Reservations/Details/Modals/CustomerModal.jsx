@@ -22,6 +22,8 @@ const CustomerModal = ({ action, customer, onClose, onEditSubmit, onAddSubmit, o
         licenseNumber: ''
     });
 
+    console.log('action : ' + action);
+
     // Fetch customers for add action
     useEffect(() => {
         if (action === 'add') {

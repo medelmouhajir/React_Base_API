@@ -519,6 +519,132 @@ namespace React_Rentify.Server.Controllers.App
             return Ok(result);
         }
 
+
+
+        [HttpPatch("{id:guid}/car")]
+        public async Task<IActionResult> UpdateReservationCar(Guid id, [FromBody] UpdateReservationCarDto dto)
+        {
+            _logger.LogInformation("Updating car for reservation {ReservationId} to car {CarId}", id, dto.CarId);
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid UpdateReservationCarDto for Reservation {ReservationId}", id);
+                return BadRequest(ModelState);
+            }
+
+            var reservation = await _context.Set<Reservation>()
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                _logger.LogWarning("Reservation with Id {ReservationId} not found", id);
+                return NotFound(new { message = $"Reservation with Id '{id}' not found." });
+            }
+
+            // Verify the car exists
+            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == dto.CarId);
+            if (!carExists)
+            {
+                _logger.LogWarning("Car with Id {CarId} does not exist", dto.CarId);
+                return BadRequest(new { message = $"Car with Id '{dto.CarId}' does not exist." });
+            }
+
+            // Check if car is available for the reservation period
+            var isCarAvailable = await IsCarAvailableForDates(dto.CarId, reservation.StartDate, reservation.EndDate, id);
+            if (!isCarAvailable)
+            {
+                _logger.LogWarning("Car with Id {CarId} is not available for the requested dates", dto.CarId);
+                return BadRequest(new { message = $"Car with Id '{dto.CarId}' is not available for the requested dates." });
+            }
+
+            // Update the car ID
+            reservation.CarId = dto.CarId;
+            _context.Entry(reservation).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Updated car for reservation {ReservationId} to {CarId}", id, dto.CarId);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// PATCH: api/Reservations/{id}/dates
+        /// Updates only the dates of a reservation.
+        /// </summary>
+        [HttpPatch("{id:guid}/dates")]
+        public async Task<IActionResult> UpdateReservationDates(Guid id, [FromBody] UpdateReservationDatesDto dto)
+        {
+            _logger.LogInformation("Updating dates for reservation {ReservationId}", id);
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid UpdateReservationDatesDto for Reservation {ReservationId}", id);
+                return BadRequest(ModelState);
+            }
+
+            // Validate dates
+            if (dto.StartDate >= dto.EndDate)
+            {
+                _logger.LogWarning("Invalid date range: Start date must be before end date");
+                return BadRequest(new { message = "Start date must be before end date." });
+            }
+
+            var reservation = await _context.Set<Reservation>()
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                _logger.LogWarning("Reservation with Id {ReservationId} not found", id);
+                return NotFound(new { message = $"Reservation with Id '{id}' not found." });
+            }
+
+            // Check if car is available for the new dates
+            var isCarAvailable = await IsCarAvailableForDates(reservation.CarId, dto.StartDate, dto.EndDate, id);
+            if (!isCarAvailable)
+            {
+                _logger.LogWarning("Car is not available for the requested dates");
+                return BadRequest(new { message = "The car is not available for the requested dates." });
+            }
+
+            // Update the dates
+            reservation.StartDate = dto.StartDate;
+            reservation.EndDate = dto.EndDate;
+            _context.Entry(reservation).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Updated dates for reservation {ReservationId}", id);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Helper method to check if a car is available for specific dates
+        /// </summary>
+        private async Task<bool> IsCarAvailableForDates(Guid carId, DateTime startDate, DateTime endDate, Guid? excludeReservationId = null)
+        {
+            var query = _context.Set<Reservation>()
+                .Where(r => r.CarId == carId)
+                .Where(r => r.Status != "Cancelled" && r.Status != "Completed");
+
+            // Exclude the current reservation if provided
+            if (excludeReservationId.HasValue)
+            {
+                query = query.Where(r => r.Id != excludeReservationId.Value);
+            }
+
+            // Check for overlapping reservations
+            var overlappingReservations = await query
+                .Where(r =>
+                    (startDate >= r.StartDate && startDate < r.EndDate) || // Start date falls within existing reservation
+                    (endDate > r.StartDate && endDate <= r.EndDate) ||     // End date falls within existing reservation
+                    (startDate <= r.StartDate && endDate >= r.EndDate))    // New reservation completely contains existing reservation
+                .AnyAsync();
+
+            return !overlappingReservations;
+        }
+
         #region Helper Methods & DTOs
 
         private static ReservationDto MapToDto(Reservation r)
@@ -623,6 +749,22 @@ namespace React_Rentify.Server.Controllers.App
             public DateTime IssuedOn { get; set; }
         }
 
+        /// <summary>
+        /// DTO for updating only the car of a reservation
+        /// </summary>
+        public class UpdateReservationCarDto
+        {
+            public Guid CarId { get; set; }
+        }
+
+        /// <summary>
+        /// DTO for updating only the dates of a reservation
+        /// </summary>
+        public class UpdateReservationDatesDto
+        {
+            public DateTime StartDate { get; set; }
+            public DateTime EndDate { get; set; }
+        }
         #endregion
     }
 }

@@ -42,6 +42,52 @@ export const reservationService = {
         }
     },
 
+    async updateReservationCar(reservationId, carId) {
+        try {
+            const response = await apiClient.patch(`/reservations/${reservationId}/car`, { carId });
+            console.log(`✅ Successfully updated car for reservation ${reservationId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error updating car for reservation ${reservationId}:`, error);
+            throw error;
+        }
+    },
+
+    // Method to update only the dates of a reservation
+    async updateReservationDates(reservationId, datesData) {
+        try {
+            const response = await apiClient.patch(`/reservations/${reservationId}/dates`, datesData);
+            console.log(`✅ Successfully updated dates for reservation ${reservationId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error updating dates for reservation ${reservationId}:`, error);
+            throw error;
+        }
+    },
+
+    // Method to deliver a car (existing method - for reference)
+    async deliverCar(reservationId, deliveryData) {
+        try {
+            const response = await apiClient.post(`/reservations/${reservationId}/deliver`, deliveryData);
+            console.log(`✅ Successfully delivered car for reservation ${reservationId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error delivering car for reservation ${reservationId}:`, error);
+            throw error;
+        }
+    },
+
+    // Method to return a car (existing method - for reference)
+    async returnCar(reservationId, returnData) {
+        try {
+            const response = await apiClient.post(`/reservations/${reservationId}/return`, returnData);
+            console.log(`✅ Successfully returned car for reservation ${reservationId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error returning car for reservation ${reservationId}:`, error);
+            throw error;
+        }
+    },
 
     async getByAgencyId(agencyId) {
         try {
