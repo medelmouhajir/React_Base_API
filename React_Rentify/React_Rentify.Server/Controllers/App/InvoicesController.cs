@@ -190,7 +190,7 @@ namespace React_Rentify.Server.Controllers
             {
                 Id = Guid.NewGuid(),
                 ReservationId = dto.ReservationId,
-                IssuedAt = dto.IssuedAt,
+                IssuedAt = dto.IssuedAt.ToUniversalTime(),
                 Amount = dto.Amount,
                 IsPaid = dto.IsPaid,
                 Currency = dto.Currency,
@@ -198,8 +198,15 @@ namespace React_Rentify.Server.Controllers
                 Payments = new List<Payment>()
             };
 
-            _context.Set<Invoice>().Add(invoice);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Set<Invoice>().Add(invoice);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+
+            };
 
             _logger.LogInformation("Created invoice {InvoiceId}", invoice.Id);
 

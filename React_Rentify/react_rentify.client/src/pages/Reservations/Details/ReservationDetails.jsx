@@ -51,15 +51,13 @@ const ReservationDetails = () => {
                 setReservation(reservationData);
 
                 // Fetch invoice if it exists
-                if (reservationData.invoiceId) {
-                    const invoiceData = await invoiceService.getInvoiceById(reservationData.invoiceId);
-                    setInvoice(invoiceData);
 
-                    // Fetch payments for this invoice
-                    if (invoiceData.id) {
-                        const paymentsData = await invoiceService.getPaymentsByInvoiceId(invoiceData.id);
-                        setPayments(paymentsData);
-                    }
+                const invoiceData = await invoiceService.getByReservationId(id);
+                setInvoice(invoiceData);
+
+                // Fetch payments for this invoice
+                if (invoiceData.payments) {
+                    setPayments(invoiceData.payments);
                 }
 
                 setLoading(false);
@@ -121,7 +119,7 @@ const ReservationDetails = () => {
 
     const handleGenerateInvoiceSubmit = async (invoiceData) => {
         try {
-            const newInvoice = await invoiceService.createInvoice({
+            const newInvoice = await invoiceService.create({
                 ...invoiceData,
                 reservationId: id
             });
@@ -467,7 +465,7 @@ const ReservationDetails = () => {
                         <div className="invoice-header">
                             <div className="invoice-id">
                                 <span className="invoice-label">{t('invoice.fields.number')}:</span>
-                                <span className="invoice-value">#{invoice.invoiceNumber || invoice.id}</span>
+                                <span className="invoice-value">{invoice.invoiceNumber || invoice.id}</span>
                             </div>
 
                             <div className="invoice-date">

@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\components\Loading\" />
-    <Folder Include="src\hooks\" />
     <Folder Include="src\pages\Agencies\Details\" />
     <Folder Include="src\pages\Agencies\Create\" />
     <Folder Include="src\pages\Agencies\List\" />

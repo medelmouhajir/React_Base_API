@@ -17,6 +17,8 @@ import MainLayout from './layouts/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import LoadingScreen from './components/ui/LoadingScreen';
 
+import { useRtlDirection } from './hooks/useRtlDirection';
+
 // Pages - using lazy loading for better performance
 // Landing & Auth
 const LandingPage = lazy(() => import('./pages/Landing/LandingPage'));
@@ -62,7 +64,6 @@ const CustomersList = lazy(() => import('./pages/Customers/List/CustomersList'))
 const ReservationDetails = lazy(() => import('./pages/Reservations/Details/ReservationDetails'));
 const ReservationAdd = lazy(() => import('./pages/Reservations/Add/ReservationAdd'));
 const Contract = lazy(() => import('./pages/Reservations/Contract/Contract'));
-
 
 
 const AddMaintenance = lazy(() => import('./pages/Maintenances/Add/AddMaintenance'));

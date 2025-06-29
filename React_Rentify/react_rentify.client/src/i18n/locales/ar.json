@@ -10,7 +10,12 @@
     "reservations": "الحجوزات"
   },
   "common": {
-    "saving": "جارٍ الحفظ..."
+    "saving": "جارٍ الحفظ...",
+    "loading": "جاري التحميل...",
+    "edit": "تعديل",
+    "remove": "إزالة",
+    "retry": "إعادة المحاولة",
+    "reset": "إعادة ضبط"
   },
   "landing": {
     "features": "الميزات",
@@ -154,6 +159,68 @@
         "status": "الحالة",
         "actions": "الإجراءات"
       }
+    },
+    "editDates": {
+      "title": "تعديل تواريخ الحجز",
+      "currentPeriod": "الفترة الحالية",
+      "endDateError": "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء",
+      "submit": "حفظ التواريخ"
+    },
+    "notFound": "الحجز غير موجود",
+    "details": {
+      "title": "تفاصيل الحجز"
+    },
+    "fields": {
+      "period": "الفترة",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء",
+      "newStartDate": "تاريخ البدء الجديد",
+      "newEndDate": "تاريخ الانتهاء الجديد",
+      "car": "السيارة",
+      "customer": "العميل"
+    },
+    "status": {
+      "delivered": "تم التسليم",
+      "returned": "تم الإرجاع",
+      "expired": "منتهي"
+    },
+    "actions": {
+      "deliver": "تسليم السيارة",
+      "return": "إرجاع السيارة",
+      "generateInvoice": "إنشاء فاتورة",
+      "viewContract": "عرض العقد",
+      "editDates": "تعديل التواريخ",
+      "changeCar": "تغيير السيارة",
+      "remove": "حذف الحجز"
+    },
+    "customers": {
+      "title": "العملاء",
+      "add": "إضافة عميل"
+    },
+    "invoice": {
+      "title": "الفاتورة",
+      "notGenerated": "لم يتم إنشاء الفاتورة بعد"
+    },
+    "payments": {
+      "title": "المدفوعات"
+    },
+    "selectCar": {
+      "title": "اختر السيارة",
+      "errorLoading": "فشل في تحميل السيارات المتاحة",
+      "searchPlaceholder": "ابحث بالماركة أو الموديل أو اللوحة…",
+      "sortBy": "ترتيب حسب",
+      "sortRecommended": "الموصى به",
+      "sortPriceLow": "السعر: من الأقل إلى الأعلى",
+      "sortPriceHigh": "السعر: من الأعلى إلى الأقل",
+      "sortYearNew": "السنة: من الأحدث إلى الأقدم",
+      "sortYearOld": "السنة: من الأقدم إلى الأحدث",
+      "filters": "الفلاتر",
+      "availableCars": "السيارات المتاحة",
+      "carsFound": "سيارات موجودة",
+      "noCarsFound": "لا توجد سيارات",
+      "resetFilters": "إعادة ضبط الفلاتر",
+      "currentCar": "السيارة الحالية",
+      "submit": "تأكيد"
     }
   },
   "customerDetails": {
@@ -181,5 +248,77 @@
     "legal": "القانونية",
     "terms": "شروط الخدمة",
     "privacy": "سياسة الخصوصية"
+  },
+  "customer": {
+    "fields": {
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "licenseNumber": "رقم الرخصة",
+      "nationalId": "الهوية الوطنية",
+      "fullName": "الاسم الكامل",
+      "phoneNumber": "رقم الهاتف",
+      "address": "العنوان"
+    },
+    "errorLoading": "فشل في تحميل العملاء",
+    "add": {
+      "selectCustomer": "يرجى اختيار عميل لإضافته",
+      "title": "إضافة عميل",
+      "search": "بحث عن عميل",
+      "searchPlaceholder": "اكتب الاسم أو البريد الإلكتروني أو رقم الهاتف...",
+      "noResults": "لم يتم العثور على عملاء",
+      "addToReservation": "إضافة إلى الحجز"
+    },
+    "edit": {
+      "title": "تعديل العميل"
+    },
+    "remove": {
+      "title": "إزالة عميل",
+      "warning": "أنت على وشك إزالة هذا العميل من الحجز.",
+      "confirmText": "هل أنت متأكد أنك تريد إزالة {{name}}؟",
+      "confirm": "نعم، أزل"
+    }
+  },
+  "invoice": {
+    "fields": {
+      "number": "رقم الفاتورة",
+      "issuedAt": "تاريخ الإصدار",
+      "amount": "المبلغ",
+      "paidAmount": "المبلغ المدفوع",
+      "remaining": "المتبقي",
+      "currency": "العملة",
+      "paymentMethod": "طريقة الدفع",
+      "markAsPaid": "وضع كمدفوعة"
+    },
+    "actions": {
+      "view": "عرض الفاتورة",
+      "print": "طباعة الفاتورة",
+      "addPayment": "إضافة دفعة"
+    },
+    "generate": {
+      "title": "إنشاء فاتورة",
+      "reservationDetails": "تفاصيل الحجز",
+      "submit": "إنشاء"
+    }
+  },
+  "car": {
+    "fields": {
+      "manufacturer": "الشركة المصنعة",
+      "model": "الموديل",
+      "category": "الفئة",
+      "year": "السنة",
+      "transmission": "نظام النقل",
+      "priceRange": "نطاق السعر (درهم/اليوم)",
+      "features": "المميزات",
+      "dailyRate": "سعر اليوم",
+      "licensePlate": "رقم اللوحة",
+      "fuelType": "نوع الوقود"
+    }
+  },
+  "payment": {
+    "methods": {
+      "cash": "نقداً",
+      "card": "بطاقة",
+      "bankTransfer": "تحويل بنكي"
+    }
   }
 }

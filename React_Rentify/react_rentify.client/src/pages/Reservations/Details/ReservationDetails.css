@@ -1,7 +1,8 @@
 ﻿/* src/pages/Reservation/Details/ReservationDetails.css */
 
+/* Base Variables - Inherits from theme.css but with fallbacks */
 :root {
-    /* Colors - Primary */
+    /* Primary Colors */
     --primary-50: var(--color-primary-50, #f0f9ff);
     --primary-100: var(--color-primary-100, #e0f2fe);
     --primary-200: var(--color-primary-200, #bae6fd);
@@ -10,81 +11,91 @@
     --primary-500: var(--color-primary-500, #0ea5e9);
     --primary-600: var(--color-primary-600, #0284c7);
     --primary-700: var(--color-primary-700, #0369a1);
-    /* Colors - Functional */
-    --success-light: #e8f5e9;
-    --success: #43a047;
-    --success-dark: #2e7d32;
-    --warning-light: #fff8e1;
-    --warning: #ffa000;
-    --warning-dark: #ff8f00;
-    --danger-light: #ffebee;
-    --danger: #e53935;
-    --danger-dark: #c62828;
-    --info-light: #e3f2fd;
-    --info: #0288d1;
-    --info-dark: #0277bd;
-    --secondary-light: #f3e5f5;
-    --secondary: #8e24aa;
-    --secondary-dark: #6a1b9a;
-    --neutral-light: #f5f5f5;
-    --neutral: #616161;
-    --neutral-dark: #424242;
-    /* Base UI Colors */
+    --primary-800: var(--color-primary-800, #075985);
+    --primary-900: var(--color-primary-900, #0c4a6e);
+    /* Functional Colors */
+    --success-light: #e6f6ec;
+    --success: #10b981;
+    --success-dark: #059669;
+    --warning-light: #fef3c7;
+    --warning: #f59e0b;
+    --warning-dark: #d97706;
+    --danger-light: #fee2e2;
+    --danger: #ef4444;
+    --danger-dark: #dc2626;
+    --info-light: #dbeafe;
+    --info: #3b82f6;
+    --info-dark: #2563eb;
+    --secondary-light: #f5d0fe;
+    --secondary: #a855f7;
+    --secondary-dark: #9333ea;
+    --neutral-light: #f3f4f6;
+    --neutral: #6b7280;
+    --neutral-dark: #4b5563;
+    /* Interface Colors - Light Mode Defaults */
     --card-bg: #ffffff;
-    --card-nested-bg: #f9f9f9;
-    --text-primary: #333333;
-    --text-secondary: #666666;
-    --border-color: #e0e0e0;
-    /* Shadows */
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+    --card-nested-bg: #f9fafb;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --border-color: #e5e7eb;
+    /* Effects */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     /* Animations */
-    --transition-fast: 150ms ease;
-    --transition-normal: 250ms ease;
-    --transition-slow: 350ms ease;
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
     /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
     --radius-full: 9999px;
 }
 
-/* Dark Mode Variables */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --card-bg: #1e1e1e;
-        --card-nested-bg: #2d2d2d;
-        --text-primary: #e0e0e0;
-        --text-secondary: #a0a0a0;
-        --border-color: #3d3d3d;
-        --primary-light: #004c8c;
-        --primary: #0288d1;
-        --primary-dark: #01579b;
-        --success-light: #1b5e20;
-        --success: #43a047;
-        --success-dark: #388e3c;
-        --warning-light: #e65100;
-        --warning: #ffa000;
-        --warning-dark: #ff8f00;
-        --danger-light: #b71c1c;
-        --danger: #e53935;
-        --danger-dark: #c62828;
-        --neutral-light: #424242;
-        --neutral: #9e9e9e;
-        --neutral-dark: #757575;
-    }
+/* Dark Mode Overrides */
+.dark {
+    --card-bg: #1e293b;
+    --card-nested-bg: #334155;
+    --text-primary: #f3f4f6;
+    --text-secondary: #d1d5db;
+    --border-color: #475569;
+    --success-light: rgba(16, 185, 129, 0.2);
+    --warning-light: rgba(245, 158, 11, 0.2);
+    --danger-light: rgba(239, 68, 68, 0.2);
+    --info-light: rgba(59, 130, 246, 0.2);
+    --secondary-light: rgba(168, 85, 247, 0.2);
+    --neutral-light: rgba(107, 114, 128, 0.2);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
 }
 
 /* Container Layout */
 .reservation-details {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 1.5rem;
     max-width: 1200px;
     margin: 0 auto;
     padding: 1.5rem;
+    animation: fadeIn var(--transition-normal);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Loading and Error States */
@@ -93,12 +104,41 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 40vh;
-    font-size: 1.25rem;
+    min-height: 50vh;
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+}
+
+.reservation-loading {
+    flex-direction: column;
+    gap: 1rem;
+}
+
+    .reservation-loading::after {
+        content: "";
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        border: 2px solid var(--border-color);
+        border-top-color: var(--primary-500);
+        animation: spin 0.8s linear infinite;
+    }
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .reservation-error {
     color: var(--danger);
+    font-weight: 500;
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--danger-light);
+    border-radius: var(--radius-lg);
+    max-width: 600px;
+    margin: 2rem auto;
 }
 
 /* Section Base Styles */
@@ -108,10 +148,13 @@
 .invoice-section,
 .payments-section {
     background-color: var(--card-bg);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    padding: 1.5rem;
-    transition: box-shadow var(--transition-normal);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    padding: 1.75rem;
+    transition: all var(--transition-normal);
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
 }
 
     .reservation-header:hover,
@@ -119,7 +162,9 @@
     .customer-section:hover,
     .invoice-section:hover,
     .payments-section:hover {
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--border-color);
+        transform: translateY(-2px);
     }
 
 /* Section Headers */
@@ -127,7 +172,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+    position: relative;
 }
 
     .section-header h2,
@@ -137,19 +183,35 @@
         font-weight: 600;
         color: var(--text-primary);
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
 /* Header Section */
 .reservation-header h1 {
-    font-size: 1.5rem;
-    margin-bottom: 1.25rem;
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
     color: var(--text-primary);
+    font-weight: 700;
+    position: relative;
 }
+
+    .reservation-header h1::after {
+        content: "";
+        position: absolute;
+        bottom: -0.5rem;
+        left: 0;
+        width: 3rem;
+        height: 3px;
+        background-color: var(--primary-500);
+        border-radius: var(--radius-full);
+    }
 
 .car-info {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
 }
 
     .car-info h2 {
@@ -166,14 +228,17 @@
 .matricule {
     font-size: 1rem;
     color: var(--text-secondary);
-    font-weight: 400;
+    font-weight: 500;
+    padding: 0.2rem 0.5rem;
+    background-color: var(--neutral-light);
+    border-radius: var(--radius-md);
 }
 
 .customer-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 0.25rem 0;
+    gap: 0.625rem;
+    margin: 0.5rem 0 1rem;
 }
 
 .customer-tag {
@@ -187,26 +252,33 @@
     transition: all var(--transition-fast);
     display: inline-flex;
     align-items: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid transparent;
 }
 
     .customer-tag:hover {
-        background-color: var(--primary-600);
+        background-color: var(--primary-500);
         color: white;
-        transform: translateY(-1px);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
     }
 
 .reservation-period {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.75rem;
     font-size: 0.95rem;
     color: var(--text-secondary);
+    margin-top: 0.5rem;
 }
 
     .reservation-period time {
         font-weight: 500;
         color: var(--text-primary);
+        padding: 0.2rem 0.5rem;
+        background-color: var(--neutral-light);
+        border-radius: var(--radius-md);
     }
 
 /* Reservation Status */
@@ -214,7 +286,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
-    margin-top: 0.5rem;
+    margin-top: 1rem;
 }
 
 .status-item {
@@ -222,8 +294,10 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.875rem;
-    padding: 0.35rem 0.75rem;
+    padding: 0.4rem 0.8rem;
     border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
 }
 
 .status-icon {
@@ -258,130 +332,116 @@
 .action-buttons {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.5rem;
 }
 
 .action-group {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
 }
 
 .action-btn {
-    padding: 0.75rem 1rem;
-    border-radius: var(--radius-md);
+    padding: 0.9rem 1.2rem;
+    border-radius: var(--radius-lg);
     border: none;
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all var(--transition-normal);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.625rem;
     text-decoration: none;
     box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
 }
 
-    .action-btn:active {
-        transform: scale(0.98);
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
     }
 
+    .action-btn:active {
+        transform: translateY(-1px);
+    }
+
+    /* Modern hover effect with overlay */
+    .action-btn::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.1);
+        z-index: -1;
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+    }
+
+.dark .action-btn::after {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.action-btn:hover::after {
+    opacity: 1;
+}
+
 .action-icon {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    transition: transform var(--transition-fast);
+}
+
+.action-btn:hover .action-icon {
+    transform: scale(1.15);
 }
 
 /* Button Variations */
 .action-btn.deliver {
-    background-color: var(--primary-100);
-    color: var(--primary-700);
+    background-color: var(--primary-600);
+    color: white;
+    background-image: linear-gradient(135deg, var(--primary-500), var(--primary-700));
 }
-
-    .action-btn.deliver:hover,
-    .action-btn.deliver:focus {
-        background-color: var(--primary-600);
-        color: white;
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-    }
 
 .action-btn.return {
-    background-color: var(--secondary-light);
-    color: var(--secondary);
+    background-color: var(--secondary);
+    color: white;
+    background-image: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
 }
-
-    .action-btn.return:hover,
-    .action-btn.return:focus {
-        background-color: var(--secondary);
-        color: white;
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-    }
 
 .action-btn.generate-invoice {
-    background-color: var(--success-light);
-    color: var(--success);
+    background-color: var(--success);
+    color: white;
+    background-image: linear-gradient(135deg, var(--success), var(--success-dark));
 }
-
-    .action-btn.generate-invoice:hover,
-    .action-btn.generate-invoice:focus {
-        background-color: var(--success);
-        color: white;
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-    }
 
 .action-btn.contract {
-    background-color: var(--neutral-light);
-    color: var(--neutral);
+    background-color: var(--neutral);
+    color: white;
+    background-image: linear-gradient(135deg, var(--neutral), var(--neutral-dark));
 }
-
-    .action-btn.contract:hover,
-    .action-btn.contract:focus {
-        background-color: var(--neutral);
-        color: white;
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-    }
 
 .action-btn.edit-dates {
-    background-color: var(--info-light);
-    color: var(--info);
+    background-color: var(--info);
+    color: white;
+    background-image: linear-gradient(135deg, var(--info), var(--info-dark));
 }
-
-    .action-btn.edit-dates:hover,
-    .action-btn.edit-dates:focus {
-        background-color: var(--info);
-        color: white;
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-    }
 
 .action-btn.edit-car {
-    background-color: var(--warning-light);
-    color: var(--warning);
+    background-color: var(--warning);
+    color: white;
+    background-image: linear-gradient(135deg, var(--warning), var(--warning-dark));
 }
-
-    .action-btn.edit-car:hover,
-    .action-btn.edit-car:focus {
-        background-color: var(--warning);
-        color: white;
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-    }
 
 .action-btn.remove {
-    background-color: var(--danger-light);
-    color: var(--danger);
+    background-color: var(--danger);
+    color: white;
+    background-image: linear-gradient(135deg, var(--danger), var(--danger-dark));
 }
-
-    .action-btn.remove:hover,
-    .action-btn.remove:focus {
-        background-color: var(--danger);
-        color: white;
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-    }
 
 /* Customer Section */
 .add-customer-btn {
@@ -389,21 +449,21 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    border-radius: var(--radius-md);
-    background-color: var(--success-light);
-    color: var(--success);
+    border-radius: var(--radius-lg);
+    background-color: var(--success);
+    color: white;
     font-size: 0.875rem;
     font-weight: 500;
     border: none;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-sm);
 }
 
     .add-customer-btn:hover {
-        background-color: var(--success);
-        color: white;
         transform: translateY(-2px);
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-md);
+        background-color: var(--success-dark);
     }
 
 .btn-icon {
@@ -419,22 +479,25 @@
 
 .customer-card {
     background-color: var(--card-nested-bg);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     padding: 1.25rem;
     box-shadow: var(--shadow-sm);
     position: relative;
-    transition: all var(--transition-fast);
+    transition: all var(--transition-normal);
+    border: 1px solid transparent;
 }
 
     .customer-card:hover {
         box-shadow: var(--shadow-md);
         transform: translateY(-2px);
+        border-color: var(--border-color);
     }
 
     .customer-card h3 {
         font-size: 1.1rem;
         margin-bottom: 0.75rem;
         color: var(--text-primary);
+        font-weight: 600;
     }
 
 .customer-details {
@@ -447,41 +510,47 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px dashed var(--border-color);
 }
 
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
 .detail-label {
+    font-weight: 500;
     color: var(--text-secondary);
-    min-width: 90px;
+    min-width: 120px;
 }
 
 .detail-value {
+    font-weight: 400;
     color: var(--text-primary);
-    font-weight: 500;
+    flex: 1;
 }
 
 .customer-card-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 0.5rem;
+    gap: 0.75rem;
     margin-top: 1.25rem;
 }
 
 .edit-customer-btn,
 .remove-customer-btn {
-    padding: 0.4rem 0.75rem;
+    padding: 0.5rem 1rem;
     border-radius: var(--radius-md);
-    background: none;
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     font-weight: 500;
+    border: none;
     cursor: pointer;
     transition: all var(--transition-fast);
-    border: 1px solid;
 }
 
 .edit-customer-btn {
-    color: var(--info);
-    border-color: var(--info-light);
+    background-color: var(--info-light);
+    color: var(--info-dark);
 }
 
     .edit-customer-btn:hover {
@@ -490,8 +559,8 @@
     }
 
 .remove-customer-btn {
-    color: var(--danger);
-    border-color: var(--danger-light);
+    background-color: var(--danger-light);
+    color: var(--danger-dark);
 }
 
     .remove-customer-btn:hover {
@@ -500,100 +569,68 @@
     }
 
 /* Invoice Section */
-.invoice-details {
-    background-color: var(--card-nested-bg);
-    border-radius: var(--radius-md);
-    padding: 1.25rem;
+.invoice-section,
+.payments-section {
+    padding-top: 1.5rem;
 }
 
 .invoice-header {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.invoice-details {
+    background-color: var(--card-nested-bg);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: grid;
     gap: 1rem;
+    margin-bottom: 1.25rem;
 }
 
-.invoice-id, .invoice-date {
+.invoice-detail-row {
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--border-color);
 }
 
-.invoice-label {
-    font-size: 0.8rem;
+    .invoice-detail-row:last-child {
+        border-bottom: none;
+        font-weight: 600;
+    }
+
+.invoice-detail-label {
     color: var(--text-secondary);
 }
 
-.invoice-value {
-    font-size: 1rem;
+.invoice-detail-value {
     font-weight: 500;
     color: var(--text-primary);
 }
 
-.invoice-summary {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-}
-
-.summary-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem;
-    background-color: var(--card-bg);
-    border-radius: var(--radius-sm);
-}
-
-.summary-label {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-}
-
-.summary-value {
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-    .summary-value.amount {
-        color: var(--text-primary);
-    }
-
-    .summary-value.paid {
-        color: var(--success);
-    }
-
-    .summary-value.remaining {
-        color: var(--danger);
-    }
-
-    .summary-value.paid-full {
-        color: var(--success);
-    }
-
 .invoice-actions {
     display: flex;
-    flex-wrap: wrap;
     gap: 0.75rem;
+    margin-top: 1rem;
 }
 
 .view-invoice-btn,
 .print-invoice-btn,
 .add-payment-btn {
-    padding: 0.6rem 1rem;
+    padding: 0.6rem 1.1rem;
     border-radius: var(--radius-md);
     font-size: 0.875rem;
     font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    text-decoration: none;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
     border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
 }
 
 .view-invoice-btn {
@@ -602,108 +639,81 @@
 }
 
     .view-invoice-btn:hover {
-        background-color: var(--primary-600);
+        background-color: var(--primary-500);
         color: white;
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-sm);
     }
 
 .print-invoice-btn {
     background-color: var(--neutral-light);
-    color: var(--neutral);
+    color: var(--neutral-dark);
 }
 
     .print-invoice-btn:hover {
         background-color: var(--neutral);
         color: white;
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-sm);
     }
 
 .add-payment-btn {
     background-color: var(--success-light);
-    color: var(--success);
+    color: var(--success-dark);
 }
 
     .add-payment-btn:hover {
         background-color: var(--success);
         color: white;
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-sm);
-    }
-
-.no-invoice {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.25rem;
-    padding: 2.5rem 1.5rem;
-    background-color: var(--card-nested-bg);
-    border-radius: var(--radius-md);
-    text-align: center;
-}
-
-    .no-invoice p {
-        color: var(--text-secondary);
-        font-size: 0.95rem;
     }
 
 .generate-invoice-btn {
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1.25rem;
     border-radius: var(--radius-md);
     background-color: var(--success);
     color: white;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 500;
     border: none;
     cursor: pointer;
     transition: all var(--transition-fast);
-    box-shadow: var(--shadow-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
     .generate-invoice-btn:hover {
         background-color: var(--success-dark);
         transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-sm);
     }
 
 /* Payments Section */
-.payment-list {
+.payments-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
 .payment-item {
+    background-color: var(--card-nested-bg);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    background-color: var(--card-nested-bg);
-    border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
 }
 
-    .payment-item:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-sm);
-    }
-
-.payment-info {
+.payment-details {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
 }
 
 .payment-date {
-    font-size: 0.9rem;
-    color: var(--text-primary);
-    font-weight: 500;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
 }
 
 .payment-method {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 .payment-amount {
@@ -712,10 +722,34 @@
     color: var(--success);
 }
 
+.no-payments {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    background-color: var(--card-nested-bg);
+    border-radius: var(--radius-lg);
+    font-style: italic;
+}
+
 /* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .customer-cards {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
 @media (max-width: 768px) {
     .reservation-details {
         padding: 1rem;
+        gap: 1rem;
+    }
+
+    .reservation-header,
+    .reservation-actions,
+    .customer-section,
+    .invoice-section,
+    .payments-section {
+        padding: 1.25rem;
     }
 
     .action-group {
@@ -760,14 +794,6 @@
 
 /* Small Mobile Screens */
 @media (max-width: 480px) {
-    .reservation-header,
-    .reservation-actions,
-    .customer-section,
-    .invoice-section,
-    .payments-section {
-        padding: 1rem;
-    }
-
     .invoice-details {
         padding: 1rem;
     }
@@ -780,6 +806,7 @@
 
     .payment-amount {
         align-self: flex-end;
+        margin-top: -2rem;
     }
 
     .customer-card-actions {
@@ -791,7 +818,19 @@
     .remove-customer-btn {
         width: 100%;
         text-align: center;
-        padding: 0.5rem;
+        padding: 0.6rem;
+    }
+
+    .invoice-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .view-invoice-btn,
+    .print-invoice-btn,
+    .add-payment-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 
@@ -823,7 +862,7 @@
     }
 }
 
-/* Active States for Touch Feedback */
+/* Improved Active States for Touch Feedback */
 .action-btn:active,
 .edit-customer-btn:active,
 .remove-customer-btn:active,
@@ -835,4 +874,29 @@
 .customer-tag:active {
     opacity: 0.9;
     transform: scale(0.98);
+}
+
+/* Print styles */
+@media print {
+    .reservation-details {
+        display: block;
+        padding: 0;
+    }
+
+    .reservation-actions,
+    .customer-card-actions,
+    .invoice-actions,
+    .add-customer-btn {
+        display: none;
+    }
+
+    .reservation-header,
+    .customer-section,
+    .invoice-section,
+    .payments-section {
+        box-shadow: none;
+        border: 1px solid #eee;
+        margin-bottom: 1.5rem;
+        break-inside: avoid;
+    }
 }

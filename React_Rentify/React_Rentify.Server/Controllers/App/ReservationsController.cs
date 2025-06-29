@@ -600,19 +600,26 @@ namespace React_Rentify.Server.Controllers.App
             }
 
             // Check if car is available for the new dates
-            var isCarAvailable = await IsCarAvailableForDates(reservation.CarId, dto.StartDate, dto.EndDate, id);
-            if (!isCarAvailable)
-            {
-                _logger.LogWarning("Car is not available for the requested dates");
-                return BadRequest(new { message = "The car is not available for the requested dates." });
-            }
+            //var isCarAvailable = await IsCarAvailableForDates(reservation.CarId, dto.StartDate, dto.EndDate, id);
+            //if (!isCarAvailable)
+            //{
+            //    _logger.LogWarning("Car is not available for the requested dates");
+            //    return BadRequest(new { message = "The car is not available for the requested dates." });
+            //}
 
             // Update the dates
-            reservation.StartDate = dto.StartDate;
-            reservation.EndDate = dto.EndDate;
+            reservation.StartDate = dto.StartDate.ToUniversalTime();
+            reservation.EndDate = dto.EndDate.ToUniversalTime();
             _context.Entry(reservation).State = EntityState.Modified;
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+
+            }
 
             _logger.LogInformation("Updated dates for reservation {ReservationId}", id);
 

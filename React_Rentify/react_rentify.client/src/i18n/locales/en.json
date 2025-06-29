@@ -10,7 +10,12 @@
     "reservations": "Reservations"
   },
   "common": {
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "loading": "Loading...",
+    "edit": "Edit",
+    "remove": "Remove",
+    "retry": "Retry",
+    "reset": "Reset"
   },
   "landing": {
     "features": "Features",
@@ -166,6 +171,68 @@
         "status": "Status",
         "actions": "Actions"
       }
+    },
+    "editDates": {
+      "title": "Edit Reservation Dates",
+      "currentPeriod": "Current Period",
+      "endDateError": "End date must be after start date",
+      "submit": "Save Dates"
+    },
+    "notFound": "Reservation not found",
+    "details": {
+      "title": "Reservation Details"
+    },
+    "fields": {
+      "period": "Period",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "newStartDate": "New Start Date",
+      "newEndDate": "New End Date",
+      "car": "Car",
+      "customer": "Customer"
+    },
+    "status": {
+      "delivered": "Delivered",
+      "returned": "Returned",
+      "expired": "Expired"
+    },
+    "actions": {
+      "deliver": "Deliver Car",
+      "return": "Return Car",
+      "generateInvoice": "Generate Invoice",
+      "viewContract": "View Contract",
+      "editDates": "Edit Dates",
+      "changeCar": "Change Car",
+      "remove": "Remove Reservation"
+    },
+    "customers": {
+      "title": "Customers",
+      "add": "Add Customer"
+    },
+    "invoice": {
+      "title": "Invoice",
+      "notGenerated": "Invoice not generated yet"
+    },
+    "payments": {
+      "title": "Payments"
+    },
+    "selectCar": {
+      "title": "Select Car",
+      "errorLoading": "Failed to load available cars",
+      "searchPlaceholder": "Search by make, model, or plate…",
+      "sortBy": "Sort by",
+      "sortRecommended": "Recommended",
+      "sortPriceLow": "Price: Low to High",
+      "sortPriceHigh": "Price: High to Low",
+      "sortYearNew": "Year: New to Old",
+      "sortYearOld": "Year: Old to New",
+      "filters": "Filters",
+      "availableCars": "Available Cars",
+      "carsFound": "cars found",
+      "noCarsFound": "No cars found",
+      "resetFilters": "Reset Filters",
+      "currentCar": "Current Car",
+      "submit": "Confirm"
     }
   },
   "customerDetails": {
@@ -193,5 +260,77 @@
     "legal": "Legal",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy"
+  },
+  "customer": {
+    "fields": {
+      "email": "Email",
+      "phone": "Phone",
+      "licenseNumber": "License Number",
+      "nationalId": "National ID",
+      "fullName": "Full Name",
+      "phoneNumber": "Phone Number",
+      "address": "Address"
+    },
+    "errorLoading": "Failed to load customers",
+    "add": {
+      "selectCustomer": "Please select a customer to add",
+      "title": "Add Customer",
+      "search": "Search Customer",
+      "searchPlaceholder": "Type a name, email, or phone...",
+      "noResults": "No customers found",
+      "addToReservation": "Add to Reservation"
+    },
+    "edit": {
+      "title": "Edit Customer"
+    },
+    "remove": {
+      "title": "Remove Customer",
+      "warning": "You are about to remove this customer from the reservation.",
+      "confirmText": "Are you sure you want to remove {{name}}?",
+      "confirm": "Yes, remove"
+    }
+  },
+  "invoice": {
+    "fields": {
+      "number": "Invoice Number",
+      "issuedAt": "Issued At",
+      "amount": "Amount",
+      "paidAmount": "Paid Amount",
+      "remaining": "Remaining",
+      "currency": "Currency",
+      "paymentMethod": "Payment Method",
+      "markAsPaid": "Mark as Paid"
+    },
+    "actions": {
+      "view": "View Invoice",
+      "print": "Print Invoice",
+      "addPayment": "Add Payment"
+    },
+    "generate": {
+      "title": "Generate Invoice",
+      "reservationDetails": "Reservation Details",
+      "submit": "Generate"
+    }
+  },
+  "car": {
+    "fields": {
+      "manufacturer": "Manufacturer",
+      "model": "Model",
+      "category": "Category",
+      "year": "Year",
+      "transmission": "Transmission",
+      "priceRange": "Price Range (MAD/day)",
+      "features": "Features",
+      "dailyRate": "Daily Rate",
+      "licensePlate": "License Plate",
+      "fuelType": "Fuel Type"
+    }
+  },
+  "payment": {
+    "methods": {
+      "cash": "Cash",
+      "card": "Card",
+      "bankTransfer": "Bank Transfer"
+    }
   }
 }
