@@ -15,7 +15,8 @@
     "edit": "تعديل",
     "remove": "إزالة",
     "retry": "إعادة المحاولة",
-    "reset": "إعادة ضبط"
+    "reset": "إعادة ضبط",
+    "cancel": "إلغاء"
   },
   "landing": {
     "features": "الميزات",
@@ -166,6 +167,14 @@
       "endDateError": "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء",
       "submit": "حفظ التواريخ"
     },
+    "deliverCar": {
+      "title": "تسليم السيارة",
+      "carDetails": "تفاصيل السيارة",
+      "deliveryDetails": "تفاصيل التسليم",
+      "conditionAndDeposit": "الحالة والوديعة",
+      "additionalInfo": "معلومات إضافية",
+      "submit": "تأكيد التسليم"
+    },
     "notFound": "الحجز غير موجود",
     "details": {
       "title": "تفاصيل الحجز"
@@ -177,7 +186,12 @@
       "newStartDate": "تاريخ البدء الجديد",
       "newEndDate": "تاريخ الانتهاء الجديد",
       "car": "السيارة",
-      "customer": "العميل"
+      "customer": "العميل",
+      "deliveryDate": "تاريخ التسليم",
+      "depositAmount": "مبلغ الوديعة",
+      "additionalFees": "رسوم إضافية",
+      "additionalFeesReason": "سبب الرسوم الإضافية",
+      "deliveryNotes": "ملاحظات التسليم"
     },
     "status": {
       "delivered": "تم التسليم",
@@ -287,7 +301,10 @@
       "remaining": "المتبقي",
       "currency": "العملة",
       "paymentMethod": "طريقة الدفع",
-      "markAsPaid": "وضع كمدفوعة"
+      "markAsPaid": "وضع كمدفوعة",
+      "invoiceNumber": "رقم الفاتورة",
+      "totalAmount": "المبلغ الإجمالي",
+      "remainingBalance": "الرصيد المتبقي"
     },
     "actions": {
       "view": "عرض الفاتورة",
@@ -311,14 +328,42 @@
       "features": "المميزات",
       "dailyRate": "سعر اليوم",
       "licensePlate": "رقم اللوحة",
-      "fuelType": "نوع الوقود"
+      "fuelType": "نوع الوقود",
+      "odometerStart": "قراءة العداد",
+      "fuelLevel": "مستوى الوقود",
+      "hasPreExistingDamage": "أضرار موجودة مسبقاً",
+      "damageDescription": "وصف الضرر"
+    },
+    "fuelLevels": {
+      "full": "ممتلئ",
+      "threeQuarters": "75% (ثلاثة أرباع)",
+      "half": "50% (نصف)",
+      "quarter": "25% (ربع)",
+      "empty": "فارغ"
     }
   },
   "payment": {
+    "method": "طريقة الدفع",
     "methods": {
       "cash": "نقداً",
-      "card": "بطاقة",
-      "bankTransfer": "تحويل بنكي"
+      "creditCard": "بطاقة ائتمان",
+      "bankTransfer": "تحويل بنكي",
+      "other": "أخرى",
+      "card": "بطاقة"
+    },
+    "add": {
+      "title": "إضافة دفعة",
+      "invoiceDetails": "تفاصيل الفاتورة",
+      "amountHint": "أدخل المبلغ للدفع (لا يتجاوز الرصيد المتبقي).",
+      "transactionIdPlaceholder": "أدخل معرّف المعاملة",
+      "transactionIdHint": "اختياري، إذا كان متوفرًا.",
+      "submit": "إرسال الدفعة"
+    },
+    "fields": {
+      "amount": "المبلغ",
+      "method": "الطريقة",
+      "transactionId": "معرّف المعاملة",
+      "paidAt": "تاريخ الدفع"
     }
   }
 }

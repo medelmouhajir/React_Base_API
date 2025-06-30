@@ -297,7 +297,7 @@ namespace React_Rentify.Server.Controllers.App
         /// PUT: api/Reservations/{id}
         /// Updates an existing reservation. Accepts UpdateReservationDto.
         /// </summary>
-        [HttpPut("{id:guid}")]
+        [HttpPost("{id:guid}")]
         public async Task<IActionResult> UpdateReservation(Guid id, [FromBody] UpdateReservationDto dto)
         {
             _logger.LogInformation("Updating reservation {ReservationId}", id);
@@ -626,6 +626,95 @@ namespace React_Rentify.Server.Controllers.App
             return Ok();
         }
 
+        [HttpPost("{id:guid}/deliver")]
+        public async Task<IActionResult> ReservationDeliverCar(Guid id , [FromBody] ReservationDeliverCarDTO dto)
+        {
+            _logger.LogInformation("UDeliver car for reservation {ReservationId}", id);
+
+
+            var reservation = await _context.Set<Reservation>()
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                _logger.LogWarning("Reservation with Id {ReservationId} not found", id);
+                return NotFound(new { message = $"Reservation with Id '{id}' not found." });
+            }
+
+
+            // Validate dates
+            if ( reservation.Status != "Reserved")
+            {
+                _logger.LogWarning("Invalid status : " + reservation.Status);
+                return BadRequest(new { message = "Status must be 'Reserved'." });
+            }
+
+            // Update the dates
+            reservation.Status = "Ongoing";
+            reservation.ActualStartTime = dto.DeliveryDate.ToUniversalTime();
+            reservation.OdometerStart = dto.OdometerStart;
+            reservation.FuelLevelStart = 100;
+
+            _context.Entry(reservation).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+
+            }
+
+            _logger.LogInformation("Updated dates for reservation {ReservationId}", id);
+
+            return Ok();
+        }
+        [HttpPost("{id:guid}/return")]
+        public async Task<IActionResult> ReservationReturnCar(Guid id , [FromBody] ReservationDeliverCarDTO dto)
+        {
+            _logger.LogInformation("UDeliver car for reservation {ReservationId}", id);
+
+
+            var reservation = await _context.Set<Reservation>()
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                _logger.LogWarning("Reservation with Id {ReservationId} not found", id);
+                return NotFound(new { message = $"Reservation with Id '{id}' not found." });
+            }
+
+
+            // Validate dates
+            if ( reservation.Status != "Ongoing")
+            {
+                _logger.LogWarning("Invalid status : " + reservation.Status);
+                return BadRequest(new { message = "Status must be 'Ongoing'." });
+            }
+
+            // Update the dates
+            reservation.Status = "Completed";
+            reservation.ActualStartTime = dto.DeliveryDate.ToUniversalTime();
+            reservation.OdometerStart = dto.OdometerStart;
+            reservation.FuelLevelStart = 100;
+
+            _context.Entry(reservation).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception e)
+            {
+
+            }
+
+            _logger.LogInformation("Updated dates for reservation {ReservationId}", id);
+
+            return Ok();
+        }
+
         /// <summary>
         /// Helper method to check if a car is available for specific dates
         /// </summary>
@@ -771,6 +860,21 @@ namespace React_Rentify.Server.Controllers.App
         {
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
+        }
+
+        public class ReservationDeliverCarDTO
+        {
+            public int OdometerStart { get; set; }
+            public string FuelLevel { get; set; }
+            public string deliveryNotes { get; set; }
+            public DateTime DeliveryDate { get; set; }
+
+            public bool HasPreExistingDamage { get; set; }
+            public string? DamageDescription { get; set; }
+            public string? DepositPaymentMethodn { get; set; }
+            public int DepositAmount { get; set; }
+            public int AdditionalFees { get; set; }
+            public string? AdditionalFeesReason { get; set; }
         }
         #endregion
     }

@@ -233,9 +233,9 @@ const ReservationDetails = () => {
         return <div className="reservation-error">{t('reservation.notFound')}</div>;
     }
 
-    const isActive = new Date(reservation.endDate) >= new Date();
-    const isDelivered = reservation.deliveryDate != null;
-    const isReturned = reservation.returnDate != null;
+    const isActive = reservation.status != 'Completed' && reservation.status != 'Cancelled';
+    const isDelivered = reservation.status != 'Reserved';
+    const isReturned = isDelivered && reservation.status != 'Ongoing';
     const canDeliver = isActive && !isDelivered;
     const canReturn = isDelivered && !isReturned;
     const canEdit = isActive && !isReturned;

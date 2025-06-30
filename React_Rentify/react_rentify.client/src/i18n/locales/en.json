@@ -15,7 +15,8 @@
     "edit": "Edit",
     "remove": "Remove",
     "retry": "Retry",
-    "reset": "Reset"
+    "reset": "Reset",
+    "cancel": "Cancel"
   },
   "landing": {
     "features": "Features",
@@ -189,7 +190,20 @@
       "newStartDate": "New Start Date",
       "newEndDate": "New End Date",
       "car": "Car",
-      "customer": "Customer"
+      "customer": "Customer",
+      "deliveryDate": "Delivery Date",
+      "depositAmount": "Deposit Amount",
+      "additionalFees": "Additional Fees",
+      "additionalFeesReason": "Reason for Additional Fees",
+      "deliveryNotes": "Delivery Notes"
+    },
+    "deliverCar": {
+      "title": "Deliver Car",
+      "carDetails": "Car Details",
+      "deliveryDetails": "Delivery Details",
+      "conditionAndDeposit": "Condition & Deposit",
+      "additionalInfo": "Additional Information",
+      "submit": "Confirm Delivery"
     },
     "status": {
       "delivered": "Delivered",
@@ -299,7 +313,10 @@
       "remaining": "Remaining",
       "currency": "Currency",
       "paymentMethod": "Payment Method",
-      "markAsPaid": "Mark as Paid"
+      "markAsPaid": "Mark as Paid",
+      "invoiceNumber": "Invoice Number",
+      "totalAmount": "Total Amount",
+      "remainingBalance": "Remaining Balance"
     },
     "actions": {
       "view": "View Invoice",
@@ -323,14 +340,42 @@
       "features": "Features",
       "dailyRate": "Daily Rate",
       "licensePlate": "License Plate",
-      "fuelType": "Fuel Type"
+      "fuelType": "Fuel Type",
+      "odometerStart": "Odometer Start",
+      "fuelLevel": "Fuel Level",
+      "hasPreExistingDamage": "Pre-existing Damage",
+      "damageDescription": "Damage Description"
+    },
+    "fuelLevels": {
+      "full": "Full",
+      "threeQuarters": "75% (Three Quarters)",
+      "half": "50% (Half)",
+      "quarter": "25% (Quarter)",
+      "empty": "Empty"
     }
   },
   "payment": {
+    "method": "Payment Method",
     "methods": {
       "cash": "Cash",
-      "card": "Card",
-      "bankTransfer": "Bank Transfer"
+      "creditCard": "Credit Card",
+      "bankTransfer": "Bank Transfer",
+      "other": "Other",
+      "card": "Card"
+    },
+    "add": {
+      "title": "Add Payment",
+      "invoiceDetails": "Invoice Details",
+      "amountHint": "Enter the amount to pay (cannot exceed remaining balance).",
+      "transactionIdPlaceholder": "Enter transaction ID",
+      "transactionIdHint": "Optional, if available.",
+      "submit": "Submit Payment"
+    },
+    "fields": {
+      "amount": "Amount",
+      "method": "Method",
+      "transactionId": "Transaction ID",
+      "paidAt": "Paid At"
     }
   }
 }

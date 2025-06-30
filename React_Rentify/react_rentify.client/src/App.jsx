@@ -75,13 +75,15 @@ const InvoiceDetails = lazy(() => import('./pages/Invoices/Details/InvoiceDetail
 
 //// Other standalone pages
 //const MaintenancePage = lazy(() => import('./pages/maintenance/Maintenance'));
-const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
+//const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
 //const ReportsPage = lazy(() => import('./pages/reports/Reports'));
 //const AgenciesPage = lazy(() => import('./pages/admin/Agencies'));
 //const StaffPage = lazy(() => import('./pages/admin/Staff'));
 //const SearchPage = lazy(() => import('./pages/Search'));
 
 function App() {
+    // Initialize RTL direction
+    useRtlDirection();
     return (
         <Router>
             <AuthProvider>
@@ -151,7 +153,7 @@ function App() {
                                 {/*<Route path="/maintenance" element={<MaintenancePage />} />*/}
 
                                 {/* GPS Tracking */}
-                                <Route path="/gps" element={<GpsHome />} />
+                                {/*<Route path="/gps" element={<GpsHome />} />*/}
 
                                 {/* Reports */}
                                 {/*<Route path="/reports" element={<ReportsPage />} />*/}
