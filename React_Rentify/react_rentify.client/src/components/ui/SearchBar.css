@@ -1,0 +1,446 @@
+/* src/components/ui/SearchBar.css */
+
+/* ========================================
+   SEARCH BAR CONTAINER
+   ======================================== */
+.search-bar {
+    position: relative;
+    width: 100%;
+    max-width: 28rem;
+}
+
+    .search-bar.dark {
+        color-scheme: dark;
+    }
+
+/* ========================================
+   SEARCH FORM
+   ======================================== */
+.search-form {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    background-color: var(--color-bg-subtle, #f1f5f9);
+    border-radius: 0.5rem;
+    transition: all var(--transition-normal, 250ms) ease;
+    border: 1px solid transparent;
+}
+
+.dark .search-form {
+    background-color: var(--color-bg-subtle, #1e293b);
+}
+
+.search-form:focus-within {
+    border-color: var(--color-primary-500, #0ea5e9);
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15);
+    background-color: var(--color-card, #ffffff);
+}
+
+.dark .search-form:focus-within {
+    background-color: var(--color-card, #1e293b);
+}
+
+/* ========================================
+   SEARCH ICON
+   ======================================== */
+.search-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 0.75rem;
+    color: var(--color-text-muted, #64748b);
+    pointer-events: none;
+}
+
+.search-icon-svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* ========================================
+   SEARCH INPUT
+   ======================================== */
+.search-input {
+    flex: 1 1 auto;
+    height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: var(--color-text, #1e293b);
+    font-size: 0.875rem;
+    width: 100%;
+}
+
+    .search-input::placeholder {
+        color: var(--color-text-muted, #64748b);
+        opacity: 0.8;
+    }
+
+.dark .search-input {
+    color: var(--color-text, #f1f5f9);
+}
+
+    .dark .search-input::placeholder {
+        color: var(--color-text-muted, #94a3b8);
+    }
+
+/* ========================================
+   CATEGORY SELECT
+   ======================================== */
+.search-category-wrapper {
+    position: relative;
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .search-category-wrapper {
+        display: block;
+    }
+}
+
+.search-category-select {
+    appearance: none;
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-text, #1e293b);
+    cursor: pointer;
+    border-left: 1px solid var(--color-border, #e2e8f0);
+    outline: none;
+}
+
+.dark .search-category-select {
+    color: var(--color-text, #f1f5f9);
+    border-left-color: var(--color-border, #334155);
+}
+
+.select-arrow {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--color-text-muted, #64748b);
+}
+
+.select-arrow-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* ========================================
+   MOBILE SEARCH BUTTON
+   ======================================== */
+.search-button-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-primary-500, #0ea5e9);
+    border: none;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0 0.5rem 0.5rem 0;
+    color: white;
+    cursor: pointer;
+    transition: background-color var(--transition-fast, 150ms) ease;
+}
+
+    .search-button-mobile:hover {
+        background-color: var(--color-primary-600, #0284c7);
+    }
+
+    .search-button-mobile:active {
+        background-color: var(--color-primary-700, #0369a1);
+    }
+
+.search-button-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+@media (min-width: 640px) {
+    .search-button-mobile {
+        display: none;
+    }
+}
+
+/* ========================================
+   SUGGESTIONS DROPDOWN
+   ======================================== */
+.search-suggestions-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: var(--color-card, #ffffff);
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-border, #e2e8f0);
+    overflow: hidden;
+    animation: dropdown-slide 0.2s ease-out forwards;
+}
+
+.dark .search-suggestions-dropdown {
+    background-color: var(--color-card, #1e293b);
+    border-color: var(--color-border, #334155);
+}
+
+@keyframes dropdown-slide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   SUGGESTIONS HEADER
+   ======================================== */
+.suggestions-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border, #e2e8f0);
+}
+
+.dark .suggestions-header {
+    border-color: var(--color-border, #334155);
+}
+
+.suggestions-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--color-text, #1e293b);
+}
+
+.dark .suggestions-title {
+    color: var(--color-text, #f1f5f9);
+}
+
+.clear-recent-button {
+    background: none;
+    border: none;
+    font-size: 0.75rem;
+    color: var(--color-primary-600, #0284c7);
+    cursor: pointer;
+    transition: color var(--transition-fast, 150ms) ease;
+}
+
+    .clear-recent-button:hover {
+        color: var(--color-primary-700, #0369a1);
+        text-decoration: underline;
+    }
+
+.dark .clear-recent-button {
+    color: var(--color-primary-400, #38bdf8);
+}
+
+    .dark .clear-recent-button:hover {
+        color: var(--color-primary-300, #7dd3fc);
+    }
+
+/* ========================================
+   SUGGESTIONS LIST
+   ======================================== */
+.suggestions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 16rem;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    border-bottom: 1px solid var(--color-border, #e2e8f0);
+}
+
+.dark .suggestion-item {
+    border-color: var(--color-border, #334155);
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-button {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background-color var(--transition-fast, 150ms) ease;
+}
+
+    .suggestion-button:hover {
+        background-color: var(--color-bg-subtle, #f1f5f9);
+    }
+
+.dark .suggestion-button:hover {
+    background-color: var(--color-bg-subtle, #1e293b);
+}
+
+/* ========================================
+   SUGGESTION CONTENT
+   ======================================== */
+.suggestion-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.suggestion-icon {
+    color: var(--color-text-muted, #64748b);
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+    .suggestion-icon svg {
+        width: 1rem;
+        height: 1rem;
+    }
+
+.suggestion-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.suggestion-term {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--color-text, #1e293b);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dark .suggestion-term {
+    color: var(--color-text, #f1f5f9);
+}
+
+.suggestion-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #64748b);
+    background-color: var(--color-bg-subtle, #f1f5f9);
+    padding: 0.125rem 0.375rem;
+    border-radius: 1rem;
+    margin-top: 0.25rem;
+}
+
+.dark .suggestion-badge {
+    color: var(--color-text-muted, #94a3b8);
+    background-color: var(--color-bg, #0f172a);
+}
+
+.suggestion-time {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #64748b);
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.dark .suggestion-time {
+    color: var(--color-text-muted, #94a3b8);
+}
+
+/* ========================================
+   RTL SUPPORT
+   ======================================== */
+[dir="rtl"] .search-icon {
+    padding-left: 0;
+    padding-right: 0.75rem;
+}
+
+[dir="rtl"] .search-category-select {
+    padding: 0.5rem 0.75rem 0.5rem 2rem;
+    border-left: none;
+    border-right: 1px solid var(--color-border, #e2e8f0);
+}
+
+[dir="rtl"] .dark .search-category-select {
+    border-right-color: var(--color-border, #334155);
+}
+
+[dir="rtl"] .select-arrow {
+    right: auto;
+    left: 0.5rem;
+}
+
+[dir="rtl"] .search-button-mobile {
+    border-radius: 0.5rem 0 0 0.5rem;
+}
+
+[dir="rtl"] .suggestion-icon {
+    margin-right: 0;
+    margin-left: 0.75rem;
+}
+
+[dir="rtl"] .suggestion-time {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* ========================================
+   TOUCH DEVICE ENHANCEMENTS
+   ======================================== */
+@media (hover: none) {
+    .search-form {
+        border-color: var(--color-border, #e2e8f0);
+    }
+
+    .dark .search-form {
+        border-color: var(--color-border, #334155);
+    }
+
+    .search-category-select {
+        font-size: 1rem;
+        padding-top: 0.625rem;
+        padding-bottom: 0.625rem;
+    }
+
+    .search-input {
+        font-size: 1rem;
+        height: 2.75rem;
+    }
+
+    .search-button-mobile {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+
+    .suggestion-button {
+        padding: 0.875rem 1rem;
+    }
+
+        .suggestion-button:active {
+            background-color: var(--color-bg-subtle, #f1f5f9);
+        }
+
+    .dark .suggestion-button:active {
+        background-color: var(--color-bg-subtle, #1e293b);
+    }
+}
+
+/* ========================================
+   REDUCED MOTION PREFERENCE
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    .search-form,
+    .search-category-select,
+    .search-button-mobile,
+    .search-suggestions-dropdown {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

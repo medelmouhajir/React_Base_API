@@ -16,7 +16,18 @@
     "remove": "إزالة",
     "retry": "إعادة المحاولة",
     "reset": "إعادة ضبط",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "search": "بحث",
+    "yes": "نعم",
+    "no": "لا",
+    "noSearchResults": "لم يتم العثور على نتائج.",
+    "blacklisted": "مدرج في القائمة السوداء",
+    "active": "نشط",
+    "details": "تفاصيل",
+    "delete": "حذف",
+    "clear": "مسح",
+    "goBack": "رجوع"
   },
   "landing": {
     "features": "الميزات",
@@ -148,9 +159,24 @@
   },
   "reservation": {
     "list": {
+      "contract": "العقد",
+      "error": "فشل في تحميل الحجوزات. الرجاء المحاولة مرة أخرى.",
+      "title": "الحجوزات",
+      "addNew": "إضافة حجز جديد",
+      "search": "ابحث في الحجوزات...",
+      "showFilters": "إظهار الفلاتر",
+      "hideFilters": "إخفاء الفلاتر",
       "filter": {
         "selectStatus": "جميع الحالات",
-        "clear": "مسح الفلاتر"
+        "clear": "مسح الفلاتر",
+        "fromDate": "من التاريخ",
+        "toDate": "إلى التاريخ",
+        "customer": "العميل",
+        "allCustomers": "كل العملاء",
+        "car": "السيارة",
+        "allCars": "كل السيارات",
+        "status": "الحالة",
+        "allStatuses": "كل الحالات"
       },
       "table": {
         "customer": "العميل",
@@ -159,7 +185,8 @@
         "endDate": "تاريخ الانتهاء",
         "status": "الحالة",
         "actions": "الإجراءات"
-      }
+      },
+      "clearFilters": "مسح الفلاتر"
     },
     "editDates": {
       "title": "تعديل تواريخ الحجز",
@@ -238,8 +265,35 @@
     }
   },
   "customerDetails": {
+    "confirmRemoveBlacklist": "هل أنت متأكد أنك تريد إزالة هذا الإدخال من القائمة السوداء؟",
+    "errorRemoveBlacklist": "فشل في إزالة الإدخال من القائمة السوداء.",
+    "errorAddBlacklist": "فشل في إضافة الإدخال إلى القائمة السوداء.",
+    "confirmRemoveAttachment": "هل أنت متأكد أنك تريد إزالة هذا المرفق؟",
+    "errorRemoveAttachment": "فشل في إزالة المرفق.",
+    "errorAddAttachment": "فشل في إضافة المرفق.",
+    "notFound": "العميل غير موجود.",
+    "heading": "تفاصيل {{name}}",
+    "reservationsHeading": "الحجوزات",
+    "noReservations": "لا توجد حجوزات.",
+    "unknownCar": "سيارة غير معروفة",
+    "paid": "مدفوع",
+    "unpaid": "غير مدفوع",
+    "blacklistHeading": "إدخالات القائمة السوداء",
+    "notBlacklisted": "هذا العميل غير مدرج في القائمة السوداء.",
+    "reportedBy": "أُبلغ عنه بواسطة",
+    "unknownAgency": "وكالة غير معروفة",
+    "dateAdded": "تاريخ الإضافة",
+    "addBlacklist": "إضافة إلى القائمة السوداء",
+    "addBlacklistBtn": "إضافة إلى القائمة السوداء",
     "attachmentsHeading": "المرفقات",
-    "addBlacklistBtn": "إضافة إلى القائمة السوداء"
+    "noAttachments": "لا توجد مرفقات.",
+    "addAttachment": "إضافة مرفق",
+    "addAttachmentBtn": "إضافة مرفق",
+    "placeholders": {
+      "blacklistReason": "أدخل سبب الإضافة إلى القائمة السوداء",
+      "fileName": "اسم الملف",
+      "filePath": "رابط أو مسار الملف"
+    }
   },
   "agency": {
     "list": {
@@ -271,7 +325,19 @@
       "nationalId": "الهوية الوطنية",
       "fullName": "الاسم الكامل",
       "phoneNumber": "رقم الهاتف",
-      "address": "العنوان"
+      "address": "العنوان",
+      "passportId": "رقم جواز السفر",
+      "dateOfBirth": "تاريخ الميلاد",
+      "isBlacklisted": "مدرج في القائمة السوداء"
+    },
+    "list": {
+      "title": "العملاء",
+      "error": "حدث خطأ أثناء جلب قائمة العملاء.",
+      "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا العميل؟",
+      "deleteError": "حدث خطأ أثناء حذف العميل.",
+      "addNew": "إضافة عميل جديد",
+      "actions": "الإجراءات",
+      "noRecords": "لا يوجد عملاء."
     },
     "errorLoading": "فشل في تحميل العملاء",
     "add": {
@@ -280,7 +346,8 @@
       "search": "بحث عن عميل",
       "searchPlaceholder": "اكتب الاسم أو البريد الإلكتروني أو رقم الهاتف...",
       "noResults": "لم يتم العثور على عملاء",
-      "addToReservation": "إضافة إلى الحجز"
+      "addToReservation": "إضافة إلى الحجز",
+      "error": "حدث خطأ أثناء إضافة العميل."
     },
     "edit": {
       "title": "تعديل العميل"
@@ -290,6 +357,25 @@
       "warning": "أنت على وشك إزالة هذا العميل من الحجز.",
       "confirmText": "هل أنت متأكد أنك تريد إزالة {{name}}؟",
       "confirm": "نعم، أزل"
+    },
+    "placeholders": {
+      "fullName": "أدخل الاسم الكامل",
+      "phoneNumber": "أدخل رقم الهاتف",
+      "email": "أدخل البريد الإلكتروني",
+      "nationalId": "أدخل الهوية الوطنية",
+      "passportId": "أدخل رقم جواز السفر",
+      "licenseNumber": "أدخل رقم الرخصة",
+      "address": "أدخل العنوان"
+    },
+    "sections": {
+      "identification": "التحقق"
+    },
+    "idRequirement": "مطلوب إدخال رقم الهوية الوطنية أو رقم جواز السفر على الأقل.",
+    "blacklist": {
+      "warning": "تحذير القائمة السوداء",
+      "description": "يظهر هذا الشخص في القائمة السوداء. هل أنت متأكد أنك تريد المتابعة؟",
+      "reportedBy": "أبلغت من قبل",
+      "continue": "المتابعة رغم ذلك"
     }
   },
   "invoice": {
@@ -332,7 +418,23 @@
       "odometerStart": "قراءة العداد",
       "fuelLevel": "مستوى الوقود",
       "hasPreExistingDamage": "أضرار موجودة مسبقاً",
-      "damageDescription": "وصف الضرر"
+      "damageDescription": "وصف الضرر",
+      "color": "اللون",
+      "isAvailable": "متاحة",
+      "status": "الحالة",
+      "hourlyRate": "السعر بالساعة",
+      "deviceSerialNumber": "الرقم التسلسلي للجهاز",
+      "isTrackingActive": "التتبع مفعل"
+    },
+    "placeholders": {
+      "selectModel": "اختر الطراز",
+      "selectYear": "اختر السنة",
+      "licensePlate": "أدخل رقم اللوحة",
+      "color": "أدخل اللون",
+      "status": "أدخل الحالة",
+      "dailyRate": "أدخل السعر اليومي",
+      "hourlyRate": "أدخل السعر بالساعة",
+      "deviceSerialNumber": "أدخل الرقم التسلسلي للجهاز"
     },
     "fuelLevels": {
       "full": "ممتلئ",
@@ -340,6 +442,30 @@
       "half": "50% (نصف)",
       "quarter": "25% (ربع)",
       "empty": "فارغ"
+    },
+    "list": {
+      "fetchError": "فشل في جلب بيانات السيارات.",
+      "deleteError": "فشل في حذف السيارة.",
+      "confirmDelete": "هل أنت متأكد أنك تريد حذف هذه السيارة؟",
+      "title": "السيارات",
+      "addCar": "إضافة سيارة",
+      "searchPlaceholder": "البحث بالموديل أو لوحة الترخيص أو اللون",
+      "allModels": "جميع الموديلات",
+      "allYears": "جميع السنوات",
+      "allAvailability": "كل الحالات",
+      "available": "متاحة",
+      "unavailable": "غير متاحة",
+      "resetFilters": "إعادة تعيين الفلاتر",
+      "reset": "إعادة تعيين",
+      "carsFound": "سيارات موجودة",
+      "model": "الموديل",
+      "year": "السنة",
+      "licensePlate": "رقم اللوحة",
+      "color": "اللون",
+      "dailyRate": "السعر اليومي",
+      "availability": "التوفر",
+      "actions": "إجراءات",
+      "noCarsFound": "لم يتم العثور على سيارات"
     }
   },
   "payment": {
@@ -365,5 +491,9 @@
       "transactionId": "معرّف المعاملة",
       "paidAt": "تاريخ الدفع"
     }
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب.",
+    "atLeastOneIdRequired": "يرجى توفير شكل واحد على الأقل من أشكال التحقق."
   }
 }

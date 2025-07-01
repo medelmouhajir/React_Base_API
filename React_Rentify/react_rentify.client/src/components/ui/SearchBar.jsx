@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../contexts/ThemeContext';
-import './ui.css';
+import './SearchBar.css';
 
 const SearchBar = ({ className = '' }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -97,10 +97,10 @@ const SearchBar = ({ className = '' }) => {
     };
 
     return (
-        <div className={`search-bar ${className}`} ref={searchRef}>
+        <div className={`search-bar ${className} ${isDarkMode ? 'dark' : ''}`} ref={searchRef}>
             <form onSubmit={handleSearch} className="search-form">
                 <div className="search-icon">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="search-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -112,7 +112,7 @@ const SearchBar = ({ className = '' }) => {
 
                 <input
                     type="search"
-                    className={`search-input ${isDarkMode ? 'dark' : ''}`}
+                    className="search-input"
                     placeholder={t('search.placeholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -126,7 +126,7 @@ const SearchBar = ({ className = '' }) => {
 
                 <div className="search-category-wrapper">
                     <select
-                        className={`form-select ${isDarkMode ? 'dark' : ''}`}
+                        className="search-category-select"
                         value={searchCategory}
                         onChange={(e) => setSearchCategory(e.target.value)}
                         aria-label={t('search.categoryLabel')}
@@ -137,6 +137,11 @@ const SearchBar = ({ className = '' }) => {
                             </option>
                         ))}
                     </select>
+                    <div className="select-arrow">
+                        <svg className="select-arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </div>
 
                 {/* Search button - visible only on mobile */}
@@ -145,7 +150,7 @@ const SearchBar = ({ className = '' }) => {
                     className="search-button-mobile"
                     aria-label={t('search.searchButton')}
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="search-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -157,11 +162,11 @@ const SearchBar = ({ className = '' }) => {
             </form>
 
             {showSuggestions && recentSearches.length > 0 && (
-                <div className={`dropdown-content ${isDarkMode ? 'dark' : ''}`}>
+                <div className="search-suggestions-dropdown">
                     <div className="suggestions-header">
-                        <span className="font-medium">{t('search.recentSearches')}</span>
+                        <span className="suggestions-title">{t('search.recentSearches')}</span>
                         <button
-                            className="clear-recent"
+                            className="clear-recent-button"
                             onClick={clearRecentSearches}
                         >
                             {t('search.clearAll')}
@@ -169,31 +174,33 @@ const SearchBar = ({ className = '' }) => {
                     </div>
                     <ul className="suggestions-list">
                         {recentSearches.map((item, index) => (
-                            <li key={index}>
+                            <li key={index} className="suggestion-item">
                                 <button
                                     type="button"
-                                    className={`dropdown-item ${isDarkMode ? 'dark' : ''}`}
+                                    className="suggestion-button"
                                     onClick={() => handleSelectRecentSearch(item)}
                                 >
-                                    <div className="suggestion-left">
-                                        <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                            />
-                                        </svg>
-                                        <span className={`suggestion-term ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                                            {item.term}
-                                        </span>
-                                        <span className="suggestion-badge">
-                                            {categories.find(cat => cat.id === item.category)?.label || item.category}
+                                    <div className="suggestion-content">
+                                        <div className="suggestion-icon">
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <div className="suggestion-details">
+                                            <span className="suggestion-term">{item.term}</span>
+                                            <span className="suggestion-badge">
+                                                {categories.find(cat => cat.id === item.category)?.label || item.category}
+                                            </span>
+                                        </div>
+                                        <span className="suggestion-time">
+                                            {formatRelativeTime(item.timestamp)}
                                         </span>
                                     </div>
-                                    <span className="suggestion-time">
-                                        {formatRelativeTime(item.timestamp)}
-                                    </span>
                                 </button>
                             </li>
                         ))}

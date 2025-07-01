@@ -1,8 +1,9 @@
 ﻿// src/pages/Cars/List/CarsList.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../../contexts/ThemeContext';
 import carService from '../../../services/carService';
 import carFiltersService from '../../../services/carFiltersService';
 import './CarsList.css';
@@ -10,9 +11,11 @@ import './CarsList.css';
 const CarsList = () => {
     const { t } = useTranslation();
     const { user } = useAuth();
+    const { isDarkMode } = useTheme();
     const agencyId = user?.agencyId;
     const navigate = useNavigate();
 
+    // State variables
     const [cars, setCars] = useState([]);
     const [filteredCars, setFilteredCars] = useState([]);
     const [models, setModels] = useState([]);
@@ -25,7 +28,19 @@ const CarsList = () => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
 
+    // Check window size for responsive design
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobileView(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Fetch data
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -46,19 +61,24 @@ const CarsList = () => {
                 setIsLoading(false);
             }
         };
-        fetchData();
+
+        if (agencyId) {
+            fetchData();
+        }
     }, [agencyId, t]);
 
-    useEffect(() => {
+    // Apply filters
+    const applyFilters = useCallback(() => {
         let result = [...cars];
 
-        if (searchTerm) {
-            const term = searchTerm.toLowerCase();
-            result = result.filter(
-                (car) =>
-                    car.licensePlate.toLowerCase().includes(term) ||
-                    (car.color && car.color.toLowerCase().includes(term))
-            );
+        if (searchTerm.trim()) {
+            const searchLower = searchTerm.toLowerCase();
+            result = result.filter((car) => {
+                const modelMatch = car.model?.toLowerCase().includes(searchLower);
+                const licensePlateMatch = car.licensePlate?.toLowerCase().includes(searchLower);
+                const colorMatch = car.color?.toLowerCase().includes(searchLower);
+                return modelMatch || licensePlateMatch || colorMatch;
+            });
         }
 
         if (filterModel) {
@@ -66,230 +86,294 @@ const CarsList = () => {
         }
 
         if (filterYear) {
-            result = result.filter(
-                (car) => String(car.car_YearId) === filterYear
-            );
+            result = result.filter((car) => car.car_YearId === parseInt(filterYear));
         }
 
-        if (filterAvailability) {
-            const avail = filterAvailability === 'available';
-            result = result.filter((car) => car.isAvailable === avail);
+        if (filterAvailability !== '') {
+            const isAvailable = filterAvailability === 'true';
+            result = result.filter((car) => car.isAvailable === isAvailable);
         }
 
         setFilteredCars(result);
     }, [cars, searchTerm, filterModel, filterYear, filterAvailability]);
 
-    const handleAdd = () => {
-        navigate('/cars/add');
+    useEffect(() => {
+        applyFilters();
+    }, [applyFilters]);
+
+    // Reset filters
+    const handleResetFilters = () => {
+        setSearchTerm('');
+        setFilterModel('');
+        setFilterYear('');
+        setFilterAvailability('');
+        setFilteredCars(cars);
     };
 
-    const handleDetails = (id) => {
-        navigate(`/cars/${id}`);
-    };
+    // Navigation handlers
+    const handleAddCar = () => navigate('/cars/add');
+    const handleViewDetails = (id) => navigate(`/cars/details/${id}`);
+    const handleEditCar = (id) => navigate(`/cars/${id}/edit`);
 
-    const handleEdit = (id) => {
-        navigate(`/cars/${id}/edit`);
-    };
-
-    const handleRemove = async (id) => {
-        if (!window.confirm(t('car.list.confirmRemove'))) return;
-        try {
-            await carService.delete(id);
-            const updated = cars.filter((c) => c.id !== id);
-            setCars(updated);
-        } catch (err) {
-            console.error('❌ Error deleting car:', err);
-            alert(t('car.list.removeError'));
+    const handleRemoveCar = async (id) => {
+        if (window.confirm(t('car.list.confirmDelete'))) {
+            try {
+                await carService.delete(id);
+                setCars((prevCars) => prevCars.filter((car) => car.id !== id));
+                setFilteredCars((prevCars) => prevCars.filter((car) => car.id !== id));
+            } catch (err) {
+                console.error(`❌ Error deleting car with ID ${id}:`, err);
+                alert(t('car.list.deleteError'));
+            }
         }
     };
 
+    // Find model name by ID
+    const getModelName = (modelId) => {
+        const model = models.find((m) => m.id === modelId);
+        return model ? model.name : '';
+    };
+
+    // Loading state
     if (isLoading) {
         return (
-            <div className="cl-loading-wrapper">
-                <div className="cl-spinner" />
+            <div className={`cars-list-container ${isDarkMode ? 'dark' : 'light'}`}>
+                <div className="cl-loading">
+                    <div className="cl-spinner"></div>
+                    <p>{t('common.loading')}</p>
+                </div>
             </div>
         );
     }
 
+    // Error state
     if (error) {
-        return <div className="cl-error-message">{error}</div>;
+        return (
+            <div className={`cars-list-container ${isDarkMode ? 'dark' : 'light'}`}>
+                <div className="cl-error">
+                    <p>{error}</p>
+                    <button
+                        className="cl-retry-btn"
+                        onClick={() => window.location.reload()}
+                    >
+                        {t('common.retry')}
+                    </button>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="cars-list-container">
-            {/* Header with Add Button */}
+        <div className={`cars-list-container ${isDarkMode ? 'dark' : 'light'}`}>
+            {/* Header */}
             <div className="cl-header">
                 <h1 className="cl-title">{t('car.list.title')}</h1>
-                <button className="btn-add" onClick={handleAdd}>
-                    + {t('common.add')}
+                <button className="btn-add" onClick={handleAddCar}>
+                    {t('car.list.addCar')}
                 </button>
             </div>
 
             {/* Filters */}
-            <div className="cl-filters">
-                <input
-                    type="text"
-                    className="cl-search-input"
-                    placeholder={t('car.list.searchPlaceholder')}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            <div className="cl-filters-wrapper">
+                <div className="cl-filters">
+                    <input
+                        type="text"
+                        className="cl-search-input"
+                        placeholder={t('car.list.searchPlaceholder')}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
 
-                <select
-                    className="cl-select"
-                    value={filterModel}
-                    onChange={(e) => setFilterModel(e.target.value)}
-                >
-                    <option value="">{t('car.list.filterModel')}</option>
-                    {models.map((m) => (
-                        <option key={m.id} value={m.id}>
-                            {m.name}
-                        </option>
-                    ))}
-                </select>
+                    <select
+                        className="cl-select"
+                        value={filterModel}
+                        onChange={(e) => setFilterModel(e.target.value)}
+                    >
+                        <option value="">{t('car.list.allModels')}</option>
+                        {models.map((model) => (
+                            <option key={model.id} value={model.id}>
+                                {model.name}
+                            </option>
+                        ))}
+                    </select>
 
-                <select
-                    className="cl-select"
-                    value={filterYear}
-                    onChange={(e) => setFilterYear(e.target.value)}
-                >
-                    <option value="">{t('car.list.filterYear')}</option>
-                    {years.map((y) => (
-                        <option key={y.id} value={y.id}>
-                            {y.yearValue}
-                        </option>
-                    ))}
-                </select>
+                    <select
+                        className="cl-select"
+                        value={filterYear}
+                        onChange={(e) => setFilterYear(e.target.value)}
+                    >
+                        <option value="">{t('car.list.allYears')}</option>
+                        {years.map((year) => (
+                            <option key={year.id} value={year.id}>
+                                {year.yearValue}
+                            </option>
+                        ))}
+                    </select>
 
-                <select
-                    className="cl-select"
-                    value={filterAvailability}
-                    onChange={(e) => setFilterAvailability(e.target.value)}
-                >
-                    <option value="">{t('car.list.filterAvailability')}</option>
-                    <option value="available">{t('car.list.available')}</option>
-                    <option value="unavailable">{t('car.list.unavailable')}</option>
-                </select>
+                    <select
+                        className="cl-select"
+                        value={filterAvailability}
+                        onChange={(e) => setFilterAvailability(e.target.value)}
+                    >
+                        <option value="">{t('car.list.allAvailability')}</option>
+                        <option value="true">{t('car.list.available')}</option>
+                        <option value="false">{t('car.list.unavailable')}</option>
+                    </select>
+
+                    {(searchTerm || filterModel || filterYear || filterAvailability !== '') && (
+                        <button
+                            className="cl-reset-btn"
+                            onClick={handleResetFilters}
+                            aria-label={t('car.list.resetFilters')}
+                        >
+                            {t('car.list.reset')}
+                        </button>
+                    )}
+                </div>
+
+                <div className="cl-results-count">
+                    {filteredCars.length} {t('car.list.carsFound')}
+                </div>
             </div>
 
-            {/* Table View (Desktop) */}
+            {/* Table view (desktop) */}
             <div className="cl-table-wrapper">
                 <table className="cl-data-table">
                     <thead>
                         <tr>
-                            <th>{t('car.fields.licensePlate')}</th>
-                            <th>{t('car.fields.model')}</th>
-                            <th>{t('car.fields.year')}</th>
-                            <th>{t('car.fields.color')}</th>
-                            <th>{t('car.fields.isAvailable')}</th>
-                            <th>{t('common.actions')}</th>
+                            <th>{t('car.list.model')}</th>
+                            <th>{t('car.list.year')}</th>
+                            <th>{t('car.list.licensePlate')}</th>
+                            <th>{t('car.list.color')}</th>
+                            <th>{t('car.list.dailyRate')}</th>
+                            <th>{t('car.list.availability')}</th>
+                            <th>{t('car.list.actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredCars.map((car) => {
-                            return (
+                        {filteredCars.length === 0 ? (
+                            <tr>
+                                <td colSpan="7" className="cl-no-data">
+                                    {t('car.list.noCarsFound')}
+                                </td>
+                            </tr>
+                        ) : (
+                            filteredCars.map((car) => (
                                 <tr key={car.id}>
+                                    <td>{getModelName(car.car_ModelId)}</td>
+                                    <td>
+                                        {years.find((y) => y.id === car.car_YearId)?.yearValue || ''}
+                                    </td>
                                     <td>{car.licensePlate}</td>
-                                    <td>{car.fields.model + ' ' + car.fields.manufacturer}</td>
-                                    <td>{car.fields.year}</td>
-                                    <td>{car.color}</td>
+                                    <td>
+                                        <div className="color-dot" style={{ backgroundColor: car.color }}></div>
+                                        {car.color}
+                                    </td>
+                                    <td>{car.dailyRate.toFixed(2)}</td>
                                     <td>
                                         <span
                                             className={`availability-badge ${car.isAvailable ? 'avail-true' : 'avail-false'
                                                 }`}
                                         >
                                             {car.isAvailable
-                                                ? t('car.list.availableShort')
-                                                : t('car.list.unavailableShort')}
+                                                ? t('car.list.available')
+                                                : t('car.list.unavailable')}
                                         </span>
                                     </td>
-                                    <td className="cl-actions-cell">
-                                        <button
-                                            className="cl-action-btn btn-details"
-                                            onClick={() => handleDetails(car.id)}
-                                        >
-                                            {t('common.details')}
-                                        </button>
-                                        <button
-                                            className="cl-action-btn btn-edit"
-                                            onClick={() => handleEdit(car.id)}
-                                        >
-                                            {t('common.edit')}
-                                        </button>
-                                        <button
-                                            className="cl-action-btn btn-remove"
-                                            onClick={() => handleRemove(car.id)}
-                                        >
-                                            {t('common.remove')}
-                                        </button>
+                                    <td>
+                                        <div className="cl-actions-cell">
+                                            <button
+                                                className="cl-action-btn btn-details"
+                                                onClick={() => handleViewDetails(car.id)}
+                                            >
+                                                {t('common.details')}
+                                            </button>
+                                            <button
+                                                className="cl-action-btn btn-edit"
+                                                onClick={() => handleEditCar(car.id)}
+                                            >
+                                                {t('common.edit')}
+                                            </button>
+                                            <button
+                                                className="cl-action-btn btn-remove"
+                                                onClick={() => handleRemoveCar(car.id)}
+                                            >
+                                                {t('common.remove')}
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
-                            );
-                        })}
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
 
-            {/* Card View (Mobile) */}
+            {/* Card view (mobile) */}
             <div className="cl-cards-wrapper">
-                {filteredCars.map((car) => {
-                    const modelName =
-                        models.find((m) => m.id === car.car_ModelId)?.name || car.car_ModelId;
-                    const yearValue =
-                        years.find((y) => y.id === car.car_YearId)?.yearValue || car.car_YearId;
-                    return (
-                        <div className="cl-card" key={car.id}>
+                {filteredCars.length === 0 ? (
+                    <div className="cl-no-data-mobile">
+                        {t('car.list.noCarsFound')}
+                    </div>
+                ) : (
+                    filteredCars.map((car) => (
+                        <div key={car.id} className="cl-card">
+                            <div className="cl-card-header">
+                                <div className="cl-card-title">
+                                    <h3>{getModelName(car.car_ModelId)}</h3>
+                                    <span className="cl-card-year">
+                                        {years.find((y) => y.id === car.car_YearId)?.value || ''}
+                                    </span>
+                                </div>
+                                <span
+                                    className={`availability-badge ${car.isAvailable ? 'avail-true' : 'avail-false'
+                                        }`}
+                                >
+                                    {car.isAvailable
+                                        ? t('car.list.available')
+                                        : t('car.list.unavailable')}
+                                </span>
+                            </div>
+
                             <div className="cl-card-content">
                                 <p>
-                                    <span className="card-label">
-                                        {t('car.fields.licensePlate')}:
-                                    </span>{' '}
-                                    {car.licensePlate}
+                                    <span className="card-label">{t('car.list.licensePlate')}:</span> {car.licensePlate}
                                 </p>
                                 <p>
-                                    <span className="card-label">{t('car.fields.model')}:</span>{' '}
-                                    {modelName}
+                                    <span className="card-label">{t('car.list.color')}:</span>
+                                    <span className="color-value">
+                                        <span className="color-dot" style={{ backgroundColor: car.color }}></span>
+                                        {car.color}
+                                    </span>
                                 </p>
                                 <p>
-                                    <span className="card-label">{t('car.fields.year')}:</span>{' '}
-                                    {yearValue}
-                                </p>
-                                <p>
-                                    <span className="card-label">{t('car.fields.color')}:</span>{' '}
-                                    {car.color}
-                                </p>
-                                <p>
-                                    <span className="card-label">
-                                        {t('car.fields.isAvailable')}:
-                                    </span>{' '}
-                                    {car.isAvailable
-                                        ? t('car.list.availableShort')
-                                        : t('car.list.unavailableShort')}
+                                    <span className="card-label">{t('car.list.dailyRate')}:</span> {car.dailyRate.toFixed(2)}
                                 </p>
                             </div>
+
                             <div className="cl-card-actions">
                                 <button
                                     className="cl-card-btn btn-details"
-                                    onClick={() => handleDetails(car.id)}
+                                    onClick={() => handleViewDetails(car.id)}
                                 >
                                     {t('common.details')}
                                 </button>
                                 <button
                                     className="cl-card-btn btn-edit"
-                                    onClick={() => handleEdit(car.id)}
+                                    onClick={() => handleEditCar(car.id)}
                                 >
                                     {t('common.edit')}
                                 </button>
                                 <button
                                     className="cl-card-btn btn-remove"
-                                    onClick={() => handleRemove(car.id)}
+                                    onClick={() => handleRemoveCar(car.id)}
                                 >
                                     {t('common.remove')}
                                 </button>
                             </div>
                         </div>
-                    );
-                })}
+                    ))
+                )}
             </div>
         </div>
     );

@@ -2,13 +2,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTheme, THEMES } from '../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import '../ui/ui.css';
+import './ThemeToggle.css';
 
 const ThemeToggle = ({ className = '' }) => {
     const { theme, isDarkMode, toggleTheme, setThemeMode } = useTheme();
     const { t } = useTranslation();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const buttonRef = useRef(null);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -22,18 +23,60 @@ const ThemeToggle = ({ className = '' }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Support for keyboard navigation and accessibility
+    useEffect(() => {
+        function handleKeyDown(e) {
+            if (!dropdownOpen) return;
+
+            if (e.key === 'Escape') {
+                setDropdownOpen(false);
+                buttonRef.current?.focus();
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [dropdownOpen]);
+
+    // Add ripple effect for touch devices
+    const addRippleEffect = (e) => {
+        // Skip if not touch device
+        if (window.matchMedia('(hover: hover)').matches) return;
+
+        const button = e.currentTarget;
+        const ripple = document.createElement('span');
+        const rect = button.getBoundingClientRect();
+
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        ripple.className = 'theme-option-ripple';
+
+        button.appendChild(ripple);
+
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    };
+
     // Theme options with translations
     const themeOptions = [
         {
             id: THEMES.LIGHT,
             label: t('theme.light'),
             icon: (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                    />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="5" />
+                    <line x1="12" y1="1" x2="12" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" />
+                    <line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                 </svg>
             ),
         },
@@ -41,8 +84,8 @@ const ThemeToggle = ({ className = '' }) => {
             id: THEMES.DARK,
             label: t('theme.dark'),
             icon: (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
             ),
         },
@@ -50,12 +93,10 @@ const ThemeToggle = ({ className = '' }) => {
             id: THEMES.SYSTEM,
             label: t('theme.system'),
             icon: (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                        fillRule="evenodd"
-                        d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z"
-                        clipRule="evenodd"
-                    />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
                 </svg>
             ),
         },
@@ -68,51 +109,45 @@ const ThemeToggle = ({ className = '' }) => {
         <div className={`theme-toggle-wrapper ${className}`} ref={dropdownRef}>
             <button
                 type="button"
+                ref={buttonRef}
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className={`theme-toggle ${isDarkMode ? 'dark' : ''}`}
+                className="theme-toggle"
                 aria-label={t('theme.toggleTheme')}
+                aria-expanded={dropdownOpen}
+                aria-haspopup="true"
                 title={t('theme.toggleTheme')}
             >
                 <span className="theme-toggle-icon">
-                    {isDarkMode ? currentTheme.icon : currentTheme.icon}
+                    {currentTheme.icon}
                 </span>
             </button>
 
             {dropdownOpen && (
-                <div className={`dropdown-content ${isDarkMode ? 'dark' : ''}`}>
-                    <div className="py-1">
-                        {themeOptions.map((option) => (
-                            <button
-                                key={option.id}
-                                type="button"
-                                className={`dropdown-item ${theme === option.id
-                                        ? `font-semibold ${isDarkMode ? 'text-primary-400' : 'text-primary-600'}`
-                                        : ''
-                                    }`}
-                                onClick={() => {
-                                    setThemeMode(option.id);
-                                    setDropdownOpen(false);
-                                }}
-                            >
-                                <span className="inline-block w-5 h-5 mr-2">{option.icon}</span>
-                                {option.label}
-                                {theme === option.id && (
-                                    <svg
-                                        className="w-4 h-4 ml-auto"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clipRule="evenodd"
-                                        />
+                <div className="theme-dropdown" role="menu" aria-orientation="vertical">
+                    {themeOptions.map((option) => (
+                        <button
+                            key={option.id}
+                            type="button"
+                            role="menuitem"
+                            className={`theme-option ${theme === option.id ? 'theme-option-active' : ''}`}
+                            onClick={(e) => {
+                                setThemeMode(option.id);
+                                setDropdownOpen(false);
+                                addRippleEffect(e);
+                            }}
+                            onTouchStart={addRippleEffect}
+                        >
+                            <span className="theme-option-icon">{option.icon}</span>
+                            <span className="theme-option-label">{option.label}</span>
+                            {theme === option.id && (
+                                <span className="theme-option-check">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="20 6 9 17 4 12" />
                                     </svg>
-                                )}
-                            </button>
-                        ))}
-                    </div>
+                                </span>
+                            )}
+                        </button>
+                    ))}
                 </div>
             )}
         </div>

@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../contexts/ThemeContext';
-import '../ui/ui.css';
+import './LanguageSelector.css';
 
 const LanguageSelector = ({ className = '' }) => {
     const { i18n, t } = useTranslation();
@@ -10,14 +10,14 @@ const LanguageSelector = ({ className = '' }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    // Available languages with more detailed information
+    // Available languages with detailed information
     const languages = [
         { code: 'en', name: 'English', flag: '🇬🇧', native: 'English', direction: 'ltr' },
         { code: 'fr', name: 'Français', flag: '🇫🇷', native: 'Français', direction: 'ltr' },
         { code: 'ar', name: 'العربية', flag: '🇲🇦', native: 'العربية', direction: 'rtl' },
     ];
 
-    // Current language
+    // Get current language
     const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
     // Close dropdown when clicking outside
@@ -55,41 +55,54 @@ const LanguageSelector = ({ className = '' }) => {
                 aria-expanded={isOpen}
                 title={t('language.selectLanguage')}
             >
-                <span className="language-flag">{currentLanguage.flag}</span>
-                <span className="sr-only">{currentLanguage.name}</span>
+                <span className="language-flag" aria-hidden="true">{currentLanguage.flag}</span>
+                <span className="sr-only">{t('language.selectLanguage')}</span>
             </button>
 
             {isOpen && (
-                <div className="language-menu">
-                    {languages.map((language) => (
-                        <button
-                            key={language.code}
-                            type="button"
-                            onClick={() => changeLanguage(language)}
-                            className={`language-item ${i18n.language === language.code ? 'active' : ''}`}
-                            dir={language.direction}
-                        >
-                            <span className="language-flag">{language.flag}</span>
-                            <div className="language-names">
-                                <span className={`language-name ${isDarkMode ? 'dark' : ''}`}>{language.name}</span>
-                                <span className="language-native">
-                                    {language.native !== language.name ? language.native : ''}
-                                </span>
-                            </div>
-                            {i18n.language === language.code && (
-                                <svg className="language-check" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            )}
-                        </button>
-                    ))}
+                <div className={`language-dropdown ${isDarkMode ? 'dark' : ''}`}>
+                    <div className="language-dropdown-header">
+                        <span className="language-dropdown-title">{t('language.selectLanguage')}</span>
+                    </div>
 
-                    <div className={`language-info ${isDarkMode ? 'dark' : ''}`}>
-                        {t('language.changeInfo')}
+                    <div className="language-dropdown-content">
+                        {languages.map((language) => (
+                            <button
+                                key={language.code}
+                                type="button"
+                                onClick={() => changeLanguage(language)}
+                                className={`language-item ${i18n.language === language.code ? 'active' : ''}`}
+                                dir={language.direction}
+                            >
+                                <span className="language-flag">{language.flag}</span>
+                                <div className="language-details">
+                                    <span className="language-name">{language.name}</span>
+                                    {language.native !== language.name && (
+                                        <span className="language-native">{language.native}</span>
+                                    )}
+                                </div>
+
+                                {i18n.language === language.code && (
+                                    <svg
+                                        className="language-check"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="language-dropdown-footer">
+                        <span className="language-info">{t('language.changeInfo')}</span>
                     </div>
                 </div>
             )}

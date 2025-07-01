@@ -1,0 +1,288 @@
+/* src/components/ui/LanguageSelector.css */
+
+/* ========================================
+   LANGUAGE SELECTOR BASE
+   ======================================== */
+.language-selector {
+    position: relative;
+    display: inline-flex;
+}
+
+/* ========================================
+   TOGGLE BUTTON
+   ======================================== */
+.language-selector-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
+    color: var(--color-text-muted, #6B7280);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 200ms ease;
+    touch-action: manipulation;
+}
+
+    .language-selector-toggle.dark {
+        color: var(--color-text-muted, #9CA3AF);
+    }
+
+    .language-selector-toggle:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+.dark .language-selector-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.language-selector-toggle:focus-visible {
+    outline: 2px solid var(--color-primary-500, #0ea5e9);
+    outline-offset: 2px;
+}
+
+/* Flag in toggle button */
+.language-flag {
+    font-size: 1.25rem;
+    line-height: 1;
+    display: block;
+}
+
+/* ========================================
+   DROPDOWN CONTAINER
+   ======================================== */
+.language-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 16rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    background-color: var(--color-card, #ffffff);
+    border: 1px solid var(--color-border, #e2e8f0);
+    z-index: 50;
+    overflow: hidden;
+    transform-origin: top right;
+    animation: dropdown-slide 200ms ease-out forwards;
+}
+
+.dark .language-dropdown {
+    background-color: var(--color-card, #1e293b);
+    border-color: var(--color-border, #334155);
+}
+
+/* Animation for dropdown */
+@keyframes dropdown-slide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ========================================
+   DROPDOWN HEADER
+   ======================================== */
+.language-dropdown-header {
+    padding: 0.75rem 1rem;
+    background-color: var(--color-bg-subtle, #f1f5f9);
+    border-bottom: 1px solid var(--color-border, #e2e8f0);
+}
+
+.dark .language-dropdown-header {
+    background-color: var(--color-bg-subtle, #1e293b);
+    border-color: var(--color-border, #334155);
+}
+
+.language-dropdown-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--color-text, #111827);
+}
+
+.dark .language-dropdown-title {
+    color: var(--color-text, #f3f4f6);
+}
+
+/* ========================================
+   DROPDOWN CONTENT
+   ======================================== */
+.language-dropdown-content {
+    max-height: 16rem;
+    overflow-y: auto;
+}
+
+/* ========================================
+   LANGUAGE ITEMS
+   ======================================== */
+.language-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+}
+
+    .language-item:hover {
+        background-color: var(--color-bg-subtle, #f1f5f9);
+    }
+
+.dark .language-item:hover {
+    background-color: var(--color-bg-subtle, #1e293b);
+}
+
+/* Active language styling */
+.language-item.active {
+    background-color: rgba(14, 165, 233, 0.08);
+    font-weight: 500;
+}
+
+.dark .language-item.active {
+    background-color: rgba(14, 165, 233, 0.15);
+}
+
+/* Flag inside language item */
+.language-item .language-flag {
+    font-size: 1.25rem;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+/* Language details container */
+.language-details {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* Language name */
+.language-name {
+    font-size: 0.875rem;
+    color: var(--color-text, #111827);
+}
+
+.dark .language-name {
+    color: var(--color-text, #f3f4f6);
+}
+
+/* Native language name */
+.language-native {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #6B7280);
+    margin-top: 0.125rem;
+}
+
+.dark .language-native {
+    color: var(--color-text-muted, #9CA3AF);
+}
+
+/* Check mark for active language */
+.language-check {
+    color: var(--color-primary-500, #0ea5e9);
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* ========================================
+   DROPDOWN FOOTER
+   ======================================== */
+.language-dropdown-footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--color-border, #e2e8f0);
+}
+
+.dark .language-dropdown-footer {
+    border-color: var(--color-border, #334155);
+}
+
+.language-info {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #6B7280);
+    display: block;
+    text-align: center;
+}
+
+.dark .language-info {
+    color: var(--color-text-muted, #9CA3AF);
+}
+
+/* ========================================
+   TOUCH DEVICE ENHANCEMENTS
+   ======================================== */
+@media (hover: none) {
+    .language-selector-toggle:active {
+        background-color: rgba(0, 0, 0, 0.1);
+        transform: scale(0.97);
+        transition: transform 100ms ease;
+    }
+
+    .dark .language-selector-toggle:active {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .language-item:active {
+        background-color: var(--color-bg-subtle, #f1f5f9);
+    }
+
+    .dark .language-item:active {
+        background-color: var(--color-bg-subtle, #1e293b);
+    }
+
+    /* Larger touch targets for mobile */
+    .language-item {
+        padding: 0.875rem 1rem;
+    }
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+@media (max-width: 640px) {
+    .language-dropdown {
+        width: 14rem;
+        right: -0.5rem;
+    }
+}
+
+/* ========================================
+   RTL SUPPORT
+   ======================================== */
+[dir="rtl"] .language-dropdown {
+    right: auto;
+    left: 0;
+    transform-origin: top left;
+}
+
+[dir="rtl"] .language-item .language-flag {
+    margin-right: 0;
+    margin-left: 0.75rem;
+}
+
+[dir="rtl"] .language-check {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+[dir="rtl"] .language-item {
+    text-align: right;
+}
+
+/* ========================================
+   REDUCED MOTION PREFERENCE
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+    .language-dropdown,
+    .language-selector-toggle {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}

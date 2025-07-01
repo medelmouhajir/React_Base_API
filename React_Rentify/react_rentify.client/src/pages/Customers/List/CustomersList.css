@@ -1,134 +1,605 @@
-/* Container */
-.customerlist-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 1rem;
+ï»¿/* src/pages/Customers/List/CustomersList.css */
+
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-color: #4a90e2;
+    --primary-dark: #3b78c3;
+    --secondary-color: #d9534f;
+    --secondary-hover: #c9302c;
+    /* Light theme */
+    --bg-color-light: #ffffff;
+    --card-bg-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --table-header-bg-light: #f3f4f6;
+    --table-row-hover-light: rgba(0, 0, 0, 0.025);
+    /* Dark theme */
+    --bg-color-dark: #121212;
+    --card-bg-dark: #1e1e1e;
+    --text-color-dark: #ffffff;
+    --text-secondary-dark: #a0aec0;
+    --border-color-dark: #2d3748;
+    --input-bg-dark: #2d3748;
+    --input-text-dark: #ffffff;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.5);
+    --table-header-bg-dark: #2d3748;
+    --table-row-hover-dark: rgba(255, 255, 255, 0.05);
+    /* Common */
+    --border-radius: 0.5rem;
+    --transition-speed: 0.25s;
+    --error-color: #ef4444;
+    --success-color: #10b981;
 }
 
-/* Header (Title + “Add New” button) */
+/* Color scheme based on current theme */
+.customerlist-container {
+    --bg-color: transparent;
+    --card-bg: var(--card-bg-light);
+    --text-color: var(--text-color-light);
+    --text-secondary: var(--text-secondary-light);
+    --border-color: var(--border-color-light);
+    --input-bg: var(--input-bg-light);
+    --input-text: var(--input-text-light);
+    --shadow: var(--shadow-light);
+}
+
+/* Dark mode colors */
+[data-theme='dark'] .customerlist-container {
+    --bg-color: transparent;
+    --card-bg: rgba(30, 30, 30, 0.7);
+    --text-color: var(--text-color-dark);
+    --text-secondary: var(--text-secondary-dark);
+    --border-color: var(--border-color-dark);
+    --input-bg: var(--input-bg-dark);
+    --input-text: var(--input-text-dark);
+    --shadow: var(--shadow-dark);
+}
+
+/*---------------------------------------------
+  Container and Layout
+---------------------------------------------*/
+.customerlist-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 1.5rem;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    border-radius: var(--border-radius);
+    transition: color var(--transition-speed);
+}
+
 .customerlist-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-    .customerlist-header h1 {
-        font-size: 1.75rem;
-        font-weight: 600;
+.customerlist-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color);
+}
+
+/*---------------------------------------------
+  Buttons
+---------------------------------------------*/
+.btn-add {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: calc(var(--border-radius) / 1.5);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform 0.1s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+    .btn-add:hover {
+        background-color: var(--secondary-hover);
     }
 
-    .customerlist-header .btn-primary {
-        padding: 0.5rem 1rem;
-        font-size: 0.95rem;
+    .btn-add:active {
+        transform: translateY(1px);
     }
 
-/* Error Message */
-.customerlist-error {
-    color: #d9534f;
-    background-color: #f8d7da;
-    padding: 0.75rem 1rem;
-    border-radius: 0.375rem;
-    font-size: 0.9rem;
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-/* Loading State */
-.customerlist-loading {
-    text-align: center;
-    font-size: 1rem;
-    padding: 2rem 0;
-}
-
-/* Make table horizontally scrollable on small screens */
-.customerlist-table-wrapper {
-    overflow-x: auto;
-}
-
-/* Table Styles */
-.customerlist-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-    .customerlist-table th,
-    .customerlist-table td {
-        padding: 0.75rem 1rem;
-        border: 1px solid #ddd;
-        text-align: left;
-        font-size: 0.95rem;
-    }
-
-    .customerlist-table th {
-        background-color: #f5f5f5;
-        font-weight: 500;
-    }
-
-    .customerlist-table tr:nth-child(even) {
-        background-color: #fafafa;
-    }
-
-    .customerlist-table tr:hover {
-        background-color: #f0f0f0;
-    }
-
-/* “No Records” row */
-.no-records {
-    text-align: center;
-    padding: 1rem;
-    color: #555;
-}
-
-/* Actions Column (Edit + Delete) */
-.customerlist-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.btn-edit,
-.btn-delete {
+.btn-action {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.75rem;
+    border-radius: calc(var(--border-radius) / 2);
     font-size: 0.85rem;
     font-weight: 500;
-    padding: 0.4rem 0.75rem;
-    border: none;
-    border-radius: 0.375rem;
     cursor: pointer;
-    transition: background-color 0.2s;
-    color: #fff;
+    transition: background-color var(--transition-speed);
+    display: inline-block;
     text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
 }
 
-/* Edit Button */
-.btn-edit {
-    background-color: #4a90e2;
-}
-
-    .btn-edit:hover {
-        background-color: #3b78c3;
+    .btn-action:hover {
+        background-color: var(--primary-dark);
     }
 
-/* Delete Button */
 .btn-delete {
-    background-color: #d9534f;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.75rem;
+    border-radius: calc(var(--border-radius) / 2);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
 }
 
     .btn-delete:hover {
-        background-color: #c9302c;
+        background-color: var(--secondary-hover);
     }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+/*---------------------------------------------
+  Search
+---------------------------------------------*/
+.customerlist-search {
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+[data-theme='dark'] .search-input {
+    background-color: var(--input-bg-dark);
+    color: var(--input-text-dark);
+    border-color: var(--border-color-dark);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+[data-theme='dark'] .search-input:focus {
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
+}
+
+/*---------------------------------------------
+  Table (Desktop View)
+---------------------------------------------*/
+.customerlist-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+[data-theme='dark'] .customerlist-table-wrapper {
+    background-color: rgba(30, 30, 30, 0.7);
+    border: 1px solid var(--border-color-dark);
+}
+
+.customerlist-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
     .customerlist-table th,
     .customerlist-table td {
-        padding: 0.5rem 0.75rem;
+        padding: 0.875rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-color);
+    }
+
+[data-theme='dark'] .customerlist-table th,
+[data-theme='dark'] .customerlist-table td {
+    border-color: var(--border-color-dark);
+}
+
+.customerlist-table th {
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background-color 0.15s;
+    background-color: var(--table-header-bg-light);
+    color: var(--text-color);
+}
+
+[data-theme='dark'] .customerlist-table th {
+    background-color: rgba(45, 55, 72, 0.8);
+    color: white;
+}
+
+.customerlist-table th:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='dark'] .customerlist-table th:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.customerlist-table th.sorted-ascending::after {
+    content: 'â†‘';
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+}
+
+.customerlist-table th.sorted-descending::after {
+    content: 'â†“';
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+}
+
+[data-theme='dark'] .customerlist-table th.sorted-ascending::after,
+[data-theme='dark'] .customerlist-table th.sorted-descending::after {
+    color: #6ba5e7;
+}
+
+.customerlist-table tbody tr {
+    transition: background-color 0.15s;
+    cursor: pointer;
+}
+
+    .customerlist-table tbody tr:hover {
+        background-color: var(--table-row-hover-light);
+    }
+
+/* Table background in dark mode */
+[data-theme='dark'] .customerlist-table tbody tr {
+    background-color: rgba(30, 30, 30, 0.3);
+}
+
+    [data-theme='dark'] .customerlist-table tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+.customerlist-table tbody td {
+    color: var(--text-color);
+}
+
+[data-theme='dark'] .customerlist-table tbody td {
+    color: white;
+}
+
+.customerlist-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+    .status.blacklisted {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: var(--error-color);
+    }
+
+[data-theme='dark'] .status.blacklisted {
+    background-color: rgba(239, 68, 68, 0.25);
+    color: #ff6b6b;
+}
+
+.status.not-blacklisted {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--success-color);
+}
+
+[data-theme='dark'] .status.not-blacklisted {
+    background-color: rgba(16, 185, 129, 0.25);
+    color: #4ade80;
+}
+
+.no-records {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+[data-theme='dark'] .no-records {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/*---------------------------------------------
+  Mobile Card View
+---------------------------------------------*/
+.mobile-view {
+    display: none;
+}
+
+.customer-card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+}
+
+    .customer-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+[data-theme='dark'] .customer-card {
+    background-color: rgba(30, 30, 30, 0.7);
+}
+
+    [data-theme='dark'] .customer-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+.customer-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+
+[data-theme='dark'] .customer-card-header {
+    border-color: var(--border-color-dark);
+}
+
+.customer-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color);
+}
+
+[data-theme='dark'] .customerlist-title {
+    color: white;
+}
+
+[data-theme='dark'] .customer-name {
+    color: white;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+    .status-badge.blacklisted {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: var(--error-color);
+    }
+
+[data-theme='dark'] .status-badge.blacklisted {
+    background-color: rgba(239, 68, 68, 0.25);
+    color: #ff6b6b;
+}
+
+.status-badge.not-blacklisted {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--success-color);
+}
+
+[data-theme='dark'] .status-badge.not-blacklisted {
+    background-color: rgba(16, 185, 129, 0.25);
+    color: #4ade80;
+}
+
+.customer-card-body {
+    margin-bottom: 1rem;
+}
+
+.customer-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+[data-theme='dark'] .info-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.info-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+[data-theme='dark'] .info-value {
+    color: white;
+}
+
+.customer-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+[data-theme='dark'] .customer-card-actions {
+    border-color: var(--border-color-dark);
+}
+
+.customer-card-actions .btn-action,
+.customer-card-actions .btn-delete {
+    flex: 1;
+}
+
+.no-records-mobile {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    color: var(--text-secondary);
+    font-style: italic;
+    box-shadow: var(--shadow);
+}
+
+[data-theme='dark'] .no-records-mobile {
+    background-color: rgba(30, 30, 30, 0.7);
+    color: var(--text-color-dark);
+}
+
+/* Loading state */
+.customerlist-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+[data-theme='dark'] .customerlist-loading {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Error message */
+.customerlist-error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--error-color);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--error-color);
+}
+
+/*---------------------------------------------
+  Responsive Design & Media Queries
+---------------------------------------------*/
+@media (max-width: 768px) {
+    .customerlist-container {
+        padding: 1rem;
+    }
+
+    .customerlist-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .customerlist-title {
+        margin-bottom: 0.75rem;
+    }
+
+    .btn-add {
+        width: 100%;
+    }
+
+    /* Hide desktop table, show cards */
+    .desktop-view {
+        display: none;
+    }
+
+    .mobile-view {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .customerlist-container {
+        padding: 0.75rem;
+    }
+
+    .customer-card {
+        padding: 1rem;
+    }
+
+    .customer-name {
+        font-size: 1.1rem;
+    }
+
+    .info-item {
         font-size: 0.9rem;
     }
 
-    .customerlist-header h1 {
-        font-size: 1.5rem;
+    .customer-card-actions {
+        flex-direction: column;
+    }
+
+    .btn-action, .btn-delete {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Touch enhancements */
+@media (hover: none) {
+    /* Larger touch targets */
+    .btn-action, .btn-delete {
+        padding: 0.6rem 1rem;
+        min-height: 2.5rem;
+    }
+
+    .customerlist-table th,
+    .customerlist-table td {
+        padding: 1rem;
+    }
+
+    /* Better touch feedback */
+    .btn-action:active,
+    .btn-delete:active,
+    .customer-card:active {
+        opacity: 0.7;
+    }
+
+    /* Add spacing between action buttons for easier touch */
+    .customerlist-actions {
+        gap: 0.75rem;
+    }
+
+    /* Make sorting indicators more visible */
+    .customerlist-table th.sorted-ascending::after,
+    .customerlist-table th.sorted-descending::after {
+        font-size: 1rem;
+        margin-left: 0.75rem;
     }
 }

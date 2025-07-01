@@ -16,7 +16,18 @@
     "remove": "Remove",
     "retry": "Retry",
     "reset": "Reset",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "save": "Save",
+    "search": "Search",
+    "yes": "Yes",
+    "no": "No",
+    "noSearchResults": "No results found.",
+    "blacklisted": "Blacklisted",
+    "active": "Active",
+    "details": "Details",
+    "delete": "Delete",
+    "clear": "Clear",
+    "goBack": "Go back"
   },
   "landing": {
     "features": "Features",
@@ -162,7 +173,15 @@
     "list": {
       "filter": {
         "selectStatus": "All Statuses",
-        "clear": "Clear Filters"
+        "clear": "Clear Filters",
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "customer": "Customer",
+        "allCustomers": "All Customers",
+        "car": "Car",
+        "allCars": "All Cars",
+        "status": "Status",
+        "allStatuses": "All Statuses"
       },
       "table": {
         "customer": "Customer",
@@ -171,7 +190,14 @@
         "endDate": "End Date",
         "status": "Status",
         "actions": "Actions"
-      }
+      },
+      "error": "Failed to load reservations. Please try again.",
+      "title": "Reservations",
+      "addNew": "Add New Reservation",
+      "search": "Search reservations...",
+      "showFilters": "Show Filters",
+      "hideFilters": "Hide Filters",
+      "contract": "Contract"
     },
     "editDates": {
       "title": "Edit Reservation Dates",
@@ -250,8 +276,35 @@
     }
   },
   "customerDetails": {
+    "confirmRemoveBlacklist": "Are you sure you want to remove this blacklist entry?",
+    "errorRemoveBlacklist": "Failed to remove blacklist entry.",
+    "errorAddBlacklist": "Failed to add blacklist entry.",
+    "confirmRemoveAttachment": "Are you sure you want to remove this attachment?",
+    "errorRemoveAttachment": "Failed to remove attachment.",
+    "errorAddAttachment": "Failed to add attachment.",
+    "notFound": "Customer not found.",
+    "heading": "{{name}}'s Details",
+    "reservationsHeading": "Reservations",
+    "noReservations": "No reservations found.",
+    "unknownCar": "Unknown car",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "blacklistHeading": "Blacklist Entries",
+    "notBlacklisted": "This customer is not blacklisted.",
+    "reportedBy": "Reported by",
+    "unknownAgency": "Unknown agency",
+    "dateAdded": "Date added",
+    "addBlacklist": "Add to Blacklist",
+    "addBlacklistBtn": "Add to Blacklist",
     "attachmentsHeading": "Attachments",
-    "addBlacklistBtn": "Add to Blacklist"
+    "noAttachments": "No attachments.",
+    "addAttachment": "Add Attachment",
+    "addAttachmentBtn": "Add Attachment",
+    "placeholders": {
+      "blacklistReason": "Enter reason for blacklisting",
+      "fileName": "File name",
+      "filePath": "File URL or path"
+    }
   },
   "agency": {
     "list": {
@@ -283,7 +336,19 @@
       "nationalId": "National ID",
       "fullName": "Full Name",
       "phoneNumber": "Phone Number",
-      "address": "Address"
+      "address": "Address",
+      "passportId": "Passport ID",
+      "dateOfBirth": "Date of Birth",
+      "isBlacklisted": "Blacklisted"
+    },
+    "placeholders": {
+      "fullName": "Enter full name",
+      "phoneNumber": "Enter phone number",
+      "email": "Enter email",
+      "nationalId": "Enter national ID",
+      "passportId": "Enter passport ID",
+      "licenseNumber": "Enter license number",
+      "address": "Enter address"
     },
     "errorLoading": "Failed to load customers",
     "add": {
@@ -292,7 +357,8 @@
       "search": "Search Customer",
       "searchPlaceholder": "Type a name, email, or phone...",
       "noResults": "No customers found",
-      "addToReservation": "Add to Reservation"
+      "addToReservation": "Add to Reservation",
+      "error": "An error occurred while adding the customer."
     },
     "edit": {
       "title": "Edit Customer"
@@ -302,6 +368,25 @@
       "warning": "You are about to remove this customer from the reservation.",
       "confirmText": "Are you sure you want to remove {{name}}?",
       "confirm": "Yes, remove"
+    },
+    "sections": {
+      "identification": "Identification"
+    },
+    "idRequirement": "At least one of National ID or Passport ID is required.",
+    "blacklist": {
+      "warning": "Blacklist Warning",
+      "description": "This person appears on the blacklist. Are you sure you want to continue?",
+      "reportedBy": "Reported by",
+      "continue": "Continue anyway"
+    },
+    "list": {
+      "title": "Customers",
+      "error": "An error occurred while fetching customers.",
+      "confirmDelete": "Are you sure you want to delete this customer?",
+      "deleteError": "An error occurred while deleting the customer.",
+      "addNew": "Add New Customer",
+      "actions": "Actions",
+      "noRecords": "No customers found."
     }
   },
   "invoice": {
@@ -344,7 +429,23 @@
       "odometerStart": "Odometer Start",
       "fuelLevel": "Fuel Level",
       "hasPreExistingDamage": "Pre-existing Damage",
-      "damageDescription": "Damage Description"
+      "damageDescription": "Damage Description",
+      "color": "Color",
+      "isAvailable": "Available",
+      "status": "Status",
+      "hourlyRate": "Hourly Rate",
+      "deviceSerialNumber": "Device Serial Number",
+      "isTrackingActive": "Tracking Active"
+    },
+    "placeholders": {
+      "selectModel": "Select model",
+      "selectYear": "Select year",
+      "licensePlate": "Enter license plate",
+      "color": "Enter color",
+      "status": "Enter status",
+      "dailyRate": "Enter daily rate",
+      "hourlyRate": "Enter hourly rate",
+      "deviceSerialNumber": "Enter device serial number"
     },
     "fuelLevels": {
       "full": "Full",
@@ -352,6 +453,30 @@
       "half": "50% (Half)",
       "quarter": "25% (Quarter)",
       "empty": "Empty"
+    },
+    "list": {
+      "fetchError": "Failed to fetch car data.",
+      "deleteError": "Failed to delete the car.",
+      "confirmDelete": "Are you sure you want to delete this car?",
+      "title": "Cars",
+      "addCar": "Add Car",
+      "searchPlaceholder": "Search by model, license plate or color",
+      "allModels": "All Models",
+      "allYears": "All Years",
+      "allAvailability": "All Availability",
+      "available": "Available",
+      "unavailable": "Unavailable",
+      "resetFilters": "Reset filters",
+      "reset": "Reset",
+      "carsFound": "cars found",
+      "model": "Model",
+      "year": "Year",
+      "licensePlate": "License Plate",
+      "color": "Color",
+      "dailyRate": "Daily Rate",
+      "availability": "Availability",
+      "actions": "Actions",
+      "noCarsFound": "No cars found"
     }
   },
   "payment": {
@@ -377,5 +502,9 @@
       "transactionId": "Transaction ID",
       "paidAt": "Paid At"
     }
+  },
+  "validation": {
+    "required": "This field is required.",
+    "atLeastOneIdRequired": "Please provide at least one form of identification."
   }
 }
