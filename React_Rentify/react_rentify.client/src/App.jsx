@@ -73,6 +73,10 @@ const EditMaintenance = lazy(() => import('./pages/Maintenances/Edit/EditMainten
 const AddInvoice = lazy(() => import('./pages/Invoices/Add/AddInvoice'));
 const InvoiceDetails = lazy(() => import('./pages/Invoices/Details/InvoiceDetails'));
 
+
+//// Child route for Settings
+const AgencySettings = lazy(() => import('./pages/Settings/Agency/AgencySettings'));
+
 //// Other standalone pages
 //const MaintenancePage = lazy(() => import('./pages/maintenance/Maintenance'));
 //const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
@@ -157,6 +161,9 @@ function App() {
 
                                 {/* Reports */}
                                 {/*<Route path="/reports" element={<ReportsPage />} />*/}
+
+                                {/* Settings */}
+                                <Route path="/settings/agency" element={<AgencySettings />} />
 
                                 {/* Admin Routes */}
                                 {/*<Route path="/agencies" element={<AgenciesPage />} />*/}

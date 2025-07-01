@@ -57,6 +57,24 @@ namespace React_Rentify.Server.Controllers
                 .Include(a => a.Customers)
                 .Include(a => a.Reservations)
                 .Include(a => a.Agency_Attachments)
+                .Select(x=>  new Agency
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Address = x.Address,
+                    LogoUrl = x.LogoUrl,
+                    Email = x.Email,
+                    PhoneOne = x.PhoneOne,
+                    PhoneTwo = x.PhoneTwo,
+                    Agency_Attachments = x.Agency_Attachments.Select( c=> new Agency_Attachment
+                    {
+                        Id = c.Id,
+                        AgencyId = c.Id,
+                        FileName = c.FileName,
+                        FilePath = c.FilePath,
+                        UploadedAt = c.UploadedAt,
+                    }).ToList()
+                })
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (agency == null)

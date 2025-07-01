@@ -309,7 +309,38 @@
   "agency": {
     "list": {
       "fetchError": "Error loading agencies"
+    },
+    "fields": {
+      "name": "Name",
+      "address": "Address",
+      "email": "Email",
+      "phoneOne": "Primary Phone",
+      "phoneTwo": "Secondary Phone"
     }
+  },
+  "agencySettings": {
+    "fetchError": "Error fetching agency data. Please try again.",
+    "title": "Agency Settings",
+    "generalInfo": "General Information",
+    "logo": "Logo",
+    "logoAlt": "Agency Logo",
+    "noLogo": "No logo uploaded",
+    "uploadLogo": "Upload Logo",
+    "saveSuccess": "Agency settings saved successfully.",
+    "saveError": "Failed to save agency settings.",
+    "logoUploadError": "Failed to upload logo.",
+    "attachments": "Attachments",
+    "noAttachments": "No attachments found.",
+    "addAttachment": "Add Attachment",
+    "attachmentName": "Attachment Name",
+    "attachmentNamePlaceholder": "Enter a name for the attachment",
+    "attachmentFile": "Attachment File",
+    "selectFile": "Select File",
+    "addAttachmentBtn": "Add Attachment",
+    "attachmentAddedSuccess": "Attachment added successfully.",
+    "attachmentAddedError": "Failed to add attachment.",
+    "attachmentRemovedSuccess": "Attachment removed successfully.",
+    "attachmentRemovedError": "Failed to remove attachment."
   },
   "footer": {
     "company": "Company",

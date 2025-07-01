@@ -298,7 +298,38 @@
   "agency": {
     "list": {
       "fetchError": "خطأ في تحميل الوكالات"
+    },
+    "fields": {
+      "name": "الاسم",
+      "address": "العنوان",
+      "email": "البريد الإلكتروني",
+      "phoneOne": "الهاتف الأساسي",
+      "phoneTwo": "الهاتف الثانوي"
     }
+  },
+  "agencySettings": {
+    "fetchError": "حدث خطأ أثناء جلب بيانات الوكالة. حاول مرة أخرى.",
+    "title": "إعدادات الوكالة",
+    "generalInfo": "المعلومات العامة",
+    "logo": "الشعار",
+    "logoAlt": "شعار الوكالة",
+    "noLogo": "لا يوجد شعار محمل",
+    "uploadLogo": "تحميل الشعار",
+    "saveSuccess": "تم حفظ إعدادات الوكالة بنجاح.",
+    "saveError": "فشل في حفظ إعدادات الوكالة.",
+    "logoUploadError": "فشل في تحميل الشعار.",
+    "attachments": "المرفقات",
+    "noAttachments": "لا توجد مرفقات.",
+    "addAttachment": "إضافة مرفق",
+    "attachmentName": "اسم المرفق",
+    "attachmentNamePlaceholder": "أدخل اسمًا للمرفق",
+    "attachmentFile": "ملف المرفق",
+    "selectFile": "اختر ملف",
+    "addAttachmentBtn": "إضافة المرفق",
+    "attachmentAddedSuccess": "تم إضافة المرفق بنجاح.",
+    "attachmentAddedError": "فشل في إضافة المرفق.",
+    "attachmentRemovedSuccess": "تم إزالة المرفق بنجاح.",
+    "attachmentRemovedError": "فشل في إزالة المرفق."
   },
   "footer": {
     "company": "الشركة",
