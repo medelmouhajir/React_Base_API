@@ -15,7 +15,8 @@ const Contract = () => {
 
   const [reservation, setReservation] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [error, setError] = useState(null);
+    const apiBaseUrl = import.meta.env.VITE_API_URL || '';
 
   useEffect(() => {
     const fetchReservation = async () => {
@@ -140,7 +141,7 @@ const Contract = () => {
       {/* Print control buttons - these will be hidden during print */}
       <div className="contract-actions no-print">
         <button onClick={handleBack} className="btn-back">
-          {t('common.back')}
+          {t('common.goBack')}
         </button>
         <button onClick={handlePrint} className="btn-print">
           {t('common.print')}
@@ -152,7 +153,7 @@ const Contract = () => {
         {/* Header with logos and title */}
         <div className="row">
           <div className="col-4">
-            <img src={reservation.agency?.logo} width="220" alt="Agency Logo" />
+            <img src={apiBaseUrl + reservation.agency?.logoUrl} width="220" alt="Agency Logo" />
           </div>
           <div className="col-4">
             <h1 className="text-center">{reservation.agency?.name}</h1>

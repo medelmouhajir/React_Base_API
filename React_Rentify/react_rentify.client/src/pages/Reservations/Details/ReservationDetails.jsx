@@ -45,26 +45,38 @@ const ReservationDetails = () => {
     // Fetch reservation data
     useEffect(() => {
         const fetchReservationData = async () => {
+            setLoading(true);
             try {
-                setLoading(true);
+                // 1. Load reservation
                 const reservationData = await reservationService.getById(id);
                 setReservation(reservationData);
 
-                // Fetch invoice if it exists
-
-                const invoiceData = await invoiceService.getByReservationId(id);
-                setInvoice(invoiceData);
-
-                // Fetch payments for this invoice
-                if (invoiceData.payments) {
-                    setPayments(invoiceData.payments);
+                // 2. Try loading the invoice, but swallow 404
+                let invoiceData = null;
+                try {
+                    invoiceData = await invoiceService.getByReservationId(id);
+                    setInvoice(invoiceData);
+                    // 3. If you got payments back, set them
+                    if (invoiceData.payments) {
+                        setPayments(invoiceData.payments);
+                    }
+                } catch (invErr) {
+                    // If it's a 404, just leave invoiceData = null
+                    if (invErr.response?.status === 404) {
+                        console.log(`No invoice for reservation ${id}`);
+                        setInvoice(null);
+                        setPayments([]);       // or leave previous state / empty array
+                    } else {
+                        // Some other error — rethrow so your outer catch handles it
+                        throw invErr;
+                    }
                 }
-
-                setLoading(false);
             } catch (err) {
+                // Reservation load failure or non-404 invoice error
+                console.error('Error fetching reservation or invoice:', err);
                 setError('Failed to load reservation details');
+            } finally {
                 setLoading(false);
-                console.error('Error fetching reservation data:', err);
             }
         };
 
@@ -137,17 +149,18 @@ const ReservationDetails = () => {
 
     const handleAddPaymentSubmit = async (paymentData) => {
         try {
-            await invoiceService.addPayment({
+            await invoiceService.addPayment(invoice.id , {
                 ...paymentData,
                 invoiceId: invoice.id
             });
 
             // Refresh invoice and payments data
-            const updatedInvoice = await invoiceService.getInvoiceById(invoice.id);
+            const updatedInvoice = await invoiceService.getById(invoice.id);
             setInvoice(updatedInvoice);
 
-            const updatedPayments = await invoiceService.getPaymentsByInvoiceId(invoice.id);
-            setPayments(updatedPayments);
+            if (updatedInvoice.payments) {
+                setPayments(updatedInvoice.payments);
+            }
 
             setShowAddPaymentModal(false);
         } catch (err) {
@@ -199,7 +212,7 @@ const ReservationDetails = () => {
 
     const handleAddCustomerSubmit = async (customerId) => {
         try {
-            await reservationService.addCustomerToReservation(id, customerId);
+            await reservationService.addCustomerToReservation(id, customerId.id);
             // Refresh reservation data
             const updated = await reservationService.getById(id);
             setReservation(updated);
@@ -291,8 +304,8 @@ const ReservationDetails = () => {
                             <div className="status-item delivered">
                                 <span className="status-icon">✓</span>
                                 <span className="status-label">{t('reservation.status.delivered')}</span>
-                                <time dateTime={reservation.deliveryDate}>
-                                    {new Date(reservation.deliveryDate).toLocaleDateString()}
+                                <time dateTime={reservation.actualStartTime}>
+                                    {new Date(reservation.actualStartTime).toLocaleDateString()}
                                 </time>
                             </div>
                         )}
@@ -301,8 +314,8 @@ const ReservationDetails = () => {
                             <div className="status-item returned">
                                 <span className="status-icon">✓</span>
                                 <span className="status-label">{t('reservation.status.returned')}</span>
-                                <time dateTime={reservation.returnDate}>
-                                    {new Date(reservation.returnDate).toLocaleDateString()}
+                                <time dateTime={reservation.actualEndTime}>
+                                    {new Date(reservation.actualEndTime).toLocaleDateString()}
                                 </time>
                             </div>
                         )}
@@ -558,9 +571,9 @@ const ReservationDetails = () => {
                             <div key={payment.id} className="payment-item">
                                 <div className="payment-info">
                                     <span className="payment-date">
-                                        {new Date(payment.paymentDate).toLocaleDateString()}
+                                        {new Date(payment.paidAt).toLocaleDateString()}
                                     </span>
-                                    <span className="payment-method">{payment.paymentMethod}</span>
+                                    <span className="payment-method">{payment.method}</span>
                                 </div>
                                 <span className="payment-amount">
                                     {payment.amount.toLocaleString()} {invoice.currency}

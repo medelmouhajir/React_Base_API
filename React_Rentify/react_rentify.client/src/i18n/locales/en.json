@@ -27,7 +27,8 @@
     "details": "Details",
     "delete": "Delete",
     "clear": "Clear",
-    "goBack": "Go back"
+    "goBack": "Go back",
+    "print": "Print"
   },
   "landing": {
     "features": "Features",
@@ -221,7 +222,15 @@
       "depositAmount": "Deposit Amount",
       "additionalFees": "Additional Fees",
       "additionalFeesReason": "Reason for Additional Fees",
-      "deliveryNotes": "Delivery Notes"
+      "deliveryNotes": "Delivery Notes",
+      "odometerStart": "Starting Odometer",
+      "odometerEnd": "End Odometer",
+      "fuelLevel": "Fuel Level",
+      "returnDate": "Return Date",
+      "damageDescription": "Damage Description",
+      "additionalCharges": "Additional Charges",
+      "additionalChargesReason": "Reason for Additional Charges",
+      "returnNotes": "Return Notes"
     },
     "deliverCar": {
       "title": "Deliver Car",
@@ -230,6 +239,17 @@
       "conditionAndDeposit": "Condition & Deposit",
       "additionalInfo": "Additional Information",
       "submit": "Confirm Delivery"
+    },
+    "returnCar": {
+      "title": "Return Car",
+      "carDetails": "Car Details",
+      "odometerPlaceholder": "Enter end odometer reading",
+      "distanceDriven": "Distance Driven",
+      "hasDamage": "Has Damage?",
+      "damagePlaceholder": "Describe the damage",
+      "chargesReasonPlaceholder": "Reason for additional charges",
+      "notesPlaceholder": "Return notes",
+      "submit": "Submit"
     },
     "status": {
       "delivered": "Delivered",

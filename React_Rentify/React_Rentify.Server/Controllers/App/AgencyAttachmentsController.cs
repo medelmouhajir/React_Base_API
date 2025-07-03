@@ -56,7 +56,10 @@ namespace React_Rentify.Server.Controllers.App
                 }
 
                 // Create directory if it doesn't exist
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "agencies", id.ToString());
+                var uploadsFolder = Path.Combine(
+                    _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
+                    "uploads", "agencies", id.ToString());
+
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
@@ -237,7 +240,9 @@ namespace React_Rentify.Server.Controllers.App
                 }
 
                 // Create directory if it doesn't exist
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "agencies", id.ToString());
+                var uploadsFolder = Path.Combine(
+                    _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
+                    "uploads", "agencies", id.ToString());
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);

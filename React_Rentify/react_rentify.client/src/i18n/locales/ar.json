@@ -27,7 +27,8 @@
     "details": "تفاصيل",
     "delete": "حذف",
     "clear": "مسح",
-    "goBack": "رجوع"
+    "goBack": "رجوع",
+    "print": "طباعة"
   },
   "landing": {
     "features": "الميزات",
@@ -202,6 +203,17 @@
       "additionalInfo": "معلومات إضافية",
       "submit": "تأكيد التسليم"
     },
+    "returnCar": {
+      "title": "إرجاع السيارة",
+      "carDetails": "تفاصيل السيارة",
+      "odometerPlaceholder": "أدخل قراءة العداد عند الإرجاع",
+      "distanceDriven": "المسافة المقطوعة",
+      "hasDamage": "وجود أضرار؟",
+      "damagePlaceholder": "وصف الأضرار",
+      "chargesReasonPlaceholder": "سبب الرسوم الإضافية",
+      "notesPlaceholder": "ملاحظات الإرجاع",
+      "submit": "إرسال"
+    },
     "notFound": "الحجز غير موجود",
     "details": {
       "title": "تفاصيل الحجز"
@@ -218,7 +230,15 @@
       "depositAmount": "مبلغ الوديعة",
       "additionalFees": "رسوم إضافية",
       "additionalFeesReason": "سبب الرسوم الإضافية",
-      "deliveryNotes": "ملاحظات التسليم"
+      "deliveryNotes": "ملاحظات التسليم",
+      "odometerStart": "عداد البداية",
+      "odometerEnd": "عداد النهاية",
+      "fuelLevel": "مستوى الوقود",
+      "returnDate": "تاريخ الإرجاع",
+      "damageDescription": "وصف الأضرار",
+      "additionalCharges": "رسوم إضافية",
+      "additionalChargesReason": "سبب الرسوم الإضافية",
+      "returnNotes": "ملاحظات الإرجاع"
     },
     "status": {
       "delivered": "تم التسليم",

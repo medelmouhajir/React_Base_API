@@ -28,6 +28,7 @@ const AgencySettings = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const apiBaseUrl = import.meta.env.VITE_API_URL || '';
 
     // File upload states
     const [logoFile, setLogoFile] = useState(null);
@@ -297,7 +298,7 @@ const AgencySettings = () => {
                     <div className="logo-container">
                         {formData.logoUrl ? (
                             <img
-                                src={formData.logoUrl}
+                                src={apiBaseUrl + formData.logoUrl}
                                 alt={t('agencySettings.logoAlt')}
                                 className="agency-logo-preview"
                             />

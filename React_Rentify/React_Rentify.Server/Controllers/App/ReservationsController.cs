@@ -10,6 +10,7 @@ using React_Rentify.Server.Models.Invoices;
 using React_Rentify.Server.Models.Reservations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -455,6 +456,113 @@ namespace React_Rentify.Server.Controllers.App
         }
 
 
+        [HttpPost("{id:guid}/customers/{CustomerId:guid}")]
+        public async Task<IActionResult> AddCustomerToReservation(Guid id, Guid CustomerId)
+        {
+            _logger.LogInformation("Adding customer {CustomerId} to reservation {ReservationId}", CustomerId, id);
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid AddCustomerToReservationDto for Reservation {ReservationId}", id);
+                return BadRequest(ModelState);
+            }
+
+            // Verify reservation exists
+            var reservation = await _context.Set<Reservation>()
+                .Include(r => r.Reservation_Customers)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                _logger.LogWarning("Reservation with Id {ReservationId} not found", id);
+                return NotFound(new { message = $"Reservation with Id '{id}' not found." });
+            }
+
+            // Verify customer exists
+            var customerExists = await _context.Set<Customer>().AnyAsync(c => c.Id == CustomerId);
+            if (!customerExists)
+            {
+                _logger.LogWarning("Customer with Id {CustomerId} does not exist", CustomerId);
+                return BadRequest(new { message = $"Customer with Id '{CustomerId}' does not exist." });
+            }
+
+            // Check if customer is already associated with this reservation
+            var existingLink = await _context.Set<Reservation_Customer>()
+                .AnyAsync(rc => rc.ReservationId == id && rc.CustomerId == CustomerId);
+
+            if (existingLink)
+            {
+                _logger.LogWarning("Customer {CustomerId} is already associated with Reservation {ReservationId}",
+                    CustomerId, id);
+                return BadRequest(new { message = "This customer is already associated with the reservation." });
+            }
+
+            // Add the new customer link
+            var newLink = new Reservation_Customer
+            {
+                Id = Guid.NewGuid(),
+                CustomerId = CustomerId,
+                ReservationId = id,
+                Date_Added = DateTime.UtcNow
+            };
+
+            _context.Set<Reservation_Customer>().Add(newLink);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Added customer {CustomerId} to reservation {ReservationId}",
+                CustomerId, id);
+
+            return Ok();
+        }
+
+        [HttpDelete("{id:guid}/customers/{customerId:guid}")]
+        public async Task<IActionResult> RemoveCustomerFromReservation(Guid id, Guid customerId)
+        {
+            _logger.LogInformation("Removing customer {CustomerId} from reservation {ReservationId}",
+                customerId, id);
+
+            // Verify reservation exists
+            var reservation = await _context.Set<Reservation>()
+                .Include(r => r.Reservation_Customers)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                _logger.LogWarning("Reservation with Id {ReservationId} not found", id);
+                return NotFound(new { message = $"Reservation with Id '{id}' not found." });
+            }
+
+            // Find the customer link
+            var customerLink = await _context.Set<Reservation_Customer>()
+                .FirstOrDefaultAsync(rc => rc.ReservationId == id && rc.CustomerId == customerId);
+
+            if (customerLink == null)
+            {
+                _logger.LogWarning("Customer {CustomerId} is not associated with Reservation {ReservationId}",
+                    customerId, id);
+                return NotFound(new { message = "This customer is not associated with the reservation." });
+            }
+
+            // Check if this is the last customer (a reservation must have at least one customer)
+            var customerCount = await _context.Set<Reservation_Customer>()
+                .CountAsync(rc => rc.ReservationId == id);
+
+            if (customerCount <= 1)
+            {
+                _logger.LogWarning("Cannot remove the last customer from Reservation {ReservationId}", id);
+                return BadRequest(new { message = "Cannot remove the last customer from the reservation. A reservation must have at least one customer." });
+            }
+
+            // Remove the customer link
+            _context.Set<Reservation_Customer>().Remove(customerLink);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Removed customer {CustomerId} from reservation {ReservationId}",
+                customerId, id);
+
+            return NoContent();
+        }
+
         [HttpGet("getAvailableCars")]
         public async Task<IActionResult> GetAvailableCars(
             [FromQuery] DateTime start,
@@ -671,7 +779,7 @@ namespace React_Rentify.Server.Controllers.App
             return Ok();
         }
         [HttpPost("{id:guid}/return")]
-        public async Task<IActionResult> ReservationReturnCar(Guid id , [FromBody] ReservationDeliverCarDTO dto)
+        public async Task<IActionResult> ReservationReturnCar(Guid id , [FromBody] ReservationReturnCarDTO dto)
         {
             _logger.LogInformation("UDeliver car for reservation {ReservationId}", id);
 
@@ -695,9 +803,9 @@ namespace React_Rentify.Server.Controllers.App
 
             // Update the dates
             reservation.Status = "Completed";
-            reservation.ActualStartTime = dto.DeliveryDate.ToUniversalTime();
-            reservation.OdometerStart = dto.OdometerStart;
-            reservation.FuelLevelStart = 100;
+            reservation.ActualEndTime = dto.ReturnDate.ToUniversalTime();
+            reservation.OdometerEnd = dto.OdometerEnd;
+            reservation.FuelLevelEnd = 100;
 
             _context.Entry(reservation).State = EntityState.Modified;
 
@@ -876,6 +984,20 @@ namespace React_Rentify.Server.Controllers.App
             public int AdditionalFees { get; set; }
             public string? AdditionalFeesReason { get; set; }
         }
+
+        public class ReservationReturnCarDTO
+        {
+            public int OdometerEnd { get; set; }
+            public string FuelLevel { get; set; }
+            public string ReturnNotes { get; set; }
+            public DateTime ReturnDate { get; set; }
+
+            public bool HasDamage { get; set; }
+            public string? DamageDescription { get; set; }
+            public int AdditionalCharges { get; set; }
+            public string? AdditionalChargesReason { get; set; }
+        }
+
         #endregion
     }
 }

@@ -80,6 +80,7 @@ export const reservationService = {
     // Method to return a car (existing method - for reference)
     async returnCar(reservationId, returnData) {
         try {
+            console.log(returnData);
             const response = await apiClient.post(`/reservations/${reservationId}/return`, returnData);
             console.log(`✅ Successfully returned car for reservation ${reservationId}`);
             return response.data;
@@ -105,6 +106,27 @@ export const reservationService = {
             return response.data;
         } catch (error) {
             console.error(`❌ Error fetching reservations for customer ${customerId}:`, error);
+            throw error;
+        }
+    },
+
+    async addCustomerToReservation(reservationId, customerId) {
+        try {
+            console.log(customerId);
+            const response = await apiClient.post(`/reservations/${reservationId}/customers/${customerId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error adding customer to reservation ${reservationId}:`, error);
+            throw error;
+        }
+    },
+
+    async removeCustomerFromReservation(reservationId, customerId) {
+        try {
+            const response = await apiClient.delete(`/reservations/${reservationId}/customers/${customerId}`);
+            return response.status === 204;
+        } catch (error) {
+            console.error(`❌ Error removing customer from reservation ${reservationId}:`, error);
             throw error;
         }
     },

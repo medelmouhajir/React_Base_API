@@ -66,6 +66,7 @@ export const invoiceService = {
 
     async addPayment(invoiceId, paymentData) {
         try {
+            console.log(paymentData);
             const response = await apiClient.post(`/invoices/${invoiceId}/payments`, paymentData);
             return response.data;
         } catch (error) {
