@@ -20,6 +20,9 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const initializeAuth = async () => {
             try {
+                // Add a small delay to ensure all components are loaded
+                await new Promise(resolve => setTimeout(resolve, 100));
+
                 // Check for normal token
                 const token = localStorage.getItem('authToken');
                 if (token) {
@@ -34,8 +37,11 @@ export const AuthProvider = ({ children }) => {
                 const expiresAt = urlParams.get('expiresAt');
 
                 if (googleToken && expiresAt) {
+                    // Decode the token if it was URL encoded
+                    const decodedToken = decodeURIComponent(googleToken);
+
                     // Store the token
-                    localStorage.setItem('authToken', googleToken);
+                    localStorage.setItem('authToken', decodedToken);
                     localStorage.setItem('tokenExpiry', expiresAt);
 
                     // Clean the URL
@@ -47,7 +53,7 @@ export const AuthProvider = ({ children }) => {
                 }
             } catch (error) {
                 console.error('Auth initialization error:', error);
-                // Clear invalid token
+                // Clear invalid tokens
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('tokenExpiry');
             } finally {

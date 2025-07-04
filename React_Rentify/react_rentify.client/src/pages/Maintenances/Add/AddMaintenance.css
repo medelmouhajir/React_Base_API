@@ -1,56 +1,92 @@
-/*---------------------------------------------
-  Theme Variables
+﻿/*---------------------------------------------
+  Theme Variables - Dark/Light Mode Support
 ---------------------------------------------*/
 :root {
+    /* Light theme (default) */
     --bg-color: #ffffff;
+    --card-bg: #ffffff;
     --text-color: #111827;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --placeholder-color: #9ca3af;
     --input-bg: #f9fafb;
     --input-text: #111827;
-    --border-color: #d1d5db;
-    --placeholder-color: #6b7280;
-    --primary-color: #4a90e2;
-    --primary-hover: #3b78c3;
-    --error-bg: #f8d7da;
+    --input-border: #d1d5db;
+    --input-focus-border: #3b82f6;
+    --input-focus-shadow: rgba(59, 130, 246, 0.25);
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-active: #1e40af;
+    --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
+    --secondary-active: #374151;
+    --error-bg: #fee2e2;
     --error-text: #b91c1c;
-    --btn-secondary-bg: transparent;
-    --btn-secondary-text: #4a4a4a;
-    --btn-secondary-border: #d1d5db;
+    --error-border: #ef4444;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --section-bg: #f9fafb;
+    --section-border: #e5e7eb;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --transition-speed: 0.2s;
+    /* Touch targets */
+    --input-height: 42px;
+    --control-radius: 0.375rem;
 }
 
-[data-theme="dark"] {
-    --bg-color: #1f2937;
+/* Dark theme */
+.dark {
+    --bg-color: #111827;
+    --card-bg: #1f2937;
     --text-color: #f9fafb;
+    --text-secondary: #d1d5db;
+    --border-color: #374151;
+    --placeholder-color: #9ca3af;
     --input-bg: #374151;
     --input-text: #f9fafb;
-    --border-color: #4b5563;
-    --placeholder-color: #9ca3af;
-    --primary-color: #2563eb;
-    --primary-hover: #1e40af;
-    --error-bg: #78191f;
+    --input-border: #4b5563;
+    --input-focus-border: #60a5fa;
+    --input-focus-shadow: rgba(96, 165, 250, 0.25);
+    --primary-color: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-active: #2563eb;
+    --secondary-color: #9ca3af;
+    --secondary-hover: #d1d5db;
+    --secondary-active: #f9fafb;
+    --error-bg: #7f1d1d;
     --error-text: #fca5a5;
-    --btn-secondary-bg: transparent;
-    --btn-secondary-text: #d1d5db;
-    --btn-secondary-border: #4b5563;
+    --error-border: #ef4444;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --section-bg: #1e293b;
+    --section-border: #374151;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
 }
 
 /*---------------------------------------------
-  Container & Title
+  Container & Page Layout
 ---------------------------------------------*/
 .addMaintenance-container {
-    max-width: 600px;
-    margin: 2rem auto;
+    max-width: 800px;
+    margin: 0 auto 2rem;
     padding: 1.5rem;
-    background-color: var(--bg-color);
+    background-color: var(--card-bg);
     color: var(--text-color);
     border-radius: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-md);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
 .addMaintenance-title {
     font-size: 1.75rem;
     font-weight: 600;
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
 }
 
 /*---------------------------------------------
@@ -59,11 +95,31 @@
 .addMaintenance-error {
     background-color: var(--error-bg);
     color: var(--error-text);
-    padding: 0.75rem 1rem;
+    padding: 1rem;
     border-radius: 0.375rem;
-    font-size: 0.9rem;
-    text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--error-border);
+    font-size: 0.9375rem;
+}
+
+/*---------------------------------------------
+  Form Sections
+---------------------------------------------*/
+.form-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: var(--section-bg);
+    border-radius: 0.5rem;
+    border: 1px solid var(--section-border);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: var(--text-color);
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 /*---------------------------------------------
@@ -72,126 +128,561 @@
 .addMaintenance-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
-/*---------------------------------------------
-  Form Group
----------------------------------------------*/
-.form-group {
+.form-row {
     display: flex;
-    flex-direction: column;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
+.form-group {
+    flex: 1;
+    min-width: 250px;
+    margin-bottom: 1.25rem;
+}
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    /*---------------------------------------------
+  Form Controls - Inputs, Labels, etc.
+---------------------------------------------*/
     .form-group label {
+        display: block;
         margin-bottom: 0.5rem;
-        font-size: 0.95rem;
         font-weight: 500;
         color: var(--text-color);
     }
 
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        padding: 0.75rem 1rem;
-        font-size: 0.95rem;
-        background-color: var(--input-bg);
-        color: var(--input-text);
-        border: 1px solid var(--border-color);
-        border-radius: 0.375rem;
-        transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+.checkbox-label {
+    margin-bottom: 0 !important;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--input-border);
+    border-radius: var(--control-radius);
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    font-size: 0.9375rem;
+    min-height: var(--input-height);
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+    input::placeholder,
+    textarea::placeholder,
+    select::placeholder {
+        color: var(--placeholder-color);
     }
 
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: var(--placeholder-color);
-        }
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: var(--input-focus-border);
+        box-shadow: 0 0 0 3px var(--input-focus-shadow);
+    }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
 
-/*---------------------------------------------
-  Checkbox Group
----------------------------------------------*/
 .checkbox-group {
-    flex-direction: row;
+    margin-top: 0.75rem;
+}
+
+.checkbox-container {
+    display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-    .checkbox-group input {
-        width: 1rem;
-        height: 1rem;
-    }
+input[type="checkbox"] {
+    width: 1.125rem;
+    height: 1.125rem;
+    margin: 0;
+    cursor: pointer;
+}
+
+.form-group.has-error input,
+.form-group.has-error select,
+.form-group.has-error textarea {
+    border-color: var(--error-border);
+    background-color: rgba(239, 68, 68, 0.05);
+}
+
+.error-message {
+    color: var(--error-text);
+    font-size: 0.875rem;
+    margin-top: 0.375rem;
+}
 
 /*---------------------------------------------
-  Form Actions (Buttons)
+  Car Selection
+---------------------------------------------*/
+.car-selection-controls {
+    margin-bottom: 1.25rem;
+}
+
+.search-filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.search-container {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding-left: 2.25rem !important;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.filters-container {
+    display: flex;
+    gap: 0.75rem;
+    flex: 2;
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    flex: 1;
+    min-width: 150px;
+}
+
+.car-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+    .car-grid.has-error {
+        border: 1px solid var(--error-border);
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+    }
+
+.car-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+    .car-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--primary-color);
+    }
+
+    .car-card:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px var(--input-focus-shadow);
+    }
+
+    .car-card.selected {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px var(--primary-color);
+    }
+
+        .car-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+.car-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.car-license-plate {
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--text-color);
+}
+
+.car-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    text-transform: capitalize;
+}
+
+    .car-status.available {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+    }
+
+    .car-status.rented {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+    }
+
+    .car-status.maintenance {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--error-text);
+    }
+
+.car-card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.car-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.car-model {
+    font-weight: 500;
+    font-size: 0.9375rem;
+}
+
+.car-year {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.car-color {
+    display: flex;
+    align-items: center;
+}
+
+.color-dot {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+}
+
+.no-cars-found {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    background-color: var(--input-bg);
+    border-radius: 0.375rem;
+    border: 1px dashed var(--border-color);
+}
+
+/*---------------------------------------------
+  Special Input Containers
+---------------------------------------------*/
+.date-input-container {
+    position: relative;
+    display: flex;
+}
+
+    .date-input-container input {
+        width: 100%;
+        padding-right: 2.5rem;
+    }
+
+.calendar-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+}
+
+    .calendar-icon:hover {
+        color: var(--primary-color);
+    }
+
+.currency-input-container {
+    position: relative;
+}
+
+    .currency-input-container input {
+        padding-left: 2rem;
+    }
+
+.currency-symbol {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/*---------------------------------------------
+  Form Actions
 ---------------------------------------------*/
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 0.75rem;
+    gap: 1rem;
     margin-top: 1rem;
 }
 
 .btn-primary,
 .btn-secondary {
-    font-size: 0.95rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--control-radius);
     font-weight: 500;
-    padding: 0.75rem 1.25rem;
-    border-radius: 0.375rem;
+    font-size: 0.9375rem;
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    transition: all var(--transition-speed);
+    min-height: var(--input-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Primary Button */
 .btn-primary {
     background-color: var(--primary-color);
-    color: #ffffff;
+    color: white;
     border: none;
 }
-
-    .btn-primary:disabled {
-        background-color: rgba(0, 0, 0, 0.15);
-        cursor: not-allowed;
-    }
 
     .btn-primary:hover:not(:disabled) {
         background-color: var(--primary-hover);
     }
 
-/* Secondary Button */
+    .btn-primary:active:not(:disabled) {
+        background-color: var(--primary-active);
+    }
+
 .btn-secondary {
-    background-color: var(--btn-secondary-bg);
-    color: var(--btn-secondary-text);
-    border: 1px solid var(--btn-secondary-border);
+    background-color: transparent;
+    color: var(--secondary-color);
+    border: 1px solid var(--border-color);
 }
 
-    .btn-secondary:hover {
-        background-color: rgba(0, 0, 0, 0.05);
+    .btn-secondary:hover:not(:disabled) {
+        background-color: var(--input-bg);
+        color: var(--secondary-hover);
+    }
+
+    .btn-secondary:active:not(:disabled) {
+        background-color: var(--border-color);
+        color: var(--secondary-active);
+    }
+
+    .btn-primary:disabled,
+    .btn-secondary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 
 /*---------------------------------------------
-  Responsive Adjustments
+  Touch Device Optimizations
+---------------------------------------------*/
+@media (hover: none) {
+    /* Increased tap target sizes */
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea,
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.75rem 1rem;
+        min-height: 48px;
+        font-size: 1rem;
+    }
+
+    .car-card {
+        padding: 1.25rem;
+    }
+
+        /* Better touch feedback */
+        .car-card:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+    .btn-primary:active:not(:disabled),
+    .btn-secondary:active:not(:disabled) {
+        transform: scale(0.98);
+    }
+
+    .calendar-icon,
+    .currency-symbol {
+        font-size: 1.125rem;
+    }
+
+    /* Provide more space for touch interactions */
+    .car-grid {
+        gap: 1.25rem;
+    }
+
+    .search-filter-container {
+        gap: 1.25rem;
+    }
+
+    .filters-container {
+        gap: 1rem;
+    }
+
+    /* Enhanced focus states for touch */
+    input:focus,
+    select:focus,
+    textarea:focus,
+    .car-card:focus {
+        box-shadow: 0 0 0 4px var(--input-focus-shadow);
+    }
+}
+
+/*---------------------------------------------
+  Responsive Design
 ---------------------------------------------*/
 @media (max-width: 768px) {
     .addMaintenance-container {
-        padding: 1rem;
-        margin: 1rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        border-radius: 0.375rem;
+    }
+
+    .addMaintenance-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .form-section {
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .form-group {
+        min-width: 100%;
+    }
+
+    .search-filter-container {
+        flex-direction: column;
+    }
+
+    .filters-container {
+        flex-direction: column;
+    }
+
+    .car-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
     }
 
     .form-actions {
         flex-direction: column-reverse;
-        align-items: stretch;
     }
 
     .btn-primary,
     .btn-secondary {
         width: 100%;
-        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .addMaintenance-container {
+        padding: 1rem;
+    }
+
+    .form-section {
+        padding: 1rem;
+    }
+
+    .addMaintenance-title {
+        font-size: 1.375rem;
+    }
+}
+
+/*---------------------------------------------
+  Animation & Motion
+---------------------------------------------*/
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.car-card {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .car-card,
+    .car-card:hover,
+    .car-card:active,
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-secondary:hover,
+    .btn-secondary:active,
+    input,
+    select,
+    textarea,
+    * {
+        transition-duration: 0.001ms !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
     }
 }

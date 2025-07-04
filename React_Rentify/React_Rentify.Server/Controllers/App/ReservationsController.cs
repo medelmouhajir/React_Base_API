@@ -41,6 +41,7 @@ namespace React_Rentify.Server.Controllers.App
             var reservations = await _context.Set<Reservation>()
                 .Include(r => r.Agency)
                 .Include(r => r.Car)
+                .ThenInclude(x=> x.Car_Model)
                 .Include(r => r.Reservation_Customers)
                 .Include(r => r.Invoice)
                 .ToListAsync();
@@ -166,6 +167,7 @@ namespace React_Rentify.Server.Controllers.App
                 var reservations = await _context.Set<Reservation>()
                     .Where(r => r.AgencyId == agencyId)
                     .Include(r => r.Car)
+                    .ThenInclude(x=> x.Car_Model)
                     .Include(r => r.Reservation_Customers)
                     .Include(r => r.Invoice)
                     .ToListAsync();
@@ -201,6 +203,7 @@ namespace React_Rentify.Server.Controllers.App
                 .Where(r => r.Reservation_Customers.Any(x => x.CustomerId == customerId))
                 .Include(r => r.Agency)
                 .Include(r => r.Car)
+                .ThenInclude(x => x.Car_Model)
                 .Include(r => r.Invoice)
                 .ToListAsync();
 
@@ -290,8 +293,8 @@ namespace React_Rentify.Server.Controllers.App
             _logger.LogInformation("Created reservation {ReservationId} with {CustomerCount} customers",
                 reservation.Id, dto.CustomersId.Count);
 
-            var resultDto = MapToDto(reservation);
-            return CreatedAtAction(nameof(GetReservationById), new { id = reservation.Id }, resultDto);
+
+            return Ok();
         }
 
         /// <summary>
@@ -874,6 +877,7 @@ namespace React_Rentify.Server.Controllers.App
                 FuelLevelEnd = r.FuelLevelEnd,
                 PickupLocation = r.PickupLocation,
                 DropoffLocation = r.DropoffLocation,
+                Model = r.Car.Car_Model.Name,
                 Invoice = r.Invoice == null
                     ? null
                     : new InvoiceDto
@@ -893,6 +897,7 @@ namespace React_Rentify.Server.Controllers.App
             public string? AgencyName { get; set; }
             public Guid CarId { get; set; }
             public string? CarLicensePlate { get; set; }
+            public string? Model { get; set; }
 
             public List<Customer>? Customers { get; set; }
             public DateTime StartDate { get; set; }

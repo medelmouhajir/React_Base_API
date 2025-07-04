@@ -1,8 +1,10 @@
 // src/App.jsx
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
+
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import './App.css';
 
 // Contexts
@@ -84,6 +86,7 @@ const AgencySettings = lazy(() => import('./pages/Settings/Agency/AgencySettings
 //const AgenciesPage = lazy(() => import('./pages/admin/Agencies'));
 //const StaffPage = lazy(() => import('./pages/admin/Staff'));
 //const SearchPage = lazy(() => import('./pages/Search'));
+
 
 function App() {
     // Initialize RTL direction

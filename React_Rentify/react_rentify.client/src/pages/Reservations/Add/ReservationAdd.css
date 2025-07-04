@@ -1,33 +1,80 @@
-/* Container */
+/* src/pages/Reservations/Add/ReservationAdd.css */
+
+/* Container - Support for light/dark mode */
 .reservationadd-container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1.75rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    background-color: #fff;
+    border-radius: var(--radius-lg, 0.5rem);
+    transition: all var(--transition-normal, 250ms ease);
 }
 
+    .reservationadd-container.light {
+        background-color: var(--card-bg, #ffffff);
+        color: var(--text-primary, #111827);
+        box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+        border: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .reservationadd-container.dark {
+        background-color: var(--card-bg, #1e293b);
+        color: var(--text-primary, #f3f4f6);
+        box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1));
+        border: 1px solid var(--border-color, #475569);
+    }
+
+/* Title */
 .reservationadd-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 600;
     text-align: center;
     margin-bottom: 1rem;
-    color: #333;
+    transition: color var(--transition-normal, 250ms ease);
+}
+
+.light .reservationadd-title {
+    color: var(--text-primary, #111827);
+}
+
+.dark .reservationadd-title {
+    color: var(--text-primary, #f3f4f6);
 }
 
 /* Error Message */
 .reservationadd-error {
-    color: #d9534f;
-    background-color: #f8d7da;
     padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    font-size: 1rem;
+    border-radius: var(--radius-md, 0.375rem);
+    font-size: 0.875rem;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(217, 83, 79, 0.1);
+    transition: all var(--transition-normal, 250ms ease);
+    animation: slideInDown 0.3s ease forwards;
+}
+
+.light .reservationadd-error {
+    color: var(--danger, #ef4444);
+    background-color: var(--danger-light, #fee2e2);
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+}
+
+.dark .reservationadd-error {
+    color: var(--danger, #ef4444);
+    background-color: var(--danger-light, rgba(239, 68, 68, 0.2));
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Form */
@@ -37,147 +84,608 @@
     gap: 1.5rem;
 }
 
-/* Form Group */
-.form-group {
-    display: flex;
-    flex-direction: column;
-    transition: all 0.2s ease;
-}
-
-    .form-group label {
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
-        font-weight: 500;
-        color: #333;
-    }
-
-    .form-group input,
-    .form-group select {
-        padding: 0.875rem 1rem;
-        font-size: 1rem;
-        border: 1px solid #ddd;
-        border-radius: 0.5rem;
-        transition: all 0.3s;
-        background-color: #f9f9f9;
-    }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #4a90e2;
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
-            background-color: #fff;
-        }
-
-        .form-group input:hover,
-        .form-group select:hover {
-            border-color: #aaa;
-        }
-
-/* Multiple Customers Section */
-.customers-section {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.customers-header {
+/* Section Header */
+.section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid;
+    transition: border-color var(--transition-normal, 250ms ease);
 }
 
-.customers-title {
-    font-size: 1.1rem;
+.light .section-header {
+    border-color: var(--border-color, #e5e7eb);
+}
+
+.dark .section-header {
+    border-color: var(--border-color, #475569);
+}
+
+.section-title {
+    font-size: 1.125rem;
     font-weight: 500;
-    color: #333;
+    transition: color var(--transition-normal, 250ms ease);
+}
+
+.light .section-title {
+    color: var(--text-primary, #111827);
+}
+
+.dark .section-title {
+    color: var(--text-primary, #f3f4f6);
+}
+
+/* Form Row (for horizontal layout) */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    width: 100%;
+}
+
+/* Form Group */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    transition: all var(--transition-normal, 250ms ease);
+    margin-bottom: 0.5rem;
+}
+
+    .form-group label {
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color var(--transition-normal, 250ms ease);
+    }
+
+.light .form-group label {
+    color: var(--text-primary, #111827);
+}
+
+.dark .form-group label {
+    color: var(--text-primary, #f3f4f6);
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border-radius: var(--radius-md, 0.375rem);
+    transition: all var(--transition-normal, 250ms ease);
+    outline: none;
+}
+
+.light .form-group input,
+.light .form-group select {
+    border: 1px solid var(--border-color, #e5e7eb);
+    background-color: var(--bg-color, #ffffff);
+    color: var(--text-primary, #111827);
+}
+
+.dark .form-group input,
+.dark .form-group select {
+    border: 1px solid var(--border-color, #475569);
+    background-color: var(--card-nested-bg, #334155);
+    color: var(--text-primary, #f3f4f6);
+}
+
+.form-group input:hover,
+.form-group select:hover {
+    transition: all var(--transition-fast, 150ms ease);
+}
+
+.light .form-group input:hover,
+.light .form-group select:hover {
+    border-color: var(--neutral-dark, #4b5563);
+}
+
+.dark .form-group input:hover,
+.dark .form-group select:hover {
+    border-color: var(--neutral-light, #f3f4f6);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    transition: all var(--transition-fast, 150ms ease);
+}
+
+.light .form-group input:focus,
+.light .form-group select:focus {
+    border-color: var(--primary-500, #0ea5e9);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+.dark .form-group input:focus,
+.dark .form-group select:focus {
+    border-color: var(--primary-400, #38bdf8);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+/* Search Components */
+.search-container {
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 2.5rem;
+    border-radius: var(--radius-md, 0.375rem);
+    font-size: 0.875rem;
+    transition: all var(--transition-normal, 250ms ease);
+}
+
+.light .search-input {
+    border: 1px solid var(--border-color, #e5e7eb);
+    background-color: var(--bg-color, #ffffff);
+    color: var(--text-primary, #111827);
+}
+
+.dark .search-input {
+    border: 1px solid var(--border-color, #475569);
+    background-color: var(--card-nested-bg, #334155);
+    color: var(--text-primary, #f3f4f6);
+}
+
+.clear-search {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color var(--transition-fast, 150ms ease);
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.light .clear-search {
+    color: var(--neutral-dark, #4b5563);
+}
+
+.dark .clear-search {
+    color: var(--neutral-light, #d1d5db);
+}
+
+.light .clear-search:hover {
+    color: var(--danger, #ef4444);
+}
+
+.dark .clear-search:hover {
+    color: var(--danger, #ef4444);
+}
+
+/* Advanced Search Container */
+.advanced-search-container {
+    background-color: transparent;
+    border-radius: var(--radius-md, 0.375rem);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid;
+    transition: all var(--transition-normal, 250ms ease);
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.light .advanced-search-container {
+    border-color: var(--border-color, #e5e7eb);
+    background-color: var(--bg-offset, #f9fafb);
+}
+
+.dark .advanced-search-container {
+    border-color: var(--border-color, #475569);
+    background-color: var(--card-nested-bg, #334155);
+}
+
+.advanced-search-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+/* Toggle Buttons */
+.toggle-advanced-search,
+.toggle-section {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: var(--radius-full, 9999px);
+    cursor: pointer;
+    transition: all var(--transition-fast, 150ms ease);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.light .toggle-advanced-search,
+.light .toggle-section {
+    background-color: var(--primary-50, #f0f9ff);
+    color: var(--primary-600, #0284c7);
+    border: 1px solid var(--primary-200, #bae6fd);
+}
+
+.dark .toggle-advanced-search,
+.dark .toggle-section {
+    background-color: var(--primary-900, #0c4a6e);
+    color: var(--primary-300, #7dd3fc);
+    border: 1px solid var(--primary-700, #0369a1);
+}
+
+.light .toggle-advanced-search:hover,
+.light .toggle-section:hover {
+    background-color: var(--primary-100, #e0f2fe);
+    color: var(--primary-700, #0369a1);
+}
+
+.dark .toggle-advanced-search:hover,
+.dark .toggle-section:hover {
+    background-color: var(--primary-800, #075985);
+    color: var(--primary-200, #bae6fd);
+}
+
+/* Car Selection */
+.car-selection-section {
+    margin-bottom: 1.5rem;
+}
+
+.cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.car-card {
+    border-radius: var(--radius-md, 0.375rem);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--transition-normal, 250ms ease);
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+}
+
+.light .car-card {
+    background-color: var(--bg-color, #ffffff);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+}
+
+.dark .car-card {
+    background-color: var(--card-nested-bg, #334155);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.1));
+}
+
+.car-card:hover {
+    transform: translateY(-2px);
+}
+
+.light .car-card:hover {
+    box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
+}
+
+.dark .car-card:hover {
+    box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1));
+}
+
+.car-card.selected {
+    transform: translateY(-2px);
+}
+
+.light .car-card.selected {
+    border-color: var(--primary-500, #0ea5e9);
+    box-shadow: 0 0 0 1px var(--primary-500, #0ea5e9);
+}
+
+.dark .car-card.selected {
+    border-color: var(--primary-400, #38bdf8);
+    box-shadow: 0 0 0 1px var(--primary-400, #38bdf8);
+}
+
+.car-card-header {
+    padding: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid;
+}
+
+.light .car-card-header {
+    background-color: var(--bg-offset, #f9fafb);
+    border-color: var(--border-color, #e5e7eb);
+}
+
+.dark .car-card-header {
+    background-color: var(--card-bg, #1e293b);
+    border-color: var(--border-color, #475569);
+}
+
+.license-plate {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.availability-badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-full, 9999px);
+    font-size: 0.675rem;
+    font-weight: 500;
+}
+
+    .availability-badge.available {
+        background-color: var(--success-light, #e6f6ec);
+        color: var(--success, #10b981);
+    }
+
+    .availability-badge.unavailable {
+        background-color: var(--danger-light, #fee2e2);
+        color: var(--danger, #ef4444);
+    }
+
+.car-card-body {
+    padding: 0.75rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.car-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.car-model {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.car-year {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #4b5563);
+}
+
+.car-price {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+}
+
+.price-value {
+    font-weight: 600;
+}
+
+.car-card-footer {
+    padding: 0.75rem;
+    border-top: 1px solid;
+    display: flex;
+    justify-content: center;
+}
+
+.light .car-card-footer {
+    border-color: var(--border-color, #e5e7eb);
+}
+
+.dark .car-card-footer {
+    border-color: var(--border-color, #475569);
+}
+
+.btn-select-car {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: var(--radius-md, 0.375rem);
+    transition: all var(--transition-fast, 150ms ease);
+    cursor: pointer;
+}
+
+.light .btn-select-car {
+    background-color: var(--bg-offset, #f9fafb);
+    color: var(--text-primary, #111827);
+    border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.dark .btn-select-car {
+    background-color: var(--card-bg, #1e293b);
+    color: var(--text-primary, #f3f4f6);
+    border: 1px solid var(--border-color, #475569);
+}
+
+.light .car-card.selected .btn-select-car {
+    background-color: var(--primary-500, #0ea5e9);
+    color: white;
+    border-color: var(--primary-600, #0284c7);
+}
+
+.dark .car-card.selected .btn-select-car {
+    background-color: var(--primary-600, #0284c7);
+    color: white;
+    border-color: var(--primary-700, #0369a1);
+}
+
+.no-cars-message {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary, #4b5563);
+    background-color: var(--bg-offset, #f9fafb);
+    border-radius: var(--radius-md, 0.375rem);
+    font-size: 0.875rem;
+}
+
+/* Customers Section */
+.customers-section {
+    margin-bottom: 1rem;
+}
+
+.add-customer-container {
+    margin-bottom: 1rem;
+}
+
+.customer-selector-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.customer-selector {
+    flex-grow: 1;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border-radius: var(--radius-md, 0.375rem);
+    transition: all var(--transition-normal, 250ms ease);
+}
+
+.light .customer-selector {
+    border: 1px solid var(--border-color, #e5e7eb);
+    background-color: var(--bg-color, #ffffff);
+    color: var(--text-primary, #111827);
+}
+
+.dark .customer-selector {
+    border: 1px solid var(--border-color, #475569);
+    background-color: var(--card-nested-bg, #334155);
+    color: var(--text-primary, #f3f4f6);
+}
+
+.btn-add-customer {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--radius-md, 0.375rem);
+    transition: all var(--transition-fast, 150ms ease);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.light .btn-add-customer {
+    background-color: var(--primary-500, #0ea5e9);
+    color: white;
+    border: 1px solid var(--primary-600, #0284c7);
+}
+
+.dark .btn-add-customer {
+    background-color: var(--primary-600, #0284c7);
+    color: white;
+    border: 1px solid var(--primary-700, #0369a1);
+}
+
+.light .btn-add-customer:hover {
+    background-color: var(--primary-600, #0284c7);
+}
+
+.dark .btn-add-customer:hover {
+    background-color: var(--primary-700, #0369a1);
+}
+
+.btn-add-customer:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .customers-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    max-height: 300px;
+    gap: 0.5rem;
+    max-height: 250px;
     overflow-y: auto;
-    padding-right: 0.5rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-md, 0.375rem);
+    border: 1px solid;
+    transition: all var(--transition-normal, 250ms ease);
+}
+
+.light .customers-list {
+    border-color: var(--border-color, #e5e7eb);
+    background-color: var(--bg-offset, #f9fafb);
+}
+
+.dark .customers-list {
+    border-color: var(--border-color, #475569);
+    background-color: var(--card-nested-bg, #334155);
 }
 
 .customer-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem;
-    background-color: #f5f7fa;
-    border-radius: 0.5rem;
-    border: 1px solid #e1e5eb;
-    transition: all 0.2s;
+    padding: 0.75rem;
+    border-radius: var(--radius-sm, 0.25rem);
+    transition: all var(--transition-fast, 150ms ease);
 }
 
-    .customer-item:hover {
-        background-color: #edf1f7;
-        transform: translateY(-2px);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
+.light .customer-item {
+    background-color: var(--bg-color, #ffffff);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+}
+
+.dark .customer-item {
+    background-color: var(--card-bg, #1e293b);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.1));
+}
+
+.customer-info {
+    display: flex;
+    flex-direction: column;
+}
 
 .customer-name {
     font-weight: 500;
+    font-size: 0.875rem;
 }
 
-.customer-details {
-    color: #666;
-    font-size: 0.9rem;
+.customer-phone {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #4b5563);
 }
 
-.remove-customer {
-    background: transparent;
+.btn-remove-customer {
+    background-color: transparent;
     border: none;
-    color: #d9534f;
+    color: var(--danger, #ef4444);
+    font-size: 1.25rem;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    transition: all 0.2s;
-}
-
-    .remove-customer:hover {
-        background-color: rgba(217, 83, 79, 0.1);
-        color: #c9302c;
-    }
-
-.add-customer-wrapper {
-    display: flex;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
-}
-
-.add-customer-select {
-    flex: 1;
-}
-
-.add-customer-btn {
-    background-color: #5cb85c;
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 100px;
+    padding: 0.25rem;
+    transition: all var(--transition-fast, 150ms ease);
+    border-radius: var(--radius-full, 9999px);
 }
 
-    .add-customer-btn:hover {
-        background-color: #4cae4c;
+    .btn-remove-customer:hover {
+        background-color: var(--danger-light, #fee2e2);
     }
 
-    .add-customer-btn:disabled {
-        background-color: #a0c4a0;
-        cursor: not-allowed;
-    }
+.no-customers-message {
+    text-align: center;
+    padding: 1rem;
+    color: var(--text-secondary, #4b5563);
+    background-color: var(--bg-offset, #f9fafb);
+    border-radius: var(--radius-md, 0.375rem);
+    font-size: 0.875rem;
+}
 
 /* Form Actions */
 .form-actions {
@@ -187,114 +695,159 @@
     margin-top: 1.5rem;
 }
 
-/* Buttons */
 .btn-primary,
 .btn-secondary {
-    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
     font-weight: 500;
-    padding: 0.875rem 1.5rem;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-md, 0.375rem);
+    transition: all var(--transition-fast, 150ms ease);
     cursor: pointer;
-    transition: all 0.3s;
-    min-width: 120px;
-    text-align: center;
 }
 
-.btn-primary {
-    background-color: #4a90e2;
-    color: #fff;
-    border: none;
-    box-shadow: 0 2px 5px rgba(74, 144, 226, 0.2);
+.light .btn-primary {
+    background-color: var(--primary-500, #0ea5e9);
+    color: white;
+    border: 1px solid var(--primary-600, #0284c7);
 }
 
-    .btn-primary:disabled {
-        background-color: #a0c4e5;
-        cursor: not-allowed;
-        box-shadow: none;
+.dark .btn-primary {
+    background-color: var(--primary-600, #0284c7);
+    color: white;
+    border: 1px solid var(--primary-700, #0369a1);
+}
+
+.light .btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-600, #0284c7);
+    border-color: var(--primary-700, #0369a1);
+}
+
+.dark .btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-700, #0369a1);
+    border-color: var(--primary-800, #075985);
+}
+
+.light .btn-secondary {
+    background-color: var(--bg-color, #ffffff);
+    color: var(--text-primary, #111827);
+    border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.dark .btn-secondary {
+    background-color: var(--card-bg, #1e293b);
+    color: var(--text-primary, #f3f4f6);
+    border: 1px solid var(--border-color, #475569);
+}
+
+.light .btn-secondary:hover:not(:disabled) {
+    background-color: var(--bg-offset, #f9fafb);
+    border-color: var(--neutral-dark, #4b5563);
+}
+
+.dark .btn-secondary:hover:not(:disabled) {
+    background-color: var(--card-nested-bg, #334155);
+    border-color: var(--neutral-light, #d1d5db);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
     }
 
-    .btn-primary:hover:not(:disabled) {
-        background-color: #3b78c3;
-        box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
-        transform: translateY(-2px);
+    to {
+        opacity: 1;
     }
-
-.btn-secondary {
-    background-color: transparent;
-    color: #4a4a4a;
-    border: 1px solid #ddd;
 }
 
-    .btn-secondary:hover {
-        background-color: #f5f5f5;
-        border-color: #ccc;
-        transform: translateY(-2px);
-    }
-
-/* Empty state */
-.no-customers {
-    padding: 1.5rem;
-    text-align: center;
-    background-color: #f8f9fa;
-    border-radius: 0.5rem;
-    color: #6c757d;
-    font-style: italic;
-}
-
-/* Responsive */
+/* Responsive Design */
 @media (max-width: 768px) {
     .reservationadd-container {
         padding: 1rem;
-        box-shadow: none;
-        border-radius: 0;
+        gap: 1.25rem;
+        margin: 0.5rem;
+        width: auto;
     }
 
     .reservationadd-title {
         font-size: 1.5rem;
     }
 
-    .form-group input,
-    .form-group select {
-        padding: 0.75rem;
-        font-size: 1rem;
-        /* Increase touch target size for mobile */
-        min-height: 48px;
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .cars-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+
+    .customer-selector-container {
+        flex-direction: column;
     }
 
     .form-actions {
         flex-direction: column-reverse;
-        align-items: stretch;
-        gap: 0.75rem;
     }
 
     .btn-primary,
     .btn-secondary {
         width: 100%;
-        padding: 0.875rem;
-        /* Increase touch target size for mobile */
-        min-height: 48px;
     }
 
-    .add-customer-wrapper {
-        flex-direction: column;
+    /* Improve touch targets for mobile */
+    .form-group input,
+    .form-group select,
+    .search-input,
+    .btn-add-customer,
+    .btn-select-car,
+    .btn-primary,
+    .btn-secondary {
+        min-height: 3rem;
     }
 
-    .add-customer-btn {
-        width: 100%;
-        min-height: 48px;
+    .clear-search,
+    .btn-remove-customer {
+        min-width: 2.5rem;
+        min-height: 2.5rem;
     }
+}
+
+/* Touch-friendly enhancements */
+@media (pointer: coarse) {
+    .car-card {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        position: relative;
+    }
+
+        .car-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--primary-500, #0ea5e9);
+            opacity: 0;
+            border-radius: var(--radius-md, 0.375rem);
+            transition: opacity 0.2s ease;
+        }
+
+        .car-card:active::after {
+            opacity: 0.1;
+        }
 
     .customer-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
+        position: relative;
     }
 
-    .customer-info {
-        width: 100%;
-    }
-
-    .remove-customer {
-        align-self: flex-end;
+    .btn-remove-customer {
+        padding: 0.5rem;
     }
 }

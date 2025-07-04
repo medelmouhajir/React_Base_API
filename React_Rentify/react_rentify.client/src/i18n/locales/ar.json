@@ -28,7 +28,18 @@
     "delete": "حذف",
     "clear": "مسح",
     "goBack": "رجوع",
-    "print": "طباعة"
+    "print": "طباعة",
+    "simpleSearch": "بحث بسيط",
+    "advancedSearch": "بحث متقدم",
+    "resetFilters": "إعادة ضبط الفلاتر",
+    "selected": "محدد",
+    "select": "تحديد",
+    "hide": "إخفاء",
+    "show": "عرض",
+    "submitting": "جاري الإرسال...",
+    "openCalendar": "افتح التقويم",
+    "user": "المستخدم",
+    "viewAll": "عرض الكل"
   },
   "landing": {
     "features": "الميزات",
@@ -148,6 +159,9 @@
       "title": "سجلات الصيانة",
       "addButton": "إضافة صيانة",
       "deleteError": "خطأ في حذف سجل الصيانة",
+      "error": "خطأ في تحميل سجلات الصيانة.",
+      "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا السجل؟",
+      "noRecords": "لم يتم العثور على سجلات.",
       "filter": {
         "show": "عرض الفلاتر",
         "hide": "إخفاء الفلاتر",
@@ -155,7 +169,45 @@
         "allCars": "جميع السيارات",
         "date": "تصفية حسب التاريخ",
         "clear": "مسح الفلاتر"
+      },
+      "table": {
+        "car": "السيارة",
+        "scheduledDate": "التاريخ",
+        "description": "الوصف",
+        "cost": "التكلفة",
+        "isCompleted": "مكتمل",
+        "actions": "الإجراءات"
       }
+    },
+    "add": {
+      "title": "إضافة صيانة",
+      "fetchError": "خطأ في تحميل البيانات",
+      "requiredFields": "يرجى تعبئة جميع الحقول المطلوبة",
+      "error": "حدث خطأ عند إنشاء سجل الصيانة",
+      "selectCar": "اختر السيارة",
+      "searchCar": "ابحث عن سيارة...",
+      "noCarsFound": "لم يتم العثور على سيارات",
+      "detailsTitle": "تفاصيل الصيانة"
+    },
+    "fields": {
+      "scheduledDate": "تاريخ الصيانة المحدد",
+      "cost": "التكلفة",
+      "description": "الوصف",
+      "isCompleted": "مكتمل",
+      "completedDate": "تاريخ الإكمال",
+      "remarks": "ملاحظات"
+    },
+    "placeholders": {
+      "cost": "أدخل التكلفة",
+      "description": "أدخل الوصف",
+      "remarks": "أدخل الملاحظات"
+    },
+    "validation": {
+      "carRequired": "يرجى اختيار سيارة",
+      "scheduledDateRequired": "تاريخ الصيانة مطلوب",
+      "costInvalid": "أدخل تكلفة صحيحة",
+      "descriptionRequired": "الوصف مطلوب",
+      "completedDateRequired": "تاريخ الإكمال مطلوب"
     }
   },
   "reservation": {
@@ -238,12 +290,22 @@
       "damageDescription": "وصف الأضرار",
       "additionalCharges": "رسوم إضافية",
       "additionalChargesReason": "سبب الرسوم الإضافية",
-      "returnNotes": "ملاحظات الإرجاع"
+      "returnNotes": "ملاحظات الإرجاع",
+      "agreedPrice": "السعر المتفق عليه",
+      "status": "الحالة",
+      "pickupLocation": "موقع الاستلام",
+      "dropoffLocation": "موقع التسليم",
+      "customers": "العملاء"
     },
     "status": {
       "delivered": "تم التسليم",
       "returned": "تم الإرجاع",
-      "expired": "منتهي"
+      "expired": "منتهي",
+      "reserved": "محجوز",
+      "confirmed": "مؤكد",
+      "ongoing": "جاري",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
     },
     "actions": {
       "deliver": "تسليم السيارة",
@@ -252,7 +314,9 @@
       "viewContract": "عرض العقد",
       "editDates": "تعديل التواريخ",
       "changeCar": "تغيير السيارة",
-      "remove": "حذف الحجز"
+      "remove": "حذف الحجز",
+      "addCustomer": "إضافة عميل",
+      "removeCustomer": "إزالة عميل"
     },
     "customers": {
       "title": "العملاء",
@@ -282,7 +346,20 @@
       "resetFilters": "إعادة ضبط الفلاتر",
       "currentCar": "السيارة الحالية",
       "submit": "تأكيد"
-    }
+    },
+    "add": {
+      "title": "إضافة حجز",
+      "fetchError": "فشل في تحميل خيارات الحجز. الرجاء المحاولة مرة أخرى.",
+      "errorNoCustomers": "يرجى اختيار عميل واحد على الأقل.",
+      "errorNoCar": "يرجى اختيار سيارة.",
+      "errorNoDates": "يرجى اختيار تاريخ البدء وتاريخ الانتهاء.",
+      "error": "فشل في إضافة الحجز. الرجاء المحاولة مرة أخرى."
+    },
+    "placeholders": {
+      "price": "أدخل السعر",
+      "selectCustomer": "اختر عميل"
+    },
+    "noCustomersSelected": "لا يوجد عملاء محددين."
   },
   "customerDetails": {
     "confirmRemoveBlacklist": "هل أنت متأكد أنك تريد إزالة هذا الإدخال من القائمة السوداء؟",
@@ -427,6 +504,9 @@
       "description": "يظهر هذا الشخص في القائمة السوداء. هل أنت متأكد أنك تريد المتابعة؟",
       "reportedBy": "أبلغت من قبل",
       "continue": "المتابعة رغم ذلك"
+    },
+    "search": {
+      "placeholder": "ابحث في العملاء..."
     }
   },
   "invoice": {
@@ -485,7 +565,8 @@
       "status": "أدخل الحالة",
       "dailyRate": "أدخل السعر اليومي",
       "hourlyRate": "أدخل السعر بالساعة",
-      "deviceSerialNumber": "أدخل الرقم التسلسلي للجهاز"
+      "deviceSerialNumber": "أدخل الرقم التسلسلي للجهاز",
+      "selectManufacturer": "اختر الشركة المصنعة"
     },
     "fuelLevels": {
       "full": "ممتلئ",
@@ -517,7 +598,14 @@
       "availability": "التوفر",
       "actions": "إجراءات",
       "noCarsFound": "لم يتم العثور على سيارات"
-    }
+    },
+    "search": {
+      "placeholder": "ابحث في السيارات...",
+      "noResults": "لا توجد سيارات مطابقة للبحث.",
+      "noCars": "لا توجد سيارات متاحة."
+    },
+    "available": "متاحة",
+    "unavailable": "غير متاحة"
   },
   "payment": {
     "method": "طريقة الدفع",
@@ -546,5 +634,32 @@
   "validation": {
     "required": "هذا الحقل مطلوب.",
     "atLeastOneIdRequired": "يرجى توفير شكل واحد على الأقل من أشكال التحقق."
+  },
+  "dashboard": {
+    "welcomeMessage": "مرحبًا، {{name}}!",
+    "quickShortcuts": "اختصارات سريعة",
+    "viewCars": "عرض السيارات",
+    "viewReservations": "عرض الحجوزات",
+    "viewMaintenances": "عرض الصيانات",
+    "viewInvoices": "عرض الفواتير",
+    "alerts": "التنبيهات",
+    "fleet": "الأسطول",
+    "available": "متاح",
+    "reservations": "الحجوزات",
+    "active": "نشطة",
+    "pending": "قيد الانتظار",
+    "monthlyRevenue": "إيرادات الشهر",
+    "maintenance": "الصيانة المستحقة",
+    "recentReservations": "الحجوزات الأخيرة",
+    "customer": "العميل",
+    "car": "السيارة",
+    "dates": "التواريخ",
+    "status": "الحالة",
+    "carStatus": "حالة السيارة",
+    "model": "الموديل",
+    "licensePlate": "رقم اللوحة",
+    "maintenanceDue": "موعد الصيانة",
+    "unknown": "غير معروف",
+    "notScheduled": "غير مجدول"
   }
 }

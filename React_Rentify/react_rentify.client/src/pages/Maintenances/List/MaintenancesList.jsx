@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import maintenanceService from '../../../services/maintenanceService';
 import carService from '../../../services/carService';
 import './MaintenancesList.css';
@@ -10,6 +11,7 @@ const MaintenancesList = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { isDarkMode } = useTheme();
     const agencyId = user?.agencyId;
 
     const [maintenances, setMaintenances] = useState([]);
@@ -18,7 +20,9 @@ const MaintenancesList = () => {
     const [filters, setFilters] = useState({ carId: '', date: '' });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showFilters, setShowFilters] = useState(false); // For collapsible on mobile
+    const [showFilters, setShowFilters] = useState(false);
+    const [touchStartX, setTouchStartX] = useState(null);
+    const [activeCard, setActiveCard] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -68,11 +72,18 @@ const MaintenancesList = () => {
         const { name, value } = e.target;
         setFilters(prev => ({ ...prev, [name]: value }));
     };
+
     const clearFilters = () => {
         setFilters({ carId: '', date: '' });
     };
-    const handleDelete = async (id) => {
-        if (!window.confirm(t('maintenance.list.confirmDelete') || 'Are you sure you want to delete this record?')) return;
+
+    const handleDelete = async (id, e) => {
+        // Prevent event bubbling to parent elements
+        e?.stopPropagation();
+
+        if (!window.confirm(t('maintenance.list.confirmDelete') || 'Are you sure you want to delete this record?'))
+            return;
+
         try {
             await maintenanceService.delete(id);
             setMaintenances(prev => prev.filter(m => m.id !== id));
@@ -81,20 +92,68 @@ const MaintenancesList = () => {
             alert(t('maintenance.list.deleteError') || 'Error deleting maintenance record.');
         }
     };
-    const handleEdit = (id) => navigate(`/maintenances/${id}/edit`);
-    const handleDetails = (id) => navigate(`/maintenances/${id}`);
+
+    const handleEdit = (id, e) => {
+        e?.stopPropagation();
+        navigate(`/maintenances/${id}/edit`);
+    };
+
+    const handleDetails = (id, e) => {
+        e?.stopPropagation();
+        navigate(`/maintenances/${id}`);
+    };
+
     const handleAdd = () => navigate('/maintenances/add');
     const toggleFilters = () => setShowFilters(prev => !prev);
 
+    // Touch event handlers for swipe actions on mobile
+    const handleTouchStart = (e, id) => {
+        setTouchStartX(e.touches[0].clientX);
+        setActiveCard(id);
+    };
+
+    const handleTouchMove = (e) => {
+        // No implementation needed here - just using for demonstration
+        // In a real swipe implementation, you would track movement here
+    };
+
+    const handleTouchEnd = (e) => {
+        if (!touchStartX) return;
+
+        const touchEndX = e.changedTouches[0].clientX;
+        const difference = touchStartX - touchEndX;
+
+        // Reset touch tracking
+        setTouchStartX(null);
+
+        // If swipe distance is significant, perform action
+        // (not implementing actual swipe actions in this version)
+        if (Math.abs(difference) > 100) {
+            // Example: difference > 0 means swipe left (could trigger delete)
+            // difference < 0 means swipe right (could trigger edit)
+            // Commented out for safety:
+            // if (difference > 0 && activeCard) handleDelete(activeCard);
+            // else if (difference < 0 && activeCard) handleEdit(activeCard);
+        }
+
+        setActiveCard(null);
+    };
+
+    // Format date for better display
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        return new Date(dateString).toLocaleDateString();
+    };
+
     return (
-        <div className="maintList-container">
+        <div className={`maintList-container ${isDarkMode ? 'dark' : 'light'}`}>
             {/* HEADER ROW */}
             <div className="header-row">
                 <h1 className="maintList-title">
                     {t('maintenance.list.title') || 'Maintenance Records'}
                 </h1>
                 <button
-                    className="btn-primary add-button"
+                    className="add-button"
                     onClick={handleAdd}
                     aria-label={t('maintenance.list.addButton') || 'Add Maintenance'}
                 >
@@ -118,17 +177,18 @@ const MaintenancesList = () => {
                 {showFilters
                     ? t('maintenance.list.filter.hide') || 'Hide Filters'
                     : t('maintenance.list.filter.show') || 'Show Filters'}
+                <span className="toggle-icon">{showFilters ? '▲' : '▼'}</span>
             </button>
 
             {/* FILTERS SECTION */}
             <div className={`filters-container ${showFilters ? 'expanded' : ''}`}>
                 <div className="filters-grid">
                     <div className="filter-group">
-                        <label htmlFor="carFilter">
-                            {t('maintenance.list.filter.car') || 'Filter by Car'}
+                        <label htmlFor="carId">
+                            {t('maintenance.list.filter.car') || 'Car'}
                         </label>
                         <select
-                            id="carFilter"
+                            id="carId"
                             name="carId"
                             value={filters.carId}
                             onChange={handleFilterChange}
@@ -138,27 +198,25 @@ const MaintenancesList = () => {
                             </option>
                             {cars.map(car => (
                                 <option key={car.id} value={car.id}>
-                                    {car.licensePlate || car.LicensePlate}
+                                    {car.licensePlate} - {car.model}
                                 </option>
                             ))}
                         </select>
                     </div>
-
                     <div className="filter-group">
-                        <label htmlFor="dateFilter">
-                            {t('maintenance.list.filter.date') || 'Filter by Date'}
+                        <label htmlFor="date">
+                            {t('maintenance.list.filter.date') || 'Date'}
                         </label>
                         <input
                             type="date"
-                            id="dateFilter"
+                            id="date"
                             name="date"
                             value={filters.date}
                             onChange={handleFilterChange}
                         />
                     </div>
-
                     <div className="filter-actions">
-                        <button className="btn-secondary clear-filters" onClick={clearFilters}>
+                        <button className="clear-filters" onClick={clearFilters}>
                             {t('maintenance.list.filter.clear') || 'Clear Filters'}
                         </button>
                     </div>
@@ -167,10 +225,13 @@ const MaintenancesList = () => {
 
             {/* LOADING STATE */}
             {isLoading ? (
-                <div className="loading">{t('common.loading') || 'Loading...'}</div>
+                <div className="loading" role="status">
+                    <div className="loading-spinner"></div>
+                    <span>{t('common.loading') || 'Loading...'}</span>
+                </div>
             ) : (
                 <>
-                    {/* RESPONSIVE LIST: Table for desktop, Cards for mobile */}
+                    {/* DESKTOP TABLE VIEW */}
                     <div className="desktop-table">
                         <table className="maintList-table">
                             <thead>
@@ -192,10 +253,10 @@ const MaintenancesList = () => {
                                     </tr>
                                 ) : (
                                     filteredMaintenances.map(record => (
-                                        <tr key={record.id}>
+                                        <tr key={record.id} onClick={(e) => handleDetails(record.id, e)}>
                                             <td>{record.carLicensePlate || record.CarLicensePlate}</td>
-                                            <td>{record.scheduledDate.slice(0, 10)}</td>
-                                            <td className="desc-cell">
+                                            <td>{formatDate(record.scheduledDate)}</td>
+                                            <td className="desc-cell" title={record.description}>
                                                 {record.description.length > 40
                                                     ? record.description.slice(0, 40) + '…'
                                                     : record.description}
@@ -206,28 +267,23 @@ const MaintenancesList = () => {
                                                     : '-'}
                                             </td>
                                             <td>
-                                                {record.isCompleted
-                                                    ? t('common.yes') || 'Yes'
-                                                    : t('common.no') || 'No'}
+                                                <span className={`status-badge ${record.isCompleted ? 'completed' : 'pending'}`}>
+                                                    {record.isCompleted
+                                                        ? t('common.yes') || 'Yes'
+                                                        : t('common.no') || 'No'}
+                                                </span>
                                             </td>
                                             <td className="actions-cell">
                                                 <button
-                                                    className="btn-secondary small-btn"
-                                                    onClick={() => handleDetails(record.id)}
-                                                    aria-label={t('common.details') || 'Details'}
-                                                >
-                                                    {t('common.details') || 'Details'}
-                                                </button>
-                                                <button
-                                                    className="btn-secondary small-btn"
-                                                    onClick={() => handleEdit(record.id)}
+                                                    className="small-btn"
+                                                    onClick={(e) => handleEdit(record.id, e)}
                                                     aria-label={t('common.edit') || 'Edit'}
                                                 >
                                                     {t('common.edit') || 'Edit'}
                                                 </button>
                                                 <button
-                                                    className="btn-secondary small-btn delete-btn"
-                                                    onClick={() => handleDelete(record.id)}
+                                                    className="small-btn delete-btn"
+                                                    onClick={(e) => handleDelete(record.id, e)}
                                                     aria-label={t('common.remove') || 'Remove'}
                                                 >
                                                     {t('common.remove') || 'Remove'}
@@ -240,7 +296,7 @@ const MaintenancesList = () => {
                         </table>
                     </div>
 
-                    {/* CARD LIST FOR MOBILE */}
+                    {/* MOBILE CARD VIEW */}
                     <div className="mobile-cards">
                         {filteredMaintenances.length === 0 ? (
                             <div className="no-data-mobile">
@@ -248,63 +304,57 @@ const MaintenancesList = () => {
                             </div>
                         ) : (
                             filteredMaintenances.map(record => (
-                                <div className="card" key={record.id}>
+                                <div
+                                    key={record.id}
+                                    className="card"
+                                    onClick={(e) => handleDetails(record.id, e)}
+                                    onTouchStart={(e) => handleTouchStart(e, record.id)}
+                                    onTouchMove={handleTouchMove}
+                                    onTouchEnd={handleTouchEnd}
+                                >
+                                    <div className="card-header">
+                                        <span className="card-title">{record.carLicensePlate || record.CarLicensePlate}</span>
+                                        <span className={`status-badge ${record.isCompleted ? 'completed' : 'pending'}`}>
+                                            {record.isCompleted
+                                                ? t('common.completed') || 'Completed'
+                                                : t('common.pending') || 'Pending'}
+                                        </span>
+                                    </div>
+
                                     <div className="card-row">
-                                        <div>
-                                            <span className="card-label">
-                                                {t('maintenance.list.table.car') || 'Car'}:
-                                            </span>{' '}
-                                            {record.carLicensePlate || record.CarLicensePlate}
-                                        </div>
                                         <div>
                                             <span className="card-label">
                                                 {t('maintenance.list.table.scheduledDate') || 'Date'}:
-                                            </span>{' '}
-                                            {record.scheduledDate.slice(0, 10)}
+                                            </span>
+                                            {formatDate(record.scheduledDate)}
                                         </div>
-                                    </div>
-                                    <div className="card-row">
-                                        <div>
-                                            <span className="card-label">
-                                                {t('maintenance.list.table.description') || 'Description'}:
-                                            </span>{' '}
-                                            {record.description.length > 60
-                                                ? record.description.slice(0, 60) + '…'
-                                                : record.description}
-                                        </div>
-                                    </div>
-                                    <div className="card-row">
                                         <div>
                                             <span className="card-label">
                                                 {t('maintenance.list.table.cost') || 'Cost'}:
-                                            </span>{' '}
+                                            </span>
                                             {record.cost !== null ? `${record.cost.toFixed(2)}` : '-'}
                                         </div>
-                                        <div>
-                                            <span className="card-label">
-                                                {t('maintenance.list.table.isCompleted') || 'Completed'}:
-                                            </span>{' '}
-                                            {record.isCompleted
-                                                ? t('common.yes') || 'Yes'
-                                                : t('common.no') || 'No'}
-                                        </div>
                                     </div>
+
+                                    <div className="card-description">
+                                        <span className="card-label">
+                                            {t('maintenance.list.table.description') || 'Description'}:
+                                        </span>
+                                        {record.description}
+                                    </div>
+
                                     <div className="card-actions">
                                         <button
-                                            className="btn-secondary small-btn"
-                                            onClick={() => handleDetails(record.id)}
-                                        >
-                                            {t('common.details') || 'Details'}
-                                        </button>
-                                        <button
-                                            className="btn-secondary small-btn"
-                                            onClick={() => handleEdit(record.id)}
+                                            className="small-btn"
+                                            onClick={(e) => handleEdit(record.id, e)}
+                                            aria-label={t('common.edit') || 'Edit'}
                                         >
                                             {t('common.edit') || 'Edit'}
                                         </button>
                                         <button
-                                            className="btn-secondary small-btn delete-btn"
-                                            onClick={() => handleDelete(record.id)}
+                                            className="small-btn delete-btn"
+                                            onClick={(e) => handleDelete(record.id, e)}
+                                            aria-label={t('common.remove') || 'Remove'}
                                         >
                                             {t('common.remove') || 'Remove'}
                                         </button>

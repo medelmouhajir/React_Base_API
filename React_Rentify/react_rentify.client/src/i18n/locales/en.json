@@ -28,7 +28,18 @@
     "delete": "Delete",
     "clear": "Clear",
     "goBack": "Go back",
-    "print": "Print"
+    "print": "Print",
+    "simpleSearch": "Simple Search",
+    "advancedSearch": "Advanced Search",
+    "resetFilters": "Reset Filters",
+    "selected": "Selected",
+    "select": "Select",
+    "hide": "Hide",
+    "show": "Show",
+    "submitting": "Submitting...",
+    "openCalendar": "Open calendar",
+    "user": "User",
+    "viewAll": "View All"
   },
   "landing": {
     "features": "Features",
@@ -167,7 +178,48 @@
         "allCars": "All Cars",
         "date": "Filter by Date",
         "clear": "Clear Filters"
+      },
+      "error": "Error loading maintenance records.",
+      "confirmDelete": "Are you sure you want to delete this record?",
+      "noRecords": "No records found.",
+      "table": {
+        "car": "Car",
+        "scheduledDate": "Date",
+        "description": "Description",
+        "cost": "Cost",
+        "isCompleted": "Completed",
+        "actions": "Actions"
       }
+    },
+    "add": {
+      "title": "Add Maintenance",
+      "fetchError": "Error loading data",
+      "requiredFields": "Please fill out all required fields",
+      "error": "Error creating maintenance record",
+      "selectCar": "Select Car",
+      "searchCar": "Search car...",
+      "noCarsFound": "No cars found",
+      "detailsTitle": "Maintenance Details"
+    },
+    "fields": {
+      "scheduledDate": "Scheduled Date",
+      "cost": "Cost",
+      "description": "Description",
+      "isCompleted": "Completed",
+      "completedDate": "Completed Date",
+      "remarks": "Remarks"
+    },
+    "placeholders": {
+      "cost": "Enter cost",
+      "description": "Enter description",
+      "remarks": "Enter remarks"
+    },
+    "validation": {
+      "carRequired": "Please select a car",
+      "scheduledDateRequired": "Scheduled date is required",
+      "costInvalid": "Enter a valid cost",
+      "descriptionRequired": "Description is required",
+      "completedDateRequired": "Completed date is required"
     }
   },
   "reservation": {
@@ -230,7 +282,16 @@
       "damageDescription": "Damage Description",
       "additionalCharges": "Additional Charges",
       "additionalChargesReason": "Reason for Additional Charges",
-      "returnNotes": "Return Notes"
+      "returnNotes": "Return Notes",
+      "agreedPrice": "Agreed Price",
+      "status": "Status",
+      "pickupLocation": "Pickup Location",
+      "dropoffLocation": "Dropoff Location",
+      "customers": "Customers"
+    },
+    "placeholders": {
+      "price": "Enter price",
+      "selectCustomer": "Select customer"
     },
     "deliverCar": {
       "title": "Deliver Car",
@@ -254,7 +315,12 @@
     "status": {
       "delivered": "Delivered",
       "returned": "Returned",
-      "expired": "Expired"
+      "expired": "Expired",
+      "reserved": "Reserved",
+      "confirmed": "Confirmed",
+      "ongoing": "Ongoing",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
     },
     "actions": {
       "deliver": "Deliver Car",
@@ -263,7 +329,9 @@
       "viewContract": "View Contract",
       "editDates": "Edit Dates",
       "changeCar": "Change Car",
-      "remove": "Remove Reservation"
+      "remove": "Remove Reservation",
+      "addCustomer": "Add Customer",
+      "removeCustomer": "Remove Customer"
     },
     "customers": {
       "title": "Customers",
@@ -293,7 +361,16 @@
       "resetFilters": "Reset Filters",
       "currentCar": "Current Car",
       "submit": "Confirm"
-    }
+    },
+    "add": {
+      "title": "Add Reservation",
+      "fetchError": "Failed to load reservation options. Please try again.",
+      "errorNoCustomers": "Please select at least one customer.",
+      "errorNoCar": "Please select a car.",
+      "errorNoDates": "Please select start and end dates.",
+      "error": "Failed to add reservation. Please try again."
+    },
+    "noCustomersSelected": "No customers selected."
   },
   "customerDetails": {
     "confirmRemoveBlacklist": "Are you sure you want to remove this blacklist entry?",
@@ -438,6 +515,9 @@
       "addNew": "Add New Customer",
       "actions": "Actions",
       "noRecords": "No customers found."
+    },
+    "search": {
+      "placeholder": "Search customers..."
     }
   },
   "invoice": {
@@ -528,7 +608,14 @@
       "availability": "Availability",
       "actions": "Actions",
       "noCarsFound": "No cars found"
-    }
+    },
+    "search": {
+      "placeholder": "Search cars...",
+      "noResults": "No cars match your search.",
+      "noCars": "No cars available."
+    },
+    "available": "Available",
+    "unavailable": "Unavailable"
   },
   "payment": {
     "method": "Payment Method",
@@ -557,5 +644,32 @@
   "validation": {
     "required": "This field is required.",
     "atLeastOneIdRequired": "Please provide at least one form of identification."
+  },
+  "dashboard": {
+    "welcomeMessage": "Welcome, {{name}}!",
+    "quickShortcuts": "Quick Shortcuts",
+    "viewCars": "View Cars",
+    "viewReservations": "View Reservations",
+    "viewMaintenances": "View Maintenances",
+    "viewInvoices": "View Invoices",
+    "alerts": "Alerts",
+    "fleet": "Fleet",
+    "available": "Available",
+    "reservations": "Reservations",
+    "active": "Active",
+    "pending": "Pending",
+    "monthlyRevenue": "Monthly Revenue",
+    "maintenance": "Maintenance Due",
+    "recentReservations": "Recent Reservations",
+    "customer": "Customer",
+    "car": "Car",
+    "dates": "Dates",
+    "status": "Status",
+    "carStatus": "Car Status",
+    "model": "Model",
+    "licensePlate": "License Plate",
+    "maintenanceDue": "Maintenance Due",
+    "unknown": "Unknown",
+    "notScheduled": "Not Scheduled"
   }
 }
