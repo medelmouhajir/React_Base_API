@@ -280,7 +280,7 @@ const CarsList = () => {
 
     // Navigate to edit car page
     const handleEditCar = (id) => {
-        navigate(`/cars/edit/${id}`);
+        navigate(`/cars/${id}`);
     };
 
     // Handle car deletion

@@ -39,7 +39,11 @@
     "submitting": "جاري الإرسال...",
     "openCalendar": "افتح التقويم",
     "user": "المستخدم",
-    "viewAll": "عرض الكل"
+    "viewAll": "عرض الكل",
+    "backToList": "العودة إلى القائمة",
+    "currency": "MAD",
+    "view": "عرض",
+    "download": "تنزيل"
   },
   "landing": {
     "features": "الميزات",
@@ -605,7 +609,36 @@
       "noCars": "لا توجد سيارات متاحة."
     },
     "available": "متاحة",
-    "unavailable": "غير متاحة"
+    "unavailable": "غير متاحة",
+    "unknown": "غير معروف",
+    "statusAvailable": "متاح",
+    "statusUnavailable": "غير متاح",
+    "licensePlate": "رقم اللوحة",
+    "color": "اللون",
+    "status": "الحالة",
+    "dailyRate": "سعر اليوم",
+    "hourlyRate": "سعر الساعة",
+    "availability": "التوفر",
+    "deviceSerial": "رقم الجهاز التسلسلي",
+    "trackingActive": "التتبع نشط",
+    "trackingEnabled": "مُمَكَّن",
+    "trackingDisabled": "غير مُمَكَّن"
+  },
+  "carDetails": {
+    "fetchError": "خطأ في جلب تفاصيل السيارة.",
+    "deleteConfirmation": "هل أنت متأكد أنك تريد حذف هذه السيارة؟",
+    "deleteError": "حدث خطأ أثناء حذف السيارة.",
+    "notFound": "لم يتم العثور على السيارة.",
+    "tabInfo": "معلومات",
+    "tabMaintenance": "الصيانة",
+    "tabAttachments": "المرفقات",
+    "basicInfo": "المعلومات الأساسية",
+    "rentalInfo": "معلومات الإيجار",
+    "tracking": "التتبع",
+    "photos": "الصور",
+    "maintenanceComingSoon": "سجلات الصيانة قادمة قريباً.",
+    "attachments": "المرفقات",
+    "noAttachments": "لا توجد مرفقات متاحة."
   },
   "payment": {
     "method": "طريقة الدفع",

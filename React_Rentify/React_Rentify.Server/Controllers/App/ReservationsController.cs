@@ -852,6 +852,187 @@ namespace React_Rentify.Server.Controllers.App
             return !overlappingReservations;
         }
 
+
+        [HttpGet("car/{carId:guid}")]
+        public async Task<IActionResult> GetReservationsByCarId(Guid carId)
+        {
+            _logger.LogInformation("Retrieving reservations for car {CarId}", carId);
+
+            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == carId);
+            if (!carExists)
+            {
+                _logger.LogWarning("Car with Id {CarId} not found", carId);
+                return NotFound(new { message = $"Car with Id '{carId}' not found." });
+            }
+
+            var reservations = await _context.Set<Reservation>()
+                .Include(r => r.Reservation_Customers)
+                    .ThenInclude(rc => rc.Customer)
+                .Where(r => r.CarId == carId)
+                .ToListAsync();
+
+            var dtoList = reservations.Select(r => new ReservationDto
+            {
+                Id = r.Id,
+                CarId = r.CarId,
+                StartDate = r.StartDate,
+                EndDate = r.EndDate,
+                ActualStartTime = r.ActualStartTime,
+                ActualEndTime = r.ActualEndTime,
+                Status = r.Status,
+                AgreedPrice = r.AgreedPrice,
+                FinalPrice = r.FinalPrice,
+                OdometerStart = r.OdometerStart,
+                OdometerEnd = r.OdometerEnd,
+                FuelLevelStart = r.FuelLevelStart,
+                FuelLevelEnd = r.FuelLevelEnd,
+                PickupLocation = r.PickupLocation,
+                DropoffLocation = r.DropoffLocation,
+                Reservation_Customers = r.Reservation_Customers?.Select(rc => new ReservationCustomerDto
+                {
+                    ReservationId = rc.ReservationId,
+                    CustomerId = rc.CustomerId,
+                    Customer = rc.Customer != null ? new CustomerBasicDto
+                    {
+                        Id = rc.Customer.Id,
+                        Name = rc.Customer.FullName,
+                        Email = rc.Customer.Email,
+                        Phone = rc.Customer.PhoneNumber
+                    } : null
+                }).ToList()
+            }).ToList();
+
+            _logger.LogInformation("Retrieved {Count} reservations for car {CarId}", dtoList.Count, carId);
+            return Ok(dtoList);
+        }
+
+        /// <summary>
+        /// GET: api/reservations/car/{carId}/current
+        /// Returns the current reservation for a car, if any.
+        /// </summary>
+        [HttpGet("car/{carId:guid}/current")]
+        public async Task<IActionResult> GetCurrentReservation(Guid carId)
+        {
+            _logger.LogInformation("Retrieving current reservation for car {CarId}", carId);
+
+            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == carId);
+            if (!carExists)
+            {
+                _logger.LogWarning("Car with Id {CarId} not found", carId);
+                return NotFound(new { message = $"Car with Id '{carId}' not found." });
+            }
+
+            var now = DateTime.UtcNow;
+            var currentReservation = await _context.Set<Reservation>()
+                .Include(r => r.Reservation_Customers)
+                    .ThenInclude(rc => rc.Customer)
+                .Where(r => r.CarId == carId
+                        && r.StartDate <= now
+                        && r.EndDate >= now
+                        && r.Status == "Ongoing")
+                .FirstOrDefaultAsync();
+
+            if (currentReservation == null)
+            {
+                return NotFound(new { message = $"No current reservation found for car '{carId}'." });
+            }
+
+            var dto = new ReservationDto
+            {
+                Id = currentReservation.Id,
+                CarId = currentReservation.CarId,
+                StartDate = currentReservation.StartDate,
+                EndDate = currentReservation.EndDate,
+                ActualStartTime = currentReservation.ActualStartTime,
+                ActualEndTime = currentReservation.ActualEndTime,
+                Status = currentReservation.Status,
+                AgreedPrice = currentReservation.AgreedPrice,
+                FinalPrice = currentReservation.FinalPrice,
+                OdometerStart = currentReservation.OdometerStart,
+                OdometerEnd = currentReservation.OdometerEnd,
+                FuelLevelStart = currentReservation.FuelLevelStart,
+                FuelLevelEnd = currentReservation.FuelLevelEnd,
+                PickupLocation = currentReservation.PickupLocation,
+                DropoffLocation = currentReservation.DropoffLocation,
+                Reservation_Customers = currentReservation.Reservation_Customers?.Select(rc => new ReservationCustomerDto
+                {
+                    ReservationId = rc.ReservationId,
+                    CustomerId = rc.CustomerId,
+                    Customer = rc.Customer != null ? new CustomerBasicDto
+                    {
+                        Id = rc.Customer.Id,
+                        Name = rc.Customer.FullName,
+                        Email = rc.Customer.Email,
+                        Phone = rc.Customer.PhoneNumber
+                    } : null
+                }).ToList()
+            };
+
+            _logger.LogInformation("Retrieved current reservation {ReservationId} for car {CarId}", currentReservation.Id, carId);
+            return Ok(dto);
+        }
+
+        /// <summary>
+        /// GET: api/reservations/car/{carId}/upcoming
+        /// Returns upcoming reservations for a car.
+        /// </summary>
+        [HttpGet("car/{carId:guid}/upcoming")]
+        public async Task<IActionResult> GetUpcomingReservations(Guid carId)
+        {
+            _logger.LogInformation("Retrieving upcoming reservations for car {CarId}", carId);
+
+            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == carId);
+            if (!carExists)
+            {
+                _logger.LogWarning("Car with Id {CarId} not found", carId);
+                return NotFound(new { message = $"Car with Id '{carId}' not found." });
+            }
+
+            var now = DateTime.UtcNow;
+            var upcomingReservations = await _context.Set<Reservation>()
+                .Include(r => r.Reservation_Customers)
+                    .ThenInclude(rc => rc.Customer)
+                .Where(r => r.CarId == carId
+                        && r.StartDate > now
+                        && r.Status == "Reserved")
+                .OrderBy(r => r.StartDate)
+                .ToListAsync();
+
+            var dtoList = upcomingReservations.Select(r => new ReservationDto
+            {
+                Id = r.Id,
+                CarId = r.CarId,
+                StartDate = r.StartDate,
+                EndDate = r.EndDate,
+                ActualStartTime = r.ActualStartTime,
+                ActualEndTime = r.ActualEndTime,
+                Status = r.Status,
+                AgreedPrice = r.AgreedPrice,
+                FinalPrice = r.FinalPrice,
+                OdometerStart = r.OdometerStart,
+                OdometerEnd = r.OdometerEnd,
+                FuelLevelStart = r.FuelLevelStart,
+                FuelLevelEnd = r.FuelLevelEnd,
+                PickupLocation = r.PickupLocation,
+                DropoffLocation = r.DropoffLocation,
+                Reservation_Customers = r.Reservation_Customers?.Select(rc => new ReservationCustomerDto
+                {
+                    ReservationId = rc.ReservationId,
+                    CustomerId = rc.CustomerId,
+                    Customer = rc.Customer != null ? new CustomerBasicDto
+                    {
+                        Id = rc.Customer.Id,
+                        Name = rc.Customer.FullName,
+                        Email = rc.Customer.Email,
+                        Phone = rc.Customer.PhoneNumber
+                    } : null
+                }).ToList()
+            }).ToList();
+
+            _logger.LogInformation("Retrieved {Count} upcoming reservations for car {CarId}", dtoList.Count, carId);
+            return Ok(dtoList);
+        }
+
         #region Helper Methods & DTOs
 
         private static ReservationDto MapToDto(Reservation r)
@@ -914,6 +1095,8 @@ namespace React_Rentify.Server.Controllers.App
             public string? PickupLocation { get; set; }
             public string? DropoffLocation { get; set; }
             public InvoiceDto? Invoice { get; set; }
+
+            public List<ReservationCustomerDto>? Reservation_Customers { get; set; }
         }
 
         public class CreateReservationDto
@@ -1004,5 +1187,21 @@ namespace React_Rentify.Server.Controllers.App
         }
 
         #endregion
+    }
+
+    public class CustomerBasicDto
+    {
+        public Guid Id { get; set; }
+        public object Name { get; set; }
+        public string Email { get; set; }
+        public object Phone { get; set; }
+    }
+
+    public class ReservationCustomerDto
+    {
+        public Guid ReservationId { get; set; }
+        public Guid CustomerId { get; set; }
+        public object IsPrimary { get; set; }
+        public object Customer { get; set; }
     }
 }

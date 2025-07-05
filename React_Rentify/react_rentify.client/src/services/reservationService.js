@@ -90,6 +90,55 @@ export const reservationService = {
         }
     },
 
+    /**
+ * Get all reservations for a specific car
+ * @param {string} carId - The ID of the car
+ * @returns {Promise<Array>} - Array of reservation objects
+ */
+    getByCarId: async (carId) => {
+        try {
+            const response = await apiClient.get(`/reservations/car/${carId}`);
+            return response.data;
+        } catch (error) {
+            console.error('❌ Error fetching car reservations:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Check if a car is currently reserved
+     * @param {string} carId - The ID of the car
+     * @returns {Promise<Object|null>} - The current reservation if any, otherwise null
+     */
+    getCurrentReservation: async (carId) => {
+        try {
+            const response = await apiClient.get(`/reservations/car/${carId}/current`);
+            return response.data;
+        } catch (error) {
+            // If 404, it means there's no current reservation
+            if (error.response && error.response.status === 404) {
+                return null;
+            }
+            console.error('❌ Error checking current reservation:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get upcoming reservations for a car
+     * @param {string} carId - The ID of the car
+     * @returns {Promise<Array>} - Array of upcoming reservation objects
+     */
+    getUpcomingReservations: async (carId) => {
+        try {
+            const response = await apiClient.get(`/reservations/car/${carId}/upcoming`);
+            return response.data;
+        } catch (error) {
+            console.error('❌ Error fetching upcoming reservations:', error);
+            throw error;
+        }
+    },
+
     async getByAgencyId(agencyId) {
         try {
             const response = await apiClient.get(`/reservations/agency/${agencyId}`);

@@ -53,6 +53,7 @@ const CarYear = lazy(() => import('./pages/Filters/CarYear/CarYear'));
 
 // Child routes for Cars
 //const CarDetails = lazy(() => import('./pages/cars/CarDetails'));
+const CarDetails = lazy(() => import('./pages/Cars/Details/CarDetails'));
 const AddCar = lazy(() => import('./pages/Cars/Add/AddCar'));
 const EditCar = lazy(() => import('./pages/Cars/Edit/EditCar'));
 
@@ -128,7 +129,7 @@ function App() {
 
                                 {/* Cars */}
                                 <Route path="/cars" element={<CarsList />} />
-                                {/*<Route path="/cars/:id" element={<CarDetails />} />*/}
+                                <Route path="/cars/:id" element={<CarDetails />} />
                                 <Route path="/cars/add" element={<AddCar />} />
                                 <Route path="/cars/:id/edit" element={<EditCar />} />
 

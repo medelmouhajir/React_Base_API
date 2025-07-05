@@ -17,6 +17,7 @@
     <Folder Include="src\pages\Cars\Add\" />
     <Folder Include="src\pages\Cars\List\" />
     <Folder Include="src\pages\Cars\Edit\" />
+    <Folder Include="src\pages\Cars\Details\" />
     <Folder Include="src\pages\Customers\Add\" />
     <Folder Include="src\pages\Customers\List\" />
     <Folder Include="src\pages\Customers\Edit\" />

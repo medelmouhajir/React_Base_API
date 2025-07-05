@@ -17,11 +17,9 @@ const Navbar = ({ toggleSidebar, sidebarOpen }) => {
     const navigate = useNavigate();
 
     const [profileOpen, setProfileOpen] = useState(false);
-    const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
     const profileRef = useRef(null);
-    const notificationsRef = useRef(null);
 
     // Track scroll position for navbar styling
     useEffect(() => {
@@ -37,9 +35,6 @@ const Navbar = ({ toggleSidebar, sidebarOpen }) => {
         function handleClickOutside(event) {
             if (profileRef.current && !profileRef.current.contains(event.target)) {
                 setProfileOpen(false);
-            }
-            if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
-                setNotificationsOpen(false);
             }
         }
         document.addEventListener('mousedown', handleClickOutside);
@@ -57,8 +52,6 @@ const Navbar = ({ toggleSidebar, sidebarOpen }) => {
         }
     };
 
-    // Dummy notification count
-    const notificationCount = 3;
 
     return (
         <nav className={`navbar ${isScrolled ? 'navbar-scrolled' : ''} ${isDarkMode ? 'dark' : ''}`}>
@@ -97,70 +90,6 @@ const Navbar = ({ toggleSidebar, sidebarOpen }) => {
 
                     {/* Language selector */}
                     <LanguageSelector className="navbar-action-button" />
-
-                    {/* Notifications */}
-                    <div className="notification-wrapper" ref={notificationsRef}>
-                        <button
-                            type="button"
-                            onClick={() => setNotificationsOpen(!notificationsOpen)}
-                            className="navbar-action-button notification-bell"
-                            aria-label="View notifications"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                                ></path>
-                            </svg>
-                            {notificationCount > 0 && <span className="notification-badge">{notificationCount}</span>}
-                        </button>
-
-                        {notificationsOpen && (
-                            <div className={`dropdown-content user-menu-dropdown ${isDarkMode ? 'dark' : ''}`}>
-                                <div className="dropdown-header">{t('notifications.recentNotifications')}</div>
-                                <div className="dropdown-list">
-                                    <button className="dropdown-item">
-                                        <div className="icon-wrapper positive">
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                            </svg>
-                                        </div>
-                                        <div className="item-text">
-                                            <div className="item-title">{t('notifications.newReservation')}</div>
-                                            <div className="item-time">15 {t('common.minutesAgo')}</div>
-                                        </div>
-                                    </button>
-                                    <button className="dropdown-item">
-                                        <div className="icon-wrapper warning">
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                        </div>
-                                        <div className="item-text">
-                                            <div className="item-title">{t('notifications.maintenanceReminder')}</div>
-                                            <div className="item-time">3 {t('common.hoursAgo')}</div>
-                                        </div>
-                                    </button>
-                                    <button className="dropdown-item">
-                                        <div className="icon-wrapper success">
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                        </div>
-                                        <div className="item-text">
-                                            <div className="item-title">{t('notifications.paymentReceived')}</div>
-                                            <div className="item-time">1 {t('common.dayAgo')}</div>
-                                        </div>
-                                    </button>
-                                </div>
-                                <button className={`dropdown-footer ${isDarkMode ? 'dark' : ''}`}>
-                                    {t('notifications.viewAll')}
-                                </button>
-                            </div>
-                        )}
-                    </div>
 
                     {/* Profile dropdown */}
                     <div className="navbar-user-menu" ref={profileRef}>

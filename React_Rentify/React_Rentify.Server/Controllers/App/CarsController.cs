@@ -78,6 +78,9 @@ namespace React_Rentify.Server.Controllers
         {
             _logger.LogInformation("Retrieving car with Id {CarId}", id);
             var car = await _context.Set<Car>()
+                .Include(x=> x.Car_Year)
+                .Include(x=> x.Car_Model)
+                .ThenInclude(x=> x.Manufacturer)
                 .Include(c => c.Car_Attachments)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -109,7 +112,13 @@ namespace React_Rentify.Server.Controllers
                         FilePath = a.FilePath,
                         UploadedAt = a.UploadedAt
                     })
-                    .ToList()
+                    .ToList(),
+                Fields = new Car_Fields
+                {
+                    Model = car.Car_Model.Name,
+                    Manufacturer = car.Car_Model.Manufacturer.Name,
+                    Year = car.Car_Year.YearValue
+                }
             };
 
             _logger.LogInformation("Retrieved car {CarId}", id);
