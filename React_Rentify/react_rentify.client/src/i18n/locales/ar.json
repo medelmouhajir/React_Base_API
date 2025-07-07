@@ -7,7 +7,18 @@
     "all": "الكل",
     "cars": "السيارات",
     "customers": "العملاء",
-    "reservations": "الحجوزات"
+    "reservations": "الحجوزات",
+    "error": "حدث خطأ أثناء البحث.",
+    "resultsTitle": "نتائج البحث",
+    "found": "تم العثور على {{count}} نتيجة لـ \"{{query}}\".",
+    "noResults": "لم يتم العثور على نتائج.",
+    "carsResults": "السيارات ({{count}})",
+    "customersResults": "العملاء ({{count}})",
+    "reservationsResults": "الحجوزات ({{count}})",
+    "noCustomerName": "لا يوجد اسم عميل",
+    "placeholder": "ابحث هنا",
+    "clearAll": "مسح الكل",
+    "recentSearches": "عمليات البحث الأخيرة"
   },
   "common": {
     "saving": "جارٍ الحفظ...",
@@ -43,7 +54,11 @@
     "backToList": "العودة إلى القائمة",
     "currency": "MAD",
     "view": "عرض",
-    "download": "تنزيل"
+    "download": "تنزيل",
+    "back": "عودة",
+    "viewDetails": "عرض التفاصيل",
+    "uploading": "جارٍ الرفع...",
+    "upload": "رفع"
   },
   "landing": {
     "features": "الميزات",
@@ -136,7 +151,10 @@
     "resetPassword": "إعادة تعيين كلمة المرور",
     "checkYourEmail": "تحقق من بريدك الإلكتروني للحصول على تعليمات إعادة التعيين",
     "enterYourEmail": "أدخل بريدك الإلكتروني لتلقي رابط إعادة تعيين كلمة المرور",
-    "resetLinkSent": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني"
+    "resetLinkSent": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني",
+    "logoutSuccess": "تم تسجيل الخروج بنجاح",
+    "logoutError": "فشل تسجيل الخروج",
+    "logout": "تسجيل الخروج"
   },
   "filters": {
     "pageTitle": "إعدادات الفلترة",
@@ -212,7 +230,12 @@
       "costInvalid": "أدخل تكلفة صحيحة",
       "descriptionRequired": "الوصف مطلوب",
       "completedDateRequired": "تاريخ الإكمال مطلوب"
-    }
+    },
+    "status": {
+      "completed": "مكتمل",
+      "scheduled": "مجدول"
+    },
+    "cost": "التكلفة"
   },
   "reservation": {
     "list": {
@@ -363,7 +386,10 @@
       "price": "أدخل السعر",
       "selectCustomer": "اختر عميل"
     },
-    "noCustomersSelected": "لا يوجد عملاء محددين."
+    "noCustomersSelected": "لا يوجد عملاء محددين.",
+    "customer": "العميل",
+    "noCustomer": "لا يوجد عميل",
+    "price": "السعر"
   },
   "customerDetails": {
     "confirmRemoveBlacklist": "هل أنت متأكد أنك تريد إزالة هذا الإدخال من القائمة السوداء؟",
@@ -559,7 +585,10 @@
       "status": "الحالة",
       "hourlyRate": "السعر بالساعة",
       "deviceSerialNumber": "الرقم التسلسلي للجهاز",
-      "isTrackingActive": "التتبع مفعل"
+      "isTrackingActive": "التتبع مفعل",
+      "availability": "التوفر",
+      "trackingActive": "التتبع",
+      "vin": "رقم الهيكل"
     },
     "placeholders": {
       "selectModel": "اختر الطراز",
@@ -615,14 +644,59 @@
     "statusUnavailable": "غير متاح",
     "licensePlate": "رقم اللوحة",
     "color": "اللون",
-    "status": "الحالة",
     "dailyRate": "سعر اليوم",
     "hourlyRate": "سعر الساعة",
     "availability": "التوفر",
     "deviceSerial": "رقم الجهاز التسلسلي",
     "trackingActive": "التتبع نشط",
     "trackingEnabled": "مُمَكَّن",
-    "trackingDisabled": "غير مُمَكَّن"
+    "trackingDisabled": "غير مُمَكَّن",
+    "details": {
+      "error": "حدث خطأ أثناء تحميل تفاصيل السيارة.",
+      "notFound": "لم يتم العثور على السيارة.",
+      "noImage": "لا توجد صورة متاحة"
+    },
+    "status": {
+      "title": "الحالة",
+      "unknown": "غير معروف",
+      "currentlyRented": "مستأجرة حاليًا"
+    },
+    "tabs": {
+      "info": "معلومات",
+      "maintenance": "الصيانة",
+      "attachments": "المرفقات",
+      "reservations": "الحجوزات"
+    },
+    "actions": {
+      "addReservation": "إنشاء حجز"
+    },
+    "maintenance": {
+      "title": "سجلات الصيانة",
+      "addRecord": "إضافة سجل",
+      "noRecords": "لا توجد سجلات صيانة.",
+      "addFirstRecord": "إضافة السجل الأول"
+    },
+    "attachments": {
+      "title": "المرفقات",
+      "addFile": "إضافة ملف",
+      "noFiles": "لا توجد مرفقات.",
+      "addFirstFile": "إضافة الملف الأول",
+      "uploadTitle": "رفع مرفق",
+      "dragDrop": "اسحب وأفلت ملفًا أو انقر للتصفح",
+      "maxSize": "الحجم الأقصى للملف: 10 ميغابايت"
+    },
+    "reservations": {
+      "title": "الحجوزات",
+      "createNew": "إنشاء جديد",
+      "current": "الحجز الحالي",
+      "noCurrent": "لا يوجد حجز حالي.",
+      "upcoming": "الحجوزات القادمة",
+      "noUpcoming": "لا توجد حجوزات قادمة."
+    },
+    "tracking": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    }
   },
   "carDetails": {
     "fetchError": "خطأ في جلب تفاصيل السيارة.",
@@ -694,5 +768,40 @@
     "maintenanceDue": "موعد الصيانة",
     "unknown": "غير معروف",
     "notScheduled": "غير مجدول"
+  },
+  "sidebar": {
+    "dashboard": "لوحة التحكم",
+    "agencies": "الوكالات",
+    "filters": "المرشحات",
+    "settings": "الإعدادات",
+    "cars": "السيارات",
+    "customers": "العملاء",
+    "reservations": "الحجوزات",
+    "maintenances": "الصيانات",
+    "invoices": "الفواتير",
+    "reports": "التقارير",
+    "gpsTracking": "تتبع GPS",
+    "myReservations": "حجوزاتي",
+    "myInvoices": "فواتيري",
+    "collapse": "طي",
+    "expand": "توسيع",
+    "brand": "رينتيفاي"
+  },
+  "profile": {
+    "myProfile": "ملفي الشخصي"
+  },
+  "settings": {
+    "settings": "الإعدادات"
+  },
+  "theme": {
+    "light": "فاتح",
+    "dark": "غامق",
+    "system": "النظام"
+  },
+  "time": {
+    "minutesAgo": "منذ دقائق",
+    "hoursAgo": "قبل ساعات",
+    "daysAgo": "منذ أيام",
+    "justNow": "الآن"
   }
 }

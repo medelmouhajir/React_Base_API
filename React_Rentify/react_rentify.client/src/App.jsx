@@ -35,7 +35,7 @@ const CarsList = lazy(() => import('./pages/Cars/List/CarsList'));
 const ReservationsList = lazy(() => import('./pages/Reservations/List/ReservationsList'));
 const MaintenancesList = lazy(() => import('./pages/Maintenances/List/MaintenancesList'));
 const InvoicesList = lazy(() => import('./pages/Invoices/List/InvoicesList'));
-//const Profile = lazy(() => import('./pages/Profile'));
+const Profile = lazy(() => import('./pages/Profile/Profile'));
 //const Settings = lazy(() => import('./pages/Settings'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -52,7 +52,6 @@ const CarYear = lazy(() => import('./pages/Filters/CarYear/CarYear'));
 
 
 // Child routes for Cars
-//const CarDetails = lazy(() => import('./pages/cars/CarDetails'));
 const CarDetails = lazy(() => import('./pages/Cars/Details/CarDetails'));
 const AddCar = lazy(() => import('./pages/Cars/Add/AddCar'));
 const EditCar = lazy(() => import('./pages/Cars/Edit/EditCar'));
@@ -86,7 +85,7 @@ const AgencySettings = lazy(() => import('./pages/Settings/Agency/AgencySettings
 //const ReportsPage = lazy(() => import('./pages/reports/Reports'));
 //const AgenciesPage = lazy(() => import('./pages/admin/Agencies'));
 //const StaffPage = lazy(() => import('./pages/admin/Staff'));
-//const SearchPage = lazy(() => import('./pages/Search'));
+const SearchPage = lazy(() => import('./pages/Search/SearchPage'));
 
 
 function App() {
@@ -174,11 +173,11 @@ function App() {
                                 {/*<Route path="/staff" element={<StaffPage />} />*/}
 
                                 {/* User Routes */}
-                                {/*<Route path="/profile" element={<Profile />} />*/}
+                                <Route path="/profile" element={<Profile />} />
                                 {/*<Route path="/settings" element={<Settings />} />*/}
 
                                 {/* Search */}
-                                {/*<Route path="/search" element={<SearchPage />} />*/}
+                                <Route path="/search" element={<SearchPage />} />
                             </Route>
 
                             {/* 404 and redirects */}

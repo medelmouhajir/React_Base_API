@@ -35,6 +35,7 @@
     <Folder Include="src\pages\Landing\" />
     <Folder Include="src\pages\Maintenances\List\" />
     <Folder Include="src\pages\Maintenances\Edit\" />
+    <Folder Include="src\pages\Profile\" />
     <Folder Include="src\pages\Reservations\Add\" />
     <Folder Include="src\pages\Reservations\Edit\" />
     <Folder Include="src\pages\Reservations\List\" />

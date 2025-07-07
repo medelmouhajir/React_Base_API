@@ -7,7 +7,18 @@
     "all": "All",
     "cars": "Cars",
     "customers": "Customers",
-    "reservations": "Reservations"
+    "reservations": "Reservations",
+    "error": "An error occurred while searching.",
+    "resultsTitle": "Search Results",
+    "found": "Found {{count}} results for \"{{query}}\".",
+    "noResults": "No results found.",
+    "carsResults": "Cars ({{count}})",
+    "customersResults": "Customers ({{count}})",
+    "reservationsResults": "Reservations ({{count}})",
+    "noCustomerName": "No customer name",
+    "placeholder": "Search here",
+    "clearAll": "Clear all",
+    "recentSearches": "Recent searches"
   },
   "common": {
     "saving": "Saving...",
@@ -43,7 +54,11 @@
     "backToList": "Back to list",
     "currency": "MAD",
     "view": "View",
-    "download": "Download"
+    "download": "Download",
+    "back": "Back",
+    "viewDetails": "View Details",
+    "uploading": "Uploading...",
+    "upload": "Upload"
   },
   "landing": {
     "features": "Features",
@@ -147,7 +162,10 @@
     "resetPassword": "Reset Password",
     "checkYourEmail": "Check your email for reset instructions",
     "enterYourEmail": "Enter your email to receive a password reset link",
-    "resetLinkSent": "Password reset link sent to your email"
+    "resetLinkSent": "Password reset link sent to your email",
+    "logoutSuccess": "Logged out successfully",
+    "logoutError": "Failed to log out",
+    "logout": "Logout"
   },
   "filters": {
     "pageTitle": "Filter Settings",
@@ -224,7 +242,12 @@
       "costInvalid": "Enter a valid cost",
       "descriptionRequired": "Description is required",
       "completedDateRequired": "Completed date is required"
-    }
+    },
+    "status": {
+      "completed": "Completed",
+      "scheduled": "Scheduled"
+    },
+    "cost": "Cost"
   },
   "reservation": {
     "list": {
@@ -291,7 +314,8 @@
       "status": "Status",
       "pickupLocation": "Pickup Location",
       "dropoffLocation": "Dropoff Location",
-      "customers": "Customers"
+      "customers": "Customers",
+      "price": "Price"
     },
     "placeholders": {
       "price": "Enter price",
@@ -374,7 +398,10 @@
       "errorNoDates": "Please select start and end dates.",
       "error": "Failed to add reservation. Please try again."
     },
-    "noCustomersSelected": "No customers selected."
+    "noCustomersSelected": "No customers selected.",
+    "customer": "Customer",
+    "noCustomer": "No customer",
+    "price": "Price"
   },
   "customerDetails": {
     "confirmRemoveBlacklist": "Are you sure you want to remove this blacklist entry?",
@@ -570,7 +597,10 @@
       "status": "Status",
       "hourlyRate": "Hourly Rate",
       "deviceSerialNumber": "Device Serial Number",
-      "isTrackingActive": "Tracking Active"
+      "isTrackingActive": "Tracking Active",
+      "availability": "Availability",
+      "trackingActive": "Tracking",
+      "vin": "VIN"
     },
     "placeholders": {
       "selectModel": "Select model",
@@ -625,14 +655,59 @@
     "statusUnavailable": "Unavailable",
     "licensePlate": "License Plate",
     "color": "Color",
-    "status": "Status",
     "dailyRate": "Daily Rate",
     "hourlyRate": "Hourly Rate",
     "availability": "Availability",
     "deviceSerial": "Device Serial Number",
     "trackingActive": "Tracking Active",
     "trackingEnabled": "Enabled",
-    "trackingDisabled": "Disabled"
+    "trackingDisabled": "Disabled",
+    "details": {
+      "error": "Error loading car details.",
+      "notFound": "Car not found.",
+      "noImage": "No image available"
+    },
+    "status": {
+      "title": "Status",
+      "unknown": "Unknown",
+      "currentlyRented": "Currently Rented"
+    },
+    "tabs": {
+      "info": "Info",
+      "maintenance": "Maintenance",
+      "attachments": "Attachments",
+      "reservations": "Reservations"
+    },
+    "actions": {
+      "addReservation": "Create Reservation"
+    },
+    "maintenance": {
+      "title": "Maintenance Records",
+      "addRecord": "Add Record",
+      "noRecords": "No maintenance records found.",
+      "addFirstRecord": "Add First Record"
+    },
+    "attachments": {
+      "title": "Attachments",
+      "addFile": "Add File",
+      "noFiles": "No attachments found.",
+      "addFirstFile": "Add First File",
+      "uploadTitle": "Upload Attachment",
+      "dragDrop": "Drag & drop a file or click to browse",
+      "maxSize": "Maximum file size: 10MB"
+    },
+    "reservations": {
+      "title": "Reservations",
+      "createNew": "Create New",
+      "current": "Current Reservation",
+      "noCurrent": "No current reservation.",
+      "upcoming": "Upcoming Reservations",
+      "noUpcoming": "No upcoming reservations."
+    },
+    "tracking": {
+      "active": "Active",
+      "inactive": "Inactive"
+    }
   },
   "carDetails": {
     "fetchError": "Error fetching car details.",
@@ -704,5 +779,40 @@
     "maintenanceDue": "Maintenance Due",
     "unknown": "Unknown",
     "notScheduled": "Not Scheduled"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "agencies": "Agencies",
+    "filters": "Filters",
+    "settings": "Settings",
+    "cars": "Cars",
+    "customers": "Customers",
+    "reservations": "Reservations",
+    "maintenances": "Maintenances",
+    "invoices": "Invoices",
+    "reports": "Reports",
+    "gpsTracking": "GPS Tracking",
+    "myReservations": "My Reservations",
+    "myInvoices": "My Invoices",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "brand": "Rentify"
+  },
+  "profile": {
+    "myProfile": "My Profile"
+  },
+  "settings": {
+    "settings": "Settings"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "time": {
+    "minutesAgo": "Minutes ago",
+    "hoursAgo": "Hours ago",
+    "daysAgo": "Days ago",
+    "justNow": "Just now"
   }
 }

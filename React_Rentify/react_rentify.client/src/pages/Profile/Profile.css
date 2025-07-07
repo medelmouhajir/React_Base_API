@@ -1,0 +1,574 @@
+/* src/pages/Profile/Profile.css */
+
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-color: #4a90e2;
+    --primary-hover: #3b78c3;
+    --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    /* Light theme */
+    --bg-color-light: #ffffff;
+    --card-bg-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #60a5fa;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --error-bg-light: #fee2e2;
+    --error-text-light: #b91c1c;
+    --success-bg-light: #dcfce7;
+    --success-text-light: #166534;
+    /* Dark theme */
+    --bg-color-dark: #121212;
+    --card-bg-dark: #1e1e1e;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --border-color-dark: #374151;
+    --input-bg-dark: #1f2937;
+    --input-text-dark: #f9fafb;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #3b82f6;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --error-bg-dark: #7f1d1d;
+    --error-text-dark: #fca5a5;
+    --success-bg-dark: #064e3b;
+    --success-text-dark: #a7f3d0;
+    /* Common */
+    --border-radius: 0.5rem;
+    --transition-speed: 0.25s;
+}
+
+.danger-action-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--danger-color);
+}
+
+.danger-action-info {
+    font-size: 0.875rem;
+    color: var(--text-secondary-light);
+}
+
+.profile-container.dark .danger-action-info {
+    color: var(--text-secondary-dark);
+}
+
+/*---------------------------------------------
+  Responsive Design
+---------------------------------------------*/
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1.5rem 1rem;
+        gap: 1.5rem;
+    }
+
+    .profile-title {
+        font-size: 1.75rem;
+    }
+
+    .profile-section {
+        padding: 1.25rem;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .security-item {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .security-icon {
+        margin-bottom: 0.25rem;
+    }
+
+    .profile-picture-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-picture {
+        margin: 0 auto;
+    }
+
+    .danger-actions {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .form-actions {
+        justify-content: center;
+    }
+
+    .btn-primary, .btn-secondary, .btn-danger {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* Enhance for touch devices */
+@media (hover: none) {
+    .form-group input,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        padding: 0.875rem 1.25rem; /* Larger touch targets */
+    }
+
+    .btn-text {
+        padding: 0.75rem 0.5rem;
+    }
+}
+
+/*---------------------------------------------
+  Container and Layout
+---------------------------------------------*/
+.profile-container {
+    width: 90%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    background-color: transparent;
+}
+
+    /* Light theme (default) */
+    .profile-container.light {
+        color: var(--text-color-light);
+    }
+
+    /* Dark theme */
+    .profile-container.dark {
+        color: var(--text-color-dark);
+    }
+
+/*---------------------------------------------
+  Profile Title
+---------------------------------------------*/
+.profile-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+    position: relative;
+}
+
+    .profile-title::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: -0.75rem;
+        transform: translateX(-50%);
+        width: 4rem;
+        height: 0.25rem;
+        background-color: var(--primary-color);
+        border-radius: 9999px;
+    }
+
+/*---------------------------------------------
+  Profile Sections
+---------------------------------------------*/
+.profile-section {
+    background-color: var(--card-bg-light);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-light);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.profile-container.dark .profile-section {
+    background-color: var(--card-bg-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: var(--text-color-light);
+}
+
+.profile-container.dark .section-title {
+    color: var(--text-color-dark);
+}
+
+/*---------------------------------------------
+  Forms
+---------------------------------------------*/
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+    .form-group label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text-color-light);
+    }
+
+.profile-container.dark .form-group label {
+    color: var(--text-color-dark);
+}
+
+.form-group input {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--input-border-light);
+    border-radius: 0.375rem;
+    background-color: var(--input-bg-light);
+    color: var(--input-text-light);
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.profile-container.dark .form-group input {
+    border-color: var(--input-border-dark);
+    background-color: var(--input-bg-dark);
+    color: var(--input-text-dark);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--input-focus-border-light);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+.profile-container.dark .form-group input:focus {
+    border-color: var(--input-focus-border-dark);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.input-disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: #f3f4f6 !important;
+}
+
+.profile-container.dark .input-disabled {
+    background-color: #374151 !important;
+}
+
+.input-help-text {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary-light);
+}
+
+.profile-container.dark .input-help-text {
+    color: var(--text-secondary-dark);
+}
+
+/*---------------------------------------------
+  Buttons
+---------------------------------------------*/
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .btn-secondary:hover {
+        background-color: var(--secondary-hover);
+    }
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .btn-danger:hover {
+        background-color: var(--danger-hover);
+    }
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-weight: 500;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+    .btn-text:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+
+/*---------------------------------------------
+  Error and Success Messages
+---------------------------------------------*/
+.profile-error-message {
+    padding: 0.75rem 1rem;
+    background-color: var(--error-bg-light);
+    border-radius: 0.375rem;
+    margin-bottom: 1.25rem;
+}
+
+.profile-container.dark .profile-error-message {
+    background-color: var(--error-bg-dark);
+}
+
+.profile-error-message p {
+    color: var(--error-text-light);
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.profile-container.dark .profile-error-message p {
+    color: var(--error-text-dark);
+}
+
+.profile-success-message {
+    padding: 0.75rem 1rem;
+    background-color: var(--success-bg-light);
+    border-radius: 0.375rem;
+    margin-bottom: 1.25rem;
+}
+
+.profile-container.dark .profile-success-message {
+    background-color: var(--success-bg-dark);
+}
+
+.profile-success-message p {
+    color: var(--success-text-light);
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.profile-container.dark .profile-success-message p {
+    color: var(--success-text-dark);
+}
+
+/*---------------------------------------------
+  Password Requirements
+---------------------------------------------*/
+.password-requirements {
+    background-color: rgba(96, 165, 250, 0.1);
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.profile-container.dark .password-requirements {
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+.requirements-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color-light);
+}
+
+.profile-container.dark .requirements-title {
+    color: var(--text-color-dark);
+}
+
+.requirements-list {
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+}
+
+    .requirements-list li {
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+        color: var(--text-secondary-light);
+    }
+
+.profile-container.dark .requirements-list li {
+    color: var(--text-secondary-dark);
+}
+
+/*---------------------------------------------
+  Security Information
+---------------------------------------------*/
+.security-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.security-item {
+    display: flex;
+    gap: 1rem;
+}
+
+.security-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(96, 165, 250, 0.1);
+    border-radius: 9999px;
+    flex-shrink: 0;
+}
+
+.profile-container.dark .security-icon {
+    background-color: rgba(59, 130, 246, 0.15);
+}
+
+.security-icon .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--primary-color);
+}
+
+.security-content {
+    flex: 1;
+}
+
+.security-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-color-light);
+}
+
+.profile-container.dark .security-title {
+    color: var(--text-color-dark);
+}
+
+.security-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary-light);
+    margin-bottom: 0.5rem;
+}
+
+.profile-container.dark .security-text {
+    color: var(--text-secondary-dark);
+}
+
+/*---------------------------------------------
+  Profile Picture
+---------------------------------------------*/
+.profile-picture-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-picture {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 9999px;
+    overflow: hidden;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+    .profile-picture img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.profile-initial {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+}
+
+.profile-picture-info {
+    font-size: 0.875rem;
+    color: var(--text-secondary-light);
+    margin-bottom: 1rem;
+}
+
+.profile-container.dark .profile-picture-info {
+    color: var(--text-secondary-dark);
+}
+
+.picture-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+/*---------------------------------------------
+  Danger Zone
+---------------------------------------------*/
+.danger-zone {
+    border: 1px solid var(--danger-color);
+}
+
+.danger-title {
+    color: var(--danger-color) !important;
+}
+
+.danger-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
