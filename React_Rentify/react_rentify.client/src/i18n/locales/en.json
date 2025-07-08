@@ -58,81 +58,109 @@
     "back": "Back",
     "viewDetails": "View Details",
     "uploading": "Uploading...",
-    "upload": "Upload"
+    "upload": "Upload",
+    "open": "Open",
+    "comingSoon": "Coming Soon",
+    "saveChanges": "Save Changes",
+    "updating": "Updating..."
   },
   "landing": {
     "features": "Features",
     "benefits": "Benefits",
     "pricing": "Pricing",
     "contact": "Contact",
+    "heroTitle": "Manage Your Fleet Effortlessly",
+    "heroSubtitle": "All-in-one platform for car rental agencies.",
+    "heroCta": "Get Started",
+    "heroLearnMore": "Learn More",
+    "scrollDown": "Scroll Down",
 
+    "trustedBy": "Trusted by leading companies",
+
+    "featuresTitle": "Features",
+    "featuresDescription": "Everything you need to run your rental business.",
+    "featuresCta": "Start Free Trial",
     "featureFleetTitle": "Fleet Management",
-    "featureFleetDesc": "Manage your vehicle fleet efficiently with our comprehensive tools",
-    "featureGpsTitle": "GPS Tracking",
-    "featureGpsDesc": "Track your vehicles in real-time with our advanced GPS system",
+    "featureFleetDesc": "Control and organize your vehicles in real-time.",
+    "featureGpsTitle": "Real-Time GPS Tracking",
+    "featureGpsDesc": "Monitor vehicle locations with live GPS updates.",
     "featureCustomerTitle": "Customer Management",
-    "featureCustomerDesc": "Build and maintain customer relationships with ease",
-    "featureReportsTitle": "Reports & Analytics",
-    "featureReportsDesc": "Make data-driven decisions with our powerful reporting tools",
+    "featureCustomerDesc": "Keep track of customer profiles and rental histories.",
+    "featureReportsTitle": "Advanced Reporting",
+    "featureReportsDesc": "Generate detailed reports to drive your decisions.",
 
-    "benefitsTitle": "Why Choose Rentify",
-    "benefitsDescription": "Discover how our car rental management system can transform your business",
+    "benefitsTitle": "Benefits",
+    "benefitsDescription": "Why choose Rentify?",
+    "benefitsCta": "Sign Up Now",
     "benefitTimeTitle": "Save Time",
-    "benefitTimeDesc": "Automate routine tasks and focus on growing your business",
-    "benefitCostTitle": "Reduce Costs",
-    "benefitCostDesc": "Optimize operations and eliminate unnecessary expenses",
+    "benefitTimeDesc": "Automate tasks and reduce manual work.",
+    "benefitCostTitle": "Cut Costs",
+    "benefitCostDesc": "Optimize operations to lower expenses.",
     "benefitInsightsTitle": "Gain Insights",
-    "benefitInsightsDesc": "Access powerful analytics to make smarter business decisions",
-    "benefitsCta": "Get Started Today",
+    "benefitInsightsDesc": "Analyze data to improve your business.",
 
     "testimonialsTitle": "What Our Clients Say",
-    "testimonialsDescription": "Hear from businesses that have transformed their operations with Rentify",
-    "testimonial1": "Rentify has completely streamlined our rental operations. We've seen a 30% increase in efficiency and our customers love the seamless experience.",
+    "testimonialsDescription": "Real feedback from our users.",
+    "testimonial1": "Rentify has transformed our rental operations. It's intuitive and powerful.",
+    "testimonialRole1": "CEO, AutoRent",
+    "testimonial2": "The GPS tracking feature is a game-changer for our business.",
+    "testimonialRole2": "Operations Manager, CityDrive",
+    "testimonial3": "Excellent support and reporting tools. Highly recommended.",
+    "testimonialRole3": "Fleet Supervisor, FastCars",
 
-    "pricingTitle": "Flexible Pricing Plans",
-    "pricingDescription": "Choose the perfect plan for your business needs",
-    "pricingCurrency": "USD",
-    "pricingPeriod": "/month",
-    "pricingNote": "All plans include 24/7 support and regular updates",
+    "pricingTitle": "Pricing Plans",
+    "pricingDescription": "Choose a plan that fits your needs.",
+    "pricingPopular": "Most Popular",
+    "pricingNote": "No credit card required to start your free trial.",
+
+    "pricingCurrency": "MAD",
+    "pricingPeriod": "month",
 
     "pricingBasicName": "Basic",
-    "pricingBasicDesc": "Perfect for small rental businesses",
-    "pricingBasicFeature1": "Up to 10 vehicles",
-    "pricingBasicFeature2": "Basic reporting",
-    "pricingBasicFeature3": "Customer management",
-    "pricingBasicFeature4": "Email support",
-    "pricingBasicCta": "Start with Basic",
+    "pricingBasicDesc": "Essential tools for small agencies.",
+    "pricingBasicFeature1": "Unlimited reservations",
+    "pricingBasicFeature2": "Email support",
+    "pricingBasicFeature3": "Basic analytics",
+    "pricingBasicFeature4": "Mobile access",
+    "pricingBasicCta": "Start Basic",
 
-    "pricingProName": "Professional",
-    "pricingProDesc": "Ideal for growing businesses",
-    "pricingProFeature1": "Up to 50 vehicles",
-    "pricingProFeature2": "Advanced reporting",
-    "pricingProFeature3": "Customer management",
-    "pricingProFeature4": "Priority support",
-    "pricingProFeature5": "GPS tracking",
-    "pricingProCta": "Choose Pro",
+    "pricingProName": "Pro",
+    "pricingProDesc": "Advanced features for growing businesses.",
+    "pricingProFeature1": "All Basic features",
+    "pricingProFeature2": "Priority support",
+    "pricingProFeature3": "GPS tracking",
+    "pricingProFeature4": "Custom reports",
+    "pricingProFeature5": "API access",
+    "pricingProCta": "Go Pro",
 
     "pricingEnterpriseName": "Enterprise",
-    "pricingEnterpriseDesc": "For large-scale operations",
-    "pricingEnterpriseFeature1": "Unlimited vehicles",
-    "pricingEnterpriseFeature2": "Custom reporting",
-    "pricingEnterpriseFeature3": "Customer management",
-    "pricingEnterpriseFeature4": "24/7 dedicated support",
-    "pricingEnterpriseFeature5": "GPS tracking",
-    "pricingEnterpriseFeature6": "Custom integrations",
+    "pricingEnterpriseDesc": "Full suite for large fleets.",
+    "pricingEnterpriseFeature1": "All Pro features",
+    "pricingEnterpriseFeature2": "Dedicated account manager",
+    "pricingEnterpriseFeature3": "Custom integrations",
+    "pricingEnterpriseFeature4": "White-label",
+    "pricingEnterpriseFeature5": "Advanced security",
+    "pricingEnterpriseFeature6": "Unlimited users",
     "pricingEnterpriseCta": "Contact Sales",
 
-    "ctaTitle": "Ready to transform your rental business?",
-    "ctaDescription": "Join thousands of businesses already using Rentify",
-    "ctaButtonPrimary": "Get Started",
-    "ctaButtonSecondary": "Login",
+    "ctaTitle": "Ready to Accelerate Your Business?",
+    "ctaDescription": "Join hundreds of agencies using Rentify today.",
+    "ctaButtonPrimary": "Create Account",
+    "ctaButtonSecondary": "Learn More",
 
-    "contactTitle": "Contact Us",
-    "contactDescription": "Have questions? Get in touch with our team",
-    "contactName": "Your Name",
-    "contactEmail": "Email Address",
+    "contactTitle": "Get in Touch",
+    "contactDescription": "We're here to help you.",
+    "contactName": "Name",
+    "contactEmail": "Email",
+    "contactSubject": "Subject",
     "contactMessage": "Message",
-    "contactSubmit": "Send Message"
+    "contactSubmit": "Send Message",
+
+    "contactPhoneTitle": "Phone",
+    "contactEmailTitle": "Email",
+    "contactAddressTitle": "Address",
+    "contactAddressLine1": "123 Casablanca Street",
+    "contactAddressLine2": "Casablanca, Morocco"
   },
   "auth": {
     "welcomeBack": "Welcome Back",
@@ -799,10 +827,81 @@
     "brand": "Rentify"
   },
   "profile": {
-    "myProfile": "My Profile"
+    "myProfile": "My Profile",
+    "title": "My Profile",
+    "personalInformation": "Personal Information",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Enter your last name",
+    "phoneNumber": "Phone Number",
+    "phoneNumberPlaceholder": "Enter your phone number",
+    "email": "Email",
+    "emailNotEditable": "Email cannot be changed",
+
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "currentPasswordPlaceholder": "Enter current password",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter new password",
+
+    "passwordRequirements": "Password Requirements",
+    "passwordRequirement1": "At least 6 characters",
+    "passwordRequirement2": "Include uppercase and lowercase letters",
+    "passwordRequirement3": "Include numbers or symbols",
+    "updatePassword": "Update Password",
+
+    "accountSecurity": "Account Security",
+    "lastLogin": "Last Login",
+    "lastLoginInfo": "You last logged in on {{date}}.",
+    "twoFactorAuthentication": "Two-Factor Authentication",
+    "twoFactorAuthenticationInfo": "Add an extra layer of security by requiring a second form of verification when signing in.",
+    "setupTwoFactor": "Set up Two-Factor Authentication",
+
+    "profilePicture": "Profile Picture",
+    "profilePictureAlt": "Profile Picture",
+    "profilePictureInfo": "Upload a profile picture to personalize your account.",
+    "uploadPicture": "Upload Picture",
+    "removePicture": "Remove Picture",
+
+    "dangerZone": "Danger Zone",
+    "deleteAccount": "Delete Account",
+    "deleteAccountInfo": "Permanently delete your account. This action cannot be undone.",
+    "deleteAccountButton": "Delete Account",
+
+    "errors": {
+      "firstNameRequired": "First name is required",
+      "updateFailed": "Failed to update profile",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "passwordChangeFailed": "Failed to change password"
+    },
+
+    "notifications": {
+      "profileUpdated": "Profile updated successfully",
+      "passwordChanged": "Password changed successfully"
+    },
+
+    "passwordChangeSuccess": "Your password has been changed successfully"
   },
   "settings": {
-    "settings": "Settings"
+    "settings": "Settings",
+    "pageTitle": "Settings",
+    "pageDescription": "Configure your application preferences and account settings",
+    "agency": {
+      "title": "Agency Settings",
+      "description": "Manage your agency details, contact information, and preferences"
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "description": "Update your personal information, change password, and manage account preferences"
+    },
+    "features": {
+      "title": "Additional Features",
+      "description": "Coming soon – Manage additional app features and integrations"
+    }
   },
   "theme": {
     "light": "Light",
@@ -814,5 +913,12 @@
     "hoursAgo": "Hours ago",
     "daysAgo": "Days ago",
     "justNow": "Just now"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for doesn’t exist.",
+    "goHome": "Go Home",
+    "goBack": "Go Back",
+    "easterEgg": "Oops! This page took a wrong turn."
   }
 }

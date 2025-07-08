@@ -36,7 +36,7 @@ const ReservationsList = lazy(() => import('./pages/Reservations/List/Reservatio
 const MaintenancesList = lazy(() => import('./pages/Maintenances/List/MaintenancesList'));
 const InvoicesList = lazy(() => import('./pages/Invoices/List/InvoicesList'));
 const Profile = lazy(() => import('./pages/Profile/Profile'));
-//const Settings = lazy(() => import('./pages/Settings'));
+const SettingsHome = lazy(() => import('./pages/Settings/Home/SettingsHome'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 
@@ -81,7 +81,7 @@ const AgencySettings = lazy(() => import('./pages/Settings/Agency/AgencySettings
 
 //// Other standalone pages
 //const MaintenancePage = lazy(() => import('./pages/maintenance/Maintenance'));
-//const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
+const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
 //const ReportsPage = lazy(() => import('./pages/reports/Reports'));
 //const AgenciesPage = lazy(() => import('./pages/admin/Agencies'));
 //const StaffPage = lazy(() => import('./pages/admin/Staff'));
@@ -160,13 +160,14 @@ function App() {
                                 {/*<Route path="/maintenance" element={<MaintenancePage />} />*/}
 
                                 {/* GPS Tracking */}
-                                {/*<Route path="/gps" element={<GpsHome />} />*/}
+                                <Route path="/gps" element={<GpsHome />} />
 
                                 {/* Reports */}
                                 {/*<Route path="/reports" element={<ReportsPage />} />*/}
 
                                 {/* Settings */}
                                 <Route path="/settings/agency" element={<AgencySettings />} />
+                                <Route path="/settings" element={<SettingsHome />} />
 
                                 {/* Admin Routes */}
                                 {/*<Route path="/agencies" element={<AgenciesPage />} />*/}
@@ -174,7 +175,6 @@ function App() {
 
                                 {/* User Routes */}
                                 <Route path="/profile" element={<Profile />} />
-                                {/*<Route path="/settings" element={<Settings />} />*/}
 
                                 {/* Search */}
                                 <Route path="/search" element={<SearchPage />} />

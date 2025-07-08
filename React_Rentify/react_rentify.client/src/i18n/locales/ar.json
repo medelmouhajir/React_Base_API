@@ -58,72 +58,109 @@
     "back": "عودة",
     "viewDetails": "عرض التفاصيل",
     "uploading": "جارٍ الرفع...",
-    "upload": "رفع"
+    "upload": "رفع",
+    "open": "افتح",
+    "comingSoon": "قريبًا",
+    "saveChanges": "حفظ التغييرات",
+    "updating": "جاري التحديث..."
   },
   "landing": {
     "features": "الميزات",
     "benefits": "الفوائد",
     "pricing": "الأسعار",
     "contact": "اتصل بنا",
+    "heroTitle": "أدر أسطولك بسهولة",
+    "heroSubtitle": "منصة شاملة لوكالات تأجير السيارات.",
+    "heroCta": "ابدأ الآن",
+    "heroLearnMore": "اكتشف المزيد",
+    "scrollDown": "انزل للأسفل",
+
+    "trustedBy": "موثوق به من قبل الشركات الرائدة",
+
+    "featuresTitle": "الميزات",
+    "featuresDescription": "كل ما تحتاجه لتشغيل عملك التأجيري.",
+    "featuresCta": "جرب مجانًا",
     "featureFleetTitle": "إدارة الأسطول",
-    "featureFleetDesc": "قم بإدارة أسطول مركباتك بكفاءة باستخدام أدواتنا الشاملة",
-    "featureGpsTitle": "تتبع نظام تحديد المواقع",
-    "featureGpsDesc": "تابع مركباتك في الوقت الفعلي باستخدام نظام GPS المتقدم لدينا",
+    "featureFleetDesc": "تحكم ونظم مركباتك في الوقت الحقيقي.",
+    "featureGpsTitle": "تتبع GPS فوري",
+    "featureGpsDesc": "راقب مواقع المركبات بتحديثات مباشرة.",
     "featureCustomerTitle": "إدارة العملاء",
-    "featureCustomerDesc": "قم ببناء والحفاظ على علاقات العملاء بسهولة",
-    "featureReportsTitle": "التقارير والتحليلات",
-    "featureReportsDesc": "اتخذ قرارات قائمة على البيانات باستخدام أدوات التقارير القوية لدينا",
-    "benefitsTitle": "لماذا تختار Rentify",
-    "benefitsDescription": "اكتشف كيف يمكن لنظام إدارة تأجير السيارات لدينا أن يحول عملك",
+    "featureCustomerDesc": "تعقب ملفات العملاء وتاريخ التأجير.",
+    "featureReportsTitle": "التقارير المتقدمة",
+    "featureReportsDesc": "أنشئ تقارير مفصلة لدعم قراراتك.",
+
+    "benefitsTitle": "الفوائد",
+    "benefitsDescription": "لماذا تختار Rentify؟",
+    "benefitsCta": "سجل الآن",
     "benefitTimeTitle": "توفير الوقت",
-    "benefitTimeDesc": "قم بأتمتة المهام الروتينية وركز على تنمية عملك",
+    "benefitTimeDesc": "أتمتة المهام وتقليل الأعمال اليدوية.",
     "benefitCostTitle": "خفض التكاليف",
-    "benefitCostDesc": "قم بتحسين العمليات والقضاء على النفقات غير الضرورية",
-    "benefitInsightsTitle": "اكتساب رؤى",
-    "benefitInsightsDesc": "احصل على تحليلات قوية لاتخاذ قرارات تجارية أذكى",
-    "benefitsCta": "ابدأ اليوم",
+    "benefitCostDesc": "تحسين العمليات لتقليل النفقات.",
+    "benefitInsightsTitle": "الحصول على رؤى",
+    "benefitInsightsDesc": "حلل البيانات لتحسين عملك.",
+
     "testimonialsTitle": "ماذا يقول عملاؤنا",
-    "testimonialsDescription": "استمع إلى آراء الشركات التي حوّلت عملياتها باستخدام Rentify",
-    "testimonial1": "لقد قام Rentify بتبسيط عمليات التأجير بالكامل. شهدنا زيادة بنسبة 30٪ في الكفاءة ويحب عملاؤنا هذه التجربة السلسة.",
-    "pricingTitle": "خطط أسعار مرنة",
-    "pricingDescription": "اختر الخطة المثالية لاحتياجات عملك",
-    "pricingCurrency": "دولار أمريكي",
-    "pricingPeriod": "/الشهر",
-    "pricingNote": "جميع الخطط تشمل دعمًا على مدار الساعة وتحديثات منتظمة",
-    "pricingBasicName": "أساسي",
-    "pricingBasicDesc": "مثالي للأعمال الصغيرة في مجال التأجير",
-    "pricingBasicFeature1": "حتى 10 مركبات",
-    "pricingBasicFeature2": "تقارير أساسية",
-    "pricingBasicFeature3": "إدارة العملاء",
-    "pricingBasicFeature4": "دعم عبر البريد الإلكتروني",
-    "pricingBasicCta": "ابدأ بالأساسي",
-    "pricingProName": "احترافي",
-    "pricingProDesc": "مثالي للأعمال النامية",
-    "pricingProFeature1": "حتى 50 مركبة",
-    "pricingProFeature2": "تقارير متقدمة",
-    "pricingProFeature3": "إدارة العملاء",
-    "pricingProFeature4": "دعم مميز",
-    "pricingProFeature5": "تتبع GPS",
-    "pricingProCta": "اختر الاحترافي",
+    "testimonialsDescription": "آراء حقيقية من مستخدمينا.",
+    "testimonial1": "لقد غير Rentify عملية التأجير لدينا. إنه سهل وقوي.",
+    "testimonialRole1": "الرئيس التنفيذي، AutoRent",
+    "testimonial2": "ميزة تتبع GPS مغيرة للعبة بالنسبة لنا.",
+    "testimonialRole2": "مدير العمليات، CityDrive",
+    "testimonial3": "دعم ممتاز وأدوات تقريرية. أوصي به بشدة.",
+    "testimonialRole3": "مشرف الأسطول، FastCars",
+
+    "pricingTitle": "خطط التسعير",
+    "pricingDescription": "اختر الخطة التي تناسبك.",
+    "pricingPopular": "الأكثر شيوعًا",
+    "pricingNote": "لا حاجة لبطاقة ائتمان لبدء التجربة المجانية.",
+
+    "pricingCurrency": "درهم",
+    "pricingPeriod": "شهر",
+
+    "pricingBasicName": "الأساسي",
+    "pricingBasicDesc": "الأدوات الأساسية للوكالات الصغيرة.",
+    "pricingBasicFeature1": "حجوزات غير محدودة",
+    "pricingBasicFeature2": "دعم عبر البريد الإلكتروني",
+    "pricingBasicFeature3": "تحليلات أساسية",
+    "pricingBasicFeature4": "الوصول عبر الجوال",
+    "pricingBasicCta": "ابدأ الأساسي",
+
+    "pricingProName": "الاحترافي",
+    "pricingProDesc": "ميزات متقدمة للشركات النامية.",
+    "pricingProFeature1": "جميع ميزات الأساسي",
+    "pricingProFeature2": "دعم ذي أولوية",
+    "pricingProFeature3": "تتبع GPS",
+    "pricingProFeature4": "تقارير مخصصة",
+    "pricingProFeature5": "الوصول إلى API",
+    "pricingProCta": "اذهب للاحترافي",
+
     "pricingEnterpriseName": "المؤسسي",
-    "pricingEnterpriseDesc": "للعمليات على نطاق واسع",
-    "pricingEnterpriseFeature1": "مركبات غير محدودة",
-    "pricingEnterpriseFeature2": "تقارير مخصصة",
-    "pricingEnterpriseFeature3": "إدارة العملاء",
-    "pricingEnterpriseFeature4": "دعم مخصص على مدار الساعة",
-    "pricingEnterpriseFeature5": "تتبع GPS",
-    "pricingEnterpriseFeature6": "تكاملات مخصصة",
-    "pricingEnterpriseCta": "تواصل مع المبيعات",
-    "ctaTitle": "هل أنت جاهز لتحويل عملك في التأجير؟",
-    "ctaDescription": "انضم إلى آلاف الشركات التي تستخدم Rentify بالفعل",
-    "ctaButtonPrimary": "ابدأ الآن",
-    "ctaButtonSecondary": "تسجيل الدخول",
+    "pricingEnterpriseDesc": "مجموعة كاملة للأساطيل الكبيرة.",
+    "pricingEnterpriseFeature1": "جميع ميزات الاحترافي",
+    "pricingEnterpriseFeature2": "مدير حساب مخصص",
+    "pricingEnterpriseFeature3": "تكاملات مخصصة",
+    "pricingEnterpriseFeature4": "علامة تجارية خاصة",
+    "pricingEnterpriseFeature5": "أمان متقدم",
+    "pricingEnterpriseFeature6": "مستخدمين غير محدودين",
+    "pricingEnterpriseCta": "اتصل بالمبيعات",
+
+    "ctaTitle": "هل أنت جاهز لتسريع أعمالك؟",
+    "ctaDescription": "انضم لمئات الوكالات التي تستخدم Rentify اليوم.",
+    "ctaButtonPrimary": "إنشاء حساب",
+    "ctaButtonSecondary": "اكتشف المزيد",
+
     "contactTitle": "تواصل معنا",
-    "contactDescription": "هل لديك أسئلة؟ تواصل مع فريقنا",
-    "contactName": "اسمك",
+    "contactDescription": "نحن هنا لمساعدتك.",
+    "contactName": "الاسم",
     "contactEmail": "البريد الإلكتروني",
+    "contactSubject": "الموضوع",
     "contactMessage": "الرسالة",
-    "contactSubmit": "إرسال الرسالة"
+    "contactSubmit": "إرسال الرسالة",
+
+    "contactPhoneTitle": "الهاتف",
+    "contactEmailTitle": "البريد الإلكتروني",
+    "contactAddressTitle": "العنوان",
+    "contactAddressLine1": "123 شارع الدار البيضاء",
+    "contactAddressLine2": "الدار البيضاء، المغرب"
   },
   "auth": {
     "welcomeBack": "مرحبًا بعودتك",
@@ -788,10 +825,81 @@
     "brand": "رينتيفاي"
   },
   "profile": {
-    "myProfile": "ملفي الشخصي"
+    "myProfile": "ملفي الشخصي",
+    "title": "ملفي الشخصي",
+    "personalInformation": "المعلومات الشخصية",
+    "firstName": "الاسم الأول",
+    "firstNamePlaceholder": "أدخل اسمك الأول",
+    "lastName": "اسم العائلة",
+    "lastNamePlaceholder": "أدخل اسم العائلة",
+    "phoneNumber": "رقم الهاتف",
+    "phoneNumberPlaceholder": "أدخل رقم هاتفك",
+    "email": "البريد الإلكتروني",
+    "emailNotEditable": "لا يمكن تغيير البريد الإلكتروني",
+
+    "changePassword": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "currentPasswordPlaceholder": "أدخل كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور الجديدة",
+
+    "passwordRequirements": "متطلبات كلمة المرور",
+    "passwordRequirement1": "لا تقل عن 6 أحرف",
+    "passwordRequirement2": "تتضمن حروفًا كبيرة وصغيرة",
+    "passwordRequirement3": "تتضمن أرقامًا أو رموزًا",
+    "updatePassword": "تحديث كلمة المرور",
+
+    "accountSecurity": "أمان الحساب",
+    "lastLogin": "آخر تسجيل دخول",
+    "lastLoginInfo": "آخر تسجيل دخول كان في {{date}}.",
+    "twoFactorAuthentication": "المصادقة الثنائية",
+    "twoFactorAuthenticationInfo": "أضف طبقة إضافية من الأمان بطلب شكل ثاني من التحقق عند تسجيل الدخول.",
+    "setupTwoFactor": "إعداد المصادقة الثنائية",
+
+    "profilePicture": "صورة الملف الشخصي",
+    "profilePictureAlt": "صورة الملف الشخصي",
+    "profilePictureInfo": "حمّل صورة ملف شخصي لتخصيص حسابك.",
+    "uploadPicture": "تحميل صورة",
+    "removePicture": "إزالة الصورة",
+
+    "dangerZone": "منطقة الخطر",
+    "deleteAccount": "حذف الحساب",
+    "deleteAccountInfo": "احذف حسابك نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+    "deleteAccountButton": "حذف الحساب",
+
+    "errors": {
+      "firstNameRequired": "الاسم الأول مطلوب",
+      "updateFailed": "فشل تحديث الملف الشخصي",
+      "passwordsDoNotMatch": "كلمات المرور غير متطابقة",
+      "passwordTooShort": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+      "passwordChangeFailed": "فشل تغيير كلمة المرور"
+    },
+
+    "notifications": {
+      "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+      "passwordChanged": "تم تغيير كلمة المرور بنجاح"
+    },
+
+    "passwordChangeSuccess": "تم تغيير كلمة المرور بنجاح"
   },
   "settings": {
-    "settings": "الإعدادات"
+    "settings": "الإعدادات",
+    "pageTitle": "الإعدادات",
+    "pageDescription": "قم بتكوين تفضيلات التطبيق وإعدادات الحساب",
+    "agency": {
+      "title": "إعدادات الوكالة",
+      "description": "إدارة تفاصيل وكالتك ومعلومات الاتصال والتفضيلات"
+    },
+    "profile": {
+      "title": "إعدادات الملف الشخصي",
+      "description": "تحديث معلوماتك الشخصية، تغيير كلمة المرور، وإدارة تفضيلات الحساب"
+    },
+    "features": {
+      "title": "ميزات إضافية",
+      "description": "قريبًا – إدارة ميزات وإضافات التطبيق الإضافية"
+    }
   },
   "theme": {
     "light": "فاتح",
@@ -803,5 +911,12 @@
     "hoursAgo": "قبل ساعات",
     "daysAgo": "منذ أيام",
     "justNow": "الآن"
+  },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "description": "عذرًا، الصفحة التي تبحث عنها غير موجودة.",
+    "goHome": "الصفحة الرئيسية",
+    "goBack": "الرجوع",
+    "easterEgg": "عفوًا! اتخذت هذه الصفحة مسارًا خاطئًا."
   }
 }

@@ -1,4 +1,4 @@
-/* src/pages/Landing/LandingPage.css */
+﻿/* src/pages/Landing/LandingPage.css */
 
 /* Base Styles */
 .landing-page {
@@ -281,7 +281,7 @@
     }
 
 .company-logo {
-    height: 40px;
+    height: 70px;
     width: auto;
 }
 

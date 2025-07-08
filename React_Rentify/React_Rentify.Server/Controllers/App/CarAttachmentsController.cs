@@ -54,7 +54,7 @@ namespace React_Rentify.Server.Controllers.App
                 .Where(a => a.CarId == carId)
                 .ToListAsync();
 
-            var dtoList = attachments.Select(a => new CarAttachmentDto
+            var dtoList = attachments.Select(a => new Car_AttachmentDto
             {
                 Id = a.Id,
                 FileName = a.FileName,
@@ -84,7 +84,7 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Attachment with Id '{id}' for car '{carId}' not found." });
             }
 
-            var dto = new CarAttachmentDto
+            var dto = new Car_AttachmentDto
             {
                 Id = attachment.Id,
                 FileName = attachment.FileName,
@@ -101,13 +101,13 @@ namespace React_Rentify.Server.Controllers.App
         /// Adds a new attachment to a car.
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> AddAttachment(Guid carId, [FromBody] CreateCarAttachmentDto dto)
+        public async Task<IActionResult> AddAttachment(Guid carId, [FromBody] CreateCar_AttachmentDto dto)
         {
             _logger.LogInformation("Adding attachment to car {CarId}", carId);
 
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("Invalid CreateCarAttachmentDto for car {CarId}", carId);
+                _logger.LogWarning("Invalid CreateCar_AttachmentDto for car {CarId}", carId);
                 return BadRequest(ModelState);
             }
 
@@ -130,7 +130,7 @@ namespace React_Rentify.Server.Controllers.App
             _context.Set<Car_Attachment>().Add(attachment);
             await _context.SaveChangesAsync();
 
-            var responseDto = new CarAttachmentDto
+            var responseDto = new Car_AttachmentDto
             {
                 Id = attachment.Id,
                 FileName = attachment.FileName,
@@ -206,7 +206,7 @@ namespace React_Rentify.Server.Controllers.App
             _context.Set<Car_Attachment>().Add(attachment);
             await _context.SaveChangesAsync();
 
-            var dto = new CarAttachmentDto
+            var dto = new Car_AttachmentDto
             {
                 Id = attachment.Id,
                 FileName = attachment.FileName,
@@ -263,7 +263,7 @@ namespace React_Rentify.Server.Controllers.App
 
     #region DTOs
 
-    public class CarAttachmentDto
+    public class Car_AttachmentDto
     {
         public Guid Id { get; set; }
         public string FileName { get; set; }
@@ -271,7 +271,7 @@ namespace React_Rentify.Server.Controllers.App
         public DateTime UploadedAt { get; set; }
     }
 
-    public class CreateCarAttachmentDto
+    public class CreateCar_AttachmentDto
     {
         public string FileName { get; set; }
         public string FilePath { get; set; }

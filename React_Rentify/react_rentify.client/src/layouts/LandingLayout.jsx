@@ -66,8 +66,8 @@ const LandingLayout = () => {
             <header className={`landing-header ${isScrolled ? 'landing-header-scrolled' : ''} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
                 <div className="landing-header-container">
                     {/* Logo */}
-                    <a href="#" className="landing-logo">
-                        <img src="/vite.svg" alt="Rentify" />
+                    <a href="/" className="landing-logo">
+                        <img src="/logo.png" alt="Rentify" />
                         <span className={`landing-logo-text ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Rentify</span>
                     </a>
 

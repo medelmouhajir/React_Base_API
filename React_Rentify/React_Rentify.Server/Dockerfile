@@ -15,6 +15,8 @@ RUN apt-get install curl
 RUN curl -sL https://deb.nodesource.com/setup_20.x | bash
 RUN apt-get -y install nodejs
 
+RUN mkdir -p /https && \
+    dotnet dev-certs https -ep /https/aspnetapp.pfx -p password
 
 FROM with-node AS build
 ARG BUILD_CONFIGURATION=Release

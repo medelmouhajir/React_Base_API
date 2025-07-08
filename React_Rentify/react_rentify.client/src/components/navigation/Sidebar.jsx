@@ -195,7 +195,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
 
                     {/* Logo in center */}
                     <div className="logo-section">
-                        <img src="/vite.svg" alt="Rentify Logo" className="logo-img" />
+                        <img src="/logo.png" alt="Rentify Logo" className="logo-img" />
                         {isOpen && <span className="logo-text">Rentify</span>}
                         {!isOpen && <span className="tooltip-logo">Rentify</span>}
                     </div>

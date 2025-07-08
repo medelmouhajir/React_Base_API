@@ -219,7 +219,7 @@ const LandingPage = () => {
                 <div className="hero-image animate-on-scroll">
                     <div className="hero-image-container">
                         <img
-                            src="/assets/dashboard-preview.png"
+                            src="/dashboard.png"
                             alt="Rentify Dashboard Preview"
                             className="dashboard-preview"
                         />
@@ -239,28 +239,16 @@ const LandingPage = () => {
                 <h3 className="trusted-title animate-on-scroll">{t('landing.trustedBy')}</h3>
                 <div className="trusted-logos">
                     <div className="trusted-logo animate-on-scroll">
-                        <svg className="company-logo" width="120" height="40" viewBox="0 0 120 40">
-                            <path d="M20 10h80v20H20z" fill="none" stroke="currentColor" strokeWidth="2" />
-                            <text x="60" y="25" textAnchor="middle" fontSize="12" fill="currentColor">Company A</text>
-                        </svg>
+                        <img className="company-logo" width="120" height="70" src="/companies/kc-cars-logo.png"/>
                     </div>
                     <div className="trusted-logo animate-on-scroll">
-                        <svg className="company-logo" width="120" height="40" viewBox="0 0 120 40">
-                            <path d="M20 10h80v20H20z" fill="none" stroke="currentColor" strokeWidth="2" />
-                            <text x="60" y="25" textAnchor="middle" fontSize="12" fill="currentColor">Company B</text>
-                        </svg>
+                        <img className="company-logo" width="120" height="70" src="/companies/kc-cars-logo.png" />
                     </div>
                     <div className="trusted-logo animate-on-scroll">
-                        <svg className="company-logo" width="120" height="40" viewBox="0 0 120 40">
-                            <path d="M20 10h80v20H20z" fill="none" stroke="currentColor" strokeWidth="2" />
-                            <text x="60" y="25" textAnchor="middle" fontSize="12" fill="currentColor">Company C</text>
-                        </svg>
+                        <img className="company-logo" width="120" height="70" src="/companies/kc-cars-logo.png" />
                     </div>
                     <div className="trusted-logo animate-on-scroll">
-                        <svg className="company-logo" width="120" height="40" viewBox="0 0 120 40">
-                            <path d="M20 10h80v20H20z" fill="none" stroke="currentColor" strokeWidth="2" />
-                            <text x="60" y="25" textAnchor="middle" fontSize="12" fill="currentColor">Company D</text>
-                        </svg>
+                        <img className="company-logo" width="120" height="70" src="/companies/kc-cars-logo.png" />
                     </div>
                 </div>
             </section>
@@ -350,7 +338,7 @@ const LandingPage = () => {
                         <p className="testimonial-text">{t('landing.testimonial1')}</p>
                         <div className="testimonial-author">
                             <img
-                                src="/assets/testimonial-1.jpg"
+                                src="https://placehold.co/100"
                                 alt="Testimonial Author"
                                 className="testimonial-avatar"
                                 onError={(e) => {
@@ -370,7 +358,7 @@ const LandingPage = () => {
                         <p className="testimonial-text">{t('landing.testimonial2')}</p>
                         <div className="testimonial-author">
                             <img
-                                src="/assets/testimonial-2.jpg"
+                                src="https://placehold.co/100"
                                 alt="Testimonial Author"
                                 className="testimonial-avatar"
                                 onError={(e) => {
@@ -390,7 +378,7 @@ const LandingPage = () => {
                         <p className="testimonial-text">{t('landing.testimonial3')}</p>
                         <div className="testimonial-author">
                             <img
-                                src="/assets/testimonial-3.jpg"
+                                src="https://placehold.co/100"
                                 alt="Testimonial Author"
                                 className="testimonial-avatar"
                                 onError={(e) => {
