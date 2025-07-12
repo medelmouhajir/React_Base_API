@@ -309,7 +309,7 @@ const CarDetails = () => {
                 <span
                     className={`status-badge ${car.status?.toLowerCase() || 'unknown'}`}
                 >
-                    {car.status || t('car.status.unknown') || 'Unknown'}
+                    {t('car.status.' + car.status.toLowerCase()) || t('car.status.unknown') || 'Unknown'}
                 </span>
                 {isCurrentlyReserved() && (
                     <span className="status-badge rented">

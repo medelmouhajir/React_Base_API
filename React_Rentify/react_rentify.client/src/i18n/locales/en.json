@@ -62,7 +62,8 @@
     "open": "Open",
     "comingSoon": "Coming Soon",
     "saveChanges": "Save Changes",
-    "updating": "Updating..."
+    "updating": "Updating...",
+    "actions": "Actions"
   },
   "landing": {
     "features": "Features",
@@ -669,7 +670,8 @@
       "dailyRate": "Daily Rate",
       "availability": "Availability",
       "actions": "Actions",
-      "noCarsFound": "No cars found"
+      "noCarsFound": "No cars found",
+      "allManufacturers": "All manufacturers"
     },
     "search": {
       "placeholder": "Search cars...",
@@ -698,7 +700,11 @@
     "status": {
       "title": "Status",
       "unknown": "Unknown",
-      "currentlyRented": "Currently Rented"
+      "currentlyRented": "Currently Rented",
+      "available": "Available",
+      "rented": "Rented",
+      "maintenance": "Maintenance",
+      "retired": "Retired"
     },
     "tabs": {
       "info": "Info",

@@ -21,4 +21,13 @@ RUN dotnet publish "React_Lawyer.Server.csproj" -c Debug -o /app/publish /p:UseA
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+COPY --from=with-node /https /https
+
+# Create uploads directory with proper permissions
+RUN mkdir -p /app/mangati/server/uploads && \
+    chmod -R 755 /app/mangati/server/uploads && \
+    chown -R $APP_UID:$APP_UID /app/mangati/server/uploads
+
+
 ENTRYPOINT ["dotnet", "React_Lawyer.Server.dll"]

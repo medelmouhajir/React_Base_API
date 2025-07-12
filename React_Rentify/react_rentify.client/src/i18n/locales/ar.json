@@ -62,7 +62,8 @@
     "open": "افتح",
     "comingSoon": "قريبًا",
     "saveChanges": "حفظ التغييرات",
-    "updating": "جاري التحديث..."
+    "updating": "جاري التحديث...",
+    "actions": "الإجراءات"
   },
   "landing": {
     "features": "الميزات",
@@ -667,7 +668,8 @@
       "dailyRate": "السعر اليومي",
       "availability": "التوفر",
       "actions": "إجراءات",
-      "noCarsFound": "لم يتم العثور على سيارات"
+      "noCarsFound": "لم يتم العثور على سيارات",
+      "allManufacturers": "جميع الشركات المصنعة"
     },
     "search": {
       "placeholder": "ابحث في السيارات...",
@@ -696,7 +698,11 @@
     "status": {
       "title": "الحالة",
       "unknown": "غير معروف",
-      "currentlyRented": "مستأجرة حاليًا"
+      "currentlyRented": "مستأجرة حاليًا",
+      "available": "متاحة",
+      "rented": "مستأجرة",
+      "maintenance": "صيانة",
+      "retired": "متقاعدة"
     },
     "tabs": {
       "info": "معلومات",

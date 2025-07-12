@@ -169,6 +169,7 @@ namespace React_Rentify.Server.Controllers.App
                     .Include(r => r.Car)
                     .ThenInclude(x=> x.Car_Model)
                     .Include(r => r.Reservation_Customers)
+                    .ThenInclude(x=> x.Customer)
                     .Include(r => r.Invoice)
                     .ToListAsync();
 
@@ -1044,7 +1045,13 @@ namespace React_Rentify.Server.Controllers.App
                 AgencyName = r.Agency?.Name,
                 CarId = r.CarId,
                 CarLicensePlate = r.Car?.LicensePlate,
-                Customers = r.Reservation_Customers?.Select(x => x.Customer).ToList(),
+                Customers = r.Reservation_Customers?.Select(x => new Customer
+                {
+                    Id = x.Customer.Id,
+                    FullName = x.Customer.FullName,
+                    Address = x.Customer.Address,
+                    PhoneNumber = x.Customer.PhoneNumber
+                }).ToList(),
                 StartDate = r.StartDate,
                 EndDate = r.EndDate,
                 ActualStartTime = r.ActualStartTime,

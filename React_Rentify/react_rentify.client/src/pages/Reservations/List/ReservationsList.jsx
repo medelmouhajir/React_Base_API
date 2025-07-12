@@ -1,6 +1,6 @@
 ﻿// src/pages/Reservations/List/ReservationsList.jsx
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
@@ -154,7 +154,7 @@ const ReservationsList = () => {
                     <div className="search-wrapper">
                         <input
                             type="text"
-                            className="search-bar"
+                            className="search-bar-res"
                             placeholder={t('reservation.list.search', 'Search reservations...')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -318,7 +318,17 @@ const ReservationsList = () => {
                                     filteredReservations.map((r) => (
                                         <tr key={r.id}>
                                             <td data-label={t('reservation.list.table.customer', 'Customer')}>
-                                                {r.customerName}
+                                                {r.customers?.length > 0
+                                                    ? r.customers.map((customer, idx) => (
+                                                        <span key={customer?.id || 'hhh'}>
+                                                            <Link to={`/customer/${customer.id}`}>
+                                                                {customer?.fullName || 'hello'}
+                                                            </Link>
+                                                            {/* add comma separator except after last */}
+                                                            {idx < r.customers.length - 1 && ', '}
+                                                        </span>
+                                                    ))
+                                                    : 'Unknown'}
                                             </td>
                                             <td data-label={t('reservation.list.table.car', 'Car')}>
                                                 {r.carLicensePlate}
@@ -331,7 +341,7 @@ const ReservationsList = () => {
                                             </td>
                                             <td data-label={t('reservation.list.table.status', 'Status')}>
                                                 <span className={`status-badge status-${r.status?.toLowerCase()}`}>
-                                                    {r.status}
+                                                    {t('reservation.status.' + r.status.toLowerCase())}
                                                 </span>
                                             </td>
                                             <td data-label={t('reservation.list.table.actions', 'Actions')}>

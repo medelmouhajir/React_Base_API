@@ -37,6 +37,9 @@ namespace React_Rentify.Server.Controllers
         {
             _logger.LogInformation("Retrieving all cars");
             var cars = await _context.Set<Car>()
+                .Include(x => x.Car_Year)
+                .Include(x => x.Car_Model)
+                .ThenInclude(x => x.Manufacturer)
                 .Include(c => c.Car_Attachments)
                 .ToListAsync();
 
@@ -62,7 +65,13 @@ namespace React_Rentify.Server.Controllers
                         FilePath = a.FilePath,
                         UploadedAt = a.UploadedAt
                     })
-                    .ToList()
+                    .ToList(),
+                Fields = new Car_Fields
+                {
+                    Manufacturer = c.Car_Model.Manufacturer.Name,
+                    Model = c.Car_Model.Name,
+                    Year = c.Car_Year.YearValue
+                }
             }).ToList();
 
             _logger.LogInformation("Retrieved {Count} cars", dtoList.Count);

@@ -103,7 +103,7 @@
     max-width: 400px;
 }
 
-.search-bar {
+.search-bar-res {
     width: 100%;
     padding: 0.75rem 1rem;
     padding-right: 2.5rem;
@@ -114,18 +114,18 @@
     background-color: transparent;
 }
 
-.reservationlist-container.light .search-bar {
+.reservationlist-container.light .search-bar-res {
     border-color: var(--color-border, #e2e8f0);
     color: var(--color-text, #1e293b);
 }
 
-.reservationlist-container.dark .search-bar {
+.reservationlist-container.dark .search-bar-res {
     border-color: var(--color-border, #334155);
     color: var(--color-text, #f1f5f9);
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-.search-bar:focus {
+.search-bar-res:focus {
     outline: none;
     border-color: var(--color-primary-500, #0ea5e9);
     box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.25);

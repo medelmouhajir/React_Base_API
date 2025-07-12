@@ -1,6 +1,7 @@
 // React_Lawyer/React_Lawyer.Server/Program.cs
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using React_Lawyer.Server.Data;
 using React_Lawyer.Server.Services;
@@ -85,6 +86,13 @@ namespace React_Lawyer.Server
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
+                    RequestPath = "/uploads"
+            });
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

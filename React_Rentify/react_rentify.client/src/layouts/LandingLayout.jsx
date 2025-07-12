@@ -49,7 +49,8 @@ const LandingLayout = () => {
         { path: '#features', label: t('landing.features') },
         { path: '#benefits', label: t('landing.benefits') },
         { path: '#pricing', label: t('landing.pricing') },
-        { path: '#contact', label: t('landing.contact') }
+        { path: '#contact', label: t('landing.contact') },
+        { path: '/login', label: t('auth.login') }
     ];
 
     // Function to determine if link is active

@@ -1,7 +1,7 @@
 ﻿// src/pages/Dashboard/Dashboard.jsx
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { carService } from '../../services/carService';
@@ -15,6 +15,9 @@ const Dashboard = () => {
     const { isDarkMode } = useTheme();
     const { t } = useTranslation();
     const navigate = useNavigate();
+
+    const agencyId = user?.agencyId;
+
 
     const [stats, setStats] = useState({
         totalCars: 0,
@@ -37,11 +40,12 @@ const Dashboard = () => {
                 // Fetch all required data in parallel
                 const [carsData, reservationsData, maintenanceData, invoicesData] = await Promise.all([
                     carService.getAll(),
-                    reservationService.getAll(),
+                    reservationService.getByAgencyId(agencyId),
                     maintenanceService.getAll(),
                     invoiceService.getAll()
                 ]);
 
+                console.log(reservationsData);
                 // Process cars data
                 const availableCars = carsData.filter(car => car.isAvailable);
 
@@ -312,14 +316,26 @@ const Dashboard = () => {
                             <tbody>
                                 {recentReservations.map(reservation => (
                                     <tr key={reservation.id}>
-                                        <td className={isDarkMode ? 'dark' : 'light'}>{reservation.customer || 'Unknown'}</td>
+                                        <td className={isDarkMode ? 'dark' : 'light'}>
+                                            {reservation.customers?.length > 0
+                                                ? reservation.customers.map((customer, idx) => (
+                                                    <span key={customer?.id || 'hhh'}>
+                                                        <Link to={`/customer/${customer.id}`}>
+                                                            {customer?.fullName || 'hello'}
+                                                        </Link>
+                                                        {/* add comma separator except after last */}
+                                                        {idx < reservation.customers.length - 1 && ', '}
+                                                    </span>
+                                                ))
+                                                : 'Unknown'}
+                                        </td>
                                         <td className={isDarkMode ? 'dark' : 'light'}>{reservation.carLicensePlate + ' | ' + reservation.model || 'Unknown'}</td>
                                         <td className={isDarkMode ? 'dark' : 'light'}>
                                             {new Date(reservation.startDate).toLocaleDateString()} - {new Date(reservation.endDate).toLocaleDateString()}
                                         </td>
                                         <td className={isDarkMode ? 'dark' : 'light'}>
                                             <span className={`status-badge status-${reservation.status.toLowerCase()}`}>
-                                                {reservation.status}
+                                                {t('reservation.status.' + reservation.status.toLowerCase())}
                                             </span>
                                         </td>
                                     </tr>
@@ -359,7 +375,7 @@ const Dashboard = () => {
                                         <td className={isDarkMode ? 'dark' : 'light'}>{car.licensePlate}</td>
                                         <td className={isDarkMode ? 'dark' : 'light'}>
                                             <span className={`status-badge status-${car.status?.toLowerCase() || 'unknown'}`}>
-                                                {car.status || t('dashboard.unknown')}
+                                                {t('car.status.' + car.status.toLowerCase())}
                                             </span>
                                         </td>
                                         <td className={isDarkMode ? 'dark' : 'light'}>

@@ -208,8 +208,8 @@ const LandingPage = () => {
                     <h1 className="hero-title animate-on-scroll">{t('landing.heroTitle')}</h1>
                     <p className="hero-subtitle animate-on-scroll">{t('landing.heroSubtitle')}</p>
                     <div className="hero-cta animate-on-scroll">
-                        <Link to="/register" className="cta-button primary">
-                            {t('landing.heroCta')}
+                        <Link to="/login" className="cta-button primary">
+                            {t('auth.login')}
                         </Link>
                         <a href="#features" className="cta-button secondary">
                             {t('landing.heroLearnMore')}

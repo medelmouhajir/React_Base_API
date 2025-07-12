@@ -455,7 +455,7 @@ const CarsList = () => {
                 <div className={`cl-filters-panel ${showFilters ? 'show' : ''}`}>
                     <div className="cl-filters-grid">
                         <div className="filter-group">
-                            <label htmlFor="manufacturer-filter">{t('car.fields..manufacturer')}</label>
+                            <label htmlFor="manufacturer-filter">{t('car.fields.manufacturer')}</label>
                             <select
                                 id="manufacturer-filter"
                                 className="cl-select"

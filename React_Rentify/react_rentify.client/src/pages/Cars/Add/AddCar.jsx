@@ -163,7 +163,7 @@ const AddCar = () => {
 
     return (
         <div className={`addcar-container ${isDarkMode ? 'dark' : 'light'}`}>
-            <h1 className="addcar-title">{t('car.add.title')}</h1>
+            <h1 className="addcar-title">{t('car.list.addCar')}</h1>
 
             {error && <div className="addcar-error" role="alert">{error}</div>}
 
