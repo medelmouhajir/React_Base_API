@@ -79,6 +79,16 @@ const InvoiceDetails = lazy(() => import('./pages/Invoices/Details/InvoiceDetail
 //// Child route for Settings
 const AgencySettings = lazy(() => import('./pages/Settings/Agency/AgencySettings'));
 
+
+//// Child route for Tickets
+const TicketsList = lazy(() => import('./pages/Tickets/List/TicketsList'));
+
+
+//// Child route for Gadgets
+const GadgetsHome = lazy(() => import('./pages/Gadgets/Home/GadgetsHome'));
+const BlacklistCheck = lazy(() => import('./pages/Gadgets/BlacklistChecks/BlacklistCheck'));
+const CarCheck = lazy(() => import('./pages/Gadgets/CarChecks/CarCheck'));
+
 //// Other standalone pages
 //const MaintenancePage = lazy(() => import('./pages/maintenance/Maintenance'));
 const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
@@ -161,6 +171,14 @@ function App() {
 
                                 {/* GPS Tracking */}
                                 <Route path="/gps" element={<GpsHome />} />
+
+                                {/* Tickets */}
+                                <Route path="/tickets" element={<TicketsList />} />
+
+                                {/* Gadgets */}
+                                <Route path="/gadgets" element={<GadgetsHome />} />
+                                <Route path="/gadgets/blacklist" element={<BlacklistCheck />} />
+                                <Route path="/gadgets/carcheck" element={<CarCheck />} />
 
                                 {/* Reports */}
                                 {/*<Route path="/reports" element={<ReportsPage />} />*/}

@@ -13,7 +13,6 @@ namespace React_Rentify.Server.Controllers.Tickets
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
     public class TicketsController : ControllerBase
     {
         private readonly MainDbContext _context;
@@ -29,6 +28,7 @@ namespace React_Rentify.Server.Controllers.Tickets
         /// GET: api/Tickets
         /// Returns all tickets.
         /// </summary>
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllTickets()
         {
@@ -56,6 +56,7 @@ namespace React_Rentify.Server.Controllers.Tickets
         /// GET: api/Tickets/{id}
         /// Returns a single ticket by Id.
         /// </summary>
+        [Authorize]
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetTicketById(int id)
         {
@@ -130,6 +131,7 @@ namespace React_Rentify.Server.Controllers.Tickets
         /// PUT: api/Tickets/{id}
         /// Updates an existing ticket.
         /// </summary>
+        [Authorize]
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateTicket(int id, [FromBody] UpdateTicketDto dto)
         {
@@ -183,6 +185,7 @@ namespace React_Rentify.Server.Controllers.Tickets
         /// DELETE: api/Tickets/{id}
         /// Deletes a ticket.
         /// </summary>
+        [Authorize]
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteTicket(int id)
         {

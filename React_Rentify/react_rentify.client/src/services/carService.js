@@ -31,6 +31,16 @@ export const carService = {
         }
     },
 
+    async checkCarReservationsByDate(carId, date) {
+        try {
+            const response = await apiClient.get(`/cars/${carId}/reservations/date/${date}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error checking car reservations for ${carId} on ${date}:`, error);
+            throw error;
+        }
+    },
+
     async create(carData) {
         try {
             const response = await apiClient.post('/cars', carData);

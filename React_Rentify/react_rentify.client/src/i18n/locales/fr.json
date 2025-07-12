@@ -63,7 +63,11 @@
     "comingSoon": "Bientôt disponible",
     "saveChanges": "Enregistrer les modifications",
     "updating": "Mise à jour en cours...",
-    "actions": "Actions"
+    "actions": "Actions",
+    "refresh": "Rafraîchir",
+    "close": "Fermer",
+    "resultsCount": "{{count}} sur {{total}} résultats",
+    "locale": "fr-MA"
   },
   "landing": {
     "features": "Fonctionnalités",
@@ -149,7 +153,10 @@
     "contactEmailTitle": "Email",
     "contactAddressTitle": "Adresse",
     "contactAddressLine1": "123 Rue de Casablanca",
-    "contactAddressLine2": "Casablanca, Maroc"
+    "contactAddressLine2": "Casablanca, Maroc",
+    "contactWhatsapp": "Whatsapp",
+    "contactSuccess": "Votre message a été envoyé.",
+    "contactError": "Une erreur s'est produite lors de l'envoi de votre message."
   },
   "auth": {
     "welcomeBack": "Content de vous revoir",
@@ -904,5 +911,129 @@
     "goHome": "Page d'accueil",
     "goBack": "Retour",
     "easterEgg": "Oups ! Vous avez pris le mauvais chemin."
+  },
+  "tickets": {
+    "status": {
+      "all": "Tous",
+      "created": "Créés",
+      "inProgress": "En cours",
+      "completed": "Terminés",
+      "cancelled": "Annulés",
+      "label": "Statut"
+    },
+    "errors": {
+      "loadFailed": "Échec du chargement des tickets.",
+      "deleteFailed": "Échec de la suppression du ticket."
+    },
+    "title": "Tickets",
+    "subtitle": "Afficher et gérer vos tickets",
+    "newTicket": "Nouveau ticket",
+    "searchPlaceholder": "Rechercher des tickets...",
+    "noTickets": "Aucun ticket",
+    "noTicketsDescription": "Aucun ticket à afficher pour le moment.",
+    "createFirstTicket": "Créer le premier ticket"
+  },
+  "blacklistCheck": {
+    "title": "Vérification de la liste noire",
+    "description": "Recherchez des individus dans la base de données de la liste noire à l’aide de leurs informations personnelles. Saisissez au moins un champ pour lancer la recherche.",
+    "search": "Rechercher dans la liste noire",
+    "searching": "Recherche en cours...",
+    "validation": {
+      "atLeastOne": "Veuillez saisir au moins un champ de recherche (Nom complet, CIN, passeport ou permis de conduire)"
+    },
+    "errors": {
+      "searchFailed": "Échec de la recherche dans la liste noire. Veuillez réessayer."
+    },
+    "fields": {
+      "fullName": "Nom complet",
+      "cin": "CIN (Carte d’identité nationale)",
+      "passport": "Numéro de passeport",
+      "driveLicense": "Numéro de permis de conduire",
+      "reason": "Raison"
+    },
+    "placeholders": {
+      "fullName": "Entrez le nom complet",
+      "cin": "Entrez le numéro de CIN",
+      "passport": "Entrez le numéro de passeport",
+      "driveLicense": "Entrez le numéro du permis de conduire"
+    },
+    "results": {
+      "title": "Résultats de recherche",
+      "noMatches": "Aucun résultat trouvé dans la liste noire",
+      "noMatchesDescription": "Bonne nouvelle ! Aucun résultat n’a été trouvé dans la base de données de la liste noire pour les informations fournies.",
+      "foundMatches": "{{count}} résultat trouvé dans la liste noire",
+      "foundMatches_plural": "{{count}} résultats trouvés dans la liste noire",
+      "foundMatchesDescription": "Les correspondances suivantes ont été trouvées dans la base de données de la liste noire. Veuillez contacter les agences concernées pour plus d’informations.",
+      "addedOn": "Ajouté le",
+      "reportedBy": "Signalé par"
+    },
+    "contactAgency": "Contacter l’agence",
+    "contactModal": {
+      "title": "Contact",
+      "sendEmail": "Envoyer un e‑mail",
+      "call": "Appeler",
+      "address": "Adresse",
+      "emailSubject": "Demande concernant une entrée dans la liste noire"
+    }
+  },
+  "gadgets": {
+    "home": {
+      "title": "Gadgets et outils",
+      "description": "Des outils performants pour optimiser vos opérations de location",
+      "searchPlaceholder": "Rechercher des gadgets...",
+      "noResults": "Aucun gadget trouvé",
+      "noResultsDescription": "Essayez d'ajuster vos termes de recherche",
+      "comingSoon": "Bientôt disponible"
+    },
+    "blacklist": {
+      "name": "Clients blacklistés",
+      "description": "Rechercher et gérer les clients blacklistés"
+    },
+    "carcheck": {
+      "name": "Vérification de réservation de voiture",
+      "description": "Vérifiez la disponibilité des voitures et les réservations existantes"
+    },
+    "analytics": {
+      "name": "Tableau de bord analytique",
+      "description": "Afficher des rapports détaillés et des aperçus"
+    },
+    "reports": {
+      "name": "Rapports personnalisés",
+      "description": "Générer et exporter des rapports personnalisés"
+    },
+    "notifications": {
+      "name": "Centre de notifications",
+      "description": "Gérer les notifications et les alertes du système"
+    }
+  },
+  "carCheck": {
+    "title": "Vérification de la voiture",
+    "description": "Sélectionnez une voiture et une date pour afficher les réservations",
+    "selectCar": "Sélectionnez une voiture",
+    "selectDate": "Sélectionnez une date",
+    "searchCars": "Recherchez des voitures par plaque d’immatriculation ou modèle...",
+    "selectedCar": "Voiture sélectionnée",
+    "available": "Disponible",
+    "unavailable": "Indisponible",
+    "noCarsFound": "Aucune voiture trouvée",
+    "noReservationsFound": "Aucune réservation trouvée pour cette date",
+    "reservationsForDate": "Réservations pour le {{date}}",
+    "reservationId": "ID de réservation",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "agreedPrice": "Prix convenu",
+    "pickupLocation": "Lieu de prise en charge",
+    "dropoffLocation": "Lieu de dépôt",
+    "customers": "Clients",
+    "status": {
+      "reserved": "Réservé",
+      "ongoing": "En cours",
+      "completed": "Terminé",
+      "cancelled": "Annulé"
+    },
+    "error": {
+      "fetchCars": "Erreur lors du chargement des voitures",
+      "fetchReservations": "Erreur lors du chargement des réservations"
+    }
   }
 }

@@ -63,7 +63,11 @@
     "comingSoon": "Coming Soon",
     "saveChanges": "Save Changes",
     "updating": "Updating...",
-    "actions": "Actions"
+    "actions": "Actions",
+    "refresh": "Refresh",
+    "close": "Close",
+    "resultsCount": "{{count}} of {{total}} results",
+    "locale": "en-US"
   },
   "landing": {
     "features": "Features",
@@ -161,7 +165,10 @@
     "contactEmailTitle": "Email",
     "contactAddressTitle": "Address",
     "contactAddressLine1": "123 Casablanca Street",
-    "contactAddressLine2": "Casablanca, Morocco"
+    "contactAddressLine2": "Casablanca, Morocco",
+    "contactWhatsapp": "Whatsapp",
+    "contactSuccess": "Your message has been sent.",
+    "contactError": "An error occured while sending your message."
   },
   "auth": {
     "welcomeBack": "Welcome Back",
@@ -926,5 +933,129 @@
     "goHome": "Go Home",
     "goBack": "Go Back",
     "easterEgg": "Oops! This page took a wrong turn."
+  },
+  "tickets": {
+    "status": {
+      "all": "All",
+      "created": "Created",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "label": "Status"
+    },
+    "errors": {
+      "loadFailed": "Failed to load tickets.",
+      "deleteFailed": "Failed to delete ticket."
+    },
+    "title": "Tickets",
+    "subtitle": "View and manage your tickets",
+    "newTicket": "New Ticket",
+    "searchPlaceholder": "Search tickets...",
+    "noTickets": "No tickets found",
+    "noTicketsDescription": "There are no tickets to display at the moment.",
+    "createFirstTicket": "Create your first ticket"
+  },
+  "blacklistCheck": {
+    "title": "Blacklist Check",
+    "description": "Search for individuals in the blacklist database using their personal information. Enter at least one field to perform a search.",
+    "search": "Search Blacklist",
+    "searching": "Searching...",
+    "validation": {
+      "atLeastOne": "Please enter at least one search field (Full Name, CIN, Passport, or Driver License)"
+    },
+    "errors": {
+      "searchFailed": "Failed to search blacklist. Please try again."
+    },
+    "fields": {
+      "fullName": "Full Name",
+      "cin": "CIN (National ID)",
+      "passport": "Passport Number",
+      "driveLicense": "Driver License Number",
+      "reason": "Reason"
+    },
+    "placeholders": {
+      "fullName": "Enter full name",
+      "cin": "Enter CIN number",
+      "passport": "Enter passport number",
+      "driveLicense": "Enter driver license number"
+    },
+    "results": {
+      "title": "Search Results",
+      "noMatches": "No Blacklist Matches Found",
+      "noMatchesDescription": "Great news! No matches were found in the blacklist database for the provided information.",
+      "foundMatches": "{{count}} Blacklist Match Found",
+      "foundMatches_plural": "{{count}} Blacklist Matches Found",
+      "foundMatchesDescription": "The following matches were found in the blacklist database. Please contact the reporting agencies for more information.",
+      "addedOn": "Added on",
+      "reportedBy": "Reported by"
+    },
+    "contactAgency": "Contact Agency",
+    "contactModal": {
+      "title": "Contact",
+      "sendEmail": "Send Email",
+      "call": "Call",
+      "address": "Address",
+      "emailSubject": "Inquiry about Blacklist Entry"
+    }
+  },
+  "gadgets": {
+    "home": {
+      "title": "Gadgets & Tools",
+      "description": "Powerful tools to streamline your rental operations",
+      "searchPlaceholder": "Search gadgets...",
+      "noResults": "No gadgets found",
+      "noResultsDescription": "Try adjusting your search terms",
+      "comingSoon": "Coming Soon"
+    },
+    "blacklist": {
+      "name": "Blacklisted Customers",
+      "description": "Search and manage blacklisted customers"
+    },
+    "carcheck": {
+      "name": "Car Reservation Check",
+      "description": "Check car availability and existing reservations"
+    },
+    "analytics": {
+      "name": "Analytics Dashboard",
+      "description": "View detailed reports and insights"
+    },
+    "reports": {
+      "name": "Custom Reports",
+      "description": "Generate and export custom reports"
+    },
+    "notifications": {
+      "name": "Notification Center",
+      "description": "Manage system notifications and alerts"
+    }
+  },
+  "carCheck": {
+    "title": "Car Check",
+    "description": "Select a car and date to view reservations",
+    "selectCar": "Select a Car",
+    "selectDate": "Select Date",
+    "searchCars": "Search cars by license plate or model...",
+    "selectedCar": "Selected Car",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "noCarsFound": "No cars found",
+    "noReservationsFound": "No reservations found for this date",
+    "reservationsForDate": "Reservations for {{date}}",
+    "reservationId": "Reservation ID",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "agreedPrice": "Agreed Price",
+    "pickupLocation": "Pickup Location",
+    "dropoffLocation": "Dropoff Location",
+    "customers": "Customers",
+    "status": {
+      "reserved": "Reserved",
+      "ongoing": "Ongoing",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "error": {
+      "fetchCars": "Error loading cars",
+      "fetchReservations": "Error loading reservations"
+    }
   }
 }

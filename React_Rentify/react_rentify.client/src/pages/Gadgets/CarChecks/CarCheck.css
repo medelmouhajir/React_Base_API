@@ -1,0 +1,515 @@
+/* src/pages/Gadgets/CarChecks/CarCheck.css */
+
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-color: #4a90e2;
+    --primary-hover: #3b78c3;
+    --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #3b82f6;
+    /* Light theme */
+    --bg-color-light: #ffffff;
+    --card-bg-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #60a5fa;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    /* Dark theme */
+    --bg-color-dark: #111827;
+    --card-bg-dark: #1f2937;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --border-color-dark: #374151;
+    --input-bg-dark: #1f2937;
+    --input-text-dark: #f9fafb;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #3b82f6;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    /* Status colors */
+    --status-reserved-bg: rgba(59, 130, 246, 0.1);
+    --status-reserved-color: #3b82f6;
+    --status-ongoing-bg: rgba(245, 158, 11, 0.1);
+    --status-ongoing-color: #f59e0b;
+    --status-completed-bg: rgba(16, 185, 129, 0.1);
+    --status-completed-color: #10b981;
+    --status-cancelled-bg: rgba(239, 68, 68, 0.1);
+    --status-cancelled-color: #ef4444;
+    /* Common */
+    --border-radius: 0.5rem;
+    --transition-speed: 0.25s;
+}
+
+/*---------------------------------------------
+  Container and Layout
+---------------------------------------------*/
+.car-check-container {
+    --bg-color: var(--bg-color-light);
+    --card-bg: var(--card-bg-light);
+    --text-color: var(--text-color-light);
+    --text-secondary: var(--text-secondary-light);
+    --border-color: var(--border-color-light);
+    --input-bg: var(--input-bg-light);
+    --input-text: var(--input-text-light);
+    --input-border: var(--input-border-light);
+    --input-focus-border: var(--input-focus-border-light);
+    --shadow: var(--shadow-light);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all var(--transition-speed);
+}
+
+    .car-check-container.dark {
+        --bg-color: var(--bg-color-dark);
+        --card-bg: var(--card-bg-dark);
+        --text-color: var(--text-color-dark);
+        --text-secondary: var(--text-secondary-dark);
+        --border-color: var(--border-color-dark);
+        --input-bg: var(--input-bg-dark);
+        --input-text: var(--input-text-dark);
+        --input-border: var(--input-border-dark);
+        --input-focus-border: var(--input-focus-border-dark);
+        --shadow: var(--shadow-dark);
+    }
+
+/*---------------------------------------------
+  Header Section
+---------------------------------------------*/
+.car-check-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.car-check-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.car-check-description {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 0;
+}
+
+/*---------------------------------------------
+  Content Layout
+---------------------------------------------*/
+.car-check-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+/*---------------------------------------------
+  Car Selection Section
+---------------------------------------------*/
+.car-selection-section {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.search-container {
+    margin-bottom: 1.5rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    font-size: 1rem;
+    transition: border-color var(--transition-speed);
+}
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--input-focus-border);
+    }
+
+    .search-input::placeholder {
+        color: var(--text-secondary);
+    }
+
+/*---------------------------------------------
+  Cars Grid
+---------------------------------------------*/
+.cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.car-card {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+    .car-card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+    }
+
+    .car-card.selected {
+        border-color: var(--primary-color);
+        background-color: rgba(74, 144, 226, 0.05);
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+    }
+
+.car-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.car-license {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.car-model {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.car-year {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.car-status {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+    .car-status.available {
+        background-color: var(--status-completed-bg);
+        color: var(--status-completed-color);
+    }
+
+    .car-status.unavailable {
+        background-color: var(--status-cancelled-bg);
+        color: var(--status-cancelled-color);
+    }
+
+.no-cars-message {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/*---------------------------------------------
+  Date Selection Section
+---------------------------------------------*/
+.date-selection-section {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.selected-car-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background-color: var(--input-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.selected-car-label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.selected-car-details {
+    color: var(--text-secondary);
+}
+
+.date-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.75rem;
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    font-size: 1rem;
+    transition: border-color var(--transition-speed);
+}
+
+    .date-input:focus {
+        outline: none;
+        border-color: var(--input-focus-border);
+    }
+
+/*---------------------------------------------
+  Reservations Section
+---------------------------------------------*/
+.reservations-section {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.loading-message,
+.error-message,
+.no-reservations-message {
+    text-align: center;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    margin: 1rem 0;
+}
+
+.loading-message {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--info-color);
+}
+
+.error-message {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
+.no-reservations-message {
+    background-color: var(--input-bg);
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/*---------------------------------------------
+  Reservations List
+---------------------------------------------*/
+.reservations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.reservation-card {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    transition: box-shadow var(--transition-speed);
+}
+
+    .reservation-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+.reservation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.reservation-id {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.875rem;
+}
+
+.reservation-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-reserved {
+    background-color: var(--status-reserved-bg);
+    color: var(--status-reserved-color);
+}
+
+.status-ongoing {
+    background-color: var(--status-ongoing-bg);
+    color: var(--status-ongoing-color);
+}
+
+.status-completed {
+    background-color: var(--status-completed-bg);
+    color: var(--status-completed-color);
+}
+
+.status-cancelled {
+    background-color: var(--status-cancelled-bg);
+    color: var(--status-cancelled-color);
+}
+
+.status-default {
+    background-color: var(--input-bg);
+    color: var(--text-secondary);
+}
+
+.reservation-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.reservation-dates {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.date-info,
+.location-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.reservation-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.reservation-locations {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.reservation-customers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.customers-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.customer-name {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.label {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.875rem;
+}
+
+.value {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/*---------------------------------------------
+  Mobile Responsive Design
+---------------------------------------------*/
+@media (max-width: 768px) {
+    .car-check-container {
+        padding: 1rem;
+    }
+
+    .car-check-title {
+        font-size: 1.5rem;
+    }
+
+    .cars-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .reservation-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .reservation-dates {
+        flex-direction: column;
+    }
+
+    .selected-car-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .date-input {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .car-check-container {
+        padding: 0.75rem;
+    }
+
+    .car-selection-section,
+    .date-selection-section,
+    .reservations-section {
+        padding: 1rem;
+    }
+
+    .car-check-content {
+        gap: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.125rem;
+    }
+
+    .car-card {
+        padding: 0.75rem;
+    }
+
+    .reservation-card {
+        padding: 1rem;
+    }
+}

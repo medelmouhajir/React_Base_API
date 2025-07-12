@@ -24,6 +24,11 @@ const icons = {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
         </svg>
     ),
+    tickets: (
+        <svg className="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" >
+            <path d="M3 7h18a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z" /> <path d="M3 10h18" /> <path d="M3 14h18" />
+        </svg>
+    ),
     reservations: (
         <svg className="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -43,6 +48,18 @@ const icons = {
     invoices: (
         <svg className="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+    ),
+    gadgets: (
+        <svg className="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M11.049 2.927c.3-1.14 1.908-1.14 2.207 0l.133.507a2.253 2.253 0 002.108 1.66h.541
+                 c1.12 0 1.662 1.354.784 2.082l-.451.37a2.25 2.25 0 00-.728 2.478l.264.598
+                 c.586 1.328-.823 2.56-1.858 1.76l-.483-.396a2.25 2.25 0 00-2.884 0l-.483.396
+                 c-1.035.8-2.444-.432-1.858-1.76l.264-.598a2.25 2.25 0 00-.728-2.478l-.451-.37
+                 c-.878-.728-.336-2.082.784-2.082h.541a2.25 2.25 0 002.108-1.66l.133-.507z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
     ),
     reports: (
@@ -120,6 +137,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
             { id: 'agencies', label: t('sidebar.agencies'), icon: icons.agencies, path: '/agencies' },
             { id: 'filters', label: t('sidebar.filters'), icon: icons.staff, path: '/filters' },
             { id: 'settings', label: t('sidebar.settings'), icon: icons.settings, path: '/settings' },
+            { id: 'tickets', label: t('sidebar.tickets'), icon: icons.tickets, path: '/tickets' },
         ];
         const managerItems = [
             { id: 'dashboard', label: t('sidebar.dashboard'), icon: icons.dashboard, path: '/dashboard' },
@@ -128,6 +146,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
             { id: 'reservations', label: t('sidebar.reservations'), icon: icons.reservations, path: '/reservations' },
             { id: 'maintenance', label: t('sidebar.maintenances'), icon: icons.maintenance, path: '/maintenances' },
             { id: 'invoices', label: t('sidebar.invoices'), icon: icons.invoices, path: '/invoices' },
+            { id: 'gadgets', label: t('sidebar.gadgets'), icon: icons.gadgets, path: '/gadgets' },
             { id: 'reports', label: t('sidebar.reports'), icon: icons.reports, path: '/reports' },
             { id: 'gps', label: t('sidebar.gpsTracking'), icon: icons.gps, path: '/gps' },
             { id: 'settings', label: t('sidebar.settings'), icon: icons.settings, path: '/settings' },

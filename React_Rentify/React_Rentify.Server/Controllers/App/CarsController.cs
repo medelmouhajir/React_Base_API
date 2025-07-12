@@ -2,15 +2,18 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using React_Rentify.Server.Controllers.App;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models;
 using React_Rentify.Server.Models.Agencies;
 using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.Filters.Cars;
+using React_Rentify.Server.Models.Reservations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static React_Rentify.Server.Controllers.App.ReservationsController;
 
 namespace React_Rentify.Server.Controllers
 {
@@ -411,6 +414,97 @@ namespace React_Rentify.Server.Controllers
             };
 
             return Ok(resultDto);
+        }
+
+
+        /// <summary>
+        /// GET: api/Cars/{carId}/reservations/date/{date}
+        /// Returns all reservations for a specific car on a specific date
+        /// </summary>
+        [HttpGet("{carId:guid}/reservations/date/{date}")]
+        public async Task<IActionResult> GetCarReservationsByDate(Guid carId, string date)
+        {
+            _logger.LogInformation("Retrieving reservations for car {CarId} on date {Date}", carId, date);
+
+            // Validate car exists
+            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == carId);
+            if (!carExists)
+            {
+                _logger.LogWarning("Car with Id {CarId} not found", carId);
+                return NotFound(new { message = $"Car with Id '{carId}' not found." });
+            }
+
+            // Parse the date
+            if (!DateTime.TryParse(date, out DateTime targetDate))
+            {
+                _logger.LogWarning("Invalid date format: {Date}", date);
+                return BadRequest(new { message = "Invalid date format. Use YYYY-MM-DD." });
+            }
+
+            targetDate = targetDate.ToUniversalTime();
+
+            try
+            {
+                // Get reservations that overlap with the target date
+                var reservations = await _context.Set<Reservation>()
+                    .Where(r => r.CarId == carId &&
+                               r.StartDate.Date <= targetDate.Date &&
+                               r.EndDate.Date >= targetDate.Date)
+                    .Include(r => r.Agency)
+                    .Include(r => r.Car)
+                    .ThenInclude(c => c.Car_Model)
+                    .ThenInclude(m => m.Manufacturer)
+                    .Include(r => r.Reservation_Customers)
+                    .ThenInclude(rc => rc.Customer)
+                    .Include(r => r.Invoice)
+                    .ToListAsync();
+
+                var dtoList = reservations.Select(r => new ReservationDto
+                {
+                    Id = r.Id,
+                    AgencyId = r.AgencyId,
+                    AgencyName = r.Agency?.Name,
+                    CarId = r.CarId,
+                    CarLicensePlate = r.Car?.LicensePlate,
+                    Model = r.Car?.Car_Model != null ?
+                        $"{r.Car.Car_Model.Manufacturer?.Name} {r.Car.Car_Model.Name}" : null,
+                    StartDate = r.StartDate,
+                    EndDate = r.EndDate,
+                    ActualStartTime = r.ActualStartTime,
+                    ActualEndTime = r.ActualEndTime,
+                    Status = r.Status,
+                    AgreedPrice = r.AgreedPrice,
+                    FinalPrice = r.FinalPrice,
+                    OdometerStart = r.OdometerStart,
+                    OdometerEnd = r.OdometerEnd,
+                    FuelLevelStart = r.FuelLevelStart,
+                    FuelLevelEnd = r.FuelLevelEnd,
+                    PickupLocation = r.PickupLocation,
+                    DropoffLocation = r.DropoffLocation,
+                    Reservation_Customers = r.Reservation_Customers?.Select(rc => new ReservationCustomerDto
+                    {
+                        ReservationId = rc.ReservationId,
+                        CustomerId = rc.CustomerId,
+                        Customer = rc.Customer != null ? new CustomerBasicDto
+                        {
+                            Id = rc.Customer.Id,
+                            Name = rc.Customer.FullName,
+                            Email = rc.Customer.Email,
+                            Phone = rc.Customer.PhoneNumber
+                        } : null
+                    }).ToList()
+                }).ToList();
+
+                _logger.LogInformation("Found {Count} reservations for car {CarId} on {Date}",
+                    dtoList.Count, carId, date);
+
+                return Ok(dtoList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving reservations for car {CarId} on {Date}", carId, date);
+                return StatusCode(500, new { message = "An error occurred while retrieving reservations." });
+            }
         }
 
         /// <summary>

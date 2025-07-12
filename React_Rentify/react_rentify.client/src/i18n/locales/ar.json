@@ -63,7 +63,11 @@
     "comingSoon": "قريبًا",
     "saveChanges": "حفظ التغييرات",
     "updating": "جاري التحديث...",
-    "actions": "الإجراءات"
+    "actions": "الإجراءات",
+    "refresh": "تحديث",
+    "close": "إغلاق",
+    "resultsCount": "{{count}} من أصل {{total}} نتيجة",
+    "locale": "ar-MA"
   },
   "landing": {
     "features": "الميزات",
@@ -161,7 +165,10 @@
     "contactEmailTitle": "البريد الإلكتروني",
     "contactAddressTitle": "العنوان",
     "contactAddressLine1": "123 شارع الدار البيضاء",
-    "contactAddressLine2": "الدار البيضاء، المغرب"
+    "contactAddressLine2": "الدار البيضاء، المغرب",
+    "contactSuccess": "تم إرسال رسالتك.",
+    "contactError": "حدث خطأ أثناء إرسال رسالتك.",
+    "contactWhatsapp": "واتساب"
   },
   "auth": {
     "welcomeBack": "مرحبًا بعودتك",
@@ -924,5 +931,129 @@
     "goHome": "الصفحة الرئيسية",
     "goBack": "الرجوع",
     "easterEgg": "عفوًا! اتخذت هذه الصفحة مسارًا خاطئًا."
+  },
+  "tickets": {
+    "status": {
+      "all": "الكل",
+      "created": "تم الإنشاء",
+      "inProgress": "قيد المعالجة",
+      "completed": "مكتمل",
+      "cancelled": "ملغى",
+      "label": "الحالة"
+    },
+    "errors": {
+      "loadFailed": "فشل في تحميل التذاكر.",
+      "deleteFailed": "فشل في حذف التذكرة."
+    },
+    "title": "التذاكر",
+    "subtitle": "عرض وإدارة التذاكر ديالك",
+    "newTicket": "تذكرة جديدة",
+    "searchPlaceholder": "ابحث في التذاكر...",
+    "noTickets": "ما كاينينش تذاكر",
+    "noTicketsDescription": "ما كاينينش تذاكر للعرض دابا.",
+    "createFirstTicket": "إنشاء أول تذكرة"
+  },
+  "blacklistCheck": {
+    "title": "التحقق من القائمة السوداء",
+    "description": "ابحث عن الأفراد في قاعدة بيانات القائمة السوداء باستخدام معلوماتهم الشخصية. أدخل حقلًا واحدًا على الأقل لإجراء البحث.",
+    "search": "ابحث في القائمة السوداء",
+    "searching": "جاري البحث...",
+    "validation": {
+      "atLeastOne": "يرجى إدخال حقل بحث واحد على الأقل (الاسم الكامل، رقم البطاقة الوطنية، جواز السفر، أو رخصة السياقة)"
+    },
+    "errors": {
+      "searchFailed": "فشل البحث في القائمة السوداء. حاول مرة أخرى."
+    },
+    "fields": {
+      "fullName": "الاسم الكامل",
+      "cin": "رقم البطاقة الوطنية",
+      "passport": "رقم جواز السفر",
+      "driveLicense": "رقم رخصة السياقة",
+      "reason": "السبب"
+    },
+    "placeholders": {
+      "fullName": "أدخل الاسم الكامل",
+      "cin": "أدخل رقم البطاقة الوطنية",
+      "passport": "أدخل رقم جواز السفر",
+      "driveLicense": "أدخل رقم رخصة السياقة"
+    },
+    "results": {
+      "title": "نتائج البحث",
+      "noMatches": "لم يتم العثور على أي تطابق في القائمة السوداء",
+      "noMatchesDescription": "خبر جيد! لم يتم العثور على أي تطابق في قاعدة بيانات القائمة السوداء للمعلومات المقدمة.",
+      "foundMatches": "{{count}} تطابق في القائمة السوداء",
+      "foundMatches_plural": "{{count}} تطابقات في القائمة السوداء",
+      "foundMatchesDescription": "تم العثور على التطابقات التالية في قاعدة بيانات القائمة السوداء. يرجى الاتصال بالجهات المبلغ عنها لمزيد من المعلومات.",
+      "addedOn": "أضيف في",
+      "reportedBy": "أبلغ عنه"
+    },
+    "contactAgency": "الاتصال بالجهة",
+    "contactModal": {
+      "title": "اتصل",
+      "sendEmail": "إرسال بريد إلكتروني",
+      "call": "اتصل",
+      "address": "العنوان",
+      "emailSubject": "استفسار حول سجل في القائمة السوداء"
+    }
+  },
+  "gadgets": {
+    "home": {
+      "title": "الأدوات والأجهزة",
+      "description": "أدوات قوية لتبسيط عمليات التأجير الخاصة بك",
+      "searchPlaceholder": "ابحث عن الأدوات...",
+      "noResults": "لم يتم العثور على أي أدوات",
+      "noResultsDescription": "حاول تعديل مصطلحات البحث",
+      "comingSoon": "قريباً"
+    },
+    "blacklist": {
+      "name": "العملاء المدرجون في القائمة السوداء",
+      "description": "البحث وإدارة العملاء المدرجين في القائمة السوداء"
+    },
+    "carcheck": {
+      "name": "التحقق من حجز السيارة",
+      "description": "التحقق من توفر السيارة والحجوزات الحالية"
+    },
+    "analytics": {
+      "name": "لوحة تحليلات",
+      "description": "عرض تقارير مفصلة ورؤى"
+    },
+    "reports": {
+      "name": "تقارير مخصصة",
+      "description": "إنشاء وتصدير تقارير مخصصة"
+    },
+    "notifications": {
+      "name": "مركز الإشعارات",
+      "description": "إدارة إشعارات وتنبيهات النظام"
+    }
+  },
+  "carCheck": {
+    "title": "التحقق من السيارة",
+    "description": "اختر سيارة وتاريخًا لعرض الحجوزات",
+    "selectCar": "اختر سيارة",
+    "selectDate": "اختر التاريخ",
+    "searchCars": "ابحث عن سيارات حسب لوحة الترخيص أو الطراز...",
+    "selectedCar": "السيارة المختارة",
+    "available": "متاحة",
+    "unavailable": "غير متاحة",
+    "noCarsFound": "لم يتم العثور على سيارات",
+    "noReservationsFound": "لم يتم العثور على حجوزات لهذا التاريخ",
+    "reservationsForDate": "الحجوزات في {{date}}",
+    "reservationId": "معرّف الحجز",
+    "startDate": "تاريخ البدء",
+    "endDate": "تاريخ الانتهاء",
+    "agreedPrice": "السعر المتفق عليه",
+    "pickupLocation": "مكان الاستلام",
+    "dropoffLocation": "مكان التسليم",
+    "customers": "العملاء",
+    "status": {
+      "reserved": "محجوز",
+      "ongoing": "جاري",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    },
+    "error": {
+      "fetchCars": "خطأ في تحميل السيارات",
+      "fetchReservations": "خطأ في تحميل الحجوزات"
+    }
   }
 }
