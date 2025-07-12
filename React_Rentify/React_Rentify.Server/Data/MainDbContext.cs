@@ -9,6 +9,7 @@ using React_Rentify.Server.Models.Filters.Cars;
 using React_Rentify.Server.Models.Invoices;
 using React_Rentify.Server.Models.Maintenances;
 using React_Rentify.Server.Models.Reservations;
+using React_Rentify.Server.Models.Tickets;
 using React_Rentify.Server.Models.Users;
 
 namespace React_Rentify.Server.Data
@@ -43,5 +44,10 @@ namespace React_Rentify.Server.Data
         public DbSet<Car_Attachment> Car_Attachments { get; set; }
         public DbSet<Agency_Attachment> Agency_Attachments { get; set; }
         public DbSet<Customer_Attachment> Customer_Attachments { get; set; }
+
+
+
+        //Tickets
+        public DbSet<Ticket> Tickets { get; set; }
     }
 }

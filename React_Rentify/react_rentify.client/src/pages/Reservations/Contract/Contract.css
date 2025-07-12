@@ -172,7 +172,28 @@ body.contract-print-page {
     .no-print {
         display: none !important;
     }
+    /* Force header row to stay on one line */
+    .invoice-print .row:first-child {
+        display: table !important;
+        width: 100% !important;
+        table-layout: fixed !important;
+    }
+
+        .invoice-print .row:first-child .col-4 {
+            display: table-cell !important;
+            width: 33.333333% !important;
+            vertical-align: middle !important;
+            float: none !important;
+        }
+
+    /* Ensure logos don't break the layout */
+    .invoice-print .left-logo,
+    .invoice-print .right-logo {
+        max-width: 100% !important;
+        height: auto !important;
+    }
 }
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
