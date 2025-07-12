@@ -1,5 +1,4 @@
-﻿using React_Rentify.Server.Models.Customers;
-using React_Rentify.Server.Services.Models;
+﻿using System.Text;
 using System.Text.Json;
 
 namespace React_Rentify.Server.Services
@@ -7,9 +6,7 @@ namespace React_Rentify.Server.Services
     public class GeminiIdentityReaderService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
-        private readonly string _apiBaseUrl;
-        private readonly string _modelName;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<GeminiIdentityReaderService> _logger;
 
         public GeminiIdentityReaderService(
@@ -18,54 +15,138 @@ namespace React_Rentify.Server.Services
             ILogger<GeminiIdentityReaderService> logger)
         {
             _httpClient = httpClient;
+            _configuration = configuration;
             _logger = logger;
-            _apiKey = configuration["Gemini:ApiKey"]
-                ?? throw new InvalidOperationException("Gemini API key not set");
-            _apiBaseUrl = configuration["Gemini:ApiUrl"]
-                ?? "https://generativelanguage.googleapis.com/v1beta";
-            _modelName = configuration["Gemini:IdentityModelName"]
-                ?? "models/gemini-vision-identityextractor-1.0.0";
         }
 
-        /// <summary>
-        /// Extracts identity fields from 1–6 document images.
-        /// </summary>
-        public async Task<Customer> ExtractIdentityAsync(IEnumerable<string> base64Images)
+        public async Task<object> ExtractIdentityAsync(IEnumerable<string> base64Images)
         {
-            var images = base64Images?.ToList()
-                ?? throw new ArgumentNullException(nameof(base64Images));
-            if (images.Count < 1 || images.Count > 6)
-                throw new ArgumentException("You must supply between 1 and 6 images.");
+            var apiKey = _configuration["Gemini:ApiKey"];
+            var apiUrl = _configuration["Gemini:ApiUrl"];
+            var modelName = _configuration["Gemini:IdentityModelName"];
 
-            var url = $"{_apiBaseUrl}/{_modelName}:identityExtract?key={_apiKey}";
-            var request = new IdentityExtractRequest
+            if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiUrl) || string.IsNullOrEmpty(modelName))
             {
-                Images = images.Select(b64 => new ImagePart { Base64 = b64 }).ToList(),
-                Prompt = @"
-                        Extract the following fields from these identity document images:
-                        FullName, NationalId, PassportId, LicenseNumber, DateOfBirth, Address.
-                        Return ONLY valid JSON fitting the Customer schema."
+                throw new ArgumentException("Gemini configuration is missing or incomplete.");
+            }
+
+            // Construct the correct endpoint URL
+            var endpoint = $"{apiUrl}/models/{modelName}:generateContent";
+
+            var parts = new List<object>();
+
+            // Add images
+            foreach (var base64Image in base64Images)
+            {
+                parts.Add(new
+                {
+                    inline_data = new
+                    {
+                        mime_type = "image/jpeg", // or detect from base64
+                        data = base64Image
+                    }
+                });
+            }
+
+            // Add text prompt for identity extraction
+            parts.Add(new
+            {
+                text = @"Extract identity information from the provided images. Return the data in JSON format with the following structure:
+{
+  ""fullName"": ""extracted full name"",
+  ""email"": ""extracted email"",
+  ""phoneNumber"": ""extracted phone number"",
+  ""nationalId"": ""extracted national ID"",
+  ""passportId"": ""extracted passport ID"",
+  ""licenseNumber"": ""extracted license number"",
+  ""address"": ""extracted address"",
+  ""dateOfBirth"": ""extracted date of birth in ISO format""
+}
+
+Only include fields that are clearly visible and readable in the images. Use null for missing fields.
+*Use the fullname in the image containing the person's personal picture"
+            });
+
+            var requestBody = new
+            {
+                contents = new[]
+                {
+                    new
+                    {
+                        parts = parts.ToArray()
+                    }
+                }
             };
 
-            _logger.LogInformation("Calling Gemini identityExtract with {Count} images", images.Count);
-            var response = await _httpClient.PostAsJsonAsync(url, request);
-            response.EnsureSuccessStatusCode();
+            var json = JsonSerializer.Serialize(requestBody, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
 
-            var geminiResp = await response.Content.ReadFromJsonAsync<IdentityExtractResponse>();
-            if (geminiResp?.Candidates == null || geminiResp.Candidates.Count == 0)
-                throw new InvalidOperationException("No candidates returned from Gemini.");
+            _logger.LogInformation("Sending request to Gemini API: {Endpoint}", endpoint);
 
-            // Concatenate text parts and parse JSON
-            var json = string.Concat(geminiResp.Candidates[0]
-                .Content.Parts.Select(p => p.Text));
-            _logger.LogDebug("Gemini returned: {Json}", json);
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{endpoint}?key={apiKey}")
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
 
-            var customer = JsonSerializer.Deserialize<Customer>(
-                json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            if (customer == null)
-                throw new InvalidOperationException("Failed to deserialize Customer.");
+            request.Headers.Add("x-goog-api-key", apiKey);
 
-            return customer;
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                _logger.LogError("Gemini API error: {StatusCode} - {Content}", response.StatusCode, errorContent);
+                response.EnsureSuccessStatusCode(); // This will throw the HttpRequestException you're seeing
+            }
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Gemini API response: {Response}", responseContent);
+
+            // Parse the Gemini response and extract the JSON content
+            var geminiResponse = JsonSerializer.Deserialize<JsonElement>(responseContent);
+
+            if (geminiResponse.TryGetProperty("candidates", out var candidates) &&
+                candidates.GetArrayLength() > 0)
+            {
+                var firstCandidate = candidates[0];
+                if (firstCandidate.TryGetProperty("content", out var content) &&
+                    content.TryGetProperty("parts", out var responseParts) &&
+                    responseParts.GetArrayLength() > 0)
+                {
+                    var textPart = responseParts[0];
+                    if (textPart.TryGetProperty("text", out var textElement))
+                    {
+                        var extractedText = textElement.GetString();
+
+                        // Try to parse the JSON from the response
+                        try
+                        {
+                            // Clean up the response text (remove markdown formatting if present)
+                            var jsonText = extractedText?.Trim();
+                            if (jsonText?.StartsWith("```json") == true)
+                            {
+                                jsonText = jsonText.Substring(7);
+                            }
+                            if (jsonText?.EndsWith("```") == true)
+                            {
+                                jsonText = jsonText.Substring(0, jsonText.Length - 3);
+                            }
+
+                            return JsonSerializer.Deserialize<object>(jsonText ?? "{}");
+                        }
+                        catch (JsonException ex)
+                        {
+                            _logger.LogWarning("Failed to parse extracted JSON: {Error}. Raw text: {Text}", ex.Message, extractedText);
+                            // Return a basic object with the raw text
+                            return new { error = "Failed to parse response", rawText = extractedText };
+                        }
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("Unexpected response format from Gemini API");
         }
     }
 }

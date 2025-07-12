@@ -1057,5 +1057,29 @@
       "fetchCars": "Error loading cars",
       "fetchReservations": "Error loading reservations"
     }
+  },
+  "identityReader": {
+    "title": "Identity Reader",
+    "description": "Upload or capture up to 6 images of an identity document for data extraction.",
+    "maxFilesError": "You can upload a maximum of 6 files.",
+    "invalidFileType": "One or more files have an invalid type. Please upload JPG, PNG, or GIF images.",
+    "noImagesError": "Please upload at least one image to proceed.",
+    "extractionSuccess": "Identity data extracted successfully.",
+    "extractionError": "An error occurred while extracting identity data.",
+    "customerCreated": "Customer created successfully.",
+    "customerCreationError": "An error occurred while creating the customer.",
+    "confirmCreateCustomer": "Are you sure you want to create this customer?",
+    "uploadFiles": "Upload Files",
+    "takePhoto": "Take Photo",
+    "clearAll": "Clear All",
+    "uploadInfo": "You can upload up to 6 images.",
+    "fileCount": "{{count}} / {{max}} files uploaded",
+    "selectedImages": "Selected Images",
+    "processing": "Processing...",
+    "extractIdentity": "Extract Identity",
+    "extractedData": "Extracted Data",
+    "confirmationText": "Please confirm the data below before creating the customer.",
+    "creatingCustomer": "Creating customer...",
+    "createCustomer": "Create Customer"
   }
 }

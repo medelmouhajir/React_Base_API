@@ -32,16 +32,16 @@ const GadgetsHome = () => {
             category: 'reservation',
             available: true
         },
-        // Mockup gadgets - to be implemented
         {
-            id: 'analytics',
-            name: t('gadgets.analytics.name'),
-            description: t('gadgets.analytics.description'),
-            icon: '📊',
+            id: 'identity',
+            name: t('gadgets.identity.name'),
+            description: t('gadgets.identity.description'),
+            icon: '📸',
             url: 'gadgets/identity',
-            category: 'analytics',
+            category: 'customer',
             available: true,
         },
+        // Mockup gadgets - to be implemented
         {
             id: 'reports',
             name: t('gadgets.reports.name'),

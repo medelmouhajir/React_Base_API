@@ -1035,5 +1035,29 @@
       "fetchCars": "Erreur lors du chargement des voitures",
       "fetchReservations": "Erreur lors du chargement des réservations"
     }
+  },
+  "identityReader": {
+    "title": "Lecteur d'identité",
+    "description": "Téléchargez ou capturez jusqu'à 6 images d’un document d’identité pour l’extraction des données.",
+    "maxFilesError": "Vous pouvez télécharger un maximum de 6 fichiers.",
+    "invalidFileType": "Un ou plusieurs fichiers ont un type invalide. Veuillez télécharger des images JPG, PNG ou GIF.",
+    "noImagesError": "Veuillez télécharger au moins une image pour continuer.",
+    "extractionSuccess": "Données d’identité extraites avec succès.",
+    "extractionError": "Une erreur s’est produite lors de l’extraction des données d’identité.",
+    "customerCreated": "Client créé avec succès.",
+    "customerCreationError": "Une erreur s’est produite lors de la création du client.",
+    "confirmCreateCustomer": "Êtes‑vous sûr de vouloir créer ce client ?",
+    "uploadFiles": "Téléverser des fichiers",
+    "takePhoto": "Prendre une photo",
+    "clearAll": "Tout effacer",
+    "uploadInfo": "Vous pouvez téléverser jusqu’à 6 images.",
+    "fileCount": "{{count}} / {{max}} fichiers téléversés",
+    "selectedImages": "Images sélectionnées",
+    "processing": "Traitement en cours…",
+    "extractIdentity": "Extraire l’identité",
+    "extractedData": "Données extraites",
+    "confirmationText": "Veuillez confirmer les données ci‑dessous avant de créer le client.",
+    "creatingCustomer": "Création du client en cours…",
+    "createCustomer": "Créer le client"
   }
 }
