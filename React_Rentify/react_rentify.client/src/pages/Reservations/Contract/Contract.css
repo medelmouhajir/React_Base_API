@@ -89,8 +89,12 @@
     }
 
 /* Logo positioning */
-.logo-container {
-    position: relative;
+.right-logo-container {
+    position: relative; /* Ensure this is the positioning context */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 
 .right-logo {

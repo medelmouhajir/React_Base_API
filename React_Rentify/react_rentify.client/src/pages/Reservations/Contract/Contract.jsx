@@ -152,15 +152,15 @@ const Contract = () => {
       <div className="invoice-print">
         {/* Header with logos and title */}
         <div className="row">
-          <div className="col-4">
-            <img src={apiBaseUrl + reservation.agency?.logoUrl} width="220" alt="Agency Logo" />
+          <div className="col-4 left-logo-container">
+            <img src={apiBaseUrl + reservation.agency?.logoUrl} className="left-logo" width="220" alt="Agency Logo" />
           </div>
           <div className="col-4">
             <h1 className="text-center">{reservation.agency?.name}</h1>
             <p className="text-center">Contrat de location</p>
           </div>
-          <div className="col-4 logo-container">
-            <img src={"/src/assets/contract/Flascam.png"} className="right-logo" alt="Flascam" />
+          <div className="col-4 right-logo-container">
+            <img src={"/src/assets/contract/Flascam.png"} className="right-logo" width="220" alt="Flascam" />
           </div>
         </div>
 
