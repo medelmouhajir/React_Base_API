@@ -88,6 +88,7 @@ const TicketsList = lazy(() => import('./pages/Tickets/List/TicketsList'));
 const GadgetsHome = lazy(() => import('./pages/Gadgets/Home/GadgetsHome'));
 const BlacklistCheck = lazy(() => import('./pages/Gadgets/BlacklistChecks/BlacklistCheck'));
 const CarCheck = lazy(() => import('./pages/Gadgets/CarChecks/CarCheck'));
+const IdentityReader = lazy(() => import('./pages/Gadgets/IdentityReaders/IdentityReader'));
 
 //// Other standalone pages
 //const MaintenancePage = lazy(() => import('./pages/maintenance/Maintenance'));
@@ -179,6 +180,7 @@ function App() {
                                 <Route path="/gadgets" element={<GadgetsHome />} />
                                 <Route path="/gadgets/blacklist" element={<BlacklistCheck />} />
                                 <Route path="/gadgets/carcheck" element={<CarCheck />} />
+                                <Route path="/gadgets/identity" element={<IdentityReader />} />
 
                                 {/* Reports */}
                                 {/*<Route path="/reports" element={<ReportsPage />} />*/}

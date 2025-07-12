@@ -38,10 +38,9 @@ const GadgetsHome = () => {
             name: t('gadgets.analytics.name'),
             description: t('gadgets.analytics.description'),
             icon: '📊',
-            url: 'gadgets/analytics',
+            url: 'gadgets/identity',
             category: 'analytics',
-            available: false,
-            comingSoon: true
+            available: true,
         },
         {
             id: 'reports',

@@ -26,7 +26,7 @@ namespace React_Rentify.Server.Controllers.AI
         /// </summary>
         [HttpPost("extract")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Extract([FromForm] List<IFormFile> images)
+        public async Task<IActionResult> Extract([FromForm] List<IFormFile>? images)
         {
             if (images == null || images.Count < 1 || images.Count > 6)
             {

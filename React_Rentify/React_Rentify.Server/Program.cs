@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models.Users;
+using React_Rentify.Server.Services;
 using System.Text;
 
 namespace React_Rentify.Server
@@ -27,6 +28,8 @@ namespace React_Rentify.Server
             builder.Services.AddDbContext<MainDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+            builder.Services.AddHttpClient<GeminiIdentityReaderService>();
 
             // Configure database
             builder.Services.AddDbContext<GpsDbContext>(options =>

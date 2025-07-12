@@ -1,0 +1,602 @@
+/* src/pages/Gadgets/IdentityReaders/IdentityReader.css */
+
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-color: #4a90e2;
+    --primary-hover: #3b78c3;
+    --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
+    --success-color: #10b981;
+    --success-bg: #dcfce7;
+    --success-text: #166534;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --warning-color: #f59e0b;
+    --info-color: #3b82f6;
+    /* Light theme */
+    --bg-color-light: #ffffff;
+    --card-bg-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #60a5fa;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --error-bg-light: #fee2e2;
+    --error-text-light: #b91c1c;
+    /* Dark theme */
+    --bg-color-dark: #111827;
+    --card-bg-dark: #1f2937;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --border-color-dark: #374151;
+    --input-bg-dark: #1f2937;
+    --input-text-dark: #f9fafb;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #3b82f6;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --error-bg-dark: #7f1d1d;
+    --error-text-dark: #fca5a5;
+    --success-bg-dark: #064e3b;
+    --success-text-dark: #a7f3d0;
+    /* Common */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --transition-speed: 0.25s;
+}
+
+/*---------------------------------------------
+  Container and Layout
+---------------------------------------------*/
+.identity-reader-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    color: var(--text-color-light);
+    transition: color var(--transition-speed);
+}
+
+    .identity-reader-container.dark {
+        color: var(--text-color-dark);
+    }
+
+/*---------------------------------------------
+  Header Section
+---------------------------------------------*/
+.identity-reader-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.identity-reader-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--primary-color), #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.identity-reader-description {
+    font-size: 1.125rem;
+    color: var(--text-secondary-light);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.identity-reader-container.dark .identity-reader-description {
+    color: var(--text-secondary-dark);
+}
+
+/*---------------------------------------------
+  Alert Messages
+---------------------------------------------*/
+.identity-reader-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 2rem;
+    font-weight: 500;
+    animation: slideIn 0.3s ease-out;
+}
+
+    .identity-reader-alert.error {
+        background-color: var(--error-bg-light);
+        color: var(--error-text-light);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+.identity-reader-container.dark .identity-reader-alert.error {
+    background-color: var(--error-bg-dark);
+    color: var(--error-text-dark);
+}
+
+.identity-reader-alert.success {
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.identity-reader-container.dark .identity-reader-alert.success {
+    background-color: var(--success-bg-dark);
+    color: var(--success-text-dark);
+}
+
+.alert-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/*---------------------------------------------
+  Upload Section
+---------------------------------------------*/
+.identity-reader-upload-section {
+    background: var(--card-bg-light);
+    border: 2px dashed var(--border-color-light);
+    border-radius: var(--border-radius-lg);
+    padding: 3rem 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    transition: all var(--transition-speed);
+}
+
+.identity-reader-container.dark .identity-reader-upload-section {
+    background: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+}
+
+.upload-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.upload-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    min-width: 140px;
+}
+
+    .upload-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .upload-btn.file-upload {
+        background: var(--primary-color);
+        color: white;
+    }
+
+        .upload-btn.file-upload:hover:not(:disabled) {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+    .upload-btn.camera-capture {
+        background: var(--success-color);
+        color: white;
+    }
+
+        .upload-btn.camera-capture:hover:not(:disabled) {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+    .upload-btn.clear-all {
+        background: var(--danger-color);
+        color: white;
+    }
+
+        .upload-btn.clear-all:hover:not(:disabled) {
+            background: var(--danger-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+.btn-icon {
+    font-size: 1.1rem;
+}
+
+.upload-info {
+    color: var(--text-secondary-light);
+    line-height: 1.6;
+}
+
+.identity-reader-container.dark .upload-info {
+    color: var(--text-secondary-dark);
+}
+
+.file-count {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 0.5rem;
+}
+
+/*---------------------------------------------
+  Image Preview Section
+---------------------------------------------*/
+.identity-reader-preview-section {
+    margin-bottom: 2rem;
+}
+
+    .identity-reader-preview-section h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-color-light);
+    }
+
+.identity-reader-container.dark .identity-reader-preview-section h3 {
+    color: var(--text-color-dark);
+}
+
+.image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.image-preview-item {
+    position: relative;
+    background: var(--card-bg-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    transition: transform var(--transition-speed);
+}
+
+.identity-reader-container.dark .image-preview-item {
+    background: var(--card-bg-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.image-preview-item:hover {
+    transform: translateY(-4px);
+}
+
+.preview-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.image-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.remove-image-btn {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background var(--transition-speed);
+}
+
+    .remove-image-btn:hover:not(:disabled) {
+        background: var(--danger-hover);
+    }
+
+    .remove-image-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+/*---------------------------------------------
+  Process Section
+---------------------------------------------*/
+.process-section {
+    text-align: center;
+}
+
+.process-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: var(--info-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    min-width: 180px;
+}
+
+    .process-btn:hover:not(:disabled) {
+        background: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-light);
+    }
+
+    .process-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+/*---------------------------------------------
+  Results Section
+---------------------------------------------*/
+.identity-reader-results-section {
+    margin-bottom: 2rem;
+}
+
+    .identity-reader-results-section h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-color-light);
+    }
+
+.identity-reader-container.dark .identity-reader-results-section h3 {
+    color: var(--text-color-dark);
+}
+
+.extracted-data-card {
+    background: var(--card-bg-light);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-light);
+}
+
+.identity-reader-container.dark .extracted-data-card {
+    background: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.data-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+    .data-field label {
+        font-weight: 600;
+        color: var(--text-secondary-light);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+.identity-reader-container.dark .data-field label {
+    color: var(--text-secondary-dark);
+}
+
+.data-field span {
+    font-size: 1rem;
+    color: var(--text-color-light);
+    padding: 0.75rem;
+    background: var(--input-bg-light);
+    border: 1px solid var(--input-border-light);
+    border-radius: var(--border-radius);
+}
+
+.identity-reader-container.dark .data-field span {
+    color: var(--text-color-dark);
+    background: var(--input-bg-dark);
+    border-color: var(--input-border-dark);
+}
+
+/*---------------------------------------------
+  Confirmation Section
+---------------------------------------------*/
+.confirmation-section {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color-light);
+}
+
+.identity-reader-container.dark .confirmation-section {
+    border-color: var(--border-color-dark);
+}
+
+.confirmation-text {
+    font-size: 1.125rem;
+    color: var(--text-secondary-light);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.identity-reader-container.dark .confirmation-text {
+    color: var(--text-secondary-dark);
+}
+
+.create-customer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    min-width: 200px;
+}
+
+    .create-customer-btn:hover:not(:disabled) {
+        background: #059669;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-light);
+    }
+
+    .create-customer-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+/*---------------------------------------------
+  Spinner Animation
+---------------------------------------------*/
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/*---------------------------------------------
+  Responsive Design
+---------------------------------------------*/
+@media (max-width: 768px) {
+    .identity-reader-container {
+        padding: 1.5rem 1rem;
+    }
+
+    .identity-reader-title {
+        font-size: 2rem;
+    }
+
+    .identity-reader-description {
+        font-size: 1rem;
+    }
+
+    .identity-reader-upload-section {
+        padding: 2rem 1rem;
+    }
+
+    .upload-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .upload-btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+
+    .image-preview-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .preview-image {
+        height: 120px;
+    }
+
+    .data-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .process-btn,
+    .create-customer-btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .identity-reader-header {
+        margin-bottom: 2rem;
+    }
+
+    .identity-reader-title {
+        font-size: 1.75rem;
+    }
+
+    .identity-reader-upload-section {
+        padding: 1.5rem 0.75rem;
+    }
+
+    .extracted-data-card {
+        padding: 1.5rem;
+    }
+
+    .image-preview-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .preview-image {
+        height: 100px;
+    }
+
+    .image-name {
+        font-size: 0.75rem;
+        max-width: 80px;
+    }
+}
