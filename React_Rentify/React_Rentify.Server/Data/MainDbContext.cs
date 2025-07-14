@@ -5,6 +5,7 @@ using React_Rentify.Server.Models.Alerts;
 using React_Rentify.Server.Models.Blacklists;
 using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.Customers;
+using React_Rentify.Server.Models.Expenses;
 using React_Rentify.Server.Models.Filters.Cars;
 using React_Rentify.Server.Models.Invoices;
 using React_Rentify.Server.Models.Maintenances;
@@ -49,5 +50,11 @@ namespace React_Rentify.Server.Data
 
         //Tickets
         public DbSet<Ticket> Tickets { get; set; }
+
+
+        //Expenses
+        public DbSet<Expense> Expenses { get; set; }
+        public DbSet<Expense_Attachement> Expense_Attachements { get; set; }
+        public DbSet<Expense_Category> Expense_Categories { get; set; }
     }
 }

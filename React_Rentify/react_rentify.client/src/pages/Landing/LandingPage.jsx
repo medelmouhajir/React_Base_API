@@ -320,7 +320,7 @@ const LandingPage = () => {
                         <div className="feature-content">
                             <h3 className="feature-title">{features[activeFeature].title}</h3>
                             <p className="feature-description">{features[activeFeature].description}</p>
-                            <Link to="/register" className="feature-cta">
+                            <Link to="/login" className="feature-cta">
                                 {t('landing.featuresCta')}
                                 <svg className="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -361,9 +361,9 @@ const LandingPage = () => {
                 </div>
 
                 <div className="benefits-cta animate-on-scroll">
-                    <Link to="/register" className="cta-button primary">
+                    <a url="#contact" className="cta-button primary">
                         {t('landing.benefitsCta')}
-                    </Link>
+                    </a>
                 </div>
             </section>
 
@@ -470,12 +470,12 @@ const LandingPage = () => {
                                     </li>
                                 ))}
                             </ul>
-                            <Link
-                                to="/register"
+                            <a
+                                href="#contact"
                                 className={`pricing-cta ${plan.popular ? 'primary' : 'secondary'}`}
                             >
                                 {plan.cta}
-                            </Link>
+                            </a>
                         </div>
                     ))}
                 </div>

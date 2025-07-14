@@ -1,5 +1,6 @@
 ﻿using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.Customers;
+using React_Rentify.Server.Models.Expenses;
 using React_Rentify.Server.Models.Reservations;
 using React_Rentify.Server.Models.Users;
 
@@ -15,7 +16,9 @@ namespace React_Rentify.Server.Models.Agencies
         public string PhoneOne { get; set; }
         public string? PhoneTwo { get; set; }
         public string? Email { get; set; }
+        public string? Conditions { get; set; }
         public string LogoUrl { get; set; }
+        public string? LogoUrlAssociation { get; set; }
 
         // Navigation:
         public virtual ICollection<User>? Users { get; set; }
@@ -27,5 +30,6 @@ namespace React_Rentify.Server.Models.Agencies
         /// File attachments (e.g., registration documents, logos, certificates).
         /// </summary>
         public virtual ICollection<Agency_Attachment>? Agency_Attachments { get; set; }
+        public virtual ICollection<Expense_Category>? Expense_Categories { get; set; }
     }
 }

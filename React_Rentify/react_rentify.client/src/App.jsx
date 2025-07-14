@@ -25,7 +25,6 @@ import { useRtlDirection } from './hooks/useRtlDirection';
 // Landing & Auth
 const LandingPage = lazy(() => import('./pages/Landing/LandingPage'));
 const Login = lazy(() => import('./pages/Auth/Login'));
-const Register = lazy(() => import('./pages/Auth/Register'));
 const ForgotPassword = lazy(() => import('./pages/Auth/ForgotPassword'));
 
 // Main App
@@ -112,7 +111,6 @@ function App() {
                             <Route element={<LandingLayout />}>
                                 <Route path="/" element={<LandingPage />} />
                                 <Route path="/login" element={<Login />} />
-                                <Route path="/register" element={<Register />} />
                                 <Route path="/forgot-password" element={<ForgotPassword />} />
                             </Route>
 

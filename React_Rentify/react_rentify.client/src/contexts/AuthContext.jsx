@@ -173,7 +173,7 @@ export const AuthProvider = ({ children }) => {
         try {
             setLoading(true);
             setError(null);
-
+            console.log(profileData);
             const updatedUser = await authService.updateProfile(profileData);
             setUser(updatedUser);
 

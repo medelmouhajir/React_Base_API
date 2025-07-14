@@ -1,68 +1,72 @@
 /* src/pages/Gadgets/IdentityReaders/IdentityReader.css */
 
-/*------------------------------------------------------------
-  Theme Variables - using CSS variables for theming
-  ------------------------------------------------------------*/
+/*---------------------------------------------
+  CSS Variables
+---------------------------------------------*/
 :root {
-    /* Base colors */
-    --primary-color: #4a90e2;
-    --primary-hover: #3b78c3;
-    --secondary-color: #6b7280;
-    --secondary-hover: #4b5563;
+    /* Colors */
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
     --success-color: #10b981;
-    --success-bg: #dcfce7;
-    --success-text: #166534;
+    --success-hover: #059669;
     --danger-color: #ef4444;
     --danger-hover: #dc2626;
     --warning-color: #f59e0b;
-    --info-color: #3b82f6;
-    /* Light theme */
-    --bg-color-light: #ffffff;
-    --card-bg-light: #f9fafb;
-    --text-color-light: #111827;
-    --text-secondary-light: #6b7280;
-    --border-color-light: #e5e7eb;
-    --input-bg-light: #ffffff;
-    --input-text-light: #111827;
-    --input-border-light: #d1d5db;
-    --input-focus-border-light: #60a5fa;
-    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
-    --error-bg-light: #fee2e2;
-    --error-text-light: #b91c1c;
-    /* Dark theme */
-    --bg-color-dark: #111827;
-    --card-bg-dark: #1f2937;
-    --text-color-dark: #f9fafb;
-    --text-secondary-dark: #d1d5db;
-    --border-color-dark: #374151;
-    --input-bg-dark: #1f2937;
-    --input-text-dark: #f9fafb;
-    --input-border-dark: #4b5563;
-    --input-focus-border-dark: #3b82f6;
-    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --error-bg-dark: #7f1d1d;
-    --error-text-dark: #fca5a5;
+    --warning-hover: #d97706;
+    /* Backgrounds */
+    --success-bg: #f0fdf4;
     --success-bg-dark: #064e3b;
-    --success-text-dark: #a7f3d0;
-    /* Common */
+    --success-text: #166534;
+    --success-text-dark: #10b981;
+    --error-bg-light: #fef2f2;
+    --error-bg-dark: #7f1d1d;
+    --error-text-light: #dc2626;
+    --error-text-dark: #f87171;
+    --warning-bg: #fffbeb;
+    --warning-bg-dark: #78350f;
+    --warning-text: #d97706;
+    --warning-text-dark: #fbbf24;
+    /* Card and surface colors */
+    --card-bg-light: #ffffff;
+    --card-bg-dark: #1f2937;
+    --input-bg-light: #ffffff;
+    --input-bg-dark: #374151;
+    /* Text colors */
+    --text-color-light: #1f2937;
+    --text-color-dark: #f9fafb;
+    --text-secondary-light: #6b7280;
+    --text-secondary-dark: #d1d5db;
+    /* Border colors */
+    --border-color-light: #e5e7eb;
+    --border-color-dark: #4b5563;
+    --input-border-light: #d1d5db;
+    --input-border-dark: #6b7280;
+    --input-focus-border-light: #3b82f6;
+    --input-focus-border-dark: #60a5fa;
+    /* Input colors */
+    --input-text-light: #1f2937;
+    --input-text-dark: #f9fafb;
+    /* Layout */
     --border-radius: 0.5rem;
     --border-radius-lg: 0.75rem;
-    --transition-speed: 0.25s;
+    --shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --transition-speed: 0.2s;
 }
 
 /*---------------------------------------------
-  Container and Layout
+  Main Container
 ---------------------------------------------*/
 .identity-reader-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
-    color: var(--text-color-light);
-    transition: color var(--transition-speed);
+    padding: 2rem;
+    min-height: 100vh;
+    background-color: transparent;
 }
 
     .identity-reader-container.dark {
-        color: var(--text-color-dark);
+        background-color: transparent;
     }
 
 /*---------------------------------------------
@@ -131,9 +135,53 @@
     color: var(--success-text-dark);
 }
 
+.identity-reader-alert.blacklist-warning {
+    background-color: var(--warning-bg);
+    color: var(--warning-text);
+    border: 2px solid var(--warning-color);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.identity-reader-container.dark .identity-reader-alert.blacklist-warning {
+    background-color: var(--warning-bg-dark);
+    color: var(--warning-text-dark);
+}
+
+.blacklist-reasons {
+    margin: 0.5rem 0 0 1rem;
+    padding: 0;
+}
+
+    .blacklist-reasons li {
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+
 .alert-icon {
     font-size: 1.25rem;
     flex-shrink: 0;
+}
+
+/*---------------------------------------------
+  Checking Blacklist
+---------------------------------------------*/
+.checking-blacklist {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.identity-reader-container.dark .checking-blacklist {
+    background: var(--warning-bg-dark);
+    color: var(--warning-text-dark);
 }
 
 /*---------------------------------------------
@@ -273,7 +321,7 @@
 }
 
 .image-preview-item:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
 }
 
 .preview-image {
@@ -283,50 +331,51 @@
     display: block;
 }
 
-.image-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-    color: white;
-    padding: 1rem;
+.image-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid var(--border-color-light);
+}
+
+.identity-reader-container.dark .image-info {
+    background: rgba(255, 255, 255, 0.05);
+    border-top-color: var(--border-color-dark);
 }
 
 .image-name {
     font-size: 0.875rem;
     font-weight: 500;
+    color: var(--text-color-light);
     max-width: 120px;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.identity-reader-container.dark .image-name {
+    color: var(--text-color-dark);
 }
 
 .remove-image-btn {
-    background: var(--danger-color);
-    color: white;
+    background: none;
     border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
-    font-size: 0.875rem;
-    transition: background var(--transition-speed);
+    font-size: 1rem;
+    opacity: 0.7;
+    transition: opacity var(--transition-speed);
+    padding: 0.25rem;
 }
 
     .remove-image-btn:hover:not(:disabled) {
-        background: var(--danger-hover);
+        opacity: 1;
     }
 
     .remove-image-btn:disabled {
-        opacity: 0.6;
         cursor: not-allowed;
+        opacity: 0.3;
     }
 
 /*---------------------------------------------
@@ -334,6 +383,7 @@
 ---------------------------------------------*/
 .process-section {
     text-align: center;
+    margin-top: 2rem;
 }
 
 .process-btn {
@@ -341,19 +391,19 @@
     align-items: center;
     gap: 0.75rem;
     padding: 1rem 2rem;
-    background: var(--info-color);
+    background: var(--primary-color);
     color: white;
     border: none;
     border-radius: var(--border-radius);
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.125rem;
     cursor: pointer;
     transition: all var(--transition-speed);
-    min-width: 180px;
+    min-width: 200px;
 }
 
     .process-btn:hover:not(:disabled) {
-        background: #2563eb;
+        background: var(--primary-hover);
         transform: translateY(-2px);
         box-shadow: var(--shadow-light);
     }
@@ -365,99 +415,128 @@
     }
 
 /*---------------------------------------------
-  Results Section
+  Extracted Data Section
 ---------------------------------------------*/
-.identity-reader-results-section {
-    margin-bottom: 2rem;
-}
-
-    .identity-reader-results-section h3 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        color: var(--text-color-light);
-    }
-
-.identity-reader-container.dark .identity-reader-results-section h3 {
-    color: var(--text-color-dark);
+.extracted-data-section {
+    margin-top: 2rem;
 }
 
 .extracted-data-card {
     background: var(--card-bg-light);
-    border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius-lg);
     padding: 2rem;
     box-shadow: var(--shadow-light);
+    border: 1px solid var(--border-color-light);
 }
 
 .identity-reader-container.dark .extracted-data-card {
     background: var(--card-bg-dark);
-    border-color: var(--border-color-dark);
     box-shadow: var(--shadow-dark);
+    border-color: var(--border-color-dark);
+}
+
+.extracted-data-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    color: var(--text-color-light);
+    text-align: center;
+}
+
+.identity-reader-container.dark .extracted-data-card h3 {
+    color: var(--text-color-dark);
 }
 
 .data-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
-.data-field {
+.data-item {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-    .data-field label {
+    .data-item strong {
         font-weight: 600;
-        color: var(--text-secondary-light);
+        color: var(--text-color-light);
         font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
     }
 
-.identity-reader-container.dark .data-field label {
-    color: var(--text-secondary-dark);
-}
-
-.data-field span {
-    font-size: 1rem;
-    color: var(--text-color-light);
-    padding: 0.75rem;
-    background: var(--input-bg-light);
-    border: 1px solid var(--input-border-light);
-    border-radius: var(--border-radius);
-}
-
-.identity-reader-container.dark .data-field span {
+.identity-reader-container.dark .data-item strong {
     color: var(--text-color-dark);
+}
+
+.extracted-value {
+    padding: 0.75rem 1rem;
+    background: var(--success-bg);
+    color: var(--success-text);
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    border: 2px solid rgba(16, 185, 129, 0.2);
+}
+
+.identity-reader-container.dark .extracted-value {
+    background: var(--success-bg-dark);
+    color: var(--success-text-dark);
+}
+
+.manual-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--input-border-light);
+    border-radius: var(--border-radius);
+    background: var(--input-bg-light);
+    color: var(--input-text-light);
+    font-size: 1rem;
+    transition: all var(--transition-speed);
+}
+
+    .manual-input:focus {
+        outline: none;
+        border-color: var(--input-focus-border-light);
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    }
+
+.identity-reader-container.dark .manual-input {
     background: var(--input-bg-dark);
+    color: var(--input-text-dark);
     border-color: var(--input-border-dark);
 }
 
+    .identity-reader-container.dark .manual-input:focus {
+        border-color: var(--input-focus-border-dark);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+.manual-input::placeholder {
+    color: var(--text-secondary-light);
+    font-style: italic;
+}
+
+.identity-reader-container.dark .manual-input::placeholder {
+    color: var(--text-secondary-dark);
+}
+
+.manual-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
 /*---------------------------------------------
-  Confirmation Section
+  Create Customer Section
 ---------------------------------------------*/
-.confirmation-section {
+.create-customer-section {
     text-align: center;
+    margin-top: 2rem;
     padding-top: 2rem;
     border-top: 1px solid var(--border-color-light);
 }
 
-.identity-reader-container.dark .confirmation-section {
-    border-color: var(--border-color-dark);
-}
-
-.confirmation-text {
-    font-size: 1.125rem;
-    color: var(--text-secondary-light);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-}
-
-.identity-reader-container.dark .confirmation-text {
-    color: var(--text-secondary-dark);
+.identity-reader-container.dark .create-customer-section {
+    border-top-color: var(--border-color-dark);
 }
 
 .create-customer-btn {
@@ -470,7 +549,7 @@
     border: none;
     border-radius: var(--border-radius);
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.125rem;
     cursor: pointer;
     transition: all var(--transition-speed);
     min-width: 200px;
@@ -568,6 +647,10 @@
         width: 100%;
         max-width: 300px;
     }
+
+    .extracted-data-card {
+        padding: 1.5rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -598,5 +681,13 @@
     .image-name {
         font-size: 0.75rem;
         max-width: 80px;
+    }
+
+    .data-grid {
+        gap: 1rem;
+    }
+
+    .manual-input {
+        font-size: 0.9rem;
     }
 }

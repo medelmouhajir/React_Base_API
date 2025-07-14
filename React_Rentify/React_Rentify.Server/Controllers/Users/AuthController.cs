@@ -139,7 +139,8 @@ namespace React_Rentify.Server.Controllers.Users
                         FullName = user.FullName,
                         user.AgencyId,
                         Role = GetRoleFromEnumToString(user.Role),
-                        IsActive = user.IsActive
+                        IsActive = user.IsActive,
+                        user.PhoneNumber
                     },
                     ExpiresAt = DateTime.UtcNow.AddMinutes(
                         int.Parse(_configuration["JwtSettings:ExpiresInMinutes"] ?? "60"))
@@ -173,7 +174,8 @@ namespace React_Rentify.Server.Controllers.Users
                     FullName = user.FullName,
                     user.AgencyId,
                     Role = GetRoleFromEnumToString(user.Role),
-                    IsActive = user.IsActive
+                    IsActive = user.IsActive,
+                    user.PhoneNumber
                 },
                 ExpiresAt = DateTime.UtcNow.AddMinutes(
                     int.Parse(_configuration["JwtSettings:ExpiresInMinutes"] ?? "60"))
@@ -199,7 +201,8 @@ namespace React_Rentify.Server.Controllers.Users
                 FullName = user.FullName,
                 AgencyId = user.AgencyId,
                 Role = GetRoleFromEnumToString(user.Role),
-                IsActive = user.IsActive
+                IsActive = user.IsActive,
+                user.PhoneNumber
             });
         }
 
@@ -223,7 +226,7 @@ namespace React_Rentify.Server.Controllers.Users
                 return NotFound();
             }
 
-            user.FullName = model.FullName ?? user.FullName;
+            user.FullName = model.FirstName + " " + model.LastName ?? user.FullName;
             user.PhoneNumber = model.PhoneNumber ?? user.PhoneNumber;
 
             var result = await _userManager.UpdateAsync(user);
@@ -321,7 +324,8 @@ namespace React_Rentify.Server.Controllers.Users
 
     public class UpdateProfileModel
     {
-        public string? FullName { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
         public string? PhoneNumber { get; set; }
     }
 

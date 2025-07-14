@@ -257,11 +257,13 @@ const Contract = () => {
               </thead>
               <tbody>
                 {[
-                  { label: 'Nom',      key: 'fullName',    rtl: 'اسم العائلة',    format: v => v?.toUpperCase() },
-                  { label: 'Prénom',   key: 'firstName',   rtl: 'الاسم الشخصي',  format: v => v?.toUpperCase() },
+                  { label: 'Nom complet',      key: 'fullName',    rtl: 'اسم',    format: v => v?.toUpperCase() },
                   { label: 'Date de naissance', key: 'dateOfBirth', rtl: 'تاريخ الولادة', format: formatDate },
                   { label: 'Adresse',   key: 'address',     rtl: 'العنوان',        format: v => v },
-                  { label: 'Téléphone', key: 'phone',       rtl: 'رقم الهاتف',     format: v => v },
+                  { label: 'Téléphone', key: 'phoneNumber',       rtl: 'رقم الهاتف',     format: v => v },
+                  { label: 'C.I.N', key: 'nationalId',       rtl: 'رقم الهوية',     format: v => v },
+                  { label: 'Passport N ', key: 'passportId',       rtl: 'رقم جواز السفر',     format: v => v },
+                  { label: 'Permit de conduite N ', key: 'licenseNumber',       rtl: 'رقم جواز السياقة',     format: v => v },
                 ].map(({ label, key, rtl, format }) => (
                   <tr key={key}>
                     <td>{label}</td>
@@ -395,13 +397,18 @@ const Contract = () => {
                   <td style={{ width: `${widthSignature}%` }}>
                     {reservation.agency?.name}
                   </td>
-                  <td style={{ width: `${widthSignatureCustomer}%` }}>
-                    {reservation.customer?.fullName}
-                  </td>
+                  
+                  {reservation.customers.map((customer) => (
+                      <td style={{ width: `${widthSignatureCustomer}%` }}>
+                        {customer?.fullName}
+                      </td>
+                  ))}
+
                 </tr>
                 <tr style={{ height: '80px' }}>
-                  <td></td>
-                  <td></td>
+                  {reservation.customers.map((customer) => (
+                    <td></td>
+                  ))}
                 </tr>
               </tbody>
             </table>
@@ -436,7 +443,7 @@ const Contract = () => {
                 <td>
                   {reservation.agency?.address}
                   <br />
-                  Telephone : {reservation.agency?.phone} | E-mail : {reservation.agency?.email}
+                  Telephone : {reservation.agency?.phoneOne} | E-mail : {reservation.agency?.email}
                 </td>
               </tr>
             </tbody>

@@ -388,32 +388,8 @@ namespace React_Rentify.Server.Controllers
 
             _logger.LogInformation("Updated car {CarId}", id);
 
-            var resultDto = new CarDto
-            {
-                Id = existingCar.Id,
-                AgencyId = existingCar.AgencyId,
-                Car_ModelId = existingCar.Car_ModelId,
-                Car_YearId = existingCar.Car_YearId,
-                LicensePlate = existingCar.LicensePlate,
-                Color = existingCar.Color,
-                IsAvailable = existingCar.IsAvailable,
-                Status = existingCar.Status,
-                DailyRate = existingCar.DailyRate,
-                HourlyRate = existingCar.HourlyRate,
-                DeviceSerialNumber = existingCar.DeviceSerialNumber,
-                IsTrackingActive = existingCar.IsTrackingActive,
-                Attachments = existingCar.Car_Attachments?
-                    .Select(a => new CarAttachmentDto
-                    {
-                        Id = a.Id,
-                        FileName = a.FileName,
-                        FilePath = a.FilePath,
-                        UploadedAt = a.UploadedAt
-                    })
-                    .ToList()
-            };
 
-            return Ok(resultDto);
+            return Ok();
         }
 
 

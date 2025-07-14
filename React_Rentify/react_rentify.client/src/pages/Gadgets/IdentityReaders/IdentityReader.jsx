@@ -5,6 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import identityService from '../../../services/identityService';
 import customerService from '../../../services/customerService';
+import { blacklistService } from '../../../services/blacklistService';
 import './IdentityReader.css';
 
 const IdentityReader = () => {
@@ -21,6 +22,11 @@ const IdentityReader = () => {
     const [isCreatingCustomer, setIsCreatingCustomer] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [showImages, setShowImages] = useState(true);
+    const [isCheckingBlacklist, setIsCheckingBlacklist] = useState(false);
+    const [blacklistResults, setBlacklistResults] = useState([]);
+    const [showBlacklistWarning, setShowBlacklistWarning] = useState(false);
+    const [manualData, setManualData] = useState({});
 
     // Handle file upload
     const handleFileUpload = (e) => {
@@ -84,6 +90,45 @@ const IdentityReader = () => {
         setExtractedData(null);
         setError(null);
         setSuccess(null);
+        setShowImages(true);
+        setBlacklistResults([]);
+        setShowBlacklistWarning(false);
+        setManualData({});
+    };
+
+    // Handle manual data input
+    const handleManualDataChange = (field, value) => {
+        setManualData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    // Check blacklist for extracted data
+    const checkBlacklist = async (data) => {
+        setIsCheckingBlacklist(true);
+        try {
+            const searchParams = {
+                nationalId: data.nationalId || '',
+                passportId: data.passportId || '',
+                licenseNumber: data.licenseNumber || '',
+            };
+
+            const results = await blacklistService.search(searchParams);
+            setBlacklistResults(results || []);
+
+            if (results && results.length > 0) {
+                setShowBlacklistWarning(true);
+                return true; // Blacklisted
+            }
+
+            return false; // Not blacklisted
+        } catch (err) {
+            console.error('❌ Error checking blacklist:', err);
+            return false; // Error treated as not blacklisted
+        } finally {
+            setIsCheckingBlacklist(false);
+        }
     };
 
     // Process images using identity service
@@ -99,8 +144,29 @@ const IdentityReader = () => {
         try {
             const files = images.map(img => img.file);
             const result = await identityService.extract(files);
+
+            // Hide images section after processing
+            setShowImages(false);
+
+            // Check blacklist before showing data
+            const isBlacklisted = await checkBlacklist(result);
+
+            // Set extracted data and initialize manual data for missing fields
             setExtractedData(result);
-            setSuccess(t('identityReader.extractionSuccess'));
+
+            // Initialize manual data for missing fields
+            const initialManualData = {};
+            const fields = ['email', 'phoneNumber', 'address', 'fullName', 'nationalId', 'passportId', 'licenseNumber', 'dateOfBirth'];
+            fields.forEach(field => {
+                if (!result[field]) {
+                    initialManualData[field] = '';
+                }
+            });
+            setManualData(initialManualData);
+
+            if (!isBlacklisted) {
+                setSuccess(t('identityReader.extractionSuccess'));
+            }
         } catch (err) {
             console.error('❌ Error processing images:', err);
             setError(err.response?.data?.message || err.message || t('identityReader.extractionError'));
@@ -109,7 +175,7 @@ const IdentityReader = () => {
         }
     };
 
-    // Create customer with extracted data
+    // Create customer with extracted and manual data
     const createCustomer = async () => {
         if (!extractedData || !user?.agencyId) return;
 
@@ -119,14 +185,16 @@ const IdentityReader = () => {
         try {
             const customerData = {
                 agencyId: user.agencyId,
-                fullName: extractedData.fullName || '',
-                email: extractedData.email || '',
-                phoneNumber: extractedData.phoneNumber || '',
-                nationalId: extractedData.nationalId || '',
-                passportId: extractedData.passportId || '',
-                licenseNumber: extractedData.licenseNumber || '',
-                address: extractedData.address || '',
-                dateOfBirth: extractedData.dateOfBirth ? new Date(extractedData.dateOfBirth).toISOString() : null
+                fullName: extractedData.fullName || manualData.fullName || '',
+                email: extractedData.email || manualData.email || '',
+                phoneNumber: extractedData.phoneNumber || manualData.phoneNumber || '',
+                nationalId: extractedData.nationalId || manualData.nationalId || '',
+                passportId: extractedData.passportId || manualData.passportId || '',
+                licenseNumber: extractedData.licenseNumber || manualData.licenseNumber || '',
+                address: extractedData.address || manualData.address || '',
+                dateOfBirth: (extractedData.dateOfBirth || manualData.dateOfBirth)
+                    ? new Date(extractedData.dateOfBirth || manualData.dateOfBirth).toISOString()
+                    : null
             };
 
             await customerService.create(customerData);
@@ -147,6 +215,22 @@ const IdentityReader = () => {
         if (window.confirm(t('identityReader.confirmCreateCustomer'))) {
             createCustomer();
         }
+    };
+
+    // Get combined data (extracted + manual)
+    const getCombinedData = () => {
+        if (!extractedData) return {};
+
+        return {
+            fullName: extractedData.fullName || manualData.fullName || '',
+            email: extractedData.email || manualData.email || '',
+            phoneNumber: extractedData.phoneNumber || manualData.phoneNumber || '',
+            nationalId: extractedData.nationalId || manualData.nationalId || '',
+            passportId: extractedData.passportId || manualData.passportId || '',
+            licenseNumber: extractedData.licenseNumber || manualData.licenseNumber || '',
+            address: extractedData.address || manualData.address || '',
+            dateOfBirth: extractedData.dateOfBirth || manualData.dateOfBirth || ''
+        };
     };
 
     return (
@@ -172,191 +256,283 @@ const IdentityReader = () => {
                 </div>
             )}
 
-            {/* Upload Section */}
-            <div className="identity-reader-upload-section">
-                <div className="upload-buttons">
-                    <button
-                        type="button"
-                        className="upload-btn file-upload"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isProcessing || isCreatingCustomer}
-                    >
-                        <span className="btn-icon">📁</span>
-                        {t('identityReader.uploadFiles')}
-                    </button>
-
-                    <button
-                        type="button"
-                        className="upload-btn camera-capture"
-                        onClick={() => cameraInputRef.current?.click()}
-                        disabled={isProcessing || isCreatingCustomer}
-                    >
-                        <span className="btn-icon">📷</span>
-                        {t('identityReader.takePhoto')}
-                    </button>
-
-                    {images.length > 0 && (
-                        <button
-                            type="button"
-                            className="upload-btn clear-all"
-                            onClick={clearAllImages}
-                            disabled={isProcessing || isCreatingCustomer}
-                        >
-                            <span className="btn-icon">🗑️</span>
-                            {t('identityReader.clearAll')}
-                        </button>
-                    )}
-                </div>
-
-                {/* Hidden file inputs */}
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleFileUpload}
-                    style={{ display: 'none' }}
-                />
-                <input
-                    ref={cameraInputRef}
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handleCameraCapture}
-                    style={{ display: 'none' }}
-                />
-
-                <div className="upload-info">
-                    <p>{t('identityReader.uploadInfo')}</p>
-                    <p className="file-count">{t('identityReader.fileCount', { count: images.length, max: 6 })}</p>
-                </div>
-            </div>
-
-            {/* Image Preview Section */}
-            {images.length > 0 && (
-                <div className="identity-reader-preview-section">
-                    <h3>{t('identityReader.selectedImages')}</h3>
-                    <div className="image-preview-grid">
-                        {images.map((image) => (
-                            <div key={image.id} className="image-preview-item">
-                                <img
-                                    src={image.preview}
-                                    alt={image.name}
-                                    className="preview-image"
-                                />
-                                <div className="image-overlay">
-                                    <span className="image-name">{image.name}</span>
-                                    <button
-                                        type="button"
-                                        className="remove-image-btn"
-                                        onClick={() => removeImage(image.id)}
-                                        disabled={isProcessing || isCreatingCustomer}
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="process-section">
-                        <button
-                            type="button"
-                            className="process-btn"
-                            onClick={processImages}
-                            disabled={isProcessing || isCreatingCustomer || images.length === 0}
-                        >
-                            {isProcessing ? (
-                                <>
-                                    <span className="spinner"></span>
-                                    {t('identityReader.processing')}
-                                </>
-                            ) : (
-                                <>
-                                    <span className="btn-icon">🔍</span>
-                                    {t('identityReader.extractIdentity')}
-                                </>
-                            )}
-                        </button>
+            {/* Blacklist Warning */}
+            {showBlacklistWarning && blacklistResults.length > 0 && (
+                <div className="identity-reader-alert blacklist-warning">
+                    <span className="alert-icon">⚠️</span>
+                    <div>
+                        <strong>{t('identityReader.blacklistWarning')}</strong>
+                        <ul className="blacklist-reasons">
+                            {blacklistResults.map((entry, index) => (
+                                <li key={index}>
+                                    {entry.reason} - {entry.reportedByAgencyName}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
             )}
 
-            {/* Results Section */}
-            {extractedData && (
-                <div className="identity-reader-results-section">
-                    <h3>{t('identityReader.extractedData')}</h3>
-                    <div className="extracted-data-card">
-                        <div className="data-grid">
-                            {extractedData.fullName && (
-                                <div className="data-field">
-                                    <label>{t('customer.fields.fullName')}</label>
-                                    <span>{extractedData.fullName}</span>
-                                </div>
-                            )}
-                            {extractedData.email && (
-                                <div className="data-field">
-                                    <label>{t('customer.fields.email')}</label>
-                                    <span>{extractedData.email}</span>
-                                </div>
-                            )}
-                            {extractedData.phoneNumber && (
-                                <div className="data-field">
-                                    <label>{t('customer.fields.phoneNumber')}</label>
-                                    <span>{extractedData.phoneNumber}</span>
-                                </div>
-                            )}
-                            {extractedData.nationalId && (
-                                <div className="data-field">
-                                    <label>{t('customer.fields.nationalId')}</label>
-                                    <span>{extractedData.nationalId}</span>
-                                </div>
-                            )}
-                            {extractedData.passportId && (
-                                <div className="data-field">
-                                    <label>{t('customer.fields.passportId')}</label>
-                                    <span>{extractedData.passportId}</span>
-                                </div>
-                            )}
-                            {extractedData.licenseNumber && (
-                                <div className="data-field">
-                                    <label>{t('customer.fields.licenseNumber')}</label>
-                                    <span>{extractedData.licenseNumber}</span>
-                                </div>
-                            )}
-                            {extractedData.address && (
-                                <div className="data-field">
-                                    <label>{t('customer.fields.address')}</label>
-                                    <span>{extractedData.address}</span>
-                                </div>
-                            )}
-                            {extractedData.dateOfBirth && (
-                                <div className="data-field">
-                                    <label>{t('customer.fields.dateOfBirth')}</label>
-                                    <span>{new Date(extractedData.dateOfBirth).toLocaleDateString()}</span>
-                                </div>
+            {/* Upload Section - Hidden after processing */}
+            {showImages && (
+                <>
+                    <div className="identity-reader-upload-section">
+                        <div className="upload-buttons">
+                            <button
+                                type="button"
+                                className="upload-btn file-upload"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isProcessing || isCreatingCustomer}
+                            >
+                                <span className="btn-icon">📁</span>
+                                {t('identityReader.uploadFiles')}
+                            </button>
+
+                            <button
+                                type="button"
+                                className="upload-btn camera-capture"
+                                onClick={() => cameraInputRef.current?.click()}
+                                disabled={isProcessing || isCreatingCustomer}
+                            >
+                                <span className="btn-icon">📷</span>
+                                {t('identityReader.takePhoto')}
+                            </button>
+
+                            {images.length > 0 && (
+                                <button
+                                    type="button"
+                                    className="upload-btn clear-all"
+                                    onClick={clearAllImages}
+                                    disabled={isProcessing || isCreatingCustomer}
+                                >
+                                    <span className="btn-icon">🗑️</span>
+                                    {t('identityReader.clearAll')}
+                                </button>
                             )}
                         </div>
 
-                        <div className="confirmation-section">
-                            <p className="confirmation-text">{t('identityReader.confirmationText')}</p>
+                        {/* Hidden file inputs */}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleFileUpload}
+                            style={{ display: 'none' }}
+                        />
+                        <input
+                            ref={cameraInputRef}
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            onChange={handleCameraCapture}
+                            style={{ display: 'none' }}
+                        />
+
+                        <div className="upload-info">
+                            <p>{t('identityReader.uploadInfo')}</p>
+                            <p className="file-count">{t('identityReader.fileCount', { count: images.length, max: 6 })}</p>
+                        </div>
+                    </div>
+
+                    {/* Image Preview Section */}
+                    {images.length > 0 && (
+                        <div className="identity-reader-preview-section">
+                            <h3>{t('identityReader.previewTitle')}</h3>
+                            <div className="image-preview-grid">
+                                {images.map((image) => (
+                                    <div key={image.id} className="image-preview-item">
+                                        <img
+                                            src={image.preview}
+                                            alt={image.name}
+                                            className="preview-image"
+                                        />
+                                        <div className="image-info">
+                                            <span className="image-name" title={image.name}>
+                                                {image.name}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                className="remove-image-btn"
+                                                onClick={() => removeImage(image.id)}
+                                                disabled={isProcessing || isCreatingCustomer}
+                                                title={t('identityReader.removeImage')}
+                                            >
+                                                ❌
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="process-section">
+                                <button
+                                    type="button"
+                                    className="process-btn"
+                                    onClick={processImages}
+                                    disabled={isProcessing || images.length === 0 || isCreatingCustomer}
+                                >
+                                    {isProcessing && <span className="spinner"></span>}
+                                    {isProcessing ? t('identityReader.processing') : t('identityReader.processImages')}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* Extracted Data Section with Manual Input Fields */}
+            {extractedData && !showImages && (
+                <div className="extracted-data-section">
+                    {isCheckingBlacklist && (
+                        <div className="checking-blacklist">
+                            <span className="spinner"></span>
+                            {t('identityReader.checkingBlacklist')}
+                        </div>
+                    )}
+
+                    <div className="extracted-data-card">
+                        <h3>{t('identityReader.extractedDataTitle')}</h3>
+
+                        <div className="data-grid">
+                            {/* Full Name */}
+                            <div className="data-item">
+                                <strong>{t('identityReader.fullName')}:</strong>
+                                {extractedData.fullName ? (
+                                    <span className="extracted-value">{extractedData.fullName}</span>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        placeholder={t('identityReader.enterManually')}
+                                        value={manualData.fullName || ''}
+                                        onChange={(e) => handleManualDataChange('fullName', e.target.value)}
+                                        className="manual-input"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Email */}
+                            <div className="data-item">
+                                <strong>{t('identityReader.email')}:</strong>
+                                {extractedData.email ? (
+                                    <span className="extracted-value">{extractedData.email}</span>
+                                ) : (
+                                    <input
+                                        type="email"
+                                        placeholder={t('identityReader.enterManually')}
+                                        value={manualData.email || ''}
+                                        onChange={(e) => handleManualDataChange('email', e.target.value)}
+                                        className="manual-input"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Phone Number */}
+                            <div className="data-item">
+                                <strong>{t('identityReader.phoneNumber')}:</strong>
+                                {extractedData.phoneNumber ? (
+                                    <span className="extracted-value">{extractedData.phoneNumber}</span>
+                                ) : (
+                                    <input
+                                        type="tel"
+                                        placeholder={t('identityReader.enterManually')}
+                                        value={manualData.phoneNumber || ''}
+                                        onChange={(e) => handleManualDataChange('phoneNumber', e.target.value)}
+                                        className="manual-input"
+                                    />
+                                )}
+                            </div>
+
+                            {/* National ID */}
+                            <div className="data-item">
+                                <strong>{t('identityReader.nationalId')}:</strong>
+                                {extractedData.nationalId ? (
+                                    <span className="extracted-value">{extractedData.nationalId}</span>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        placeholder={t('identityReader.enterManually')}
+                                        value={manualData.nationalId || ''}
+                                        onChange={(e) => handleManualDataChange('nationalId', e.target.value)}
+                                        className="manual-input"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Passport ID */}
+                            <div className="data-item">
+                                <strong>{t('identityReader.passportId')}:</strong>
+                                {extractedData.passportId ? (
+                                    <span className="extracted-value">{extractedData.passportId}</span>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        placeholder={t('identityReader.enterManually')}
+                                        value={manualData.passportId || ''}
+                                        onChange={(e) => handleManualDataChange('passportId', e.target.value)}
+                                        className="manual-input"
+                                    />
+                                )}
+                            </div>
+
+                            {/* License Number */}
+                            <div className="data-item">
+                                <strong>{t('identityReader.licenseNumber')}:</strong>
+                                {extractedData.licenseNumber ? (
+                                    <span className="extracted-value">{extractedData.licenseNumber}</span>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        placeholder={t('identityReader.enterManually')}
+                                        value={manualData.licenseNumber || ''}
+                                        onChange={(e) => handleManualDataChange('licenseNumber', e.target.value)}
+                                        className="manual-input"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Address */}
+                            <div className="data-item">
+                                <strong>{t('identityReader.address')}:</strong>
+                                {extractedData.address ? (
+                                    <span className="extracted-value">{extractedData.address}</span>
+                                ) : (
+                                    <textarea
+                                        placeholder={t('identityReader.enterManually')}
+                                        value={manualData.address || ''}
+                                        onChange={(e) => handleManualDataChange('address', e.target.value)}
+                                        className="manual-input manual-textarea"
+                                    />
+                                )}
+                            </div>
+
+                            {/* Date of Birth */}
+                            <div className="data-item">
+                                <strong>{t('identityReader.dateOfBirth')}:</strong>
+                                {extractedData.dateOfBirth ? (
+                                    <span className="extracted-value">
+                                        {new Date(extractedData.dateOfBirth).toLocaleDateString()}
+                                    </span>
+                                ) : (
+                                    <input
+                                        type="date"
+                                        value={manualData.dateOfBirth || ''}
+                                        onChange={(e) => handleManualDataChange('dateOfBirth', e.target.value)}
+                                        className="manual-input"
+                                    />
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="create-customer-section">
                             <button
                                 type="button"
                                 className="create-customer-btn"
                                 onClick={handleConfirmAndCreate}
-                                disabled={isCreatingCustomer}
+                                disabled={isCreatingCustomer || isCheckingBlacklist}
                             >
-                                {isCreatingCustomer ? (
-                                    <>
-                                        <span className="spinner"></span>
-                                        {t('identityReader.creatingCustomer')}
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className="btn-icon">👤</span>
-                                        {t('identityReader.createCustomer')}
-                                    </>
-                                )}
+                                {isCreatingCustomer && <span className="spinner"></span>}
+                                {isCreatingCustomer ? t('identityReader.creating') : t('identityReader.createCustomer')}
                             </button>
                         </div>
                     </div>

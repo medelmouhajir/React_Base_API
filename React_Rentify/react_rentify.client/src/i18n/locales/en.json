@@ -1015,6 +1015,10 @@
       "name": "Car Reservation Check",
       "description": "Check car availability and existing reservations"
     },
+    "identity": {
+      "name": "Scan customer identity cards",
+      "description": "User ou powered AI model to scan your customer identity cards (CIN , Passport , Driver license)"
+    },
     "analytics": {
       "name": "Analytics Dashboard",
       "description": "View detailed reports and insights"
@@ -1064,22 +1068,33 @@
     "maxFilesError": "You can upload a maximum of 6 files.",
     "invalidFileType": "One or more files have an invalid type. Please upload JPG, PNG, or GIF images.",
     "noImagesError": "Please upload at least one image to proceed.",
-    "extractionSuccess": "Identity data extracted successfully.",
     "extractionError": "An error occurred while extracting identity data.",
+    "extractionSuccess": "Identity data extracted successfully.",
     "customerCreated": "Customer created successfully.",
     "customerCreationError": "An error occurred while creating the customer.",
     "confirmCreateCustomer": "Are you sure you want to create this customer?",
+    "blacklistWarning": "Warning: this customer is on the blacklist.",
     "uploadFiles": "Upload Files",
     "takePhoto": "Take Photo",
     "clearAll": "Clear All",
-    "uploadInfo": "You can upload up to 6 images.",
+    "uploadInfo": "You can upload up to 6 files.",
     "fileCount": "{{count}} / {{max}} files uploaded",
-    "selectedImages": "Selected Images",
+    "previewTitle": "Preview Images",
+    "removeImage": "Remove Image",
     "processing": "Processing...",
-    "extractIdentity": "Extract Identity",
-    "extractedData": "Extracted Data",
-    "confirmationText": "Please confirm the data below before creating the customer.",
-    "creatingCustomer": "Creating customer...",
+    "processImages": "Process Images",
+    "checkingBlacklist": "Checking blacklist...",
+    "extractedDataTitle": "Extracted Data",
+    "fullName": "Full Name",
+    "enterManually": "Enter Manually",
+    "email": "Email",
+    "phoneNumber": "Phone Number",
+    "nationalId": "National ID",
+    "passportId": "Passport ID",
+    "licenseNumber": "License Number",
+    "address": "Address",
+    "dateOfBirth": "Date of Birth",
+    "creating": "Creating...",
     "createCustomer": "Create Customer"
   }
 }

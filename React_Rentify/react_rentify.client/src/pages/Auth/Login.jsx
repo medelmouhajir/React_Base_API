@@ -143,28 +143,20 @@ const Login = () => {
                     </button>
                 </form>
 
-                <div className="divider-wrapper">
-                    <div className="divider-line"></div>
-                    <span className="divider-text">{t('auth.orContinueWith')}</span>
-                </div>
+                {/*<div className="divider-wrapper">*/}
+                {/*    <div className="divider-line"></div>*/}
+                {/*    <span className="divider-text">{t('auth.orContinueWith')}</span>*/}
+                {/*</div>*/}
 
-                <button
-                    type="button"
-                    onClick={handleGoogleLogin}
-                    className="button-social"
-                >
-                    <img src="/google-icon.svg" alt="Google" className="social-icon" />
-                    <span>{t('auth.continueWithGoogle')}</span>
-                </button>
+                {/*<button*/}
+                {/*    type="button"*/}
+                {/*    onClick={handleGoogleLogin}*/}
+                {/*    className="button-social"*/}
+                {/*>*/}
+                {/*    <img src="/google-icon.svg" alt="Google" className="social-icon" />*/}
+                {/*    <span>{t('auth.continueWithGoogle')}</span>*/}
+                {/*</button>*/}
 
-                <div className="login-footer">
-                    <p className="footer-text">
-                        {t('auth.noAccount')}
-                        <Link to="/register" className="register-link">
-                            {t('auth.register')}
-                        </Link>
-                    </p>
-                </div>
             </div>
         </div>
     );
