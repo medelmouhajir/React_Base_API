@@ -1,0 +1,934 @@
+/* src/pages/Expenses/List/ExpenseList.css */
+
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-color: #4a90e2;
+    --primary-hover: #3b78c3;
+    --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --info-color: #3b82f6;
+    /* Light theme */
+    --bg-color-light: #ffffff;
+    --card-bg-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #60a5fa;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-hover-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --table-header-bg-light: #f3f4f6;
+    --table-row-hover-light: rgba(0, 0, 0, 0.025);
+    /* Dark theme */
+    --bg-color-dark: #111827;
+    --card-bg-dark: #1e293b;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --border-color-dark: #374151;
+    --input-bg-dark: #1f2937;
+    --input-text-dark: #f9fafb;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #3b82f6;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover-dark: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --table-header-bg-dark: #1f2937;
+    --table-row-hover-dark: rgba(255, 255, 255, 0.05);
+    /* Common */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --transition-speed: 0.25s;
+    --transition-fast: 0.15s;
+}
+
+/* Color scheme based on current theme */
+.expense-list-container {
+    --bg-color: transparent;
+    --card-bg: var(--card-bg-light);
+    --text-color: var(--text-color-light);
+    --text-secondary: var(--text-secondary-light);
+    --border-color: var(--border-color-light);
+    --input-bg: var(--input-bg-light);
+    --input-text: var(--input-text-light);
+    --input-border: var(--input-border-light);
+    --input-focus-border: var(--input-focus-border-light);
+    --shadow: var(--shadow-light);
+    --shadow-hover: var(--shadow-hover-light);
+    --table-header-bg: var(--table-header-bg-light);
+    --table-row-hover: var(--table-row-hover-light);
+}
+
+    /* Dark mode colors */
+    .expense-list-container.dark {
+        --bg-color: transparent;
+        --card-bg: var(--card-bg-dark);
+        --text-color: var(--text-color-dark);
+        --text-secondary: var(--text-secondary-dark);
+        --border-color: var(--border-color-dark);
+        --input-bg: var(--input-bg-dark);
+        --input-text: var(--input-text-dark);
+        --input-border: var(--input-border-dark);
+        --input-focus-border: var(--input-focus-border-dark);
+        --shadow: var(--shadow-dark);
+        --shadow-hover: var(--shadow-hover-dark);
+        --table-header-bg: var(--table-header-bg-dark);
+        --table-row-hover: var(--table-row-hover-dark);
+    }
+
+/*---------------------------------------------
+  Container and Layout
+---------------------------------------------*/
+.expense-list-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 1.5rem;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    transition: all var(--transition-speed);
+}
+
+/*---------------------------------------------
+  Header Section
+---------------------------------------------*/
+.expense-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.header-content h1.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0 0 0.5rem 0;
+}
+
+.header-content .page-description {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/*---------------------------------------------
+  Buttons
+---------------------------------------------*/
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+    .btn-primary:hover:not(:disabled) {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+    }
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+    .btn-outline:hover:not(:disabled) {
+        background-color: var(--card-bg);
+        border-color: var(--primary-color);
+    }
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+    border-color: var(--danger-color);
+}
+
+    .btn-danger:hover:not(:disabled) {
+        background-color: var(--danger-hover);
+        border-color: var(--danger-hover);
+    }
+
+.btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+.btn .icon {
+    width: 1rem;
+    height: 1rem;
+    stroke-width: 2;
+}
+
+/*---------------------------------------------
+  Icon Buttons
+---------------------------------------------*/
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background-color: transparent;
+}
+
+    .btn-icon svg {
+        width: 1rem;
+        height: 1rem;
+        stroke-width: 2;
+    }
+
+.btn-edit {
+    color: var(--info-color);
+}
+
+    .btn-edit:hover {
+        background-color: rgba(59, 130, 246, 0.1);
+    }
+
+.btn-view {
+    color: var(--secondary-color);
+}
+
+    .btn-view:hover {
+        background-color: rgba(107, 114, 128, 0.1);
+    }
+
+.btn-delete {
+    color: var(--danger-color);
+}
+
+    .btn-delete:hover {
+        background-color: rgba(239, 68, 68, 0.1);
+    }
+
+/*---------------------------------------------
+  Summary Cards
+---------------------------------------------*/
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+    transition: all var(--transition-speed);
+}
+
+    .summary-card:hover {
+        box-shadow: var(--shadow-hover);
+    }
+
+.summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    background-color: rgba(74, 144, 226, 0.1);
+    border-radius: var(--border-radius);
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+    .summary-icon svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        color: var(--primary-color);
+        stroke-width: 2;
+    }
+
+.summary-content h3 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin: 0 0 0.25rem 0;
+}
+
+.summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+}
+
+/*---------------------------------------------
+  Filters Section
+---------------------------------------------*/
+.filters-section {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.filters-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: end;
+}
+
+.search-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-input-wrapper {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rem;
+    height: 1rem;
+    color: var(--text-secondary);
+    stroke-width: 2;
+}
+
+.search-input,
+.filter-select,
+.date-input,
+.sort-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-fast);
+}
+
+.search-input {
+    padding-left: 2.5rem;
+}
+
+    .search-input:focus,
+    .filter-select:focus,
+    .date-input:focus,
+    .sort-select:focus {
+        outline: none;
+        border-color: var(--input-focus-border);
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    }
+
+    .search-input::placeholder {
+        color: var(--text-secondary);
+    }
+
+.filter-group,
+.sort-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/*---------------------------------------------
+  Loading and Error States
+---------------------------------------------*/
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--border-color);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-state p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.error-message {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+}
+
+.error-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    stroke-width: 2;
+    flex-shrink: 0;
+}
+
+/*---------------------------------------------
+  Table (Desktop)
+---------------------------------------------*/
+.expenses-table-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.expenses-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .expenses-table thead th {
+        background-color: var(--table-header-bg);
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 0.875rem;
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+        white-space: nowrap;
+    }
+
+    .expenses-table tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.875rem;
+    }
+
+    .expenses-table tbody tr:hover {
+        background-color: var(--table-row-hover);
+    }
+
+    .expenses-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+.title-cell {
+    max-width: 200px;
+}
+
+.expense-title {
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+}
+
+.expense-description {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.category-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: rgba(74, 144, 226, 0.1);
+    color: var(--primary-color);
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.amount-cell .expense-amount {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.date-cell {
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.actions-column {
+    width: 120px;
+    text-align: center;
+}
+
+.actions-cell {
+    text-align: center;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+/*---------------------------------------------
+  Mobile Card View
+---------------------------------------------*/
+.expenses-mobile-list {
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.expense-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+    transition: all var(--transition-speed);
+}
+
+    .expense-card:hover {
+        box-shadow: var(--shadow-hover);
+    }
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+}
+
+    .card-header .expense-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin: 0;
+        flex: 1;
+    }
+
+    .card-header .expense-amount {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        white-space: nowrap;
+    }
+
+.card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+.detail-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+    .card-actions .btn {
+        flex: 1;
+        justify-content: center;
+        min-width: 0;
+    }
+
+/*---------------------------------------------
+  Pagination
+---------------------------------------------*/
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.pagination-info {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.page-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+    .page-btn:hover {
+        background-color: var(--card-bg);
+        border-color: var(--primary-color);
+    }
+
+    .page-btn.active {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+.page-ellipsis {
+    padding: 0 0.25rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/*---------------------------------------------
+  Empty State
+---------------------------------------------*/
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.empty-icon {
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+}
+
+    .empty-icon svg {
+        width: 100%;
+        height: 100%;
+        stroke-width: 1.5;
+    }
+
+.empty-state h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0 0 0.5rem 0;
+}
+
+.empty-state p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0 0 2rem 0;
+    max-width: 400px;
+}
+
+/*---------------------------------------------
+  Mobile Responsive Design
+---------------------------------------------*/
+@media (max-width: 1024px) {
+    .filters-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .search-group {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .expense-list-container {
+        padding: 1rem;
+    }
+
+    .expense-list-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .header-content h1.page-title {
+        font-size: 1.75rem;
+    }
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .summary-card {
+        padding: 1rem;
+    }
+
+    .summary-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        margin-right: 0.75rem;
+    }
+
+        .summary-icon svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+    .summary-value {
+        font-size: 1.25rem;
+    }
+
+    .filters-section {
+        padding: 1rem;
+    }
+
+    .filters-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    /* Hide table on mobile */
+    .expenses-table-container {
+        display: none;
+    }
+
+    /* Show mobile cards */
+    .expenses-mobile-list {
+        display: flex;
+    }
+
+    .expense-card {
+        padding: 1rem;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+        .card-header .expense-amount {
+            font-size: 1.25rem;
+            text-align: right;
+        }
+
+    .pagination-container {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .pagination-controls {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .page-numbers {
+        order: -1;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .expense-list-container {
+        padding: 0.75rem;
+    }
+
+    .header-content h1.page-title {
+        font-size: 1.5rem;
+    }
+
+    .summary-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .summary-icon {
+        margin-right: 0;
+        margin-bottom: 0.75rem;
+    }
+
+    .filters-section {
+        padding: 0.75rem;
+    }
+
+    .expense-card {
+        padding: 0.75rem;
+    }
+
+    .card-actions {
+        flex-direction: column;
+    }
+
+        .card-actions .btn {
+            flex: none;
+        }
+
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .pagination-controls .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .page-btn {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.75rem;
+    }
+}
+
+/*---------------------------------------------
+  Touch Device Enhancements
+---------------------------------------------*/
+@media (hover: none) {
+    .btn:active {
+        transform: scale(0.98);
+    }
+
+    .expense-card:active {
+        transform: scale(0.99);
+    }
+
+    .page-btn:active {
+        transform: scale(0.95);
+    }
+}
+
+/*---------------------------------------------
+  RTL Support
+---------------------------------------------*/
+[dir='rtl'] .search-icon {
+    left: auto;
+    right: 0.75rem;
+}
+
+[dir='rtl'] .search-input {
+    padding-left: 1rem;
+    padding-right: 2.5rem;
+}
+
+[dir='rtl'] .summary-icon {
+    margin-right: 0;
+    margin-left: 1rem;
+}
+
+[dir='rtl'] .action-buttons {
+    flex-direction: row-reverse;
+}
+
+/*---------------------------------------------
+  Print Styles
+---------------------------------------------*/
+@media print {
+    .expense-list-container {
+        box-shadow: none;
+        border: none;
+    }
+
+    .filters-section,
+    .pagination-container,
+    .expense-list-header .btn,
+    .action-buttons {
+        display: none !important;
+    }
+
+    .expenses-table-container {
+        box-shadow: none;
+    }
+
+    .expenses-mobile-list {
+        display: none !important;
+    }
+
+    .expenses-table-container {
+        display: block !important;
+    }
+}

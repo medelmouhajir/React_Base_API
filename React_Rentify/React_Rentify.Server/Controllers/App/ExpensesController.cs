@@ -296,7 +296,7 @@ namespace React_Rentify.Server.Controllers.App
             AgencyId = e.AgencyId,
             AgencyName = e.Agency?.Name,
             CreatedById = e.Created_ById,
-            CreatedByName = e.Created_By?.UserName,
+            CreatedByName = e.Created_By?.FullName,
             CategoryId = e.Expense_CategoryId,
             CategoryName = e.Expense_Category?.Name,
             Attachments = e.Expense_Attachements?

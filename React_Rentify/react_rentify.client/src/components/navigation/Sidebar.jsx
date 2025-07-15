@@ -62,6 +62,11 @@ const icons = {
                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
     ),
+    expenses: (
+        <svg className="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h10M7 11h6M7 15h10M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+        </svg>
+    ),
     reports: (
         <svg className="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path
@@ -144,6 +149,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
             { id: 'cars', label: t('sidebar.cars'), icon: icons.cars, path: '/cars' },
             { id: 'customers', label: t('sidebar.customers'), icon: icons.customers, path: '/customers' },
             { id: 'reservations', label: t('sidebar.reservations'), icon: icons.reservations, path: '/reservations' },
+            { id: 'expenses', label: t('sidebar.expenses'), icon: icons.expenses, path: '/expenses' },
             { id: 'maintenance', label: t('sidebar.maintenances'), icon: icons.maintenance, path: '/maintenances' },
             { id: 'invoices', label: t('sidebar.invoices'), icon: icons.invoices, path: '/invoices' },
             { id: 'gadgets', label: t('sidebar.gadgets'), icon: icons.gadgets, path: '/gadgets' },

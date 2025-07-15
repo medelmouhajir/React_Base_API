@@ -22,6 +22,9 @@
     <Folder Include="src\pages\Customers\List\" />
     <Folder Include="src\pages\Customers\Edit\" />
     <Folder Include="src\pages\Customers\Details\" />
+    <Folder Include="src\pages\Expenses\Add\" />
+    <Folder Include="src\pages\Expenses\List\" />
+    <Folder Include="src\pages\Expenses\Details\" />
     <Folder Include="src\pages\Filters\CarModels\" />
     <Folder Include="src\pages\Filters\Manufacturer\" />
     <Folder Include="src\pages\Filters\CarYear\" />

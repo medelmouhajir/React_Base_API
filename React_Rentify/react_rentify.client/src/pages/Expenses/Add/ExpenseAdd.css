@@ -1,0 +1,862 @@
+/* src/pages/Expenses/Add/ExpenseAdd.css */
+
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-color: #4a90e2;
+    --primary-hover: #3b78c3;
+    --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    /* Light theme */
+    --bg-color-light: #ffffff;
+    --card-bg-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #60a5fa;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --error-bg-light: #fee2e2;
+    --error-text-light: #b91c1c;
+    --success-bg-light: #dcfce7;
+    --success-text-light: #166534;
+    /* Dark theme */
+    --bg-color-dark: #111827;
+    --card-bg-dark: #1f2937;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --border-color-dark: #374151;
+    --input-bg-dark: #1f2937;
+    --input-text-dark: #f9fafb;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #3b82f6;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --error-bg-dark: #7f1d1d;
+    --error-text-dark: #fca5a5;
+    --success-bg-dark: #064e3b;
+    --success-text-dark: #a7f3d0;
+    /* Common */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --transition-speed: 0.25s;
+}
+
+/*---------------------------------------------
+  Container and Layout
+---------------------------------------------*/
+.expense-add-container {
+    --bg-color: var(--bg-color-light);
+    --card-bg: var(--card-bg-light);
+    --text-color: var(--text-color-light);
+    --text-secondary: var(--text-secondary-light);
+    --border-color: var(--border-color-light);
+    --input-bg: var(--input-bg-light);
+    --input-text: var(--input-text-light);
+    --input-border: var(--input-border-light);
+    --input-focus-border: var(--input-focus-border-light);
+    --shadow: var(--shadow-light);
+    --error-bg: var(--error-bg-light);
+    --error-text: var(--error-text-light);
+    --success-bg: var(--success-bg-light);
+    --success-text: var(--success-text-light);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    color: var(--text-color);
+    transition: color var(--transition-speed);
+}
+
+    .expense-add-container.dark {
+        --bg-color: var(--bg-color-dark);
+        --card-bg: var(--card-bg-dark);
+        --text-color: var(--text-color-dark);
+        --text-secondary: var(--text-secondary-dark);
+        --border-color: var(--border-color-dark);
+        --input-bg: var(--input-bg-dark);
+        --input-text: var(--input-text-dark);
+        --input-border: var(--input-border-dark);
+        --input-focus-border: var(--input-focus-border-dark);
+        --shadow: var(--shadow-dark);
+        --error-bg: var(--error-bg-dark);
+        --error-text: var(--error-text-dark);
+        --success-bg: var(--success-bg-dark);
+        --success-text: var(--success-text-dark);
+    }
+
+/*---------------------------------------------
+  Header Section
+---------------------------------------------*/
+.expense-add-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.expense-add-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    background: linear-gradient(135deg, var(--primary-color), #0ea5e9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.expense-add-description {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/*---------------------------------------------
+  Messages
+---------------------------------------------*/
+.error-message,
+.success-message {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+.error-message {
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    border: 1px solid var(--danger-color);
+}
+
+.success-message {
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid var(--success-color);
+}
+
+.error-icon,
+.success-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+}
+
+/*---------------------------------------------
+  Form Styling
+---------------------------------------------*/
+.expense-form {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.form-section {
+    padding: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+    .form-section:last-child {
+        border-bottom: none;
+    }
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+    .form-group label {
+        font-weight: 500;
+        color: var(--text-color);
+        font-size: 0.875rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--border-radius);
+        padding: 0.75rem;
+        color: var(--input-text);
+        font-size: 0.9375rem;
+        transition: all var(--transition-speed);
+        font-family: inherit;
+    }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--input-focus-border);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: var(--primary-color);
+        }
+
+        .form-group input:disabled,
+        .form-group select:disabled,
+        .form-group textarea:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-group input.has-error,
+        .form-group select.has-error,
+        .form-group textarea.has-error {
+            border-color: var(--danger-color);
+        }
+
+.field-error {
+    color: var(--danger-color);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+/*---------------------------------------------
+  Category Section
+---------------------------------------------*/
+.category-section {
+    margin-bottom: 0;
+}
+
+.category-input-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+}
+
+    .category-input-group select {
+        flex: 1;
+    }
+
+.add-category-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+}
+
+    .add-category-btn:hover {
+        background: var(--primary-hover);
+    }
+
+    .add-category-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .add-category-btn svg {
+        width: 1rem;
+        height: 1rem;
+    }
+
+/*---------------------------------------------
+  Attachments Section
+---------------------------------------------*/
+.attachments-section {
+    margin-bottom: 0;
+}
+
+.file-upload-area {
+    margin-bottom: 1.5rem;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-upload-dropzone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    background: var(--input-bg);
+}
+
+    .file-upload-dropzone:hover {
+        border-color: var(--primary-color);
+        background: rgba(74, 144, 226, 0.05);
+    }
+
+.expense-add-container.dark .file-upload-dropzone:hover {
+    background: rgba(74, 144, 226, 0.1);
+}
+
+.upload-icon {
+    width: 3rem;
+    height: 3rem;
+    color: var(--text-secondary);
+    margin: 0 auto 1rem;
+}
+
+.upload-text {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.upload-subtext {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.attachments-list {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+}
+
+.attachments-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.attachment-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 0.75rem;
+    background: var(--card-bg);
+}
+
+    .attachment-item:last-child {
+        margin-bottom: 0;
+    }
+
+.attachment-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.file-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.file-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.file-name {
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 0.875rem;
+}
+
+.file-size {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.remove-attachment-btn {
+    background: none;
+    border: none;
+    color: var(--danger-color);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .remove-attachment-btn:hover {
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+    .remove-attachment-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .remove-attachment-btn svg {
+        width: 1rem;
+        height: 1rem;
+    }
+
+/*---------------------------------------------
+  Form Actions
+---------------------------------------------*/
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 2rem;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-primary,
+.btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    border: 1px solid transparent;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+    .btn-primary:hover:not(:disabled) {
+        background: var(--primary-hover);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+    .btn-secondary:hover:not(:disabled) {
+        background: var(--card-bg);
+        border-color: var(--primary-color);
+    }
+
+.spinner {
+    width: 1rem;
+    height: 1rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/*---------------------------------------------
+  Modal Styling
+---------------------------------------------*/
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 1.5rem 0;
+    margin-bottom: 1rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-speed);
+}
+
+    .modal-close-btn:hover {
+        background: rgba(0, 0, 0, 0.1);
+        color: var(--text-color);
+    }
+
+.expense-add-container.dark .modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-close-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.modal-form {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+    .modal-actions .btn-primary,
+    .modal-actions .btn-secondary {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+    }
+
+/*---------------------------------------------
+  Responsive Design
+---------------------------------------------*/
+@media (max-width: 768px) {
+    .expense-add-container {
+        padding: 1.5rem 1rem;
+    }
+
+    .expense-add-title {
+        font-size: 1.75rem;
+    }
+
+    .form-section {
+        padding: 1.5rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .category-input-group {
+        flex-direction: column;
+    }
+
+    .add-category-btn {
+        align-self: flex-start;
+        min-width: auto;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+
+        .add-category-btn svg {
+            margin-right: 0.5rem;
+        }
+
+        .add-category-btn::after {
+            content: attr(title);
+            margin-left: 0.5rem;
+        }
+
+    .file-upload-dropzone {
+        padding: 2rem 1rem;
+    }
+
+    .upload-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+        padding: 1.5rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .modal-overlay {
+        padding: 0.5rem;
+    }
+
+    .modal-header {
+        padding: 1rem 1rem 0;
+    }
+
+    .modal-form {
+        padding: 0 1rem 1rem;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+        .modal-actions .btn-primary,
+        .modal-actions .btn-secondary {
+            width: 100%;
+            padding: 0.75rem;
+        }
+}
+
+@media (max-width: 480px) {
+    .expense-add-container {
+        padding: 1rem 0.75rem;
+    }
+
+    .expense-add-title {
+        font-size: 1.5rem;
+    }
+
+    .form-section {
+        padding: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.125rem;
+    }
+
+    .attachment-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .remove-attachment-btn {
+        align-self: flex-end;
+    }
+}
+
+/*---------------------------------------------
+  Touch Device Optimizations
+---------------------------------------------*/
+@media (hover: none) {
+    .add-category-btn:active,
+    .btn-primary:active,
+    .btn-secondary:active,
+    .remove-attachment-btn:active,
+    .modal-close-btn:active {
+        opacity: 0.8;
+        transform: scale(0.98);
+    }
+
+    .file-upload-dropzone:active {
+        transform: scale(0.99);
+    }
+
+    /* Increase touch targets */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 1rem 0.75rem;
+        font-size: 1rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/*---------------------------------------------
+  Print Styles
+---------------------------------------------*/
+@media print {
+    .expense-add-container {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        max-width: 100%;
+    }
+
+    .form-actions,
+    .modal-overlay,
+    .add-category-btn,
+    .remove-attachment-btn {
+        display: none !important;
+    }
+
+    .expense-form {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+
+    .form-section {
+        break-inside: avoid;
+    }
+}
+
+/*---------------------------------------------
+  Animation and Transitions
+---------------------------------------------*/
+.expense-add-container {
+    animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content {
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/*---------------------------------------------
+  RTL Support
+---------------------------------------------*/
+[dir="rtl"] .category-input-group {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .attachment-info {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .form-actions {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-actions {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .add-category-btn svg {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
+
+/*---------------------------------------------
+  Accessibility Improvements
+---------------------------------------------*/
+.form-group input:focus-visible,
+.form-group select:focus-visible,
+.form-group textarea:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.add-category-btn:focus-visible,
+.remove-attachment-btn:focus-visible,
+.modal-close-btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/*---------------------------------------------
+  Reduced Motion Support
+---------------------------------------------*/
+@media (prefers-reduced-motion: reduce) {
+    .expense-add-container,
+    .modal-content,
+    .spinner {
+        animation: none !important;
+    }
+
+    * {
+        transition-duration: 0.01ms !important;
+    }
+}

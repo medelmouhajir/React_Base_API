@@ -83,6 +83,12 @@ const AgencySettings = lazy(() => import('./pages/Settings/Agency/AgencySettings
 const TicketsList = lazy(() => import('./pages/Tickets/List/TicketsList'));
 
 
+//// Child route for Expenses
+const ExpenseList = lazy(() => import('./pages/Expenses/List/ExpenseList'));
+const ExpenseDetails = lazy(() => import('./pages/Expenses/Details/ExpenseDetails'));
+const ExpenseAdd = lazy(() => import('./pages/Expenses/Add/ExpenseAdd'));
+
+
 //// Child route for Gadgets
 const GadgetsHome = lazy(() => import('./pages/Gadgets/Home/GadgetsHome'));
 const BlacklistCheck = lazy(() => import('./pages/Gadgets/BlacklistChecks/BlacklistCheck'));
@@ -173,6 +179,11 @@ function App() {
 
                                 {/* Tickets */}
                                 <Route path="/tickets" element={<TicketsList />} />
+
+                                {/* Expenses */}
+                                <Route path="/expenses" element={<ExpenseList />} />
+                                <Route path="/expenses/:id" element={<ExpenseDetails />} />
+                                <Route path="/expenses/add" element={<ExpenseAdd />} />
 
                                 {/* Gadgets */}
                                 <Route path="/gadgets" element={<GadgetsHome />} />

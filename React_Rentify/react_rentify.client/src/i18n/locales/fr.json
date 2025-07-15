@@ -1074,5 +1074,87 @@
     "dateOfBirth": "Date de naissance",
     "creating": "Création en cours...",
     "createCustomer": "Créer le client"
+  },
+  "expenses": {
+    "list": {
+      "title": "Dépenses",
+      "description": "Gérez et suivez les dépenses de votre agence"
+    },
+    "add": {
+      "title": "Ajouter une nouvelle dépense",
+      "description": "Créez un nouvel enregistrement de dépense pour votre agence",
+      "basicInfo": "Informations de base",
+      "category": "Catégorie",
+      "attachments": "Pièces jointes",
+      "newCategory": "Ajouter une nouvelle catégorie",
+      "uploadText": "Cliquez pour télécharger des fichiers ou glissez-déposez",
+      "uploadSubtext": "Pris en charge : images, PDF et fichiers texte (max 10 Mo chacun)",
+      "attachedFiles": "Fichiers joints",
+      "submit": "Créer la dépense",
+      "success": "Dépense créée avec succès ! Redirection en cours…"
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "amount": "Montant",
+      "category": "Catégorie",
+      "categoryName": "Nom de la catégorie",
+      "date": "Date",
+      "createdBy": "Créé par",
+      "agency": "Agence",
+      "agencyId": "ID de l'agence",
+      "createdAt": "Créé à"
+    },
+    "details": {
+      "title": "Détails de la dépense",
+      "basicInfo": "Informations de base",
+      "agencyInfo": "Informations sur l'agence",
+      "attachments": "Pièces jointes"
+    },
+    "summary": {
+      "total": "Montant total",
+      "count": "Nombre total de dépenses"
+    },
+    "searchPlaceholder": "Rechercher des dépenses…",
+    "filters": {
+      "allCategories": "Toutes les catégories",
+      "startDate": "Date de début",
+      "endDate": "Date de fin"
+    },
+    "sort": {
+      "dateDesc": "Date (du plus récent)",
+      "dateAsc": "Date (du plus ancien)",
+      "amountDesc": "Montant (du plus élevé au plus bas)",
+      "amountAsc": "Montant (du plus bas au plus élevé)",
+      "titleAsc": "Titre (A à Z)",
+      "titleDesc": "Titre (Z à A)"
+    },
+    "placeholders": {
+      "title": "Entrez le titre de la dépense…",
+      "description": "Entrez la description…",
+      "selectCategory": "Sélectionnez une catégorie",
+      "categoryName": "Entrez le nom de la catégorie…",
+      "categoryDescription": "Entrez la description de la catégorie…"
+    },
+    "validation": {
+      "titleRequired": "Le titre est requis",
+      "amountRequired": "Le montant doit être supérieur à 0",
+      "categoryRequired": "Veuillez sélectionner une catégorie"
+    },
+    "errors": {
+      "loadCategoriesFailed": "Échec du chargement des catégories",
+      "createFailed": "Échec de la création de la dépense",
+      "createCategoryFailed": "Échec de la création de la catégorie",
+      "fileTooLarge": "Le fichier {{filename}} est trop volumineux (max 10 Mo)",
+      "invalidFileType": "Le fichier {{filename}} a un type invalide"
+    },
+    "empty": {
+      "title": "Aucune dépense trouvée",
+      "description": "Commencez par ajouter votre première dépense pour suivre les dépenses de votre agence.",
+      "addFirst": "Ajouter la première dépense"
+    },
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette dépense ?",
+    "errorLoading": "Échec du chargement des dépenses",
+    "errorDeleting": "Échec de la suppression de la dépense"
   }
 }

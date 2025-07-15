@@ -1094,5 +1094,87 @@
     "dateOfBirth": "تاريخ الميلاد",
     "creating": "جاري الإنشاء...",
     "createCustomer": "إنشاء العميل"
+  },
+  "expenses": {
+    "list": {
+      "title": "المصروفات",
+      "description": "قم بإدارة وتتبع مصروفات وكالتك"
+    },
+    "add": {
+      "title": "إضافة مصروف جديد",
+      "description": "أنشئ سجل مصروف جديد لوكالتك",
+      "basicInfo": "المعلومات الأساسية",
+      "category": "الفئة",
+      "attachments": "المرفقات",
+      "newCategory": "إضافة فئة جديدة",
+      "uploadText": "انقر لتحميل الملفات أو اسحبها وأفلتها",
+      "uploadSubtext": "يدعم الصور وملفات PDF والملفات النصية (حد أقصى 10 ميغابايت لكل ملف)",
+      "attachedFiles": "الملفات المرفقة",
+      "submit": "إنشاء المصروف",
+      "success": "تم إنشاء المصروف بنجاح! جارٍ التحويل..."
+    },
+    "fields": {
+      "title": "العنوان",
+      "description": "الوصف",
+      "amount": "المبلغ",
+      "category": "الفئة",
+      "categoryName": "اسم الفئة",
+      "date": "التاريخ",
+      "createdBy": "أنشئ بواسطة",
+      "agency": "الوكالة",
+      "agencyId": "معرّف الوكالة",
+      "createdAt": "تم إنشاؤه في"
+    },
+    "details": {
+      "title": "تفاصيل المصروف",
+      "basicInfo": "المعلومات الأساسية",
+      "agencyInfo": "معلومات الوكالة",
+      "attachments": "المرفقات"
+    },
+    "summary": {
+      "total": "إجمالي المبلغ",
+      "count": "إجمالي المصروفات"
+    },
+    "searchPlaceholder": "ابحث عن مصروفات...",
+    "filters": {
+      "allCategories": "كل الفئات",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء"
+    },
+    "sort": {
+      "dateDesc": "التاريخ (الأحدث)",
+      "dateAsc": "التاريخ (الأقدم)",
+      "amountDesc": "المبلغ (من الأعلى إلى الأدنى)",
+      "amountAsc": "المبلغ (من الأدنى إلى الأعلى)",
+      "titleAsc": "العنوان (أ إلى ي)",
+      "titleDesc": "العنوان (ي إلى أ)"
+    },
+    "placeholders": {
+      "title": "أدخل عنوان المصروف...",
+      "description": "أدخل الوصف...",
+      "selectCategory": "اختر فئة",
+      "categoryName": "أدخل اسم الفئة...",
+      "categoryDescription": "أدخل وصف الفئة..."
+    },
+    "validation": {
+      "titleRequired": "العنوان مطلوب",
+      "amountRequired": "يجب أن يكون المبلغ أكبر من 0",
+      "categoryRequired": "يرجى اختيار فئة"
+    },
+    "errors": {
+      "loadCategoriesFailed": "فشل في تحميل الفئات",
+      "createFailed": "فشل في إنشاء المصروف",
+      "createCategoryFailed": "فشل في إنشاء الفئة",
+      "fileTooLarge": "حجم الملف {{filename}} كبير جدًا (الحد الأقصى 10 ميغابايت)",
+      "invalidFileType": "نوع الملف {{filename}} غير صالح"
+    },
+    "empty": {
+      "title": "لا توجد مصروفات",
+      "description": "ابدأ بإضافة المصروف الأول لتتبع نفقات وكالتك.",
+      "addFirst": "أضف المصروف الأول"
+    },
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا المصروف؟",
+    "errorLoading": "فشل في تحميل المصروفات",
+    "errorDeleting": "فشل في حذف المصروف"
   }
 }
