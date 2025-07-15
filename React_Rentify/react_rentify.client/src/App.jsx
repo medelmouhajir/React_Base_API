@@ -83,6 +83,10 @@ const AgencySettings = lazy(() => import('./pages/Settings/Agency/AgencySettings
 const TicketsList = lazy(() => import('./pages/Tickets/List/TicketsList'));
 
 
+//// Child route for Reports
+const ReportsHome = lazy(() => import('./pages/Reports/Home/ReportsHome'));
+
+
 //// Child route for Expenses
 const ExpenseList = lazy(() => import('./pages/Expenses/List/ExpenseList'));
 const ExpenseDetails = lazy(() => import('./pages/Expenses/Details/ExpenseDetails'));
@@ -179,6 +183,9 @@ function App() {
 
                                 {/* Tickets */}
                                 <Route path="/tickets" element={<TicketsList />} />
+
+                                {/* Reports */}
+                                <Route path="/reports" element={<ReportsHome />} />
 
                                 {/* Expenses */}
                                 <Route path="/expenses" element={<ExpenseList />} />
