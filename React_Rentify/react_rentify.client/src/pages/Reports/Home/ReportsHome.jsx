@@ -24,30 +24,16 @@ const ReportsHome = () => {
             color: '#0ea5e9',
             reports: [
                 {
-                    id: 'car-inventory',
-                    name: t('reports.cars.inventory'),
-                    description: t('reports.cars.inventoryDescription'),
-                    url: '/reports/cars/inventory',
-                    tags: ['inventory', 'cars']
-                },
-                {
-                    id: 'car-utilization',
-                    name: t('reports.cars.utilization'),
-                    description: t('reports.cars.utilizationDescription'),
-                    url: '/reports/cars/utilization',
-                    tags: ['utilization', 'performance']
-                },
-                {
                     id: 'car-maintenance',
-                    name: t('reports.cars.maintenance'),
-                    description: t('reports.cars.maintenanceDescription'),
+                    name: t('reports.cars.maintenance.title'),
+                    description: t('reports.cars.maintenance.description'),
                     url: '/reports/cars/maintenance',
                     tags: ['maintenance', 'costs']
                 },
                 {
                     id: 'car-revenue',
-                    name: t('reports.cars.revenue'),
-                    description: t('reports.cars.revenueDescription'),
+                    name: t('reports.cars.revenue.title'),
+                    description: t('reports.cars.revenue.description'),
                     url: '/reports/cars/revenue',
                     tags: ['revenue', 'financial']
                 }
@@ -61,32 +47,18 @@ const ReportsHome = () => {
             color: '#10b981',
             reports: [
                 {
-                    id: 'agency-performance',
-                    name: t('reports.agency.performance'),
-                    description: t('reports.agency.performanceDescription'),
-                    url: '/reports/agency/performance',
-                    tags: ['performance', 'kpi']
-                },
-                {
                     id: 'agency-financial',
-                    name: t('reports.agency.financial'),
-                    description: t('reports.agency.financialDescription'),
+                    name: t('reports.agency.financial.title'),
+                    description: t('reports.agency.financial.description'),
                     url: '/reports/agency/financial',
                     tags: ['financial', 'revenue']
                 },
                 {
                     id: 'agency-customers',
-                    name: t('reports.agency.customers'),
-                    description: t('reports.agency.customersDescription'),
+                    name: t('reports.agency.customers.title'),
+                    description: t('reports.agency.customers.description'),
                     url: '/reports/agency/customers',
                     tags: ['customers', 'analytics']
-                },
-                {
-                    id: 'agency-staff',
-                    name: t('reports.agency.staff'),
-                    description: t('reports.agency.staffDescription'),
-                    url: '/reports/agency/staff',
-                    tags: ['staff', 'hr']
                 }
             ]
         },
@@ -97,6 +69,13 @@ const ReportsHome = () => {
             icon: '📅',
             color: '#f59e0b',
             reports: [
+                {
+                    id: 'reservation-occupancy',
+                    name: t('reports.occupancy.title'),
+                    description: t('reports.occupancy.description'),
+                    url: '/reports/reservations/occupancy',
+                    tags: ['occupancy', 'utilization']
+                },
                 {
                     id: 'reservation-trends',
                     name: t('reports.reservations.trends'),
@@ -110,13 +89,6 @@ const ReportsHome = () => {
                     description: t('reports.reservations.cancellationsDescription'),
                     url: '/reports/reservations/cancellations',
                     tags: ['cancellations', 'analysis']
-                },
-                {
-                    id: 'reservation-occupancy',
-                    name: t('reports.reservations.occupancy'),
-                    description: t('reports.reservations.occupancyDescription'),
-                    url: '/reports/reservations/occupancy',
-                    tags: ['occupancy', 'utilization']
                 }
             ]
         },
@@ -128,16 +100,9 @@ const ReportsHome = () => {
             color: '#ef4444',
             reports: [
                 {
-                    id: 'profit-loss',
-                    name: t('reports.financial.profitLoss'),
-                    description: t('reports.financial.profitLossDescription'),
-                    url: '/reports/financial/profit-loss',
-                    tags: ['profit', 'loss', 'financial']
-                },
-                {
                     id: 'cash-flow',
-                    name: t('reports.financial.cashFlow'),
-                    description: t('reports.financial.cashFlowDescription'),
+                    name: t('reports.cashflow.title'),
+                    description: t('reports.cashflow.description'),
                     url: '/reports/financial/cash-flow',
                     tags: ['cash', 'flow', 'financial']
                 },
@@ -296,7 +261,7 @@ const ReportsHome = () => {
                         <div className="stat-icon">🏢</div>
                         <div className="stat-info">
                             <div className="stat-value">{user?.agencyName || t('reports.yourAgency')}</div>
-                            <div className="stat-label">{t('reports.agency')}</div>
+                            <div className="stat-label">{t('reports.agency.title')}</div>
                         </div>
                     </div>
 

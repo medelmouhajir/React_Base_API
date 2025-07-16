@@ -1,0 +1,796 @@
+/* src/pages/Reports/Cars/CarMaintenance.css */
+
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-color: #0ea5e9;
+    --primary-hover: #0284c7;
+    --secondary-color: #6b7280;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    /* Light theme */
+    --bg-color-light: #ffffff;
+    --card-bg-light: #ffffff;
+    --card-hover-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #f9fafb;
+    --input-border-light: #d1d5db;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-hover-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+    /* Dark theme */
+    --bg-color-dark: #111827;
+    --card-bg-dark: #1f2937;
+    --card-hover-dark: #374151;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --border-color-dark: #374151;
+    --input-bg-dark: #374151;
+    --input-border-dark: #4b5563;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover-dark: 0 4px 12px rgba(0, 0, 0, 0.4);
+    /* Common */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --border-radius-xl: 1rem;
+    --transition-speed: 0.25s;
+    --transition-fast: 0.15s;
+}
+
+/* Color scheme based on current theme */
+.car-maintenance-container {
+    --bg-color: var(--bg-color-light);
+    --card-bg: var(--card-bg-light);
+    --card-hover: var(--card-hover-light);
+    --text-color: var(--text-color-light);
+    --text-secondary: var(--text-secondary-light);
+    --border-color: var(--border-color-light);
+    --input-bg: var(--input-bg-light);
+    --input-border: var(--input-border-light);
+    --shadow: var(--shadow-light);
+    --shadow-hover: var(--shadow-hover-light);
+}
+
+    /* Dark mode colors */
+    .car-maintenance-container.dark {
+        --bg-color: var(--bg-color-dark);
+        --card-bg: var(--card-bg-dark);
+        --card-hover: var(--card-hover-dark);
+        --text-color: var(--text-color-dark);
+        --text-secondary: var(--text-secondary-dark);
+        --border-color: var(--border-color-dark);
+        --input-bg: var(--input-bg-dark);
+        --input-border: var(--input-border-dark);
+        --shadow: var(--shadow-dark);
+        --shadow-hover: var(--shadow-hover-dark);
+    }
+
+/*---------------------------------------------
+  Container and Layout
+---------------------------------------------*/
+.car-maintenance-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    color: var(--text-color);
+    background-color: transparent;
+    transition: all var(--transition-speed);
+}
+
+/*---------------------------------------------
+  Header Section
+---------------------------------------------*/
+.maintenance-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+    .back-button:hover {
+        background-color: var(--card-hover);
+        transform: translateX(-2px);
+    }
+
+.header-info {
+    flex: 1;
+}
+
+.maintenance-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.maintenance-description {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.filter-toggle, .export-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+    .filter-toggle:hover, .export-button:hover {
+        background-color: var(--card-hover);
+        border-color: var(--primary-color);
+    }
+
+    .filter-toggle.active {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+.export-button {
+    background-color: var(--success-color);
+    color: white;
+    border-color: var(--success-color);
+}
+
+    .export-button:hover {
+        background-color: #0f766e;
+        border-color: #0f766e;
+    }
+
+/*---------------------------------------------
+  Loading and Error States
+---------------------------------------------*/
+.loading-state, .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-xl);
+    border: 1px solid var(--border-color);
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid var(--border-color);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.error-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.error-state h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.error-state p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.retry-button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+    .retry-button:hover {
+        background-color: var(--primary-hover);
+    }
+
+/*---------------------------------------------
+  Filters Section
+---------------------------------------------*/
+.filters-section {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-xl);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+    .filter-group label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .filter-group select,
+    .filter-group input {
+        padding: 0.75rem;
+        border: 1px solid var(--input-border);
+        border-radius: var(--border-radius);
+        background-color: var(--input-bg);
+        color: var(--text-color);
+        font-size: 0.875rem;
+        transition: all var(--transition-fast);
+    }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+.date-range, .cost-range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .date-range span, .cost-range span {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+/*---------------------------------------------
+  Stats Section
+---------------------------------------------*/
+.stats-section {
+    margin-bottom: 2rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+    transition: all var(--transition-speed);
+}
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
+
+.stat-icon {
+    font-size: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+    border-radius: var(--border-radius-lg);
+    flex-shrink: 0;
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/*---------------------------------------------
+  View Tabs
+---------------------------------------------*/
+.view-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition-fast);
+}
+
+    .tab-button:hover {
+        color: var(--text-color);
+    }
+
+    .tab-button.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+    }
+
+/*---------------------------------------------
+  Content Section
+---------------------------------------------*/
+.content-section {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-xl);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+/*---------------------------------------------
+  Summary View
+---------------------------------------------*/
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1rem;
+}
+
+.maintenance-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.25rem;
+    transition: all var(--transition-speed);
+}
+
+    .maintenance-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--primary-color);
+    }
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.car-info strong {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+}
+
+.license-plate {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    background-color: var(--input-bg);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+}
+
+.status-badge {
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--border-radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+    .status-badge.completed {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .status-badge.pending {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.maintenance-description {
+    color: var(--text-color);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.maintenance-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.maintenance-date, .maintenance-cost {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.view-more {
+    margin-top: 2rem;
+    text-align: center;
+    padding: 2rem;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius-lg);
+}
+
+    .view-more p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+.view-all-button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+    .view-all-button:hover {
+        background-color: var(--primary-hover);
+    }
+
+/*---------------------------------------------
+  Detailed View (Table)
+---------------------------------------------*/
+.table-container {
+    overflow-x: auto;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.maintenance-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--card-bg);
+}
+
+    .maintenance-table th {
+        background-color: var(--input-bg);
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        white-space: nowrap;
+    }
+
+        .maintenance-table th.sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: background-color var(--transition-fast);
+        }
+
+            .maintenance-table th.sortable:hover {
+                background-color: var(--card-hover);
+            }
+
+.sort-arrow {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.maintenance-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    color: var(--text-color);
+}
+
+.maintenance-table tbody tr:hover {
+    background-color: var(--card-hover);
+}
+
+.license-plate-cell {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.car-cell .car-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+    .car-cell .car-info strong {
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    .car-cell .car-info span {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+    }
+
+.date-cell {
+    white-space: nowrap;
+}
+
+.description-cell {
+    max-width: 200px;
+}
+
+.description-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cost-cell {
+    font-weight: 600;
+    color: var(--success-color);
+    text-align: right;
+}
+
+.status-cell {
+    text-align: center;
+}
+
+/*---------------------------------------------
+  No Data State
+---------------------------------------------*/
+.no-data {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+}
+
+.no-data-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.no-data h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.no-data p {
+    font-size: 0.875rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/*---------------------------------------------
+  Responsive Design
+---------------------------------------------*/
+@media (max-width: 1024px) {
+    .car-maintenance-container {
+        padding: 1rem;
+    }
+
+    .maintenance-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .filters-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .maintenance-title {
+        font-size: 1.5rem;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .filter-toggle, .export-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .maintenance-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .date-range, .cost-range {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .view-tabs {
+        justify-content: center;
+    }
+
+    .tab-button {
+        flex: 1;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .car-maintenance-container {
+        padding: 0.75rem;
+    }
+
+    .back-button {
+        width: 2rem;
+        height: 2rem;
+        font-size: 1rem;
+    }
+
+    .maintenance-title {
+        font-size: 1.25rem;
+    }
+
+    .maintenance-description {
+        font-size: 0.875rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+
+    .stat-icon {
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.5rem;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .maintenance-card {
+        padding: 1rem;
+    }
+
+    .card-header {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .table-container {
+        font-size: 0.75rem;
+    }
+
+    .maintenance-table th,
+    .maintenance-table td {
+        padding: 0.75rem 0.5rem;
+    }
+}

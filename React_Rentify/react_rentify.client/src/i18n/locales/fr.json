@@ -67,7 +67,32 @@
     "refresh": "Rafraîchir",
     "close": "Fermer",
     "resultsCount": "{{count}} sur {{total}} résultats",
-    "locale": "fr-MA"
+    "locale": "fr-MA",
+    "filters": "Filtres",
+    "export": "Exporter",
+    "dateRange": "Plage de dates",
+    "all": "Tous",
+    "summary": "Résumé",
+    "detailed": "Détaillé",
+    "moreItems": "plus d'éléments disponibles",
+    "months": {
+      "1": "Janvier",
+      "2": "Février",
+      "3": "Mars",
+      "4": "Avril",
+      "5": "Mai",
+      "6": "Juin",
+      "7": "Juillet",
+      "8": "Août",
+      "9": "Septembre",
+      "10": "Octobre",
+      "11": "Novembre",
+      "12": "Décembre"
+    },
+    "filter": "Filtrer",
+    "error": "Erreur",
+    "dateFrom": "Date de début",
+    "dateTo": "Date de fin"
   },
   "landing": {
     "features": "Fonctionnalités",
@@ -266,9 +291,22 @@
     },
     "status": {
       "completed": "Terminé",
-      "scheduled": "Planifié"
+      "scheduled": "Planifié",
+      "title": "Statut"
     },
-    "cost": "Coût"
+    "cost": "Coût",
+    "completed": "Terminé",
+    "pending": "En attente",
+    "costRange": "Fourchette de coûts",
+    "total": "Maintenance totale",
+    "totalCost": "Coût total",
+    "averageCost": "Coût moyen",
+    "carsInvolved": "Voitures concernées",
+    "scheduledDate": "Date prévue",
+    "description": "Description",
+    "completedDate": "Date d'achèvement",
+    "noData": "Aucun enregistrement de maintenance trouvé",
+    "noDataDescription": "Essayez d'ajuster vos filtres ou la plage de dates"
   },
   "reservation": {
     "list": {
@@ -584,7 +622,10 @@
       "markAsPaid": "Marquer comme payée",
       "invoiceNumber": "Numéro de facture",
       "totalAmount": "Montant total",
-      "remainingBalance": "Solde restant"
+      "remainingBalance": "Solde restant",
+      "isPaid": "Payée",
+      "reservation": "Réservation",
+      "id": "ID de la facture"
     },
     "actions": {
       "view": "Voir la facture",
@@ -595,6 +636,27 @@
       "title": "Générer une facture",
       "reservationDetails": "Détails de la réservation",
       "submit": "Créer"
+    },
+    "list": {
+      "title": "Factures",
+      "new": "Nouvelle facture",
+      "actions": "Actions",
+      "noData": "Aucune facture trouvée."
+    },
+    "filters": {
+      "from": "De",
+      "to": "À"
+    },
+    "details": {
+      "error": "Erreur lors du chargement des détails de la facture.",
+      "loading": "Chargement...",
+      "notFound": "Facture introuvable.",
+      "title": "Détails de la facture",
+      "confirmRemove": "Êtes-vous sûr de vouloir supprimer cette facture ?",
+      "removeError": "Échec de la suppression de la facture.",
+      "paymentsTitle": "Paiements",
+      "addPayment": "Ajouter un paiement",
+      "noPayments": "Aucun paiement enregistré."
     }
   },
   "car": {
@@ -1156,5 +1218,191 @@
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette dépense ?",
     "errorLoading": "Échec du chargement des dépenses",
     "errorDeleting": "Échec de la suppression de la dépense"
+  },
+  "reports": {
+    "cars": {
+      "revenue": {
+        "error": "Échec du chargement des données de revenus des voitures. Veuillez réessayer.",
+        "title": "Rapport de revenus des voitures",
+        "description": "Analysez les performances de revenus par véhicule",
+        "period": "Période",
+        "thisMonth": "Ce mois-ci",
+        "thisQuarter": "Ce trimestre",
+        "thisYear": "Cette année",
+        "customPeriod": "Période personnalisée",
+        "fromDate": "Date de début",
+        "toDate": "Date de fin",
+        "car": "Voiture",
+        "allCars": "Toutes les voitures",
+        "sortBy": "Trier par",
+        "revenue": "Revenus",
+        "reservations": "Réservations",
+        "utilization": "Taux d'utilisation",
+        "order": "Ordre",
+        "highest": "Du plus élevé au plus bas",
+        "lowest": "Du plus bas au plus élevé",
+        "summary": "Résumé",
+        "totalRevenue": "Revenu total",
+        "avgPerCar": "Moyenne par véhicule",
+        "totalReservations": "Nombre total de réservations",
+        "avgUtilization": "Taux d'utilisation moyen",
+        "detailedData": "Données détaillées des revenus",
+        "carsShowing": "Voitures affichées",
+        "paid": "Payé",
+        "unpaid": "Impayé",
+        "avgRevenue": "Revenu moyen",
+        "noData": "Pas de données de revenus",
+        "noDataDescription": "Aucune donnée de revenus trouvée pour la période et les filtres sélectionnés."
+      },
+      "maintenance": {
+        "loading": "Chargement des données de maintenance...",
+        "error": "Erreur lors du chargement des données de maintenance",
+        "errorTitle": "Erreur de chargement des données",
+        "title": "Rapport de maintenance des voitures",
+        "description": "Suivi et analyses complets de la maintenance de votre flotte"
+      }
+    },
+    "common": {
+      "export": "Exporter",
+      "period": "Période",
+      "periods": {
+        "month": "Mois",
+        "quarter": "Trimestre",
+        "year": "Année"
+      },
+      "year": "Année",
+      "month": "Mois"
+    },
+    "agency": {
+      "title": "Agence",
+      "financial": {
+        "title": "Vue d'ensemble financière",
+        "subtitle": "Résumé financier de l'agence",
+        "errorLoading": "Échec du chargement des données financières. Veuillez réessayer.",
+        "totalRevenue": "Revenu total",
+        "totalExpenses": "Dépenses totales",
+        "netProfit": "Bénéfice net",
+        "profitMargin": "Marge bénéficiaire",
+        "revenueVsExpenses": "Revenus vs Dépenses",
+        "revenue": "Revenus",
+        "expenses": "Dépenses",
+        "expensesByCategory": "Dépenses par catégorie",
+        "totalCustomers": "Nombre total de clients",
+        "avgRevenuePerCustomer": "Revenu moyen par client",
+        "lastUpdated": "Dernière mise à jour"
+      },
+      "customers": {
+        "title": "Clients",
+        "description": "Gérer et consulter les clients de votre agence"
+      }
+    },
+    "filters": {
+      "all": "Tous",
+      "active": "Actifs",
+      "blacklisted": "En liste noire",
+      "recent": "Récents"
+    },
+    "analytics": {
+      "totalCustomers": "Nombre total de clients",
+      "newThisMonth": "Nouveaux ce mois-ci",
+      "blacklisted": "En liste noire",
+      "customerGrowth": "Croissance des clients",
+      "topCustomers": "Meilleurs clients",
+      "reservations": "Réservations"
+    },
+    "customers": {
+      "listTitle": "Liste des clients",
+      "showingResults": "Affichage de {{count}} sur {{total}} clients",
+      "noResults": "Aucun client trouvé",
+      "noResultsDescription": "Essayez d’ajuster votre recherche ou vos filtres pour trouver des clients."
+    },
+    "export": "Exporter",
+    "dateRange": "Plage de dates",
+    "ranges": {
+      "week": "La semaine dernière",
+      "month": "Le mois dernier",
+      "quarter": "Le trimestre dernier",
+      "year": "L’année dernière"
+    },
+    "customDate": "Date personnalisée",
+    "noData": "Aucune donnée disponible",
+    "financial": {
+      "expenseAnalysis": "Analyse des dépenses",
+      "expenseAnalysisDescription": "Analysez vos dépenses au fil du temps.",
+      "totalAmount": "Montant total",
+      "totalExpenses": "Dépenses totales",
+      "averageExpense": "Dépense moyenne",
+      "categories": "Catégories",
+      "categoryBreakdown": "Répartition par catégorie",
+      "monthlyTrend": "Tendance mensuelle",
+      "topExpenses": "Principales dépenses"
+    },
+    "title": "Rapports",
+    "description": "Afficher et analyser tous vos rapports de données",
+    "searchPlaceholder": "Rechercher des rapports...",
+    "noResults": "Aucun rapport trouvé",
+    "noResultsDescription": "Essayez d'ajuster votre recherche ou vos filtres pour trouver ce que vous cherchez.",
+    "totalReports": "Nombre total de rapports",
+    "yourAgency": "Votre agence",
+    "lastUpdated": "Dernière mise à jour",
+    "reportsCount": "Rapports",
+    "categories": {
+      "all": "Tous",
+      "cars": "Voitures",
+      "carsDescription": "Rapports relatifs à la maintenance, aux revenus et à l'utilisation des véhicules",
+      "agency": "Agence",
+      "agencyDescription": "Analyses financières et clients pour votre agence",
+      "reservations": "Réservations",
+      "reservationsDescription": "Aperçu des tendances de réservation, des annulations et du taux d'occupation",
+      "financial": "Financier",
+      "financialDescription": "Analyse globale des bénéfices, des flux de trésorerie et des dépenses"
+    },
+    "occupancy": {
+      "errorLoading": "Échec du chargement des données d'occupation.",
+      "title": "Occupation des réservations",
+      "description": "Afficher les indicateurs d'occupation de votre flotte sur une période sélectionnée.",
+      "export": "Exporter CSV",
+      "dateRange": "Plage de dates",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "totalCars": "Nombre total de voitures",
+      "totalDays": "Nombre total de jours",
+      "occupiedDays": "Jours occupés",
+      "occupancyRate": "Taux d'occupation",
+      "byCategory": "Par catégorie",
+      "cars": "voitures",
+      "days": "jours",
+      "topPerforming": "Voitures les plus performantes",
+      "reservations": "réservations",
+      "lowPerforming": "Voitures les moins performantes",
+      "timeframeTrends": "Tendances temporelles"
+    },
+    "cashflow": {
+      "title": "Flux de trésorerie",
+      "description": "Visualisez vos entrées et sorties de trésorerie sur une période sélectionnée.",
+      "reservation": "Réservation",
+      "maintenance": "Maintenance",
+      "errorLoading": "Erreur lors du chargement des données de flux de trésorerie.",
+      "totalInflows": "Entrées totales",
+      "totalOutflows": "Sorties totales",
+      "netCashFlow": "Flux de trésorerie net",
+      "tabs": {
+        "summary": "Résumé",
+        "inflows": "Entrées",
+        "outflows": "Sorties"
+      },
+      "categoryBreakdown": "Répartition par catégorie",
+      "inflows": "Entrées",
+      "revenue": "Revenus",
+      "outflows": "Sorties",
+      "noInflows": "Aucune entrée trouvée",
+      "noOutflows": "Aucune sortie trouvée"
+    },
+    "periods": {
+      "thisMonth": "Ce mois-ci",
+      "lastMonth": "Le mois dernier",
+      "thisQuarter": "Ce trimestre",
+      "thisYear": "Cette année"
+    }
   }
 }

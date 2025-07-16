@@ -68,7 +68,7 @@
     padding: 1.5rem;
     color: var(--text-color);
     min-height: calc(100vh - 140px);
-    background: var(--gradient);
+    background-color: transparent;
     transition: all var(--transition-speed);
 }
 

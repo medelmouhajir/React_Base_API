@@ -21,7 +21,9 @@ const AgencySettings = () => {
         email: '',
         phoneOne: '',
         phoneTwo: '',
-        logoUrl: ''
+        logoUrl: '',
+        logoUrlAssociation: '',
+        conditions: ''
     });
     const [attachments, setAttachments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +34,7 @@ const AgencySettings = () => {
 
     // File upload states
     const [logoFile, setLogoFile] = useState(null);
+    const [logoAssociationFile, setLogoAssociationFile] = useState(null);
     const [newAttachment, setNewAttachment] = useState({
         fileName: '',
         file: null
@@ -56,10 +59,14 @@ const AgencySettings = () => {
                     email: agencyData.email || '',
                     phoneOne: agencyData.phoneOne || '',
                     phoneTwo: agencyData.phoneTwo || '',
-                    logoUrl: agencyData.logoUrl || ''
+                    logoUrl: agencyData.logoUrl || '',
+                    logoUrlAssociation: agencyData.logoUrlAssociation || '',
+                    conditions: agencyData.conditions || ''
                 });
 
-                setAttachments(agencyData.agency_Attachments || []);
+                // Fetch attachments
+                const attachmentsData = await agencyService.getAttachments(agencyId);
+                setAttachments(attachmentsData);
             } catch (err) {
                 console.error('❌ Error fetching agency data:', err);
                 setError(t('agencySettings.fetchError'));
@@ -71,6 +78,7 @@ const AgencySettings = () => {
         fetchAgencyData();
     }, [agencyId, t]);
 
+    // Handle form input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -79,33 +87,28 @@ const AgencySettings = () => {
         }));
     };
 
+    // Handle logo file selection
     const handleLogoChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            setLogoFile(e.target.files[0]);
-
-            // Preview the logo
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                setFormData(prev => ({
-                    ...prev,
-                    logoUrl: event.target.result
-                }));
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
+        const file = e.target.files[0];
+        setLogoFile(file);
     };
 
+    // Handle logo association file selection
+    const handleLogoAssociationChange = (e) => {
+        const file = e.target.files[0];
+        setLogoAssociationFile(file);
+    };
+
+    // Handle attachment file selection
     const handleAttachmentFileChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setNewAttachment(prev => ({
-                ...prev,
-                fileName: file.name,
-                file: file
-            }));
-        }
+        const file = e.target.files[0];
+        setNewAttachment(prev => ({
+            ...prev,
+            file: file
+        }));
     };
 
+    // Handle attachment name input
     const handleAttachmentNameChange = (e) => {
         setNewAttachment(prev => ({
             ...prev,
@@ -120,7 +123,7 @@ const AgencySettings = () => {
         setSuccess(null);
 
         try {
-            // First, handle logo upload if a new file was selected
+            // Handle logo upload if a new file was selected
             let updatedLogoUrl = formData.logoUrl;
             if (logoFile) {
                 try {
@@ -132,23 +135,38 @@ const AgencySettings = () => {
                 }
             }
 
+            // Handle logo association upload if a new file was selected
+            let updatedLogoAssociationUrl = formData.logoUrlAssociation;
+            if (logoAssociationFile) {
+                try {
+                    const uploadResult = await agencyService.uploadLogoAssociation(agencyId, logoAssociationFile);
+                    updatedLogoAssociationUrl = uploadResult.logoUrlAssociation;
+                } catch (uploadErr) {
+                    console.error('❌ Error uploading logo association:', uploadErr);
+                    throw new Error(t('agencySettings.logoAssociationUploadError'));
+                }
+            }
+
             // Update agency data
             const updatePayload = {
                 ...formData,
                 id: agencyId,
-                logoUrl: updatedLogoUrl
+                logoUrl: updatedLogoUrl,
+                logoUrlAssociation: updatedLogoAssociationUrl
             };
 
             await agencyService.update(agencyId, updatePayload);
             setSuccess(t('agencySettings.saveSuccess'));
 
-            // Reset file input
+            // Reset file inputs
             setLogoFile(null);
+            setLogoAssociationFile(null);
 
-            // Update the form data with the new logo URL
+            // Update the form data with the new URLs
             setFormData(prev => ({
                 ...prev,
-                logoUrl: updatedLogoUrl
+                logoUrl: updatedLogoUrl,
+                logoUrlAssociation: updatedLogoAssociationUrl
             }));
         } catch (err) {
             console.error('❌ Error saving agency settings:', err);
@@ -326,6 +344,60 @@ const AgencySettings = () => {
                                 </p>
                             )}
                         </div>
+                    </div>
+                </div>
+
+                <div className="form-section-settings">
+                    <h2 className="section-title">{t('agencySettings.logoAssociation')}</h2>
+
+                    <div className="logo-container">
+                        {formData.logoUrlAssociation ? (
+                            <img
+                                src={apiBaseUrl + formData.logoUrlAssociation}
+                                alt={t('agencySettings.logoAssociationAlt')}
+                                className="agency-logo-preview"
+                            />
+                        ) : (
+                            <div className="logo-placeholder">
+                                {t('agencySettings.noLogoAssociation')}
+                            </div>
+                        )}
+
+                        <div className="logo-upload">
+                            <label className="file-upload-label">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleLogoAssociationChange}
+                                    className="file-input"
+                                />
+                                <span className="upload-button">
+                                    {t('agencySettings.uploadLogoAssociation')}
+                                </span>
+                            </label>
+                            {logoAssociationFile && (
+                                <p className="selected-file">
+                                    {logoAssociationFile.name}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="form-section-settings">
+                    <h2 className="section-title">{t('agencySettings.termsAndConditions')}</h2>
+
+                    <div className="form-group">
+                        <label htmlFor="conditions">{t('agency.fields.conditions')}</label>
+                        <textarea
+                            id="conditions"
+                            name="conditions"
+                            value={formData.conditions}
+                            onChange={handleChange}
+                            rows="8"
+                            className="conditions-textarea"
+                            placeholder={t('agencySettings.conditionsPlaceholder')}
+                        />
                     </div>
                 </div>
 

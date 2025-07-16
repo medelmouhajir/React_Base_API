@@ -67,7 +67,32 @@
     "refresh": "Refresh",
     "close": "Close",
     "resultsCount": "{{count}} of {{total}} results",
-    "locale": "en-US"
+    "locale": "en-US",
+    "filters": "Filters",
+    "export": "Export",
+    "dateRange": "Date Range",
+    "all": "All",
+    "summary": "Summary",
+    "detailed": "Detailed",
+    "moreItems": "more items available",
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "filter": "Filter",
+    "error": "Error",
+    "dateFrom": "From Date",
+    "dateTo": "To Date"
   },
   "landing": {
     "features": "Features",
@@ -280,10 +305,23 @@
       "completedDateRequired": "Completed date is required"
     },
     "status": {
+      "title": "Status",
       "completed": "Completed",
       "scheduled": "Scheduled"
     },
-    "cost": "Cost"
+    "cost": "Cost",
+    "completed": "Completed",
+    "pending": "Pending",
+    "costRange": "Cost Range",
+    "total": "Total Maintenance",
+    "totalCost": "Total Cost",
+    "averageCost": "Average Cost",
+    "carsInvolved": "Cars Involved",
+    "scheduledDate": "Scheduled Date",
+    "description": "Description",
+    "completedDate": "Completed Date",
+    "noData": "No Maintenance Records Found",
+    "noDataDescription": "Try adjusting your filters or date range"
   },
   "reservation": {
     "list": {
@@ -599,7 +637,10 @@
       "markAsPaid": "Mark as Paid",
       "invoiceNumber": "Invoice Number",
       "totalAmount": "Total Amount",
-      "remainingBalance": "Remaining Balance"
+      "remainingBalance": "Remaining Balance",
+      "isPaid": "Paid",
+      "reservation": "Reservation",
+      "id": "Invoice ID"
     },
     "actions": {
       "view": "View Invoice",
@@ -610,6 +651,27 @@
       "title": "Generate Invoice",
       "reservationDetails": "Reservation Details",
       "submit": "Generate"
+    },
+    "list": {
+      "title": "Invoices",
+      "new": "New Invoice",
+      "actions": "Actions",
+      "noData": "No invoices found."
+    },
+    "filters": {
+      "from": "From",
+      "to": "To"
+    },
+    "details": {
+      "error": "Error loading invoice details.",
+      "loading": "Loading...",
+      "notFound": "Invoice not found.",
+      "title": "Invoice Details",
+      "confirmRemove": "Are you sure you want to delete this invoice?",
+      "removeError": "Failed to delete invoice.",
+      "paymentsTitle": "Payments",
+      "addPayment": "Add Payment",
+      "noPayments": "No payments recorded."
     }
   },
   "car": {
@@ -1178,5 +1240,191 @@
     "confirmDelete": "Are you sure you want to delete this expense?",
     "errorLoading": "Failed to load expenses",
     "errorDeleting": "Failed to delete expense"
+  },
+  "reports": {
+    "cars": {
+      "revenue": {
+        "error": "Failed to load car revenue data. Please try again.",
+        "title": "Car Revenue Report",
+        "description": "Analyze revenue performance by individual cars",
+        "period": "Period",
+        "thisMonth": "This Month",
+        "thisQuarter": "This Quarter",
+        "thisYear": "This Year",
+        "customPeriod": "Custom Period",
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "car": "Car",
+        "allCars": "All Cars",
+        "sortBy": "Sort By",
+        "revenue": "Revenue",
+        "reservations": "Reservations",
+        "utilization": "Utilization",
+        "order": "Order",
+        "highest": "Highest First",
+        "lowest": "Lowest First",
+        "summary": "Summary",
+        "totalRevenue": "Total Revenue",
+        "avgPerCar": "Avg per Car",
+        "totalReservations": "Total Reservations",
+        "avgUtilization": "Avg Utilization",
+        "detailedData": "Detailed Revenue Data",
+        "carsShowing": "cars showing",
+        "paid": "Paid",
+        "unpaid": "Unpaid",
+        "avgRevenue": "Avg Revenue",
+        "noData": "No Revenue Data",
+        "noDataDescription": "No revenue data found for the selected period and filters."
+      },
+      "maintenance": {
+        "loading": "Loading maintenance data...",
+        "error": "Error loading maintenance data",
+        "errorTitle": "Error Loading Data",
+        "title": "Car Maintenance Report",
+        "description": "Comprehensive maintenance tracking and analytics for your fleet"
+      }
+    },
+    "agency": {
+      "title": "Agency",
+      "financial": {
+        "title": "Financial Overview",
+        "subtitle": "Agency Financial Summary",
+        "errorLoading": "Failed to load financial data. Please try again.",
+        "totalRevenue": "Total Revenue",
+        "totalExpenses": "Total Expenses",
+        "netProfit": "Net Profit",
+        "profitMargin": "Profit Margin",
+        "revenueVsExpenses": "Revenue vs Expenses",
+        "revenue": "Revenue",
+        "expenses": "Expenses",
+        "expensesByCategory": "Expenses by Category",
+        "totalCustomers": "Total Customers",
+        "avgRevenuePerCustomer": "Avg. Revenue per Customer",
+        "lastUpdated": "Last Updated"
+      },
+      "customers": {
+        "title": "Customers",
+        "description": "Manage and view your agency’s customers"
+      }
+    },
+    "common": {
+      "export": "Export",
+      "period": "Period",
+      "periods": {
+        "month": "Month",
+        "quarter": "Quarter",
+        "year": "Year"
+      },
+      "year": "Year",
+      "month": "Month"
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "blacklisted": "Blacklisted",
+      "recent": "Recent"
+    },
+    "analytics": {
+      "totalCustomers": "Total Customers",
+      "newThisMonth": "New This Month",
+      "blacklisted": "Blacklisted",
+      "customerGrowth": "Customer Growth",
+      "topCustomers": "Top Customers",
+      "reservations": "Reservations"
+    },
+    "customers": {
+      "listTitle": "Customers List",
+      "showingResults": "Showing {{count}} of {{total}} customers",
+      "noResults": "No customers found",
+      "noResultsDescription": "Try adjusting your search or filters to find customers."
+    },
+    "export": "Export",
+    "dateRange": "Date Range",
+    "ranges": {
+      "week": "Last Week",
+      "month": "Last Month",
+      "quarter": "Last Quarter",
+      "year": "Last Year"
+    },
+    "customDate": "Custom Date",
+    "noData": "No data available",
+    "financial": {
+      "expenseAnalysis": "Expense Analysis",
+      "expenseAnalysisDescription": "Analyze your expenses over time.",
+      "totalAmount": "Total Amount",
+      "totalExpenses": "Total Expenses",
+      "averageExpense": "Average Expense",
+      "categories": "Categories",
+      "categoryBreakdown": "Category Breakdown",
+      "monthlyTrend": "Monthly Trend",
+      "topExpenses": "Top Expenses"
+    },
+    "title": "Reports",
+    "description": "View and analyze all your data reports",
+    "searchPlaceholder": "Search reports...",
+    "noResults": "No reports found",
+    "noResultsDescription": "Try adjusting your search or filters to find what you're looking for.",
+    "totalReports": "Total Reports",
+    "yourAgency": "Your Agency",
+    "lastUpdated": "Last Updated",
+    "reportsCount": "Reports",
+    "categories": {
+      "all": "All",
+      "cars": "Cars",
+      "carsDescription": "Reports related to car maintenance, revenue, and utilization",
+      "agency": "Agency",
+      "agencyDescription": "Financial and customer analytics for your agency",
+      "reservations": "Reservations",
+      "reservationsDescription": "Insights into booking trends, cancellations, and occupancy",
+      "financial": "Financial",
+      "financialDescription": "High‑level profit, cash flow, and expense analysis"
+    },
+    "occupancy": {
+      "errorLoading": "Failed to load occupancy data.",
+      "title": "Reservations Occupancy",
+      "description": "View occupancy metrics for your fleet over a selected period.",
+      "export": "Export CSV",
+      "dateRange": "Date Range",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "totalCars": "Total Cars",
+      "totalDays": "Total Days",
+      "occupiedDays": "Occupied Days",
+      "occupancyRate": "Occupancy Rate",
+      "byCategory": "By Category",
+      "cars": "cars",
+      "days": "days",
+      "topPerforming": "Top Performing Cars",
+      "reservations": "reservations",
+      "lowPerforming": "Low Performing Cars",
+      "timeframeTrends": "Timeframe Trends"
+    },
+    "cashflow": {
+      "title": "Cash Flow",
+      "description": "View your cash inflows and outflows over a selected period.",
+      "reservation": "Reservation",
+      "maintenance": "Maintenance",
+      "errorLoading": "Error loading cash flow data.",
+      "totalInflows": "Total Inflows",
+      "totalOutflows": "Total Outflows",
+      "netCashFlow": "Net Cash Flow",
+      "tabs": {
+        "summary": "Summary",
+        "inflows": "Inflows",
+        "outflows": "Outflows"
+      },
+      "categoryBreakdown": "Category Breakdown",
+      "inflows": "Inflows",
+      "revenue": "Revenue",
+      "outflows": "Outflows",
+      "noInflows": "No inflows found",
+      "noOutflows": "No outflows found"
+    },
+    "periods": {
+      "thisMonth": "This Month",
+      "lastMonth": "Last Month",
+      "thisQuarter": "This Quarter",
+      "thisYear": "This Year"
+    }
   }
 }

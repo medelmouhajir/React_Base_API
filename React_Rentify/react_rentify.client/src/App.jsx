@@ -85,6 +85,13 @@ const TicketsList = lazy(() => import('./pages/Tickets/List/TicketsList'));
 
 //// Child route for Reports
 const ReportsHome = lazy(() => import('./pages/Reports/Home/ReportsHome'));
+const CarRevenue = lazy(() => import('./pages/Reports/Cars/CarRevenue'));
+const CarMaintenance = lazy(() => import('./pages/Reports/Cars/CarMaintenance'));
+const AgencyFinancial = lazy(() => import('./pages/Reports/Agency/AgencyFinancial'));
+const AgencyCustomers = lazy(() => import('./pages/Reports/Agency/AgencyCustomers'));
+const FinancialExpenses = lazy(() => import('./pages/Reports/Financial/FinancialExpenses'));
+const FinancialCashFlow = lazy(() => import('./pages/Reports/Financial/FinancialCashFlow'));
+const ReservationsOccupancy = lazy(() => import('./pages/Reports/Reservations/ReservationsOccupancy'));
 
 
 //// Child route for Expenses
@@ -186,6 +193,13 @@ function App() {
 
                                 {/* Reports */}
                                 <Route path="/reports" element={<ReportsHome />} />
+                                <Route path="/reports/cars/revenue" element={<CarRevenue />} />
+                                <Route path="/reports/cars/maintenance" element={<CarMaintenance />} />
+                                <Route path="/reports/agency/financial" element={<AgencyFinancial />} />
+                                <Route path="/reports/agency/customers" element={<AgencyCustomers />} />
+                                <Route path="/reports/financial/expense-analysis" element={<FinancialExpenses />} />
+                                <Route path="/reports/reservations/occupancy" element={<ReservationsOccupancy />} />
+                                <Route path="/reports/financial/cash-flow" element={<FinancialCashFlow />} />
 
                                 {/* Expenses */}
                                 <Route path="/expenses" element={<ExpenseList />} />

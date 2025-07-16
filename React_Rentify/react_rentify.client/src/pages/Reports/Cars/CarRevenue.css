@@ -1,0 +1,674 @@
+/* src/pages/Reports/Cars/CarRevenue.css */
+
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-color: #0ea5e9;
+    --primary-hover: #0284c7;
+    --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    /* Light theme */
+    --bg-color-light: #ffffff;
+    --card-bg-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #60a5fa;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-hover-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --gradient-light: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+    --table-header-bg-light: #f3f4f6;
+    --table-row-hover-light: rgba(0, 0, 0, 0.025);
+    /* Dark theme */
+    --bg-color-dark: #111827;
+    --card-bg-dark: #1e293b;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --border-color-dark: #374151;
+    --input-bg-dark: #1f2937;
+    --input-text-dark: #f9fafb;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #3b82f6;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover-dark: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --gradient-dark: linear-gradient(135deg, #1e293b 0%, #111827 100%);
+    --table-header-bg-dark: #1f2937;
+    --table-row-hover-dark: rgba(255, 255, 255, 0.05);
+    /* Common */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --border-radius-xl: 1rem;
+    --transition-speed: 0.25s;
+    --transition-fast: 0.15s;
+}
+
+/*---------------------------------------------
+  Container and Layout
+---------------------------------------------*/
+.car-revenue-container {
+    --bg-color: var(--bg-color-light);
+    --card-bg: var(--card-bg-light);
+    --text-color: var(--text-color-light);
+    --text-secondary: var(--text-secondary-light);
+    --border-color: var(--border-color-light);
+    --input-bg: var(--input-bg-light);
+    --input-text: var(--input-text-light);
+    --input-border: var(--input-border-light);
+    --input-focus-border: var(--input-focus-border-light);
+    --shadow: var(--shadow-light);
+    --shadow-hover: var(--shadow-hover-light);
+    --table-header-bg: var(--table-header-bg-light);
+    --table-row-hover: var(--table-row-hover-light);
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    transition: all var(--transition-speed);
+}
+
+    /* Dark mode colors */
+    .car-revenue-container.dark {
+        --bg-color: var(--bg-color-dark);
+        --card-bg: var(--card-bg-dark);
+        --text-color: var(--text-color-dark);
+        --text-secondary: var(--text-secondary-dark);
+        --border-color: var(--border-color-dark);
+        --input-bg: var(--input-bg-dark);
+        --input-text: var(--input-text-dark);
+        --input-border: var(--input-border-dark);
+        --input-focus-border: var(--input-focus-border-dark);
+        --shadow: var(--shadow-dark);
+        --shadow-hover: var(--shadow-hover-dark);
+        --table-header-bg: var(--table-header-bg-dark);
+        --table-row-hover: var(--table-row-hover-dark);
+    }
+
+/*---------------------------------------------
+  Header Section
+---------------------------------------------*/
+.revenue-header {
+    background: var(--gradient-light);
+    border-radius: var(--border-radius-xl);
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.car-revenue-container.dark .revenue-header {
+    background: var(--gradient-dark);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--border-radius);
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+    .back-button:hover {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+        transform: translateX(-2px);
+    }
+
+.back-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.header-info {
+    flex: 1;
+}
+
+.revenue-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.revenue-description {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/*---------------------------------------------
+  Filters Section
+---------------------------------------------*/
+.revenue-filters {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-xl);
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.filter-select,
+.filter-input {
+    padding: 0.75rem;
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+}
+
+    .filter-select:focus,
+    .filter-input:focus {
+        outline: none;
+        border-color: var(--input-focus-border);
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    }
+
+/*---------------------------------------------
+  Summary Statistics
+---------------------------------------------*/
+.revenue-summary {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-xl);
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.summary-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: var(--bg-color);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-speed);
+}
+
+    .summary-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
+
+.summary-icon {
+    font-size: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--success-color));
+    border-radius: var(--border-radius-lg);
+    flex-shrink: 0;
+}
+
+.summary-info {
+    flex: 1;
+}
+
+.summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+}
+
+.summary-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/*---------------------------------------------
+  Revenue Data Section
+---------------------------------------------*/
+.revenue-data {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-xl);
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.data-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.data-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.data-info {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/*---------------------------------------------
+  Revenue Table
+---------------------------------------------*/
+.revenue-table-container {
+    overflow-x: auto;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.revenue-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+    .revenue-table th {
+        background-color: var(--table-header-bg);
+        color: var(--text-color);
+        font-weight: 600;
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+        white-space: nowrap;
+    }
+
+    .revenue-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+.revenue-row:hover {
+    background-color: var(--table-row-hover);
+}
+
+.car-info {
+    min-width: 200px;
+}
+
+.car-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.car-model {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.car-plate {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-family: monospace;
+}
+
+.revenue-value {
+    font-weight: 700;
+    color: var(--success-color);
+    min-width: 120px;
+}
+
+.reservation-count,
+.paid-count,
+.unpaid-count,
+.avg-revenue {
+    text-align: center;
+    min-width: 80px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 2rem;
+}
+
+.status-paid {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-unpaid {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.utilization-rate {
+    min-width: 150px;
+}
+
+.utilization-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.utilization-bar {
+    flex: 1;
+    height: 0.5rem;
+    background-color: var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.utilization-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success-color), var(--primary-color));
+    border-radius: var(--border-radius);
+    transition: width var(--transition-speed);
+}
+
+.utilization-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 3rem;
+    text-align: right;
+}
+
+/*---------------------------------------------
+  Loading and Error States
+---------------------------------------------*/
+.loading-state,
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-xl);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid var(--border-color);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.error-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.error-state h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.error-state p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+    }
+
+/*---------------------------------------------
+  No Data State
+---------------------------------------------*/
+.no-data {
+    text-align: center;
+    padding: 4rem 2rem;
+    background-color: var(--bg-color);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.no-data-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.no-data-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.no-data-description {
+    color: var(--text-secondary);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/*---------------------------------------------
+  Responsive Design
+---------------------------------------------*/
+@media (max-width: 1024px) {
+    .car-revenue-container {
+        padding: 1.5rem 1rem;
+        gap: 1.5rem;
+    }
+
+    .filters-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .summary-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+
+    .revenue-header,
+    .revenue-filters,
+    .revenue-summary,
+    .revenue-data {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .car-revenue-container {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .revenue-title {
+        font-size: 1.5rem;
+    }
+
+    .summary-title,
+    .data-title {
+        font-size: 1.25rem;
+    }
+
+    .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .summary-card {
+        padding: 1.25rem;
+    }
+
+    .summary-icon {
+        font-size: 1.5rem;
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .summary-value {
+        font-size: 1.25rem;
+    }
+
+    .data-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .revenue-table {
+        font-size: 0.75rem;
+    }
+
+        .revenue-table th,
+        .revenue-table td {
+            padding: 0.75rem 0.5rem;
+        }
+
+    .car-info {
+        min-width: 150px;
+    }
+
+    .utilization-container {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+
+    .utilization-text {
+        text-align: center;
+    }
+
+    .revenue-header,
+    .revenue-filters,
+    .revenue-summary,
+    .revenue-data {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .back-button {
+        align-self: flex-start;
+    }
+
+    .summary-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .revenue-table-container {
+        overflow-x: scroll;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .revenue-table {
+        min-width: 600px;
+    }
+}

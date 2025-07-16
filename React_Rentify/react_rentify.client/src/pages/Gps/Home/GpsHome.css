@@ -1,224 +1,751 @@
 /* src/pages/Gps/Home/GpsHome.css */
 
-/* Container occupies full viewport */
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-color: #4a90e2;
+    --primary-hover: #3b78c3;
+    --primary-active: #2f5ea0;
+    --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
+    --success-color: #10b981;
+    --success-hover: #059669;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --warning-color: #f59e0b;
+    /* Light theme */
+    --bg-color-light: transparent;
+    --card-bg-light: rgba(255, 255, 255, 0.95);
+    --card-bg-solid-light: #ffffff;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #60a5fa;
+    --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --shadow-hover-light: 0 6px 16px rgba(0, 0, 0, 0.2);
+    --overlay-light: rgba(255, 255, 255, 0.9);
+    /* Dark theme */
+    --bg-color-dark: transparent;
+    --card-bg-dark: rgba(17, 17, 17, 0.95);
+    --card-bg-solid-dark: #111827;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --border-color-dark: #374151;
+    --input-bg-dark: #1f2937;
+    --input-text-dark: #f9fafb;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #3b82f6;
+    --shadow-dark: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-hover-dark: 0 6px 16px rgba(0, 0, 0, 0.6);
+    --overlay-dark: rgba(17, 17, 17, 0.9);
+    /* Common */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --transition-speed: 0.25s;
+    --transition-fast: 0.15s;
+    --z-index-panel: 1000;
+    --z-index-controls: 1001;
+}
+
+/*---------------------------------------------
+  Container & Layout
+---------------------------------------------*/
 .gps-home-container {
     position: relative;
     width: 100%;
+    max-height: 100%;
     height: 100vh;
     overflow: hidden;
+    background-color: transparent;
+    color: var(--text-color-light);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
-    /* Dark-mode background */
     .gps-home-container.dark {
         background-color: transparent;
+        color: var(--text-color-dark);
     }
 
-/* Map covers entire container */
+/*---------------------------------------------
+  Loading State
+---------------------------------------------*/
+.loading-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: var(--z-index-panel);
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid var(--border-color-light);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+.gps-home-container.dark .loading-spinner {
+    border-color: var(--border-color-dark);
+    border-top-color: var(--primary-color);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/*---------------------------------------------
+  Map Container
+---------------------------------------------*/
 .map-container {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    max-height: 100%;
+    z-index: 1;
 }
 
-/* Floating side panel */
-.panel {
+/* Custom zoom controls positioned at bottom right */
+.custom-zoom-controls {
     position: absolute;
-    top: 1rem;
-    left: 4rem;
-    width: 280px;
-    max-height: calc(100% - 2rem);
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    bottom: 2rem;
+    right: 2rem;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    z-index: 1000;
+    gap: 0.25rem;
+    z-index: var(--z-index-controls);
 }
 
-.gps-home-container.dark .panel {
-    background-color: rgba(17, 17, 17, 0.85);
-    color: #eee;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-/* Panel header with filter input */
-.panel-header {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid #ddd;
-    background-color: rgba(255, 255, 255, 1);
-}
-
-.gps-home-container.dark .panel-header {
-    border-bottom: 1px solid #444;
-    background-color: rgba(17, 17, 17, 1);
-}
-
-.panel-header h2 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.125rem;
-    font-weight: 600;
-}
-
-.panel-header .filter-input {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 0.9rem;
-    border: 1px solid #ccc;
-    border-radius: 0.375rem;
-}
-
-.gps-home-container.dark .filter-input {
-    background-color: #222;
-    color: #eee;
-    border: 1px solid #555;
-}
-
-.filter-input::placeholder {
-    color: #999;
-}
-
-.gps-home-container.dark .filter-input::placeholder {
-    color: #bbb;
-}
-
-/* Scrollable list area */
-.panel-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0.5rem 1rem;
-}
-
-.panel-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
-}
-
-.gps-home-container.dark .panel-item {
-    border-bottom: 1px solid #444;
-}
-
-.panel-item:last-child {
-    border-bottom: none;
-}
-
-.plate {
-    font-size: 0.85rem;
-    color: #666;
-}
-
-.gps-home-container.dark .plate {
-    color: #aaa;
-}
-
-.focus-btn {
-    background-color: #4a90e2;
-    color: #fff;
-    border: none;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    font-size: 0.85rem;
+.zoom-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--text-color-light);
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-light);
 }
 
-    .focus-btn:hover {
-        background-color: #3b78c3;
-    }
-
-.gps-home-container.dark .focus-btn {
-    background-color: #3b78c3;
+.gps-home-container.dark .zoom-btn {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    color: var(--text-color-dark);
+    box-shadow: var(--shadow-dark);
 }
 
-    .gps-home-container.dark .focus-btn:hover {
-        background-color: #2f5ea0;
-    }
-
-.no-data {
-    font-size: 0.85rem;
-    color: #a00;
+.zoom-btn:hover {
+    background-color: var(--overlay-light);
+    box-shadow: var(--shadow-hover-light);
+    transform: scale(1.05);
 }
 
-.gps-home-container.dark .no-data {
-    color: #f88;
+.gps-home-container.dark .zoom-btn:hover {
+    background-color: var(--overlay-dark);
+    box-shadow: var(--shadow-hover-dark);
 }
 
-.no-results {
-    font-size: 0.9rem;
-    color: #999;
-    text-align: center;
-    margin-top: 1rem;
-}
-
-.gps-home-container.dark .no-results {
-    color: #bbb;
-}
-
-/* Popup styling */
-.popup-content {
-    font-size: 0.9rem;
-    line-height: 1.2;
-}
-
-/* Mobile: toggle button */
+/*---------------------------------------------
+  Mobile Panel Toggle
+---------------------------------------------*/
 .panel-toggle-btn {
     position: absolute;
     top: 1rem;
     left: 1rem;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 3rem;
+    height: 3rem;
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: none;
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--border-color-light);
     font-size: 1.25rem;
     cursor: pointer;
-    z-index: 1100;
+    z-index: var(--z-index-controls);
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: var(--shadow-light);
+    transition: all var(--transition-fast);
 }
 
 .gps-home-container.dark .panel-toggle-btn {
-    background-color: rgba(17, 17, 17, 0.85);
-    color: #eee;
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    color: var(--text-color-dark);
+    box-shadow: var(--shadow-dark);
 }
 
 .panel-toggle-btn:hover {
-    background-color: rgba(255, 255, 255, 1);
+    background-color: var(--overlay-light);
+    box-shadow: var(--shadow-hover-light);
+    transform: scale(1.05);
 }
 
 .gps-home-container.dark .panel-toggle-btn:hover {
-    background-color: rgba(17, 17, 17, 1);
+    background-color: var(--overlay-dark);
+    box-shadow: var(--shadow-hover-dark);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .panel {
-        width: 240px;
-        top: 0.75rem;
-        left: 0.5rem;
-        max-height: calc(100% - 1.5rem);
+/*---------------------------------------------
+  Floating Side Panel
+---------------------------------------------*/
+.panel {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 320px;
+    max-height: calc(100vh - 2rem);
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: var(--z-index-panel);
+    transition: all var(--transition-speed);
+    backdrop-filter: blur(10px);
+}
+
+.gps-home-container.dark .panel {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.panel.minimized {
+    max-height: 4rem;
+}
+
+.panel.collapsed .panel-content {
+    display: none;
+}
+
+/*---------------------------------------------
+  Panel Header
+---------------------------------------------*/
+.panel-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color-light);
+    background-color: var(--card-bg-solid-light);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    flex-shrink: 0;
+}
+
+.gps-home-container.dark .panel-header {
+    border-bottom-color: var(--border-color-dark);
+    background-color: var(--card-bg-solid-dark);
+}
+
+.panel-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+    .panel-title-row h2 {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-color-light);
     }
 
-    .panel-header h2 {
+.gps-home-container.dark .panel-title-row h2 {
+    color: var(--text-color-dark);
+}
+
+.panel-controls {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.panel-control-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    background: none;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    color: var(--text-secondary-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+}
+
+.gps-home-container.dark .panel-control-btn {
+    border-color: var(--border-color-dark);
+    color: var(--text-secondary-dark);
+}
+
+.panel-control-btn:hover {
+    background-color: var(--overlay-light);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.gps-home-container.dark .panel-control-btn:hover {
+    background-color: var(--overlay-dark);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.filter-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    border: 1px solid var(--input-border-light);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg-light);
+    color: var(--input-text-light);
+    transition: all var(--transition-fast);
+}
+
+.gps-home-container.dark .filter-input {
+    background-color: var(--input-bg-dark);
+    color: var(--input-text-dark);
+    border-color: var(--input-border-dark);
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--input-focus-border-light);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.gps-home-container.dark .filter-input:focus {
+    border-color: var(--input-focus-border-dark);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter-input::placeholder {
+    color: var(--text-secondary-light);
+}
+
+.gps-home-container.dark .filter-input::placeholder {
+    color: var(--text-secondary-dark);
+}
+
+/*---------------------------------------------
+  Panel Content
+---------------------------------------------*/
+.panel-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.error-message {
+    padding: 0.75rem 1rem;
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+    border-left: 3px solid var(--danger-color);
+    margin: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+}
+
+.panel-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 1rem 1rem;
+}
+
+/*---------------------------------------------
+  Panel Items (Cars)
+---------------------------------------------*/
+.panel-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    margin-bottom: 0.75rem;
+    background-color: var(--card-bg-solid-light);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.gps-home-container.dark .panel-item {
+    border-color: var(--border-color-dark);
+    background-color: var(--card-bg-solid-dark);
+}
+
+.panel-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-light);
+    transform: translateY(-1px);
+}
+
+.gps-home-container.dark .panel-item:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+.panel-item.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(74, 144, 226, 0.05);
+    box-shadow: var(--shadow-light);
+}
+
+.gps-home-container.dark .panel-item.selected {
+    background-color: rgba(74, 144, 226, 0.1);
+    box-shadow: var(--shadow-dark);
+}
+
+.panel-item:last-child {
+    margin-bottom: 0;
+}
+
+/*---------------------------------------------
+  Car Information
+---------------------------------------------*/
+.car-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.car-main-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+    .car-main-info strong {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-color-light);
+    }
+
+.gps-home-container.dark .car-main-info strong {
+    color: var(--text-color-dark);
+}
+
+.plate {
+    font-size: 0.875rem;
+    color: var(--text-secondary-light);
+    font-family: monospace;
+    background-color: var(--border-color-light);
+    padding: 0.25rem 0.5rem;
+    border-radius: calc(var(--border-radius) / 2);
+    display: inline-block;
+    max-width: fit-content;
+}
+
+.gps-home-container.dark .plate {
+    color: var(--text-secondary-dark);
+    background-color: var(--border-color-dark);
+}
+
+.car-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.status-indicator {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+    .status-indicator.online {
+        background-color: var(--success-color);
+        animation: pulse 2s infinite;
+    }
+
+    .status-indicator.offline {
+        background-color: var(--text-secondary-light);
+    }
+
+.gps-home-container.dark .status-indicator.offline {
+    background-color: var(--text-secondary-dark);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.status-text {
+    font-weight: 500;
+    color: var(--text-color-light);
+}
+
+.gps-home-container.dark .status-text {
+    color: var(--text-color-dark);
+}
+
+.last-seen {
+    color: var(--text-secondary-light);
+    font-size: 0.8rem;
+}
+
+.gps-home-container.dark .last-seen {
+    color: var(--text-secondary-dark);
+}
+
+/*---------------------------------------------
+  Car Actions
+---------------------------------------------*/
+.car-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.action-btn {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+    .action-btn.primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+        .action-btn.primary:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+    .action-btn.secondary {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+
+        .action-btn.secondary:hover {
+            background-color: var(--secondary-hover);
+            transform: scale(1.05);
+        }
+
+.action-group {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.no-data {
+    font-size: 0.875rem;
+    color: var(--text-secondary-light);
+    font-style: italic;
+}
+
+.gps-home-container.dark .no-data {
+    color: var(--text-secondary-dark);
+}
+
+/*---------------------------------------------
+  No Results
+---------------------------------------------*/
+.no-results {
+    font-size: 0.9rem;
+    color: var(--text-secondary-light);
+    text-align: center;
+    margin-top: 2rem;
+    padding: 2rem;
+    font-style: italic;
+}
+
+.gps-home-container.dark .no-results {
+    color: var(--text-secondary-dark);
+}
+
+/*---------------------------------------------
+  Map Popup Styling
+---------------------------------------------*/
+.popup-content {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    min-width: 200px;
+}
+
+.popup-header {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+    .popup-header strong {
+        font-size: 1rem;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+.popup-plate {
+    font-family: monospace;
+    background-color: var(--border-color-light);
+    padding: 0.125rem 0.375rem;
+    border-radius: calc(var(--border-radius) / 2);
+    font-size: 0.8rem;
+}
+
+.popup-details {
+    color: var(--text-secondary-light);
+}
+
+    .popup-details p {
+        margin: 0 0 0.5rem 0;
+    }
+
+.popup-actions {
+    margin-top: 0.75rem;
+}
+
+.popup-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--border-radius);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+    .popup-btn:hover {
+        background-color: var(--primary-hover);
+    }
+
+/*---------------------------------------------
+  Selected Path Styling
+---------------------------------------------*/
+.selected-path {
+    filter: drop-shadow(0 0 8px rgba(74, 144, 226, 0.8));
+}
+
+/*---------------------------------------------
+  Responsive Design
+---------------------------------------------*/
+@media (max-width: 768px) {
+    .panel {
+        width: 280px;
+        top: 0.5rem;
+        left: 0.5rem;
+        max-height: calc(100vh - 1rem);
+    }
+
+    .panel-title-row h2 {
         font-size: 1rem;
     }
 
-    .panel-header .filter-input {
+    .filter-input {
         font-size: 0.85rem;
+        padding: 0.625rem;
     }
 
     .panel-item {
-        padding: 0.4rem 0;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
     }
 
-    .focus-btn {
-        padding: 0.2rem 0.4rem;
+    .action-btn {
+        width: 1.75rem;
+        height: 1.75rem;
         font-size: 0.8rem;
+    }
+
+    .custom-zoom-controls {
+        bottom: 1rem;
+        right: 1rem;
+    }
+
+    .zoom-btn {
+        width: 2.25rem;
+        height: 2.25rem;
+        font-size: 1.125rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .panel {
+        width: calc(100vw - 1rem);
+        left: 0.5rem;
+    }
+
+    .car-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .action-group {
+        justify-content: center;
+    }
+}
+
+/*---------------------------------------------
+  Accessibility
+---------------------------------------------*/
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus styles for keyboard navigation */
+.action-btn:focus,
+.panel-control-btn:focus,
+.zoom-btn:focus,
+.panel-toggle-btn:focus,
+.filter-input:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .panel {
+        border-width: 2px;
+    }
+
+    .action-btn,
+    .panel-control-btn,
+    .zoom-btn {
+        border: 2px solid currentColor;
     }
 }

@@ -67,7 +67,32 @@
     "refresh": "تحديث",
     "close": "إغلاق",
     "resultsCount": "{{count}} من أصل {{total}} نتيجة",
-    "locale": "ar-MA"
+    "locale": "ar-MA",
+    "filters": "مرشحات",
+    "export": "تصدير",
+    "dateRange": "نطاق التاريخ",
+    "all": "الكل",
+    "summary": "ملخص",
+    "detailed": "مفصل",
+    "moreItems": "عناصر إضافية متاحة",
+    "months": {
+      "1": "يناير",
+      "2": "فبراير",
+      "3": "مارس",
+      "4": "أبريل",
+      "5": "مايو",
+      "6": "يونيو",
+      "7": "يوليو",
+      "8": "أغسطس",
+      "9": "سبتمبر",
+      "10": "أكتوبر",
+      "11": "نوفمبر",
+      "12": "ديسمبر"
+    },
+    "filter": "تصفية",
+    "error": "خطأ",
+    "dateFrom": "من التاريخ",
+    "dateTo": "حتى التاريخ"
   },
   "landing": {
     "features": "الميزات",
@@ -278,9 +303,22 @@
     },
     "status": {
       "completed": "مكتمل",
-      "scheduled": "مجدول"
+      "scheduled": "مجدول",
+      "title": "الحالة"
     },
-    "cost": "التكلفة"
+    "cost": "التكلفة",
+    "completed": "منتهية",
+    "pending": "معلقة",
+    "costRange": "نطاق التكلفة",
+    "total": "إجمالي الصيانة",
+    "totalCost": "إجمالي التكلفة",
+    "averageCost": "متوسط التكلفة",
+    "carsInvolved": "عدد المركبات المعنية",
+    "scheduledDate": "تاريخ الصيانة",
+    "description": "الوصف",
+    "completedDate": "تاريخ الإنجاز",
+    "noData": "لم يتم العثور على سجلات صيانة",
+    "noDataDescription": "حاول تعديل المرشحات أو نطاق التاريخ"
   },
   "reservation": {
     "list": {
@@ -596,7 +634,10 @@
       "markAsPaid": "وضع كمدفوعة",
       "invoiceNumber": "رقم الفاتورة",
       "totalAmount": "المبلغ الإجمالي",
-      "remainingBalance": "الرصيد المتبقي"
+      "remainingBalance": "الرصيد المتبقي",
+      "isPaid": "مدفوع",
+      "reservation": "الحجز",
+      "id": "معرّف الفاتورة"
     },
     "actions": {
       "view": "عرض الفاتورة",
@@ -607,6 +648,27 @@
       "title": "إنشاء فاتورة",
       "reservationDetails": "تفاصيل الحجز",
       "submit": "إنشاء"
+    },
+    "list": {
+      "title": "الفواتير",
+      "new": "فاتورة جديدة",
+      "actions": "الإجراءات",
+      "noData": "لم يتم العثور على أي فواتير."
+    },
+    "filters": {
+      "from": "من",
+      "to": "إلى"
+    },
+    "details": {
+      "error": "خطأ في تحميل تفاصيل الفاتورة.",
+      "loading": "جارٍ التحميل...",
+      "notFound": "الفاتورة غير موجودة.",
+      "title": "تفاصيل الفاتورة",
+      "confirmRemove": "هل أنت متأكد أنك تريد حذف هذه الفاتورة؟",
+      "removeError": "فشل في حذف الفاتورة.",
+      "paymentsTitle": "المدفوعات",
+      "addPayment": "إضافة دفعة",
+      "noPayments": "لا توجد دفعات مسجلة."
     }
   },
   "car": {
@@ -1176,5 +1238,191 @@
     "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا المصروف؟",
     "errorLoading": "فشل في تحميل المصروفات",
     "errorDeleting": "فشل في حذف المصروف"
+  },
+  "reports": {
+    "cars": {
+      "revenue": {
+        "error": "فشل في تحميل بيانات إيرادات السيارات. حاول مرة أخرى.",
+        "title": "تقرير إيرادات السيارة",
+        "description": "تحليل أداء الإيرادات لكل سيارة",
+        "period": "الفترة",
+        "thisMonth": "هذا الشهر",
+        "thisQuarter": "هذا الربع",
+        "thisYear": "هذا العام",
+        "customPeriod": "فترة مخصصة",
+        "fromDate": "من التاريخ",
+        "toDate": "إلى التاريخ",
+        "car": "السيارة",
+        "allCars": "جميع السيارات",
+        "sortBy": "الترتيب حسب",
+        "revenue": "الإيرادات",
+        "reservations": "الحجوزات",
+        "utilization": "معدل الاستخدام",
+        "order": "الترتيب",
+        "highest": "الأعلى أولاً",
+        "lowest": "الأدنى أولاً",
+        "summary": "الملخص",
+        "totalRevenue": "إجمالي الإيرادات",
+        "avgPerCar": "المتوسط لكل سيارة",
+        "totalReservations": "إجمالي الحجوزات",
+        "avgUtilization": "متوسط معدل الاستخدام",
+        "detailedData": "تفاصيل بيانات الإيرادات",
+        "carsShowing": "سيارات معروضة",
+        "paid": "مدفوع",
+        "unpaid": "غير مدفوع",
+        "avgRevenue": "متوسط الإيرادات",
+        "noData": "لا توجد بيانات إيرادات",
+        "noDataDescription": "لا توجد بيانات إيرادات للفترة والفلاتر المحددة."
+      },
+      "maintenance": {
+        "loading": "جاري تحميل بيانات الصيانة…",
+        "error": "خطأ في تحميل بيانات الصيانة",
+        "errorTitle": "خطأ في تحميل البيانات",
+        "title": "تقرير صيانة المركبات",
+        "description": "تتبع شامل وتحليلات لصيانة أسطولك"
+      }
+    },
+    "common": {
+      "export": "تصدير",
+      "period": "الفترة",
+      "periods": {
+        "month": "شهر",
+        "quarter": "ربع سنة",
+        "year": "سنة"
+      },
+      "year": "السنة",
+      "month": "الشهر"
+    },
+    "agency": {
+      "title": "الوكالة",
+      "financial": {
+        "title": "نظرة عامة مالية",
+        "subtitle": "ملخص مالية الوكالة",
+        "errorLoading": "فشل في تحميل البيانات المالية. الرجاء المحاولة مجددًا.",
+        "totalRevenue": "إجمالي الإيرادات",
+        "totalExpenses": "إجمالي النفقات",
+        "netProfit": "صافي الربح",
+        "profitMargin": "هامش الربح",
+        "revenueVsExpenses": "الإيرادات مقابل النفقات",
+        "revenue": "الإيرادات",
+        "expenses": "النفقات",
+        "expensesByCategory": "النفقات حسب الفئة",
+        "totalCustomers": "إجمالي العملاء",
+        "avgRevenuePerCustomer": "متوسط الإيرادات لكل عميل",
+        "lastUpdated": "آخر تحديث"
+      },
+      "customers": {
+        "title": "العملاء",
+        "description": "إدارة وعرض عملاء وكالتك"
+      }
+    },
+    "filters": {
+      "all": "الكل",
+      "active": "نشط",
+      "blacklisted": "في القائمة السوداء",
+      "recent": "حديث"
+    },
+    "analytics": {
+      "totalCustomers": "إجمالي العملاء",
+      "newThisMonth": "جدد هذا الشهر",
+      "blacklisted": "في القائمة السوداء",
+      "customerGrowth": "نمو العملاء",
+      "topCustomers": "أفضل العملاء",
+      "reservations": "الحجوزات"
+    },
+    "customers": {
+      "listTitle": "قائمة العملاء",
+      "showingResults": "عرض {{count}} من أصل {{total}} عميل",
+      "noResults": "لم يتم العثور على عملاء",
+      "noResultsDescription": "حاول تعديل البحث أو الفلاتر للعثور على عملاء."
+    },
+    "export": "تصدير",
+    "dateRange": "نطاق التاريخ",
+    "ranges": {
+      "week": "الأسبوع الماضي",
+      "month": "الشهر الماضي",
+      "quarter": "الربع الماضي",
+      "year": "السنة الماضية"
+    },
+    "customDate": "تاريخ مخصص",
+    "noData": "لا توجد بيانات",
+    "financial": {
+      "expenseAnalysis": "تحليل النفقات",
+      "expenseAnalysisDescription": "تحليل نفقاتك على مر الزمن.",
+      "totalAmount": "إجمالي المبلغ",
+      "totalExpenses": "إجمالي النفقات",
+      "averageExpense": "متوسط النفقات",
+      "categories": "الفئات",
+      "categoryBreakdown": "تفصيل الفئات",
+      "monthlyTrend": "الاتجاه الشهري",
+      "topExpenses": "أعلى النفقات"
+    },
+    "title": "التقارير",
+    "description": "عرض وتحليل جميع تقاريرك",
+    "searchPlaceholder": "ابحث في التقارير...",
+    "noResults": "لم يتم العثور على تقارير",
+    "noResultsDescription": "حاول تعديل البحث أو المرشحات للعثور على ما تبحث عنه.",
+    "totalReports": "إجمالي التقارير",
+    "yourAgency": "وكالتك",
+    "lastUpdated": "آخر تحديث",
+    "reportsCount": "تقارير",
+    "categories": {
+      "all": "الكل",
+      "cars": "السيارات",
+      "carsDescription": "تقارير متعلقة بصيانة السيارات والإيرادات والاستخدام",
+      "agency": "الوكالة",
+      "agencyDescription": "التحليلات المالية وتحليلات العملاء لوكالتك",
+      "reservations": "الحجوزات",
+      "reservationsDescription": "لمحة عن اتجاهات الحجز والإلغاءات والإشغال",
+      "financial": "المالية",
+      "financialDescription": "لمحة عامة عن الربح والتدفقات النقدية وتحليل المصروفات"
+    },
+    "occupancy": {
+      "errorLoading": "فشل في تحميل بيانات نسب الإشغال.",
+      "title": "إشغال الحجوزات",
+      "description": "عرض مقاييس الإشغال لأسطولك خلال فترة محددة.",
+      "export": "تصدير CSV",
+      "dateRange": "نطاق التاريخ",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء",
+      "totalCars": "إجمالي السيارات",
+      "totalDays": "إجمالي الأيام",
+      "occupiedDays": "الأيام المشغولة",
+      "occupancyRate": "نسبة الإشغال",
+      "byCategory": "حسب الفئة",
+      "cars": "سيارات",
+      "days": "أيام",
+      "topPerforming": "أفضل السيارات أداءً",
+      "reservations": "حجوزات",
+      "lowPerforming": "الأسوأ أداءً",
+      "timeframeTrends": "اتجاهات الفترة الزمنية"
+    },
+    "cashflow": {
+      "title": "التدفق النقدي",
+      "description": "عرض التدفقات الواردة والصادرة خلال فترة محددة.",
+      "reservation": "الحجز",
+      "maintenance": "الصيانة",
+      "errorLoading": "خطأ أثناء تحميل بيانات التدفق النقدي.",
+      "totalInflows": "إجمالي التدفقات الواردة",
+      "totalOutflows": "إجمالي التدفقات الصادرة",
+      "netCashFlow": "صافي التدفق النقدي",
+      "tabs": {
+        "summary": "الملخص",
+        "inflows": "التدفقات الواردة",
+        "outflows": "التدفقات الصادرة"
+      },
+      "categoryBreakdown": "تفصيل حسب الفئة",
+      "inflows": "التدفقات الواردة",
+      "revenue": "الإيرادات",
+      "outflows": "التدفقات الصادرة",
+      "noInflows": "لا توجد تدفقات واردة",
+      "noOutflows": "لا توجد تدفقات صادرة"
+    },
+    "periods": {
+      "thisMonth": "هذا الشهر",
+      "lastMonth": "الشهر الماضي",
+      "thisQuarter": "هذا الربع",
+      "thisYear": "هذا العام"
+    }
   }
 }
