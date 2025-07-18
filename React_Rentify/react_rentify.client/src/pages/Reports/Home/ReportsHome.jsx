@@ -49,7 +49,7 @@ const ReportsHome = () => {
                 {
                     id: 'agency-financial',
                     name: t('reports.agency.financial.title'),
-                    description: t('reports.agency.financial.description'),
+                    description: t('reports.agency.financial.subtitle'),
                     url: '/reports/agency/financial',
                     tags: ['financial', 'revenue']
                 },
@@ -75,20 +75,6 @@ const ReportsHome = () => {
                     description: t('reports.occupancy.description'),
                     url: '/reports/reservations/occupancy',
                     tags: ['occupancy', 'utilization']
-                },
-                {
-                    id: 'reservation-trends',
-                    name: t('reports.reservations.trends'),
-                    description: t('reports.reservations.trendsDescription'),
-                    url: '/reports/reservations/trends',
-                    tags: ['trends', 'analytics']
-                },
-                {
-                    id: 'reservation-cancellations',
-                    name: t('reports.reservations.cancellations'),
-                    description: t('reports.reservations.cancellationsDescription'),
-                    url: '/reports/reservations/cancellations',
-                    tags: ['cancellations', 'analysis']
                 }
             ]
         },

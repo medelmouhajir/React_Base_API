@@ -1,35 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models.Agencies;
 using React_Rentify.Server.Models.Blacklists;
+using React_Rentify.Server.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace React_Rentify.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles = "Admin ,Owner,Manager")]
     public class BlacklistController : ControllerBase
     {
         private readonly MainDbContext _context;
         private readonly ILogger<BlacklistController> _logger;
+        private readonly IAgencyAuthorizationService _authService;
 
-        public BlacklistController(MainDbContext context, ILogger<BlacklistController> logger)
+        public BlacklistController(MainDbContext context, ILogger<BlacklistController> logger , IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
+            _authService = authService;
         }
 
         /// <summary>
         /// GET: api/Blacklist
         /// Returns all blacklist entries (DTO), including the reporting agency name.
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllEntries()
         {
@@ -158,6 +162,9 @@ namespace React_Rentify.Server.Controllers
                 _logger.LogWarning("Invalid CreateBlacklistEntryDto received");
                 return BadRequest(ModelState);
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(dto.ReportedByAgencyId))
+                return Unauthorized();
 
             // Verify the reporting agency exists
             var agencyExists = await _context.Set<Agency>()

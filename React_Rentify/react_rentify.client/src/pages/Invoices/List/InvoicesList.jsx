@@ -23,9 +23,10 @@ const InvoicesList = () => {
             if (!agencyId) return;
             setIsLoading(true);
             try {
-                const data = await invoiceService.getAll();
+                const data = await invoiceService.getByAgencyId(agencyId);
                 // Filter by agency through reservation relationship if needed; assuming API returns only relevant invoices
                 setInvoices(data);
+                console.log(data);
                 setFilteredInvoices(data);
             } catch (err) {
                 console.error('❌ Error fetching invoices:', err);
@@ -140,12 +141,6 @@ const InvoicesList = () => {
                                                 onClick={() => navigate(`/invoices/${inv.id}`)}
                                             >
                                                 {t('common.details') || 'Details'}
-                                            </button>
-                                            <button
-                                                className="btn-action"
-                                                onClick={() => navigate(`/invoices/edit/${inv.id}`)}
-                                            >
-                                                {t('common.edit') || 'Edit'}
                                             </button>
                                         </td>
                                     </tr>

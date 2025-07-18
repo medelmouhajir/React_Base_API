@@ -1,9 +1,11 @@
 ﻿// React_Rentify/React_Rentify.Server/Controllers/App/AgencyAttachmentsController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models.Agencies;
+using React_Rentify.Server.Services;
 using System;
 using System.IO;
 using System.Linq;
@@ -13,20 +15,23 @@ namespace React_Rentify.Server.Controllers.App
 {
     [Route("api/agencies")]
     [ApiController]
+    [Authorize(Roles = "Admin,Manager,Owner")]
     public class AgencyAttachmentsController : ControllerBase
     {
         private readonly MainDbContext _context;
         private readonly ILogger<AgencyAttachmentsController> _logger;
         private readonly IWebHostEnvironment _env;
+        private readonly IAgencyAuthorizationService _authService;
 
         public AgencyAttachmentsController(
             MainDbContext context,
             ILogger<AgencyAttachmentsController> logger,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env , IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
             _env = env;
+            _authService = authService;
         }
 
         /// <summary>
@@ -36,6 +41,8 @@ namespace React_Rentify.Server.Controllers.App
         [HttpPost("{id:guid}/attachments")]
         public async Task<IActionResult> AddAttachment(Guid id, [FromForm] AgencyAttachmentUploadDto dto)
         {
+            if (!await _authService.HasAccessToAgencyAsync(id))
+                return Unauthorized();
             try
             {
                 _logger.LogInformation("Adding attachment to Agency {AgencyId}", id);
@@ -117,6 +124,9 @@ namespace React_Rentify.Server.Controllers.App
         [HttpGet("{id:guid}/attachments")]
         public async Task<IActionResult> GetAttachments(Guid id)
         {
+            if (!await _authService.HasAccessToAgencyAsync(id))
+                return Unauthorized();
+
             try
             {
                 var agency = await _context.Set<Agency>()
@@ -154,6 +164,8 @@ namespace React_Rentify.Server.Controllers.App
         [HttpGet("{id:guid}/attachments/{attachmentId:guid}")]
         public async Task<IActionResult> GetAttachment(Guid id, Guid attachmentId)
         {
+            if (!await _authService.HasAccessToAgencyAsync(id))
+                return Unauthorized();
             try
             {
                 var attachment = await _context.Set<Agency_Attachment>()
@@ -188,6 +200,8 @@ namespace React_Rentify.Server.Controllers.App
         [HttpDelete("{id:guid}/attachments/{attachmentId:guid}")]
         public async Task<IActionResult> DeleteAttachment(Guid id, Guid attachmentId)
         {
+            if (!await _authService.HasAccessToAgencyAsync(id))
+                return Unauthorized();
             try
             {
                 var attachment = await _context.Set<Agency_Attachment>()
@@ -224,6 +238,8 @@ namespace React_Rentify.Server.Controllers.App
         [HttpPost("{id:guid}/logo")]
         public async Task<IActionResult> UploadLogo(Guid id, IFormFile file)
         {
+            if (!await _authService.HasAccessToAgencyAsync(id))
+                return Unauthorized();
             try
             {
                 var agency = await _context.Set<Agency>()
@@ -277,6 +293,72 @@ namespace React_Rentify.Server.Controllers.App
                 await _context.SaveChangesAsync();
 
                 return Ok(new { logoUrl = urlPath });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error uploading logo for Agency {AgencyId}", id);
+                return StatusCode(500, new { message = "An error occurred while uploading the logo" });
+            }
+        }
+
+        [HttpPost("{id:guid}/logo-association")]
+        public async Task<IActionResult> UploadLogoAssociation(Guid id, IFormFile file)
+        {
+            if (!await _authService.HasAccessToAgencyAsync(id))
+                return Unauthorized();
+            try
+            {
+                var agency = await _context.Set<Agency>()
+                    .FirstOrDefaultAsync(a => a.Id == id);
+
+                if (agency == null)
+                {
+                    return NotFound(new { message = $"Agency with Id '{id}' not found." });
+                }
+
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest(new { message = "No file uploaded" });
+                }
+
+                // Create directory if it doesn't exist
+                var uploadsFolder = Path.Combine(
+                    _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
+                    "uploads", "agencies", id.ToString());
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                // Generate a unique filename for the logo
+                var uniqueFileName = $"logo_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                // Save file to disk
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+
+                // Create a URL-friendly path
+                var urlPath = $"/uploads/agencies/{id}/{uniqueFileName}";
+
+                // Delete old logo file if it exists
+                if (!string.IsNullOrEmpty(agency.LogoUrl))
+                {
+                    var oldLogoPath = Path.Combine(_env.WebRootPath, agency.LogoUrl.TrimStart('/'));
+                    if (System.IO.File.Exists(oldLogoPath))
+                    {
+                        System.IO.File.Delete(oldLogoPath);
+                    }
+                }
+
+                // Update agency logo URL
+                agency.LogoUrlAssociation = urlPath;
+                _context.Entry(agency).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return Ok(new { logoUrlAssociation = urlPath });
             }
             catch (Exception ex)
             {

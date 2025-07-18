@@ -139,8 +139,10 @@ const AgencySettings = () => {
             let updatedLogoAssociationUrl = formData.logoUrlAssociation;
             if (logoAssociationFile) {
                 try {
+                    // Note: You'll need to implement uploadLogoAssociation method in agencyService.js
+                    // For now, we'll use the same uploadLogo method pattern
                     const uploadResult = await agencyService.uploadLogoAssociation(agencyId, logoAssociationFile);
-                    updatedLogoAssociationUrl = uploadResult.logoUrlAssociation;
+                    updatedLogoAssociationUrl = uploadResult.logoUrlAssociation; // Adjust based on your API response structure
                 } catch (uploadErr) {
                     console.error('❌ Error uploading logo association:', uploadErr);
                     throw new Error(t('agencySettings.logoAssociationUploadError'));

@@ -8,10 +8,12 @@ using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.Customers;
 using React_Rentify.Server.Models.Invoices;
 using React_Rentify.Server.Models.Reservations;
+using React_Rentify.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 
 namespace React_Rentify.Server.Controllers.App
@@ -23,17 +25,20 @@ namespace React_Rentify.Server.Controllers.App
     {
         private readonly MainDbContext _context;
         private readonly ILogger<ReservationsController> _logger;
+        private readonly IAgencyAuthorizationService _authService;
 
-        public ReservationsController(MainDbContext context, ILogger<ReservationsController> logger)
+        public ReservationsController(MainDbContext context, ILogger<ReservationsController> logger , IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
+            _authService = authService;
         }
 
         /// <summary>
         /// GET: api/Reservations
         /// Returns all reservations (DTO), including related Agency, Car, Customer, and Invoice info.
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllReservations()
         {
@@ -73,7 +78,7 @@ namespace React_Rentify.Server.Controllers.App
                     .Where(x => x.Id == id)
                     .Select(x => new
                     {
-                        AgencyId = id,
+                        AgencyId = x.AgencyId,
                         CarId = x.CarId,
                         ActualStartTime = x.ActualStartTime,
                         ActualEndTime = x.ActualEndTime,
@@ -96,7 +101,9 @@ namespace React_Rentify.Server.Controllers.App
                             Email = x.Agency.Email,
                             LogoUrl = x.Agency.LogoUrl,
                             PhoneOne = x.Agency.PhoneOne,
-                            PhoneTwo = x.Agency.PhoneTwo
+                            PhoneTwo = x.Agency.PhoneTwo,
+                            LogoUrlAssociation = x.Agency.LogoUrlAssociation,
+                            Conditions = x.Agency.Conditions
                         },
                         Customers = x.Reservation_Customers.Select(c =>
                             new Customer
@@ -136,6 +143,11 @@ namespace React_Rentify.Server.Controllers.App
                     return NotFound(new { message = $"Reservation with Id '{id}' not found." });
                 }
 
+
+
+                if (!await _authService.HasAccessToAgencyAsync(reservation.AgencyId))
+                    return Unauthorized();
+
                 _logger.LogInformation("Retrieved reservation {ReservationId}", id);
                 return Ok(reservation);
             }
@@ -152,6 +164,9 @@ namespace React_Rentify.Server.Controllers.App
         [HttpGet("agency/{agencyId:guid}")]
         public async Task<IActionResult> GetReservationsByAgencyId(Guid agencyId)
         {
+            if (!await _authService.HasAccessToAgencyAsync(agencyId))
+                return Unauthorized();
+
             _logger.LogInformation("Retrieving reservations for Agency {AgencyId}", agencyId);
 
             var agencyExists = await _context.Set<Agency>()
@@ -193,12 +208,15 @@ namespace React_Rentify.Server.Controllers.App
             _logger.LogInformation("Retrieving reservations for Customer {CustomerId}", customerId);
 
             var customerExists = await _context.Set<Customer>()
-                .AnyAsync(c => c.Id == customerId);
-            if (!customerExists)
+                .FirstOrDefaultAsync(c => c.Id == customerId);
+            if (customerExists == null)
             {
                 _logger.LogWarning("Customer with Id {CustomerId} not found", customerId);
                 return NotFound(new { message = $"Customer with Id '{customerId}' does not exist." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(customerExists.AgencyId))
+                return Unauthorized();
 
             var reservations = await _context.Set<Reservation>()
                 .Where(r => r.Reservation_Customers.Any(x => x.CustomerId == customerId))
@@ -220,6 +238,10 @@ namespace React_Rentify.Server.Controllers.App
         [HttpPost]
         public async Task<IActionResult> CreateReservation([FromBody] CreateReservationDto dto)
         {
+
+            if (!await _authService.HasAccessToAgencyAsync(dto.AgencyId))
+                return Unauthorized();
+
             _logger.LogInformation("Creating new reservation for Agency {AgencyId}, with {CustomerCount} customers",
                 dto.AgencyId, dto.CustomersId.Count);
 
@@ -330,6 +352,10 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Reservation with Id '{id}' not found." });
             }
 
+
+            if (!await _authService.HasAccessToAgencyAsync(existing.AgencyId))
+                return Unauthorized();
+
             // If Agency changed, verify it
             if (existing.AgencyId != dto.AgencyId)
             {
@@ -439,6 +465,10 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Reservation with Id '{id}' not found." });
             }
 
+
+            if (!await _authService.HasAccessToAgencyAsync(reservation.AgencyId))
+                return Unauthorized();
+
             // Remove all customer links first
             if (reservation.Reservation_Customers != null)
             {
@@ -481,6 +511,9 @@ namespace React_Rentify.Server.Controllers.App
                 _logger.LogWarning("Reservation with Id {ReservationId} not found", id);
                 return NotFound(new { message = $"Reservation with Id '{id}' not found." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(reservation.AgencyId))
+                return Unauthorized();
 
             // Verify customer exists
             var customerExists = await _context.Set<Customer>().AnyAsync(c => c.Id == CustomerId);
@@ -536,6 +569,9 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Reservation with Id '{id}' not found." });
             }
 
+            if (!await _authService.HasAccessToAgencyAsync(reservation.AgencyId))
+                return Unauthorized();
+
             // Find the customer link
             var customerLink = await _context.Set<Reservation_Customer>()
                 .FirstOrDefaultAsync(rc => rc.ReservationId == id && rc.CustomerId == customerId);
@@ -577,12 +613,20 @@ namespace React_Rentify.Server.Controllers.App
                 "Checking availability between {Start} and {End}, include Car {CarId}",
                 start, end, carId);
 
+            var car = await _context.Cars.FindAsync(carId);
+            if (car == null)
+                return BadRequest();
+
+            if (!await _authService.HasAccessToAgencyAsync(car.AgencyId))
+                return Unauthorized();
+
             // Find IDs of cars booked in that period, excluding the current car
             var busyCarIds = await _context.Set<Reservation>()
                 .Where(r =>
                     r.CarId != carId &&
                     r.StartDate < end &&
-                    r.EndDate > start
+                    r.EndDate > start &&
+                    r.AgencyId == car.AgencyId
                 )
                 .Select(r => r.CarId)
                 .Distinct()
@@ -593,7 +637,7 @@ namespace React_Rentify.Server.Controllers.App
                 .Include(x=> x.Car_Model)
                 .ThenInclude(x=> x.Manufacturer)
                 .Include(x=> x.Car_Year)
-                .Where(c => !busyCarIds.Contains(c.Id))
+                .Where(c => !busyCarIds.Contains(c.Id) && c.AgencyId == car.AgencyId)
                 .ToListAsync();
 
             // Map to lightweight DTO
@@ -653,6 +697,9 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Reservation with Id '{id}' not found." });
             }
 
+            if (!await _authService.HasAccessToAgencyAsync(reservation.AgencyId))
+                return Unauthorized();
+
             // Verify the car exists
             var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == dto.CarId);
             if (!carExists)
@@ -711,6 +758,9 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Reservation with Id '{id}' not found." });
             }
 
+            if (!await _authService.HasAccessToAgencyAsync(reservation.AgencyId))
+                return Unauthorized();
+
             // Check if car is available for the new dates
             //var isCarAvailable = await IsCarAvailableForDates(reservation.CarId, dto.StartDate, dto.EndDate, id);
             //if (!isCarAvailable)
@@ -753,6 +803,8 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Reservation with Id '{id}' not found." });
             }
 
+            if (!await _authService.HasAccessToAgencyAsync(reservation.AgencyId))
+                return Unauthorized();
 
             // Validate dates
             if ( reservation.Status != "Reserved")
@@ -797,6 +849,9 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Reservation with Id '{id}' not found." });
             }
 
+            if (!await _authService.HasAccessToAgencyAsync(reservation.AgencyId))
+                return Unauthorized();
+
 
             // Validate dates
             if ( reservation.Status != "Ongoing")
@@ -832,6 +887,13 @@ namespace React_Rentify.Server.Controllers.App
         /// </summary>
         private async Task<bool> IsCarAvailableForDates(Guid carId, DateTime startDate, DateTime endDate, Guid? excludeReservationId = null)
         {
+            var car = await _context.Cars.FindAsync(carId);
+            if (car == null)
+                return false;
+
+            if (!await _authService.HasAccessToAgencyAsync(car.AgencyId))
+                return false;
+
             var query = _context.Set<Reservation>()
                 .Where(r => r.CarId == carId)
                 .Where(r => r.Status != "Cancelled" && r.Status != "Completed");
@@ -859,12 +921,15 @@ namespace React_Rentify.Server.Controllers.App
         {
             _logger.LogInformation("Retrieving reservations for car {CarId}", carId);
 
-            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == carId);
-            if (!carExists)
+            var carExists = await _context.Set<Car>().FirstOrDefaultAsync(c => c.Id == carId);
+            if (carExists == null)
             {
                 _logger.LogWarning("Car with Id {CarId} not found", carId);
                 return NotFound(new { message = $"Car with Id '{carId}' not found." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(carExists.AgencyId))
+                return Unauthorized();
 
             var reservations = await _context.Set<Reservation>()
                 .Include(r => r.Reservation_Customers)
@@ -916,12 +981,16 @@ namespace React_Rentify.Server.Controllers.App
         {
             _logger.LogInformation("Retrieving current reservation for car {CarId}", carId);
 
-            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == carId);
-            if (!carExists)
+            var carExists = await _context.Set<Car>().FirstOrDefaultAsync(c => c.Id == carId);
+            if (carExists == null)
             {
                 _logger.LogWarning("Car with Id {CarId} not found", carId);
                 return NotFound(new { message = $"Car with Id '{carId}' not found." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(carExists.AgencyId))
+                return Unauthorized();
+
 
             var now = DateTime.UtcNow;
             var currentReservation = await _context.Set<Reservation>()
@@ -982,12 +1051,15 @@ namespace React_Rentify.Server.Controllers.App
         {
             _logger.LogInformation("Retrieving upcoming reservations for car {CarId}", carId);
 
-            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == carId);
-            if (!carExists)
+            var carExists = await _context.Set<Car>().FirstOrDefaultAsync(c => c.Id == carId);
+            if (carExists == null)
             {
                 _logger.LogWarning("Car with Id {CarId} not found", carId);
                 return NotFound(new { message = $"Car with Id '{carId}' not found." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(carExists.AgencyId))
+                return Unauthorized();
 
             var now = DateTime.UtcNow;
             var upcomingReservations = await _context.Set<Reservation>()

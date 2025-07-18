@@ -43,7 +43,7 @@ const CarRevenue = () => {
                 const [carsData, reservationsData, invoicesData] = await Promise.all([
                     carService.getByAgencyId(agencyId),
                     reservationService.getByAgencyId(agencyId),
-                    invoiceService.getAll()
+                    invoiceService.getByAgencyId(agencyId)
                 ]);
 
                 setCars(carsData || []);

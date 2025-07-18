@@ -39,10 +39,10 @@ const Dashboard = () => {
             try {
                 // Fetch all required data in parallel
                 const [carsData, reservationsData, maintenanceData, invoicesData] = await Promise.all([
-                    carService.getAll(),
+                    carService.getByAgencyId(agencyId),
                     reservationService.getByAgencyId(agencyId),
-                    maintenanceService.getAll(),
-                    invoiceService.getAll()
+                    maintenanceService.getByAgencyId(agencyId),
+                    invoiceService.getByAgencyId(agencyId)
                 ]);
 
                 console.log(reservationsData);
@@ -95,7 +95,7 @@ const Dashboard = () => {
                         const car = carsData.find(c => c.id === record.carId);
                         alertsList.push({
                             id: `maintenance-${record.id}`,
-                            message: `${car?.licensePlate || 'Vehicle'} due for ${record.maintenanceType} in ${daysUntilDue} days`,
+                            message: `${car?.licensePlate || 'Vehicle'} due for "${record.description}" in ${daysUntilDue} days`,
                             type: daysUntilDue <= 2 ? 'danger' : 'warning',
                             date: today.toISOString().split('T')[0]
                         });

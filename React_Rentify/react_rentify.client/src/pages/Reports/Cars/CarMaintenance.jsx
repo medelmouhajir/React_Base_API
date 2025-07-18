@@ -61,7 +61,7 @@ const CarMaintenance = () => {
                 if (agencyId) {
                     const [carsData, maintenanceData, manufacturersData, modelsData] = await Promise.all([
                         carService.getByAgencyId(agencyId),
-                        maintenanceService.getAll(),
+                        maintenanceService.getByAgencyId(agencyId),
                         carFiltersService.getManufacturers(),
                         carFiltersService.getCarModels()
                     ]);

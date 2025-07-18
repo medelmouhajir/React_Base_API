@@ -68,6 +68,7 @@ const Contract = lazy(() => import('./pages/Reservations/Contract/Contract'));
 
 
 const AddMaintenance = lazy(() => import('./pages/Maintenances/Add/AddMaintenance'));
+const MaintenanceDetails = lazy(() => import('./pages/Maintenances/Details/MaintenanceDetails'));
 const EditMaintenance = lazy(() => import('./pages/Maintenances/Edit/EditMaintenance'));
 
 //// Child route for Invoices
@@ -173,7 +174,7 @@ function App() {
 
                                 {/* maintenances */}
                                 <Route path="/maintenances" element={<MaintenancesList />} />
-                                {/*<Route path="/reservations/:id" element={<ReservationDetails />} />*/}
+                                <Route path="/maintenances/:id" element={<MaintenanceDetails />} />
                                 <Route path="/maintenances/add" element={<AddMaintenance />} />
                                 <Route path="/maintenances/:id/edit" element={<EditMaintenance />} />
 

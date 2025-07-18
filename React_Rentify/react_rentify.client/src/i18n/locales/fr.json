@@ -292,6 +292,7 @@
     "status": {
       "completed": "Terminé",
       "scheduled": "Planifié",
+      "pending": "En attente",
       "title": "Statut"
     },
     "cost": "Coût",
@@ -306,7 +307,20 @@
     "description": "Description",
     "completedDate": "Date d'achèvement",
     "noData": "Aucun enregistrement de maintenance trouvé",
-    "noDataDescription": "Essayez d'ajuster vos filtres ou la plage de dates"
+    "noDataDescription": "Essayez d'ajuster vos filtres ou la plage de dates",
+    "details": {
+      "error": "Erreur lors du chargement des détails de la maintenance.",
+      "deleteError": "Erreur lors de la suppression de l’enregistrement de maintenance.",
+      "loading": "Chargement des détails de la maintenance...",
+      "notFound": "Enregistrement de maintenance introuvable.",
+      "title": "Détails de la maintenance",
+      "info": "Informations de maintenance"
+    },
+    "remarks": "Remarques",
+    "delete": {
+      "title": "Supprimer l’enregistrement de maintenance",
+      "confirm": "Êtes-vous sûr de vouloir supprimer cet enregistrement de maintenance ? Cette action est irréversible."
+    }
   },
   "reservation": {
     "list": {
@@ -796,7 +810,8 @@
     "tracking": {
       "active": "Actif",
       "inactive": "Inactif"
-    }
+    },
+    "car": "Voiture"
   },
   "carDetails": {
     "fetchError": "Erreur lors de la récupération des détails de la voiture.",
@@ -885,7 +900,9 @@
     "myInvoices": "Mes factures",
     "collapse": "Réduire",
     "expand": "Développer",
-    "brand": "Rentify"
+    "brand": "Rentify",
+    "gadgets": "Gadgets",
+    "expenses": "Dépenses"
   },
   "profile": {
     "myProfile": "Mon profil",

@@ -34,6 +34,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "React_Rentify.Server", "Rea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rentify_GPS_Service_Worker", "Rentify_GPS_Service_Worker\Rentify_GPS_Service_Worker.csproj", "{EA99001C-A494-4FB4-9B39-55D8F306D316}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "react_identity.client", "React_Identity\react_identity.client\react_identity.client.esproj", "{CCD7DD90-DCAF-756B-991F-822001773681}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "React_Identity.Server", "React_Identity\React_Identity.Server\React_Identity.Server.csproj", "{BDA9BEC0-7EA1-4257-A2F8-69AAB8BC503C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +86,16 @@ Global
 		{EA99001C-A494-4FB4-9B39-55D8F306D316}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA99001C-A494-4FB4-9B39-55D8F306D316}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA99001C-A494-4FB4-9B39-55D8F306D316}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCD7DD90-DCAF-756B-991F-822001773681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD7DD90-DCAF-756B-991F-822001773681}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCD7DD90-DCAF-756B-991F-822001773681}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{CCD7DD90-DCAF-756B-991F-822001773681}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCD7DD90-DCAF-756B-991F-822001773681}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCD7DD90-DCAF-756B-991F-822001773681}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{BDA9BEC0-7EA1-4257-A2F8-69AAB8BC503C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDA9BEC0-7EA1-4257-A2F8-69AAB8BC503C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDA9BEC0-7EA1-4257-A2F8-69AAB8BC503C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDA9BEC0-7EA1-4257-A2F8-69AAB8BC503C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

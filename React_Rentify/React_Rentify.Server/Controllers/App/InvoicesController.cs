@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
+using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.Invoices;
 using React_Rentify.Server.Models.Reservations;
+using React_Rentify.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace React_Rentify.Server.Controllers
     {
         private readonly MainDbContext _context;
         private readonly ILogger<InvoicesController> _logger;
+        private readonly IAgencyAuthorizationService _authService;
 
-        public InvoicesController(MainDbContext context, ILogger<InvoicesController> logger)
+        public InvoicesController(MainDbContext context, ILogger<InvoicesController> logger, IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
+            _authService = authService;
         }
 
         /// <summary>
         /// GET: api/Invoices
         /// Returns all invoices (DTO), including payments.
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllInvoices()
         {
@@ -74,6 +79,7 @@ namespace React_Rentify.Server.Controllers
             _logger.LogInformation("Retrieving invoice with Id {InvoiceId}", id);
             var invoice = await _context.Set<Invoice>()
                 .Include(i => i.Payments)
+                .Include(x=> x.Reservation)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (invoice == null)
@@ -81,6 +87,11 @@ namespace React_Rentify.Server.Controllers
                 _logger.LogWarning("Invoice with Id {InvoiceId} not found", id);
                 return NotFound(new { message = $"Invoice with Id '{id}' not found." });
             }
+
+
+
+            if (!await _authService.HasAccessToAgencyAsync(invoice.Reservation.AgencyId))
+                return Unauthorized();
 
             var dto = new InvoiceDto
             {
@@ -118,13 +129,16 @@ namespace React_Rentify.Server.Controllers
             _logger.LogInformation("Retrieving invoice for Reservation {ReservationId}", reservationId);
 
             var reservationExists = await _context.Set<Reservation>()
-                .AnyAsync(r => r.Id == reservationId);
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
 
-            if (!reservationExists)
+            if (reservationExists == null)
             {
                 _logger.LogWarning("Reservation with Id {ReservationId} not found", reservationId);
                 return NotFound(new { message = $"Reservation with Id '{reservationId}' does not exist." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(reservationExists.AgencyId))
+                return Unauthorized();
 
             var invoice = await _context.Set<Invoice>()
                 .Include(i => i.Payments)
@@ -161,6 +175,47 @@ namespace React_Rentify.Server.Controllers
             _logger.LogInformation("Retrieved invoice for Reservation {ReservationId}", reservationId);
             return Ok(dto);
         }
+        [HttpGet("agency/{agencyId:guid}")]
+        public async Task<IActionResult> GetInvoicesByAgencyId(Guid agencyId)
+        {
+            _logger.LogInformation("Retrieving invoice for agency {agencyId}", agencyId);
+
+
+            if (!await _authService.HasAccessToAgencyAsync(agencyId))
+                return Unauthorized();
+
+            _logger.LogInformation("Retrieving all invoices");
+            var invoices = await _context.Set<Invoice>()
+                .Include(i => i.Payments)
+                .Include(i => i.Reservation)
+                .Where(x=> x.Reservation.AgencyId == agencyId)
+                .ToListAsync();
+
+            var dtoList = invoices.Select(i => new InvoiceDto
+            {
+                Id = i.Id,
+                ReservationId = i.ReservationId,
+                IssuedAt = i.IssuedAt,
+                Amount = i.Amount,
+                IsPaid = i.IsPaid,
+                Currency = i.Currency,
+                PaymentMethod = i.PaymentMethod,
+                Payments = i.Payments?
+                    .Select(p => new PaymentDto
+                    {
+                        Id = p.Id,
+                        InvoiceId = p.InvoiceId,
+                        PaidAt = p.PaidAt,
+                        Amount = p.Amount,
+                        Method = p.Method,
+                        TransactionId = p.TransactionId
+                    })
+                    .ToList()
+            }).ToList();
+
+            _logger.LogInformation("Retrieved {Count} invoices", dtoList.Count);
+            return Ok(dtoList);
+        }
 
         /// <summary>
         /// POST: api/Invoices
@@ -179,12 +234,16 @@ namespace React_Rentify.Server.Controllers
 
             // Verify Reservation exists
             var reservationExists = await _context.Set<Reservation>()
-                .AnyAsync(r => r.Id == dto.ReservationId);
-            if (!reservationExists)
+                .FirstOrDefaultAsync(r => r.Id == dto.ReservationId);
+            if (reservationExists == null)
             {
                 _logger.LogWarning("Reservation with Id {ReservationId} does not exist", dto.ReservationId);
                 return BadRequest(new { message = $"Reservation with Id '{dto.ReservationId}' does not exist." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(reservationExists.AgencyId))
+                return Unauthorized();
 
             var invoice = new Invoice
             {
@@ -248,6 +307,7 @@ namespace React_Rentify.Server.Controllers
 
             var existingInvoice = await _context.Set<Invoice>()
                 .Include(i => i.Payments)
+                .Include(i => i.Reservation)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (existingInvoice == null)
@@ -255,6 +315,9 @@ namespace React_Rentify.Server.Controllers
                 _logger.LogWarning("Invoice with Id {InvoiceId} not found", id);
                 return NotFound(new { message = $"Invoice with Id '{id}' not found." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(existingInvoice.Reservation.AgencyId))
+                return Unauthorized();
 
             // If Reservation changed, verify it
             if (existingInvoice.ReservationId != dto.ReservationId)
@@ -317,6 +380,7 @@ namespace React_Rentify.Server.Controllers
 
             var invoice = await _context.Set<Invoice>()
                 .Include(i => i.Payments)
+                .Include(i => i.Reservation)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (invoice == null)
@@ -324,6 +388,9 @@ namespace React_Rentify.Server.Controllers
                 _logger.LogWarning("Invoice with Id {InvoiceId} not found", id);
                 return NotFound(new { message = $"Invoice with Id '{id}' not found." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(invoice.Reservation.AgencyId))
+                return Unauthorized();
 
             if (invoice.Payments != null && invoice.Payments.Any())
             {
@@ -355,6 +422,7 @@ namespace React_Rentify.Server.Controllers
 
             var invoice = await _context.Set<Invoice>()
                 .Include(i => i.Payments)
+                .Include(i => i.Reservation)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (invoice == null)
@@ -362,6 +430,9 @@ namespace React_Rentify.Server.Controllers
                 _logger.LogWarning("Invoice with Id {InvoiceId} not found", id);
                 return NotFound(new { message = $"Invoice with Id '{id}' not found." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(invoice.Reservation.AgencyId))
+                return Unauthorized();
 
             var payment = new Payment
             {

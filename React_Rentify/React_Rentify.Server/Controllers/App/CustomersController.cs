@@ -5,7 +5,9 @@ using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models;
 using React_Rentify.Server.Models.Agencies;
+using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.Customers;
+using React_Rentify.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +22,20 @@ namespace React_Rentify.Server.Controllers
     {
         private readonly MainDbContext _context;
         private readonly ILogger<CustomersController> _logger;
+        private readonly IAgencyAuthorizationService _authService;
 
-        public CustomersController(MainDbContext context, ILogger<CustomersController> logger)
+        public CustomersController(MainDbContext context, ILogger<CustomersController> logger, IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
+            _authService = authService;
         }
 
         /// <summary>
         /// GET: api/Customers
         /// Returns the list of all customers (DTO), including attachments.
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllCustomers()
         {
@@ -85,6 +90,10 @@ namespace React_Rentify.Server.Controllers
                 return NotFound(new { message = $"Customer with Id '{id}' not found." });
             }
 
+
+            if (!await _authService.HasAccessToAgencyAsync(customer.AgencyId))
+                return Unauthorized();
+
             var dto = new CustomerDto
             {
                 Id = customer.Id,
@@ -121,6 +130,10 @@ namespace React_Rentify.Server.Controllers
         public async Task<IActionResult> GetCustomersByAgencyId(Guid agencyId)
         {
             _logger.LogInformation("Retrieving customers for Agency {AgencyId}", agencyId);
+
+
+            if (!await _authService.HasAccessToAgencyAsync(agencyId))
+                return Unauthorized();
 
             var agencyExists = await _context.Set<Agency>()
                 .AnyAsync(a => a.Id == agencyId);
@@ -178,6 +191,10 @@ namespace React_Rentify.Server.Controllers
                 _logger.LogWarning("Invalid CreateCustomerDto received");
                 return BadRequest(ModelState);
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(dto.AgencyId))
+                return Unauthorized();
 
             var agencyExists = await _context.Set<Agency>()
                 .AnyAsync(a => a.Id == dto.AgencyId);
@@ -258,6 +275,9 @@ namespace React_Rentify.Server.Controllers
                 _logger.LogWarning("Customer with Id {CustomerId} not found", id);
                 return NotFound(new { message = $"Customer with Id '{id}' not found." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(existingCustomer.AgencyId))
+                return Unauthorized();
 
             if (existingCustomer.AgencyId != dto.AgencyId)
             {
@@ -355,6 +375,9 @@ namespace React_Rentify.Server.Controllers
                 return NotFound(new { message = $"Customer with Id '{id}' not found." });
             }
 
+            if (!await _authService.HasAccessToAgencyAsync(customer.AgencyId))
+                return Unauthorized();
+
             if (customer.Customer_Attachments != null && customer.Customer_Attachments.Any())
             {
                 _logger.LogInformation("Removing {Count} attachments for Customer {CustomerId}", customer.Customer_Attachments.Count, id);
@@ -392,6 +415,9 @@ namespace React_Rentify.Server.Controllers
                 _logger.LogWarning("Customer with Id {CustomerId} not found", id);
                 return NotFound(new { message = $"Customer with Id '{id}' not found." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(customer.AgencyId))
+                return Unauthorized();
 
             var attachment = new Customer_Attachment
             {

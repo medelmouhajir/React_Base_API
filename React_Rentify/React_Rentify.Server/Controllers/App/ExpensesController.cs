@@ -4,8 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models.Agencies;
+using React_Rentify.Server.Models.Cars;
+using React_Rentify.Server.Models.Customers;
 using React_Rentify.Server.Models.Expenses;
 using React_Rentify.Server.Models.Users;
+using React_Rentify.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,17 +24,20 @@ namespace React_Rentify.Server.Controllers.App
     {
         private readonly MainDbContext _context;
         private readonly ILogger<ExpensesController> _logger;
+        private readonly IAgencyAuthorizationService _authService;
 
-        public ExpensesController(MainDbContext context, ILogger<ExpensesController> logger)
+        public ExpensesController(MainDbContext context, ILogger<ExpensesController> logger, IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
+            _authService = authService;
         }
 
         // ========================
         // === Expense Endpoints ==
         // ========================
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllExpenses()
         {
@@ -64,12 +70,19 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Expense '{id}' not found." });
             }
 
+            if (!await _authService.HasAccessToAgencyAsync(expense.AgencyId))
+                return Unauthorized();
+
             return Ok(MapToExpenseDto(expense));
         }
 
         [HttpGet("agency/{agencyId:guid}")]
         public async Task<IActionResult> GetExpensesByAgencyId(Guid agencyId)
         {
+
+            if (!await _authService.HasAccessToAgencyAsync(agencyId))
+                return Unauthorized();
+
             _logger.LogInformation("Retrieving expenses for agency {AgencyId}", agencyId);
             if (!await _context.Set<Agency>().AnyAsync(a => a.Id == agencyId))
                 return NotFound(new { message = $"Agency '{agencyId}' does not exist." });
@@ -87,6 +100,10 @@ namespace React_Rentify.Server.Controllers.App
         [HttpPost]
         public async Task<IActionResult> CreateExpense([FromBody] CreateExpenseDto dto)
         {
+
+            if (!await _authService.HasAccessToAgencyAsync(dto.AgencyId))
+                return Unauthorized();
+
             _logger.LogInformation("Creating expense for agency {AgencyId}", dto.AgencyId);
 
             if (!ModelState.IsValid)
@@ -120,6 +137,10 @@ namespace React_Rentify.Server.Controllers.App
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateExpense(Guid id, [FromBody] UpdateExpenseDto dto)
         {
+
+            if (!await _authService.HasAccessToAgencyAsync(dto.AgencyId))
+                return Unauthorized();
+
             _logger.LogInformation("Updating expense {ExpenseId}", id);
 
             if (!ModelState.IsValid)
@@ -160,6 +181,11 @@ namespace React_Rentify.Server.Controllers.App
             if (expense == null)
                 return NotFound(new { message = $"Expense '{id}' not found." });
 
+
+
+            if (!await _authService.HasAccessToAgencyAsync(expense.AgencyId))
+                return Unauthorized();
+
             // remove attachments first
             if (expense.Expense_Attachements != null && expense.Expense_Attachements.Any())
                 _context.Set<Expense_Attachement>().RemoveRange(expense.Expense_Attachements);
@@ -175,6 +201,7 @@ namespace React_Rentify.Server.Controllers.App
         // === Category Endpoints ======
         // =============================
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("categories")]
         public async Task<IActionResult> GetAllCategories()
         {
@@ -197,12 +224,20 @@ namespace React_Rentify.Server.Controllers.App
             if (cat == null)
                 return NotFound(new { message = $"Category '{id}' not found." });
 
+
+            if (!await _authService.HasAccessToAgencyAsync(cat.AgencyId))
+                return Unauthorized();
+
             return Ok(MapToCategoryDto(cat));
         }
 
         [HttpGet("categories/agency/{agencyId:guid}")]
         public async Task<IActionResult> GetCategoriesByAgencyId(Guid agencyId)
         {
+
+            if (!await _authService.HasAccessToAgencyAsync(agencyId))
+                return Unauthorized();
+
             _logger.LogInformation("Retrieving categories for agency {AgencyId}", agencyId);
             if (!await _context.Set<Agency>().AnyAsync(a => a.Id == agencyId))
                 return NotFound(new { message = $"Agency '{agencyId}' does not exist." });
@@ -217,6 +252,10 @@ namespace React_Rentify.Server.Controllers.App
         [HttpPost("categories")]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto dto)
         {
+
+            if (!await _authService.HasAccessToAgencyAsync(dto.AgencyId))
+                return Unauthorized();
+
             _logger.LogInformation("Creating category for agency {AgencyId}", dto.AgencyId);
 
             if (!ModelState.IsValid)
@@ -254,6 +293,10 @@ namespace React_Rentify.Server.Controllers.App
             if (existing == null)
                 return NotFound(new { message = $"Category '{id}' not found." });
 
+
+            if (!await _authService.HasAccessToAgencyAsync(existing.AgencyId))
+                return Unauthorized();
+
             existing.Name = dto.Name;
             existing.AgencyId = dto.AgencyId;
 
@@ -274,6 +317,10 @@ namespace React_Rentify.Server.Controllers.App
 
             if (cat == null)
                 return NotFound(new { message = $"Category '{id}' not found." });
+
+
+            if (!await _authService.HasAccessToAgencyAsync(cat.AgencyId))
+                return Unauthorized();
 
             _context.Set<Expense_Category>().Remove(cat);
             await _context.SaveChangesAsync();

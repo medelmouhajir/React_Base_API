@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models;
 using React_Rentify.Server.Models.Agencies;
+using React_Rentify.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,26 +20,36 @@ namespace React_Rentify.Server.Controllers
     {
         private readonly MainDbContext _context;
         private readonly ILogger<AgenciesController> _logger;
+        private readonly IAgencyAuthorizationService _authService;
 
-        public AgenciesController(MainDbContext context, ILogger<AgenciesController> logger)
+        public AgenciesController(MainDbContext context, ILogger<AgenciesController> logger , IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
+            _authService = authService;
         }
 
         /// <summary>
         /// GET: api/Agencies
         /// Returns the list of all agencies, including related users, cars, customers, reservations, and attachments.
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAgencies()
         {
             var agencies = await _context.Set<Agency>()
-                .Include(a => a.Users)
-                .Include(a => a.Cars)
-                .Include(a => a.Customers)
-                .Include(a => a.Reservations)
-                .Include(a => a.Agency_Attachments)
+                .Select(x=> new Agency
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Address = x.Address,
+                    Email = x.Email,
+                    LogoUrl = x.LogoUrl,
+                    LogoUrlAssociation = x.LogoUrlAssociation,
+                    PhoneOne = x.PhoneOne,
+                    PhoneTwo = x.PhoneTwo,
+                    Conditions = x.Conditions
+                })
                 .ToListAsync();
 
             return Ok(agencies);
@@ -48,9 +59,13 @@ namespace React_Rentify.Server.Controllers
         /// GET: api/Agencies/{id}
         /// Returns a single agency by its Id (including related collections).
         /// </summary>
+        [Authorize(Roles = "Admin,Manager,Owner")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetAgency(Guid id)
         {
+            if(! await _authService.HasAccessToAgencyAsync(id))
+                return Unauthorized();
+            
             var agency = await _context.Set<Agency>()
                 .Include(a => a.Users)
                 .Include(a => a.Cars)
@@ -63,6 +78,8 @@ namespace React_Rentify.Server.Controllers
                     Name = x.Name,
                     Address = x.Address,
                     LogoUrl = x.LogoUrl,
+                    LogoUrlAssociation = x.LogoUrlAssociation,
+                    Conditions = x.Conditions,
                     Email = x.Email,
                     PhoneOne = x.PhoneOne,
                     PhoneTwo = x.PhoneTwo,
@@ -89,6 +106,7 @@ namespace React_Rentify.Server.Controllers
         /// POST: api/Agencies
         /// Creates a new agency. Expects the Agency object in the request body.
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateAgency([FromBody] AgengyDTO dto)
         {
@@ -126,9 +144,13 @@ namespace React_Rentify.Server.Controllers
         /// PUT: api/Agencies/{id}
         /// Updates an existing agency. Expects the modified Agency object in the request body.
         /// </summary>
+        [Authorize(Roles = "Admin,Manager,Owner")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateAgency(Guid id, [FromBody] Agency updatedAgency)
         {
+            if (!await _authService.HasAccessToAgencyAsync(id))
+                return Unauthorized();
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -154,7 +176,7 @@ namespace React_Rentify.Server.Controllers
             existingAgency.PhoneOne = updatedAgency.PhoneOne;
             existingAgency.PhoneTwo = updatedAgency.PhoneTwo;
             existingAgency.Email = updatedAgency.Email;
-            existingAgency.LogoUrl = updatedAgency.LogoUrl;
+            existingAgency.Conditions = updatedAgency.Conditions;
 
             // Note: Navigation collections (Users, Cars, Customers, Reservations) 
             // are typically managed elsewhere (e.g., separate endpoints or services).
@@ -176,13 +198,14 @@ namespace React_Rentify.Server.Controllers
             _context.Entry(existingAgency).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return Ok(existingAgency);
+            return Ok();
         }
 
         /// <summary>
         /// DELETE: api/Agencies/{id}
         /// Deletes an agency and all its attachments.
         /// </summary>
+        [Authorize(Roles = "Admin,Manager,Owner")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAgency(Guid id)
         {

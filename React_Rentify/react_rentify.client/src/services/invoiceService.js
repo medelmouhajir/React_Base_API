@@ -21,6 +21,16 @@ export const invoiceService = {
         }
     },
 
+    async getByAgencyId(agencyId) {
+        try {
+            const response = await apiClient.get(`/invoices/agency/${agencyId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error fetching invoice for agency ${agencyId}:`, error);
+            throw error;
+        }
+    },
+
     async getByReservationId(reservationId) {
         try {
             const response = await apiClient.get(`/invoices/reservation/${reservationId}`);

@@ -160,7 +160,7 @@ const Contract = () => {
             <p className="text-center">Contrat de location</p>
           </div>
           <div className="col-4 right-logo-container">
-            <img src={"/src/assets/contract/Flascam.png"} className="right-logo" width="220" alt="Flascam" />
+            <img src={apiBaseUrl + reservation.agency?.logoUrlAssociation} className="right-logo" width="220" alt="Flascam" />
           </div>
         </div>
 

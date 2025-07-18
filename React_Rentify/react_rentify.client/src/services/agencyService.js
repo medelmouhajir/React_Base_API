@@ -75,6 +75,23 @@ export const agencyService = {
         }
     },
 
+    async uploadLogoAssociation(id, fileData) {
+        try {
+            const formData = new FormData();
+            formData.append('file', fileData);
+
+            const response = await apiClient.post(`/agencies/${id}/logo-association`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error uploading logo association for agency with ID ${id}:`, error);
+            throw error;
+        }
+    },
     async addAttachment(id, fileName, fileData) {
         try {
             const formData = new FormData();

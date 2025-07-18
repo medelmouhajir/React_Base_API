@@ -30,6 +30,7 @@ namespace React_Rentify.Server
 
 
             builder.Services.AddHttpClient<GeminiIdentityReaderService>();
+            builder.Services.AddScoped<IAgencyAuthorizationService, AgencyAuthorizationService>();
 
             // Configure database
             builder.Services.AddDbContext<GpsDbContext>(options =>

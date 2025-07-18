@@ -53,7 +53,7 @@ const FinancialCashFlow = () => {
                 const [reservationsData, expensesData, maintenanceData] = await Promise.all([
                     reservationService.getByAgencyId(agencyId),
                     expenseService.getByAgencyId(agencyId),
-                    maintenanceService.getAll()
+                    maintenanceService.getByAgencyId(agencyId)
                 ]);
 
                 // Filter data by date range

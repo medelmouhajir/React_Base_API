@@ -32,7 +32,7 @@ const MaintenancesList = () => {
                 if (agencyId) {
                     const [carsData, maintData] = await Promise.all([
                         carService.getByAgencyId(agencyId),
-                        maintenanceService.getAll()
+                        maintenanceService.getByAgencyId(agencyId)
                     ]);
 
                     // Only show records for cars belonging to this agency

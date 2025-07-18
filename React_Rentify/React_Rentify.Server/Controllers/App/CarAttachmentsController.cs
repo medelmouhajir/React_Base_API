@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models.Cars;
+using React_Rentify.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 
 namespace React_Rentify.Server.Controllers.App
@@ -19,12 +21,14 @@ namespace React_Rentify.Server.Controllers.App
     {
         private readonly MainDbContext _context;
         private readonly ILogger<CarAttachmentsController> _logger;
+        private readonly IAgencyAuthorizationService _authService;
         private readonly string _uploadsFolder;
 
-        public CarAttachmentsController(MainDbContext context, ILogger<CarAttachmentsController> logger, IWebHostEnvironment environment)
+        public CarAttachmentsController(MainDbContext context, ILogger<CarAttachmentsController> logger, IWebHostEnvironment environment , IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
+            _authService = authService;
             _uploadsFolder = Path.Combine(environment.ContentRootPath, "wwwroot", "uploads", "cars");
 
             // Ensure the uploads folder exists
@@ -43,12 +47,16 @@ namespace React_Rentify.Server.Controllers.App
         {
             _logger.LogInformation("Retrieving attachments for car {CarId}", carId);
 
-            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == carId);
-            if (!carExists)
+            var carExists = await _context.Set<Car>().FirstOrDefaultAsync(c => c.Id == carId);
+            if (carExists == null)
             {
                 _logger.LogWarning("Car with Id {CarId} not found", carId);
                 return NotFound(new { message = $"Car with Id '{carId}' not found." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(carExists.AgencyId))
+                return Unauthorized();
 
             var attachments = await _context.Set<Car_Attachment>()
                 .Where(a => a.CarId == carId)
@@ -76,6 +84,7 @@ namespace React_Rentify.Server.Controllers.App
             _logger.LogInformation("Retrieving attachment {AttachmentId} for car {CarId}", id, carId);
 
             var attachment = await _context.Set<Car_Attachment>()
+                .Include(x=> x.Car)
                 .FirstOrDefaultAsync(a => a.Id == id && a.CarId == carId);
 
             if (attachment == null)
@@ -83,6 +92,10 @@ namespace React_Rentify.Server.Controllers.App
                 _logger.LogWarning("Attachment {AttachmentId} for car {CarId} not found", id, carId);
                 return NotFound(new { message = $"Attachment with Id '{id}' for car '{carId}' not found." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(attachment.Car.AgencyId))
+                return Unauthorized();
 
             var dto = new Car_AttachmentDto
             {
@@ -111,12 +124,18 @@ namespace React_Rentify.Server.Controllers.App
                 return BadRequest(ModelState);
             }
 
-            var car = await _context.Set<Car>().FindAsync(carId);
+            var car = await _context.Set<Car>()
+                .FindAsync(carId);
+
             if (car == null)
             {
                 _logger.LogWarning("Car with Id {CarId} not found", carId);
                 return NotFound(new { message = $"Car with Id '{carId}' not found." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(car.AgencyId))
+                return Unauthorized();
 
             var attachment = new Car_Attachment
             {
@@ -170,6 +189,10 @@ namespace React_Rentify.Server.Controllers.App
                 _logger.LogWarning("Car with Id {CarId} not found", carId);
                 return NotFound(new { message = $"Car with Id '{carId}' not found." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(car.AgencyId))
+                return Unauthorized();
 
             // Create folder for this car if it doesn't exist
             var carFolder = Path.Combine(_uploadsFolder, carId.ToString());
@@ -230,6 +253,7 @@ namespace React_Rentify.Server.Controllers.App
             _logger.LogInformation("Deleting attachment {AttachmentId} from car {CarId}", id, carId);
 
             var attachment = await _context.Set<Car_Attachment>()
+                .Include(x=> x.Car)
                 .FirstOrDefaultAsync(a => a.Id == id && a.CarId == carId);
 
             if (attachment == null)
@@ -237,6 +261,10 @@ namespace React_Rentify.Server.Controllers.App
                 _logger.LogWarning("Attachment {AttachmentId} for car {CarId} not found", id, carId);
                 return NotFound(new { message = $"Attachment with Id '{id}' for car '{carId}' not found." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(attachment.Car.AgencyId))
+                return Unauthorized();
 
             // Try to delete the physical file if it exists
             try

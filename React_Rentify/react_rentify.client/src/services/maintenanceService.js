@@ -21,6 +21,16 @@ export const maintenanceService = {
         }
     },
 
+    async getByAgencyId(agencyId) {
+        try {
+            const response = await apiClient.get(`/maintenance/agency/${agencyId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error fetching maintenance records for agency ID ${agencyId}:`, error);
+            throw error;
+        }
+    },
+
     async getByCarId(carId) {
         try {
             const response = await apiClient.get(`/maintenance/car/${carId}`);

@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.Maintenances;
+using React_Rentify.Server.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace React_Rentify.Server.Controllers.App
 {
@@ -19,17 +20,20 @@ namespace React_Rentify.Server.Controllers.App
     {
         private readonly MainDbContext _context;
         private readonly ILogger<MaintenanceController> _logger;
+        private readonly IAgencyAuthorizationService _authService;
 
-        public MaintenanceController(MainDbContext context, ILogger<MaintenanceController> logger)
+        public MaintenanceController(MainDbContext context, ILogger<MaintenanceController> logger, IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
+            _authService = authService;
         }
 
         /// <summary>
         /// GET: api/Maintenance
         /// Returns all maintenance records (DTO), including basic car info.
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllMaintenances()
         {
@@ -74,6 +78,9 @@ namespace React_Rentify.Server.Controllers.App
                 return NotFound(new { message = $"Maintenance record with Id '{id}' not found." });
             }
 
+            if (!await _authService.HasAccessToAgencyAsync(record.Car.AgencyId))
+                return Unauthorized();
+
             var dto = new MaintenanceDto
             {
                 Id = record.Id,
@@ -100,12 +107,16 @@ namespace React_Rentify.Server.Controllers.App
         {
             _logger.LogInformation("Retrieving maintenance records for Car {CarId}", carId);
 
-            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == carId);
-            if (!carExists)
+            var carExists = await _context.Set<Car>().FirstOrDefaultAsync(c => c.Id == carId);
+            if (carExists == null)
             {
                 _logger.LogWarning("Car with Id {CarId} not found", carId);
                 return NotFound(new { message = $"Car with Id '{carId}' not found." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(carExists.AgencyId))
+                return Unauthorized();
 
             var records = await _context.Set<Maintenance_Record>()
                 .Where(m => m.CarId == carId)
@@ -128,6 +139,36 @@ namespace React_Rentify.Server.Controllers.App
             _logger.LogInformation("Retrieved {Count} maintenance records for Car {CarId}", dtoList.Count, carId);
             return Ok(dtoList);
         }
+        [HttpGet("agency/{agencyId:guid}")]
+        public async Task<IActionResult> GetMaintenancesByAgencyId(Guid agencyId)
+        {
+            _logger.LogInformation("Retrieving maintenance records for Car {agencyId}", agencyId);
+
+            if (!await _authService.HasAccessToAgencyAsync(agencyId))
+                return Unauthorized();
+
+            var records = await _context.Set<Maintenance_Record>()
+                .Include(x=> x.Car)
+                .Where(m => m.Car.AgencyId == agencyId)
+                .ToListAsync();
+
+            var dtoList = records.Select(m => new MaintenanceDto
+            {
+                Id = m.Id,
+                CarId = m.CarId,
+                ScheduledDate = m.ScheduledDate,
+                Description = m.Description,
+                Cost = m.Cost,
+                IsCompleted = m.IsCompleted,
+                CompletedDate = m.CompletedDate,
+                Remarks = m.Remarks,
+                CarLicensePlate = null // Since we already know CarId, license plate isn’t needed here
+            })
+            .ToList();
+
+            _logger.LogInformation("Retrieved {Count} maintenance records for agency {agencyId}", dtoList.Count, agencyId);
+            return Ok(dtoList);
+        }
 
         /// <summary>
         /// POST: api/Maintenance
@@ -145,12 +186,16 @@ namespace React_Rentify.Server.Controllers.App
             }
 
             // Verify Car exists
-            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == dto.CarId);
-            if (!carExists)
+            var carExists = await _context.Set<Car>().FirstOrDefaultAsync(c => c.Id == dto.CarId);
+            if (carExists == null)
             {
                 _logger.LogWarning("Car with Id {CarId} does not exist", dto.CarId);
                 return BadRequest(new { message = $"Car with Id '{dto.CarId}' does not exist." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(carExists.AgencyId))
+                return Unauthorized();
 
             var record = new Maintenance_Record
             {
@@ -215,6 +260,7 @@ namespace React_Rentify.Server.Controllers.App
             }
 
             var existingRecord = await _context.Set<Maintenance_Record>()
+                .Include(x=> x.Car)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (existingRecord == null)
@@ -222,6 +268,10 @@ namespace React_Rentify.Server.Controllers.App
                 _logger.LogWarning("Maintenance record with Id {RecordId} not found", id);
                 return NotFound(new { message = $"Maintenance record with Id '{id}' not found." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(existingRecord.Car.AgencyId))
+                return Unauthorized();
 
             // If Car was changed, verify new Car
             if (existingRecord.CarId != dto.CarId)
@@ -274,6 +324,7 @@ namespace React_Rentify.Server.Controllers.App
             _logger.LogInformation("Deleting maintenance record {RecordId}", id);
 
             var record = await _context.Set<Maintenance_Record>()
+                .Include(x=> x.Car)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (record == null)
@@ -281,6 +332,10 @@ namespace React_Rentify.Server.Controllers.App
                 _logger.LogWarning("Maintenance record with Id {RecordId} not found", id);
                 return NotFound(new { message = $"Maintenance record with Id '{id}' not found." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(record.Car.AgencyId))
+                return Unauthorized();
 
             _context.Set<Maintenance_Record>().Remove(record);
             await _context.SaveChangesAsync();

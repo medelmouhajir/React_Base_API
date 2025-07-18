@@ -307,7 +307,8 @@
     "status": {
       "title": "Status",
       "completed": "Completed",
-      "scheduled": "Scheduled"
+      "scheduled": "Scheduled",
+      "pending": "Pending"
     },
     "cost": "Cost",
     "completed": "Completed",
@@ -321,7 +322,20 @@
     "description": "Description",
     "completedDate": "Completed Date",
     "noData": "No Maintenance Records Found",
-    "noDataDescription": "Try adjusting your filters or date range"
+    "noDataDescription": "Try adjusting your filters or date range",
+    "details": {
+      "error": "Error loading maintenance details.",
+      "deleteError": "Error deleting maintenance record.",
+      "loading": "Loading maintenance details...",
+      "notFound": "Maintenance record not found.",
+      "title": "Maintenance Details",
+      "info": "Maintenance Information"
+    },
+    "remarks": "Remarks",
+    "delete": {
+      "title": "Delete Maintenance Record",
+      "confirm": "Are you sure you want to delete this maintenance record? This action cannot be undone."
+    }
   },
   "reservation": {
     "list": {
@@ -675,6 +689,7 @@
     }
   },
   "car": {
+    "car": "Car",
     "fields": {
       "manufacturer": "Manufacturer",
       "model": "Model",
@@ -899,7 +914,9 @@
     "myInvoices": "My Invoices",
     "collapse": "Collapse",
     "expand": "Expand",
-    "brand": "Rentify"
+    "brand": "Rentify",
+    "gadgets": "Gadgets",
+    "expenses": "Expenses"
   },
   "profile": {
     "myProfile": "My Profile",

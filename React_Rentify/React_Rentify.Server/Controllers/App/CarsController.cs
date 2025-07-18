@@ -9,9 +9,11 @@ using React_Rentify.Server.Models.Agencies;
 using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.Filters.Cars;
 using React_Rentify.Server.Models.Reservations;
+using React_Rentify.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 using static React_Rentify.Server.Controllers.App.ReservationsController;
 
@@ -19,22 +21,25 @@ namespace React_Rentify.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles = "Admin,Owner,Manager")]
     public class CarsController : ControllerBase
     {
         private readonly MainDbContext _context;
         private readonly ILogger<CarsController> _logger;
+        private readonly IAgencyAuthorizationService _authService;
 
-        public CarsController(MainDbContext context, ILogger<CarsController> logger)
+        public CarsController(MainDbContext context, ILogger<CarsController> logger, IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
+            _authService = authService;
         }
 
         /// <summary>
         /// GET: api/Cars
         /// Returns all cars (DTO), including attachments.
         /// </summary>
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllCars()
         {
@@ -102,6 +107,10 @@ namespace React_Rentify.Server.Controllers
                 return NotFound(new { message = $"Car with Id '{id}' not found." });
             }
 
+
+            if (!await _authService.HasAccessToAgencyAsync(car.AgencyId))
+                return Unauthorized();
+
             var dto = new CarDto
             {
                 Id = car.Id,
@@ -145,6 +154,11 @@ namespace React_Rentify.Server.Controllers
         public async Task<IActionResult> GetCarsByAgencyId(Guid agencyId)
         {
             _logger.LogInformation("Retrieving cars for Agency {AgencyId}", agencyId);
+
+
+            if (!await _authService.HasAccessToAgencyAsync(agencyId))
+                return Unauthorized();
+
 
             var agencyExists = await _context.Set<Agency>()
                 .AnyAsync(a => a.Id == agencyId);
@@ -212,6 +226,10 @@ namespace React_Rentify.Server.Controllers
                 _logger.LogWarning("Invalid CreateCarDto received");
                 return BadRequest(ModelState);
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(dto.AgencyId))
+                return Unauthorized();
 
             // Verify Agency exists
             var agencyExists = await _context.Set<Agency>()
@@ -313,6 +331,9 @@ namespace React_Rentify.Server.Controllers
                 return NotFound(new { message = $"Car with Id '{id}' not found." });
             }
 
+            if (!await _authService.HasAccessToAgencyAsync(existingCar.AgencyId))
+                return Unauthorized();
+
             // If Agency was changed, verify new agency
             if (existingCar.AgencyId != dto.AgencyId)
             {
@@ -403,12 +424,16 @@ namespace React_Rentify.Server.Controllers
             _logger.LogInformation("Retrieving reservations for car {CarId} on date {Date}", carId, date);
 
             // Validate car exists
-            var carExists = await _context.Set<Car>().AnyAsync(c => c.Id == carId);
-            if (!carExists)
+            var carExists = await _context.Set<Car>().FirstOrDefaultAsync(c => c.Id == carId);
+            if (carExists == null)
             {
                 _logger.LogWarning("Car with Id {CarId} not found", carId);
                 return NotFound(new { message = $"Car with Id '{carId}' not found." });
             }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(carExists.AgencyId))
+                return Unauthorized();
 
             // Parse the date
             if (!DateTime.TryParse(date, out DateTime targetDate))
@@ -502,6 +527,10 @@ namespace React_Rentify.Server.Controllers
                 return NotFound(new { message = $"Car with Id '{id}' not found." });
             }
 
+
+            if (!await _authService.HasAccessToAgencyAsync(car.AgencyId))
+                return Unauthorized();
+
             if (car.Car_Attachments != null && car.Car_Attachments.Any())
             {
                 _logger.LogInformation("Removing {Count} attachments for Car {CarId}", car.Car_Attachments.Count, id);
@@ -539,6 +568,9 @@ namespace React_Rentify.Server.Controllers
                 _logger.LogWarning("Car with Id {CarId} not found", id);
                 return NotFound(new { message = $"Car with Id '{id}' not found." });
             }
+
+            if (!await _authService.HasAccessToAgencyAsync(car.AgencyId))
+                return Unauthorized();
 
             var attachment = new Car_Attachment
             {
