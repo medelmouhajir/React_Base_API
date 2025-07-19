@@ -7,7 +7,6 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import reservationService from '../../../services/reservationService';
 import carService from '../../../services/carService';
 import customerService from '../../../services/customerService';
-import carFiltersService from '../../../services/carFiltersService';
 import './ReservationAdd.css';
 
 const ReservationAdd = () => {
@@ -24,174 +23,104 @@ const ReservationAdd = () => {
         AgreedPrice: '',
         PickupLocation: '',
         DropoffLocation: '',
-        Status: 'Reserved', // default
+        Status: 'Reserved',
         AgencyId: agencyId || '',
     });
 
-    // Store selected customers in a separate array
+    // State management
     const [selectedCustomers, setSelectedCustomers] = useState([]);
     const [customerToAdd, setCustomerToAdd] = useState('');
-
-    // Car selection filters
     const [cars, setCars] = useState([]);
-    const [filteredCars, setFilteredCars] = useState([]);
     const [customers, setCustomers] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    // Search states
     const [carSearchTerm, setCarSearchTerm] = useState('');
     const [customerSearchTerm, setCustomerSearchTerm] = useState('');
+    const [showCarModal, setShowCarModal] = useState(false);
+    const [selectedCar, setSelectedCar] = useState(null);
 
-    // Advanced car selection
-    const [manufacturers, setManufacturers] = useState([]);
-    const [models, setModels] = useState([]);
-    const [years, setYears] = useState([]);
-    const [selectedManufacturer, setSelectedManufacturer] = useState('');
-    const [selectedModel, setSelectedModel] = useState('');
-    const [selectedYear, setSelectedYear] = useState('');
-    const [filteredModels, setFilteredModels] = useState([]);
-
-    // Mobile optimization
-    const [isMobileView, setIsMobileView] = useState(window.innerWidth < 768);
-    const [showAdvancedCarSearch, setShowAdvancedCarSearch] = useState(false);
-    const [showSelectedCustomers, setShowSelectedCustomers] = useState(true);
-
+    // Load initial data
     useEffect(() => {
-        const handleResize = () => {
-            setIsMobileView(window.innerWidth < 768);
-        };
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // Fetch data from API
-    useEffect(() => {
-        if (!agencyId) return;
-
-        const fetchOptions = async () => {
+        const loadData = async () => {
             try {
-                const [carsData, customersData, manufacturersData, modelsData, yearsData] = await Promise.all([
+                setLoading(true);
+                const [carsData, customersData] = await Promise.all([
                     carService.getByAgencyId(agencyId),
-                    customerService.getByAgencyId(agencyId),
-                    carFiltersService.getManufacturers(),
-                    carFiltersService.getCarModels(),
-                    carFiltersService.getCarYears()
+                    customerService.getByAgencyId(agencyId)
                 ]);
-                setCars(carsData);
-                setFilteredCars(carsData);
-                setCustomers(customersData);
-                setManufacturers(manufacturersData);
-                setModels(modelsData);
-                setYears(yearsData);
+                setCars(carsData || []);
+                setCustomers(customersData || []);
             } catch (err) {
-                console.error('❌ Error fetching data:', err);
-                setError(t('reservation.add.fetchError'));
+                console.error('❌ Error loading data:', err);
+                setError(t('reservation.add.errorLoading'));
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchOptions();
+        if (agencyId) {
+            loadData();
+        }
     }, [agencyId, t]);
 
-    // Filter models when manufacturer changes
-    useEffect(() => {
-        if (selectedManufacturer) {
-            const filtered = models.filter(
-                model => model.manufacturerId === selectedManufacturer
-            );
-            setFilteredModels(filtered);
-            setSelectedModel(''); // Reset model selection
-        } else {
-            setFilteredModels([]);
-        }
-    }, [selectedManufacturer, models]);
+    // Filter cars based on search term
+    const filteredCars = useMemo(() => {
+        if (!carSearchTerm.trim()) return cars;
 
-    // Filter cars based on search and filters
-    useEffect(() => {
-        if (!cars.length) return;
-
-        let filtered = [...cars];
-
-        // Text search
-        if (carSearchTerm.trim()) {
-            const searchLower = carSearchTerm.toLowerCase().trim();
-            filtered = filtered.filter(car => {
-                const licensePlate = car.licensePlate?.toLowerCase() || '';
-                const model = car.car_Model?.name?.toLowerCase() || '';
-                const manufacturer = car.car_Model?.car_Manufacturer?.name?.toLowerCase() || '';
-
-                return licensePlate.includes(searchLower) ||
-                    model.includes(searchLower) ||
-                    manufacturer.includes(searchLower);
-            });
-        }
-
-        // Manufacturer filter
-        //if (selectedManufacturer) {
-        //    filtered = filtered.filter(car =>
-        //        car.car_Model?.car_Manufacturer?.id === selectedManufacturer
-        //    );
-        //}
-
-        // Model filter
-        if (selectedModel) {
-            filtered = filtered.filter(car =>
-                car.car_ModelId === selectedModel
-            );
-        }
-
-        // Year filter
-        if (selectedYear) {
-            filtered = filtered.filter(car =>
-                car.car_YearId === selectedYear
-            );
-        }
-
-        setFilteredCars(filtered);
-    }, [cars, carSearchTerm, selectedManufacturer, selectedModel, selectedYear]);
-
-    // Filter available customers based on search
-    const filteredCustomers = useMemo(() => {
-        if (!customers.length) return [];
-
-        // Get customers who aren't already selected
-        const availableCustomers = customers.filter(
-            customer => !selectedCustomers.some(sc => sc.id === customer.id)
+        const searchLower = carSearchTerm.toLowerCase();
+        return cars.filter(car =>
+            car.licensePlate?.toLowerCase().includes(searchLower) ||
+            car.fields.manufacturer?.toLowerCase().includes(searchLower) ||
+            car.fields.model?.toLowerCase().includes(searchLower) ||
+            car.fields.year?.toString().includes(searchLower)
         );
+    }, [cars, carSearchTerm]);
 
-        if (!customerSearchTerm.trim()) return availableCustomers;
+    // Filter customers based on search term
+    const filteredCustomers = useMemo(() => {
+        if (!customerSearchTerm.trim()) return customers;
 
-        const searchLower = customerSearchTerm.toLowerCase().trim();
-        return availableCustomers.filter(customer => {
-            const fullName = customer.fullName?.toLowerCase() || '';
-            const phone = customer.phoneNumber?.toLowerCase() || '';
-            const email = customer.email?.toLowerCase() || '';
+        const searchLower = customerSearchTerm.toLowerCase();
+        return customers.filter(customer =>
+            customer.fullName?.toLowerCase().includes(searchLower) ||
+            customer.phone?.toLowerCase().includes(searchLower) ||
+            customer.email?.toLowerCase().includes(searchLower)
+        );
+    }, [customers, customerSearchTerm]);
 
-            return fullName.includes(searchLower) ||
-                phone.includes(searchLower) ||
-                email.includes(searchLower);
-        });
-    }, [customers, selectedCustomers, customerSearchTerm]);
+    // Available customers (not already selected)
+    const availableCustomers = useMemo(() => {
+        return filteredCustomers.filter(customer =>
+            !selectedCustomers.some(selected => selected.id === customer.id)
+        );
+    }, [filteredCustomers, selectedCustomers]);
 
-    const handleChange = (e) => {
-        const { name, value, type } = e.target;
-        setFormData((prev) => ({
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
             ...prev,
-            [name]: type === 'number' ? parseFloat(value) : value,
+            [name]: name === 'AgreedPrice'
+                ? (value === '' ? '' : parseFloat(value) || value)
+                : value,
         }));
+    };
+
+    const handleCarSelect = (car) => {
+        setSelectedCar(car);
+        setFormData(prev => ({ ...prev, CarId: car.id }));
+        setShowCarModal(false);
     };
 
     const handleAddCustomer = () => {
         if (!customerToAdd) return;
 
-        // Don't add if already selected
-        if (selectedCustomers.some(c => c.id === customerToAdd)) {
-            return;
-        }
-
         const customer = customers.find(c => c.id === customerToAdd);
-        if (customer) {
+        if (customer && !selectedCustomers.some(c => c.id === customerToAdd)) {
             setSelectedCustomers(prev => [...prev, customer]);
-            setCustomerToAdd(''); // Reset the selector
+            setCustomerToAdd('');
         }
     };
 
@@ -199,29 +128,19 @@ const ReservationAdd = () => {
         setSelectedCustomers(prev => prev.filter(c => c.id !== customerId));
     };
 
-    const resetCarFilters = () => {
-        setCarSearchTerm('');
-        setSelectedManufacturer('');
-        setSelectedModel('');
-        setSelectedYear('');
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate at least one customer is selected
         if (selectedCustomers.length === 0) {
             setError(t('reservation.add.errorNoCustomers'));
             return;
         }
 
-        // Validate car is selected
         if (!formData.CarId) {
             setError(t('reservation.add.errorNoCar'));
             return;
         }
 
-        // Validate dates
         if (!formData.StartDate || !formData.EndDate) {
             setError(t('reservation.add.errorNoDates'));
             return;
@@ -234,7 +153,7 @@ const ReservationAdd = () => {
             const payload = {
                 AgencyId: agencyId,
                 CarId: formData.CarId,
-                CustomersId: selectedCustomers.map(c => c.id), // Send array of customer IDs
+                CustomersId: selectedCustomers.map(c => c.id),
                 StartDate: formData.StartDate
                     ? new Date(formData.StartDate).toISOString()
                     : null,
@@ -261,358 +180,243 @@ const ReservationAdd = () => {
         navigate('/reservations');
     };
 
+    if (loading) {
+        return (
+            <div className={`reservationadd-container ${isDarkMode ? 'dark' : 'light'}`}>
+                <div className="loading-message">{t('common.loading')}</div>
+            </div>
+        );
+    }
+
     return (
         <div className={`reservationadd-container ${isDarkMode ? 'dark' : 'light'}`}>
             <h1 className="reservationadd-title">{t('reservation.add.title')}</h1>
 
-            {error && <div className="reservationadd-error" role="alert">{error}</div>}
+            {error && (
+                <div className="reservationadd-error">
+                    {error}
+                </div>
+            )}
 
-            <form
-                className="reservationadd-form"
-                onSubmit={handleSubmit}
-                noValidate
-            >
-                {/* Car Selection Section */}
-                <div className="car-selection-section">
+            <form onSubmit={handleSubmit} className="reservationadd-form">
+                {/* Car Selection */}
+                <div className="form-section">
                     <div className="section-header">
-                        <h2 className="section-title">{t('reservation.fields.car')}</h2>
-                        <button
-                            type="button"
-                            className="toggle-advanced-search"
-                            onClick={() => setShowAdvancedCarSearch(!showAdvancedCarSearch)}
-                            aria-expanded={showAdvancedCarSearch}
-                        >
-                            {showAdvancedCarSearch ? t('common.simpleSearch') : t('common.advancedSearch')}
-                        </button>
+                        <h2 className="section-title">{t('reservation.selectCar.title')}</h2>
                     </div>
 
-                    {/* Quick Car Search */}
-                    <div className="search-container">
-                        <div className="search-input-wrapper">
-                            <input
-                                type="text"
-                                placeholder={t('car.search.placeholder')}
-                                value={carSearchTerm}
-                                onChange={(e) => setCarSearchTerm(e.target.value)}
-                                className="search-input"
-                            />
-                            {carSearchTerm && (
-                                <button
-                                    type="button"
-                                    className="clear-search"
-                                    onClick={() => setCarSearchTerm('')}
-                                    aria-label={t('common.clear')}
-                                >
-                                    ×
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Advanced Car Search */}
-                    {showAdvancedCarSearch && (
-                        <div className="advanced-search-container">
-                            <div className="advanced-search-row">
-                                {/* Manufacturer Select */}
-                                <div className="form-group">
-                                    <label htmlFor="manufacturer">{t('car.fields.manufacturer')}</label>
-                                    <select
-                                        id="manufacturer"
-                                        value={selectedManufacturer}
-                                        onChange={(e) => setSelectedManufacturer(e.target.value)}
-                                    >
-                                        <option value="">{t('car.placeholders.selectManufacturer')}</option>
-                                        {manufacturers.map((m) => (
-                                            <option key={m.id} value={m.id}>
-                                                {m.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* Model Select */}
-                                <div className="form-group">
-                                    <label htmlFor="model">{t('car.fields.model')}</label>
-                                    <select
-                                        id="model"
-                                        value={selectedModel}
-                                        onChange={(e) => setSelectedModel(e.target.value)}
-                                        disabled={!selectedManufacturer}
-                                    >
-                                        <option value="">{t('car.placeholders.selectModel')}</option>
-                                        {filteredModels.map((m) => (
-                                            <option key={m.id} value={m.id}>
-                                                {m.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* Year Select */}
-                                <div className="form-group">
-                                    <label htmlFor="year">{t('car.fields.year')}</label>
-                                    <select
-                                        id="year"
-                                        value={selectedYear}
-                                        onChange={(e) => setSelectedYear(e.target.value)}
-                                    >
-                                        <option value="">{t('car.placeholders.selectYear')}</option>
-                                        {years.map((y) => (
-                                            <option key={y.id} value={y.id}>
-                                                {y.yearValue}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="filter-actions">
-                                <button
-                                    type="button"
-                                    className="btn-secondary"
-                                    onClick={resetCarFilters}
-                                >
-                                    {t('common.resetFilters')}
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Cars List */}
-                    {filteredCars.length > 0 ? (
-                        <div className="cars-grid">
-                            {filteredCars.map((car) => (
-                                <div
-                                    key={car.id}
-                                    className={`car-card ${formData.CarId === car.id ? 'selected' : ''}`}
-                                    onClick={() => setFormData(prev => ({ ...prev, CarId: car.id }))}
-                                >
-                                    <div className="car-card-header">
-                                        <span className="license-plate">{car.licensePlate}</span>
-                                        <span className={`availability-badge ${car.isAvailable ? 'available' : 'unavailable'}`}>
-                                            {car.isAvailable ? t('car.available') : t('car.unavailable')}
+                    <div className="car-selection-area">
+                        {selectedCar ? (
+                            <div className="selected-car-display">
+                                <div className="selected-car-info">
+                                    <div className="car-main-info">
+                                        <span className="car-name">
+                                            {selectedCar.fields.manufacturer} {selectedCar.fields.model} {selectedCar.fields.year}
                                         </span>
-                                    </div>
-                                    <div className="car-card-body">
-                                        <div className="car-info">
-                                            <span className="car-model">
-                                                {car.car_Model?.car_Manufacturer?.name} {car.car_Model?.name}
-                                            </span>
-                                            <span className="car-year">{car.car_Year?.year}</span>
-                                        </div>
-                                        <div className="car-price">
-                                            <span className="price-label">{t('car.fields.dailyRate')}:</span>
-                                            <span className="price-value">{car.dailyRate}</span>
-                                        </div>
-                                    </div>
-                                    <div className="car-card-footer">
-                                        <button
-                                            type="button"
-                                            className="btn-select-car"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setFormData(prev => ({ ...prev, CarId: car.id }));
-                                            }}
-                                        >
-                                            {formData.CarId === car.id ? t('common.selected') : t('common.select')}
-                                        </button>
+                                        <span className="car-license">{selectedCar.licensePlate}</span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="no-cars-message">
-                            {carSearchTerm || selectedManufacturer || selectedModel || selectedYear
-                                ? t('car.search.noResults')
-                                : t('car.search.noCars')}
-                        </div>
-                    )}
-                </div>
-
-                {/* Date Selection */}
-                <div className="form-row">
-                    <div className="form-group">
-                        <label htmlFor="StartDate">{t('reservation.fields.startDate')}</label>
-                        <input
-                            id="StartDate"
-                            name="StartDate"
-                            type="date"
-                            value={formData.StartDate}
-                            onChange={handleChange}
-                            required
-                            min={new Date().toISOString().split('T')[0]}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="EndDate">{t('reservation.fields.endDate')}</label>
-                        <input
-                            id="EndDate"
-                            name="EndDate"
-                            type="date"
-                            value={formData.EndDate}
-                            onChange={handleChange}
-                            required
-                            min={formData.StartDate || new Date().toISOString().split('T')[0]}
-                        />
-                    </div>
-                </div>
-
-                {/* Price & Status */}
-                <div className="form-row">
-                    <div className="form-group">
-                        <label htmlFor="AgreedPrice">{t('reservation.fields.agreedPrice')}</label>
-                        <input
-                            id="AgreedPrice"
-                            name="AgreedPrice"
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={formData.AgreedPrice}
-                            onChange={handleChange}
-                            placeholder={t('reservation.placeholders.price')}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="Status">{t('reservation.fields.status')}</label>
-                        <select
-                            id="Status"
-                            name="Status"
-                            value={formData.Status}
-                            onChange={handleChange}
-                        >
-                            <option value="Reserved">{t('reservation.status.reserved')}</option>
-                            <option value="Confirmed">{t('reservation.status.confirmed')}</option>
-                            <option value="Ongoing">{t('reservation.status.ongoing')}</option>
-                            <option value="Completed">{t('reservation.status.completed')}</option>
-                            <option value="Cancelled">{t('reservation.status.cancelled')}</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Location */}
-                <div className="form-row">
-                    <div className="form-group">
-                        <label htmlFor="PickupLocation">{t('reservation.fields.pickupLocation')}</label>
-                        <input
-                            id="PickupLocation"
-                            name="PickupLocation"
-                            type="text"
-                            value={formData.PickupLocation}
-                            onChange={handleChange}
-                            placeholder={t('reservation.placeholders.pickupLocation')}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="DropoffLocation">{t('reservation.fields.dropoffLocation')}</label>
-                        <input
-                            id="DropoffLocation"
-                            name="DropoffLocation"
-                            type="text"
-                            value={formData.DropoffLocation}
-                            onChange={handleChange}
-                            placeholder={t('reservation.placeholders.dropoffLocation')}
-                        />
-                    </div>
-                </div>
-
-                {/* Customers Section */}
-                <div className="customers-section">
-                    <div className="section-header">
-                        <h2 className="section-title">{t('reservation.fields.customers')}</h2>
-                        {isMobileView && (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCarModal(true)}
+                                    className="btn-change-car"
+                                >
+                                    {t('common.change')}
+                                </button>
+                            </div>
+                        ) : (
                             <button
                                 type="button"
-                                className="toggle-section"
-                                onClick={() => setShowSelectedCustomers(!showSelectedCustomers)}
-                                aria-expanded={showSelectedCustomers}
+                                onClick={() => setShowCarModal(true)}
+                                className="btn-select-car"
                             >
-                                {showSelectedCustomers ? t('common.hide') : t('common.show')}
+                                {t('reservation.selectCar.title')}
                             </button>
                         )}
                     </div>
+                </div>
 
-                    {/* Search & Add Customer */}
-                    <div className="add-customer-container">
-                        <div className="search-input-wrapper">
-                            <input
-                                type="text"
-                                placeholder={t('customer.search.placeholder')}
-                                value={customerSearchTerm}
-                                onChange={(e) => setCustomerSearchTerm(e.target.value)}
-                                className="search-input"
-                            />
-                            {customerSearchTerm && (
-                                <button
-                                    type="button"
-                                    className="clear-search"
-                                    onClick={() => setCustomerSearchTerm('')}
-                                    aria-label={t('common.clear')}
-                                >
-                                    ×
-                                </button>
-                            )}
-                        </div>
-
-                        <div className="customer-selector-container">
-                            <select
-                                id="customerToAdd"
-                                value={customerToAdd}
-                                onChange={(e) => setCustomerToAdd(e.target.value)}
-                                className="customer-selector"
-                            >
-                                <option value="">{t('reservation.placeholders.selectCustomer')}</option>
-                                {filteredCustomers.map((c) => (
-                                    <option key={c.id} value={c.id}>
-                                        {c.fullName} {c.phoneNumber ? `- ${c.phoneNumber}` : ''}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <button
-                                type="button"
-                                onClick={handleAddCustomer}
-                                className="btn-add-customer"
-                                disabled={!customerToAdd}
-                            >
-                                {t('reservation.actions.addCustomer')}
-                            </button>
-                        </div>
+                {/* Date and Price Section */}
+                <div className="form-section">
+                    <div className="section-header">
+                        <h2 className="section-title">{t('reservation.details.title')}</h2>
                     </div>
 
-                    {/* Selected Customers List */}
-                    {(!isMobileView || showSelectedCustomers) && (
-                        <>
-                            {selectedCustomers.length > 0 ? (
-                                <div className="customers-list">
-                                    {selectedCustomers.map((customer) => (
-                                        <div key={customer.id} className="customer-item">
+                    <div className="form-grid">
+                        <div className="form-group">
+                            <label htmlFor="StartDate" className="form-label">
+                                {t('reservation.fields.startDate')} *
+                            </label>
+                            <input
+                                type="datetime-local"
+                                id="StartDate"
+                                name="StartDate"
+                                value={formData.StartDate}
+                                onChange={handleInputChange}
+                                className="form-input"
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="EndDate" className="form-label">
+                                {t('reservation.fields.endDate')} *
+                            </label>
+                            <input
+                                type="datetime-local"
+                                id="EndDate"
+                                name="EndDate"
+                                value={formData.EndDate}
+                                onChange={handleInputChange}
+                                className="form-input"
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="AgreedPrice" className="form-label">
+                                {t('reservation.fields.agreedPrice')}
+                            </label>
+                            <input
+                                type="number"
+                                id="AgreedPrice"
+                                name="AgreedPrice"
+                                value={formData.AgreedPrice}
+                                onChange={handleInputChange}
+                                className="form-input"
+                                min="0"
+                                step="0.01"
+                                placeholder="0.00"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="Status" className="form-label">
+                                {t('reservation.fields.status')}
+                            </label>
+                            <select
+                                id="Status"
+                                name="Status"
+                                value={formData.Status}
+                                onChange={handleInputChange}
+                                className="form-select"
+                            >
+                                <option value="Reserved">{t('reservation.status.reserved')}</option>
+                                <option value="Ongoing">{t('reservation.status.ongoing')}</option>
+                                <option value="Completed">{t('reservation.status.completed')}</option>
+                                <option value="Cancelled">{t('reservation.status.cancelled')}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Location Section */}
+                <div className="form-section">
+                    <div className="section-header">
+                        <h2 className="section-title">{t('reservation.add.locations')}</h2>
+                    </div>
+
+                    <div className="form-grid">
+                        <div className="form-group">
+                            <label htmlFor="PickupLocation" className="form-label">
+                                {t('reservation.fields.pickupLocation')}
+                            </label>
+                            <input
+                                type="text"
+                                id="PickupLocation"
+                                name="PickupLocation"
+                                value={formData.PickupLocation}
+                                onChange={handleInputChange}
+                                className="form-input"
+                                placeholder={t('reservation.fields.pickupLocation')}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="DropoffLocation" className="form-label">
+                                {t('reservation.fields.dropoffLocation')}
+                            </label>
+                            <input
+                                type="text"
+                                id="DropoffLocation"
+                                name="DropoffLocation"
+                                value={formData.DropoffLocation}
+                                onChange={handleInputChange}
+                                className="form-input"
+                                placeholder={t('reservation.fields.dropoffLocation')}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Customer Selection */}
+                <div className="form-section">
+                    <div className="section-header">
+                        <h2 className="section-title">{t('reservation.placeholders.selectCustomer')}</h2>
+                    </div>
+
+                    <div className="customer-selection-area">
+                        <div className="customer-search-area">
+                            <input
+                                type="text"
+                                placeholder={t('reservation.add.searchCustomers')}
+                                value={customerSearchTerm}
+                                onChange={(e) => setCustomerSearchTerm(e.target.value)}
+                                className="form-input"
+                            />
+
+                            {availableCustomers.length > 0 && customerSearchTerm && (
+                                <div className="customer-dropdown">
+                                    {availableCustomers.slice(0, 5).map((customer) => (
+                                        <div
+                                            key={customer.id}
+                                            className="customer-dropdown-item"
+                                            onClick={() => {
+                                                setSelectedCustomers(prev => [...prev, customer]);
+                                                setCustomerSearchTerm('');
+                                            }}
+                                        >
                                             <div className="customer-info">
                                                 <span className="customer-name">{customer.fullName}</span>
                                                 {customer.phoneNumber && (
                                                     <span className="customer-phone">{customer.phoneNumber}</span>
                                                 )}
                                             </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRemoveCustomer(customer.id)}
-                                                className="btn-remove-customer"
-                                                aria-label={t('reservation.actions.removeCustomer')}
-                                            >
-                                                ×
-                                            </button>
                                         </div>
                                     ))}
                                 </div>
-                            ) : (
-                                <div className="no-customers-message">
-                                    {t('reservation.noCustomersSelected')}
-                                </div>
                             )}
-                        </>
-                    )}
+                        </div>
+
+                        {selectedCustomers.length > 0 && (
+                            <div className="customers-list">
+                                {selectedCustomers.map((customer) => (
+                                    <div key={customer.id} className="customer-item">
+                                        <div className="customer-info">
+                                            <span className="customer-name">{customer.fullName}</span>
+                                            {customer.phoneNumber && (
+                                                <span className="customer-phone">{customer.phoneNumber}</span>
+                                            )}
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveCustomer(customer.id)}
+                                            className="btn-remove-customer"
+                                            aria-label={t('reservation.actions.removeCustomer')}
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {selectedCustomers.length === 0 && (
+                            <div className="no-customers-message">
+                                {t('reservation.noCustomersSelected')}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Form Actions */}
@@ -634,6 +438,70 @@ const ReservationAdd = () => {
                     </button>
                 </div>
             </form>
+
+            {/* Car Selection Modal */}
+            {showCarModal && (
+                <div className="modal-overlay" onClick={() => setShowCarModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">{t('reservation.add.selectCar')}</h3>
+                            <button
+                                type="button"
+                                onClick={() => setShowCarModal(false)}
+                                className="modal-close"
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="modal-body">
+                            <div className="car-search-area">
+                                <input
+                                    type="text"
+                                    placeholder={t('reservation.selectCar.title')}
+                                    value={carSearchTerm}
+                                    onChange={(e) => setCarSearchTerm(e.target.value)}
+                                    className="form-input"
+                                    autoFocus
+                                />
+                            </div>
+
+                            <div className="cars-list">
+                                {filteredCars.length > 0 ? (
+                                    filteredCars.map((car) => (
+                                        <div
+                                            key={car.id}
+                                            className="car-item"
+                                            onClick={() => handleCarSelect(car)}
+                                        >
+                                            <div className="car-info">
+                                                <div className="car-main">
+                                                    <span className="car-name">
+                                                        {car.fields.manufacturer} {car.fields.model} {car.fields.year}
+                                                    </span>
+                                                    <span className="car-license">{car.licensePlate}</span>
+                                                </div>
+                                                {car.status && (
+                                                    <span className={`car-status status-${car.status.toLowerCase()}`}>
+                                                        {t('car.status.' + car.status.toLowerCase())}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="no-cars-message">
+                                        {carSearchTerm
+                                            ? t('reservation.add.noCarsFound')
+                                            : t('reservation.add.noCarsAvailable')
+                                        }
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

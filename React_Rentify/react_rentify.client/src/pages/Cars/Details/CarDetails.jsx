@@ -352,27 +352,6 @@ const CarDetails = () => {
                 {activeTab === 'info' && (
                     <div className="info-tab">
                         <div className="car-card">
-                            <div className="car-image-container">
-                                {/* If there's a car image, display it; otherwise use a placeholder */}
-                                {attachments.find(a => a.fileName.toLowerCase().endsWith('.jpg') ||
-                                    a.fileName.toLowerCase().endsWith('.jpeg') ||
-                                    a.fileName.toLowerCase().endsWith('.png')) ? (
-                                    <img
-                                        src={attachments.find(a =>
-                                            a.fileName.toLowerCase().endsWith('.jpg') ||
-                                            a.fileName.toLowerCase().endsWith('.jpeg') ||
-                                            a.fileName.toLowerCase().endsWith('.png')
-                                        ).filePath}
-                                        alt={`${car.car_Model?.manufacturer?.name} ${car.car_Model?.name}`}
-                                        className="car-image"
-                                    />
-                                ) : (
-                                    <div className="car-image-placeholder">
-                                        <i className="fas fa-car"></i>
-                                        <p>{t('car.details.noImage') || 'No image available'}</p>
-                                    </div>
-                                )}
-                            </div>
 
                             <div className="car-info-container">
                                 <h2 className="car-model-name">
