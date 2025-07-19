@@ -287,7 +287,7 @@ const CarsList = () => {
     const handleDeleteCar = async (id) => {
         if (window.confirm(t('car.list.confirmDelete'))) {
             try {
-                await carService.deleteCar(id);
+                await carService.delete(id);
                 // Remove car from state
                 setCars(prevCars => prevCars.filter(car => car.id !== id));
                 setFilteredCars(prevCars => prevCars.filter(car => car.id !== id));
@@ -398,15 +398,6 @@ const CarsList = () => {
                 </div>
 
                 <div className="car-card-actions">
-                    <button
-                        className="btn-toggle-availability"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleAvailability(car.id, car.isAvailable);
-                        }}
-                    >
-                        {car.isAvailable ? t('car.makeUnavailable') : t('car.makeAvailable')}
-                    </button>
                     <button
                         className="btn-delete"
                         onClick={(e) => {
@@ -672,16 +663,16 @@ const CarsList = () => {
                                             </td>
                                             <td>
                                                 <div className="cl-actions">
-                                                    <button
-                                                        className="btn-toggle-availability table-action"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleToggleAvailability(car.id, car.isAvailable);
-                                                        }}
-                                                        title={car.isAvailable ? t('car.makeUnavailable') : t('car.makeAvailable')}
-                                                    >
-                                                        {car.isAvailable ? '🔴' : '🟢'}
-                                                    </button>
+                                                    {/*<button*/}
+                                                    {/*    className="btn-toggle-availability table-action"*/}
+                                                    {/*    onClick={(e) => {*/}
+                                                    {/*        e.stopPropagation();*/}
+                                                    {/*        handleToggleAvailability(car.id, car.isAvailable);*/}
+                                                    {/*    }}*/}
+                                                    {/*    title={car.isAvailable ? t('car.makeUnavailable') : t('car.makeAvailable')}*/}
+                                                    {/*>*/}
+                                                    {/*    {car.isAvailable ? '🔴' : '🟢'}*/}
+                                                    {/*</button>*/}
                                                     <button
                                                         className="btn-delete table-action"
                                                         onClick={(e) => {

@@ -23,7 +23,8 @@ export const identityService = {
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data'
-                    }
+                    },
+                    timeout: 60000 // 60 seconds - increased for image processing
                 }
             );
 

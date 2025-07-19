@@ -1,17 +1,21 @@
 // src/components/Loading/Loading.jsx
 import { useTheme } from '../../contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import './Loading.css';
 
 // Loading types: spinner, pulse, dots, skeleton
 const Loading = ({
-    type = 'spinner',
-    text = 'Loading...',
+    type = 'dots',
+    text = 'common.loading',
     showText = true,
     overlay = false,
     height = null,
     width = null
 }) => {
     const { isDarkMode } = useTheme();
+    const { t } = useTranslation();
+
+    text = t('common.loading');
 
     // Determine which loading indicator to show
     const renderLoadingIndicator = () => {

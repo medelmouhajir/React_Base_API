@@ -25,11 +25,11 @@ namespace React_Identity.Server
                 using var scope = _serviceProvider.CreateScope();
                 var messageQueue = scope.ServiceProvider.GetRequiredService<IMessageQueueService>();
                 var verificationService = scope.ServiceProvider.GetRequiredService<IVerificationService>();
-
+                Guid requestId = new Guid();
                 // Subscribe to verification queues
                 await messageQueue.SubscribeAsync<dynamic>("selfie.verification", async (message) =>
                 {
-                    if (message?.RequestId != null && Guid.TryParse(message.RequestId.ToString(), out var requestId))
+                    if (message?.RequestId != null && Guid.TryParse(message.RequestId.ToString(), out requestId))
                     {
                         await verificationService.ProcessSelfieVerificationAsync(requestId);
                     }
@@ -37,7 +37,7 @@ namespace React_Identity.Server
 
                 await messageQueue.SubscribeAsync<dynamic>("document.verification", async (message) =>
                 {
-                    if (message?.RequestId != null && Guid.TryParse(message.RequestId.ToString(), out var requestId))
+                    if (message?.RequestId != null && Guid.TryParse(message.RequestId.ToString(), out requestId))
                     {
                         await verificationService.ProcessDocumentVerificationAsync(requestId);
                     }
@@ -45,7 +45,7 @@ namespace React_Identity.Server
 
                 await messageQueue.SubscribeAsync<dynamic>("combined.verification", async (message) =>
                 {
-                    if (message?.RequestId != null && Guid.TryParse(message.RequestId.ToString(), out var requestId))
+                    if (message?.RequestId != null && Guid.TryParse(message.RequestId.ToString(), out requestId))
                     {
                         await verificationService.ProcessCombinedVerificationAsync(requestId);
                     }

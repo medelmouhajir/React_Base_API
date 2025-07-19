@@ -92,7 +92,8 @@
     "filter": "Filter",
     "error": "Error",
     "dateFrom": "From Date",
-    "dateTo": "To Date"
+    "dateTo": "To Date",
+    "allRightsReserved": "All rights reserved"
   },
   "landing": {
     "features": "Features",

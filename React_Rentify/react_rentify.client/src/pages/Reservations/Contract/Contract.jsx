@@ -172,7 +172,7 @@ const Contract = () => {
                 <tr>
                   <td>Marque + Matricule</td>
                   <td className="text-center">
-                    {reservation.car?.car_Model?.car_Manufacturer?.name || ''} | {reservation.car?.car_Model?.name || ''} | {reservation.car?.licensePlate || ''}
+                    {reservation.car?.car_Model?.manufacturer?.name || ''} | {reservation.car?.car_Model?.name || ''} | {reservation.car?.licensePlate || ''}
                   </td>
                   <td dir="rtl">الماركة + رقم تسجيل السيارة</td>
                 </tr>

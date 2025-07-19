@@ -92,7 +92,8 @@
     "filter": "Filtrer",
     "error": "Erreur",
     "dateFrom": "Date de début",
-    "dateTo": "Date de fin"
+    "dateTo": "Date de fin",
+    "allRightsReserved": "Tous droits réservés"
   },
   "landing": {
     "features": "Fonctionnalités",

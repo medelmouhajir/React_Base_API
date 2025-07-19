@@ -382,7 +382,19 @@ const ReservationsList = () => {
                             filteredReservations.map((r) => (
                                 <div key={r.id} className="reservation-card">
                                     <div className="card-header">
-                                        <h3 className="card-title">{r.customerName}</h3>
+                                        <h3 className="card-title">
+                                            {r.customers?.length > 0
+                                                ? r.customers.map((customer, idx) => (
+                                                    <span key={customer?.id || 'hhh'}>
+                                                        <Link to={`/customer/${customer.id}`}>
+                                                            {customer?.fullName || 'hello'}
+                                                        </Link>
+                                                        {/* add comma separator except after last */}
+                                                        {idx < r.customers.length - 1 && ', '}
+                                                    </span>
+                                                ))
+                                                : 'Unknown'}
+                                        </h3>
                                         <span className={`status-badge status-${r.status?.toLowerCase()}`}>
                                             {r.status}
                                         </span>

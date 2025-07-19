@@ -76,46 +76,6 @@ services:
         aliases:
           - react_rentify.server
 
-
-  # NEW: Identity Verification Service
-  react_identity.server:
-    build:
-      context: .
-      dockerfile: React_Identity/React_Identity.Server/Dockerfile
-    container_name: react-identity-api
-    ports:
-      - "7188:8081"  # HTTPS port
-      - "5080:8080"  # HTTP port
-    volumes:
-      - ./React_Identity/React_Identity.Server:/app/identity/server/
-      - identity_uploads:/app/identity/server/uploads
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080;https://+:8081
-      - DOTNET_RUNNING_IN_CONTAINER=true
-      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-      - DOTNET_USE_POLLING_FILE_WATCHER=1
-      - DOTNET_EnableDiagnostics=1
-      # Identity-specific settings
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=identity_verification_db;Username=postgres;Password=postgres
-      - JwtSettings__SecretKey=Identity_Secret_Key_For_JWT_Tokens_2024_WAN_SOLUTIONS_SUPER_SECURE
-      - JwtSettings__Issuer=https://howiya.ma
-      - JwtSettings__Audience=identity-api-clients
-      - Storage__Provider=Local
-      - Storage__LocalPath=/app/identity/server/uploads
-      - AI__OpenAI__ApiKey=${OPENAI_API_KEY:-}
-      - AI__Gemini__ApiKey=${GEMINI_API_KEY:-}
-      - Callbacks__RetryAttempts=3
-      - Callbacks__RetryDelaySeconds=5
-    depends_on:
-      - db
-      - rabbitmq
-    networks:
-      react-lawyer-network:
-        aliases:
-          - react_identity.server
-
-
   # Frontend React client service
   react_lawyer.client:
     build:
@@ -183,30 +143,6 @@ services:
         aliases:
           - react_rentify.client
 
-
-  react_identity.client:
-    build:
-      context: ./React_Identity/react_identity.client
-      dockerfile: Dockerfile
-    container_name: react-identity-client
-    ports:
-      - "51240:51240"
-    volumes:
-      - ./React_Identity/react_identity.client:/app/identity
-      - /app/identity/node_modules
-    environment:
-      - DEV_SERVER_PORT=51240
-      - ASPNETCORE_HTTPS_PORT=8081
-      - ASPNETCORE_URLS=https://+:8081;http://+:8080
-      - DOCKER_CONTAINER=true
-      - VITE_API_URL=http://localhost:5080
-    depends_on:
-      - react_identity.server
-    networks:
-      react-lawyer-network:
-        aliases:
-          - react_identity.client
-
   document_generator:
     build:
       context: .
@@ -243,24 +179,6 @@ services:
         aliases:
           - rentify_gps_listener
 
-
-  # Message Queue for Identity Service
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: wan-rabbitmq
-    ports:
-      - "5672:5672"    # AMQP port
-      - "15672:15672"  # Management UI
-    environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=admin123
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      react-lawyer-network:
-        aliases:
-          - rabbitmq
-
   # Database service (PostgreSQL as an example)
   db:
     image: postgres:15
@@ -272,7 +190,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: reactlawyerdb
-      POSTGRES_MULTIPLE_DATABASES: lawyerdocumentgeneratordb,mangati_db_1,rentify_db_1,rentify_gps_db_1,identity_verification_db
+      POSTGRES_MULTIPLE_DATABASES: lawyerdocumentgeneratordb,mangati_db_1,rentify_db_1,rentify_gps_db_1
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -322,5 +240,3 @@ networks:
 volumes:
   postgres_data:
   mangati_uploads:
-  identity_uploads:
-  rabbitmq_data:
