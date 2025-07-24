@@ -98,7 +98,7 @@ const ReservationDetails = () => {
 
     const handleRemoveReservationSubmit = async () => {
         try {
-            await reservationService.deleteReservation(id);
+            await reservationService.delete(id);
             navigate('/reservations');
         } catch (err) {
             console.error('Error removing reservation:', err);

@@ -321,7 +321,7 @@ const ReservationsList = () => {
                                                 {r.customers?.length > 0
                                                     ? r.customers.map((customer, idx) => (
                                                         <span key={customer?.id || 'hhh'}>
-                                                            <Link to={`/customer/${customer.id}`}>
+                                                            <Link to={`/customers/${customer.id}`}>
                                                                 {customer?.fullName || 'hello'}
                                                             </Link>
                                                             {/* add comma separator except after last */}
@@ -386,7 +386,7 @@ const ReservationsList = () => {
                                             {r.customers?.length > 0
                                                 ? r.customers.map((customer, idx) => (
                                                     <span key={customer?.id || 'hhh'}>
-                                                        <Link to={`/customer/${customer.id}`}>
+                                                        <Link to={`/customers/${customer.id}`}>
                                                             {customer?.fullName || 'hello'}
                                                         </Link>
                                                         {/* add comma separator except after last */}

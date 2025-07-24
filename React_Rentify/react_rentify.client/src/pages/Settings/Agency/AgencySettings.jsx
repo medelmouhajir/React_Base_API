@@ -21,13 +21,13 @@ const AgencySettings = () => {
         email: '',
         phoneOne: '',
         phoneTwo: '',
-        logoUrl: '',
-        logoUrlAssociation: '',
         conditions: ''
     });
     const [attachments, setAttachments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+    const [isUploadingLogoAssociation, setIsUploadingLogoAssociation] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const apiBaseUrl = import.meta.env.VITE_API_URL || '';
@@ -59,17 +59,15 @@ const AgencySettings = () => {
                     email: agencyData.email || '',
                     phoneOne: agencyData.phoneOne || '',
                     phoneTwo: agencyData.phoneTwo || '',
-                    logoUrl: agencyData.logoUrl || '',
-                    logoUrlAssociation: agencyData.logoUrlAssociation || '',
                     conditions: agencyData.conditions || ''
                 });
 
-                // Fetch attachments
-                const attachmentsData = await agencyService.getAttachments(agencyId);
-                setAttachments(attachmentsData);
+                if (agencyData.attachments) {
+                    setAttachments(agencyData.attachments);
+                }
             } catch (err) {
                 console.error('❌ Error fetching agency data:', err);
-                setError(t('agencySettings.fetchError'));
+                setError(err.message || t('agencySettings.fetchError'));
             } finally {
                 setIsLoading(false);
             }
@@ -78,7 +76,6 @@ const AgencySettings = () => {
         fetchAgencyData();
     }, [agencyId, t]);
 
-    // Handle form input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -87,94 +84,99 @@ const AgencySettings = () => {
         }));
     };
 
-    // Handle logo file selection
-    const handleLogoChange = (e) => {
-        const file = e.target.files[0];
-        setLogoFile(file);
-    };
-
-    // Handle logo association file selection
-    const handleLogoAssociationChange = (e) => {
-        const file = e.target.files[0];
-        setLogoAssociationFile(file);
-    };
-
-    // Handle attachment file selection
-    const handleAttachmentFileChange = (e) => {
-        const file = e.target.files[0];
-        setNewAttachment(prev => ({
-            ...prev,
-            file: file
-        }));
-    };
-
-    // Handle attachment name input
-    const handleAttachmentNameChange = (e) => {
-        setNewAttachment(prev => ({
-            ...prev,
-            fileName: e.target.value
-        }));
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!agencyId || !formData.name || !formData.address) {
+            setError(t('agencySettings.requiredFieldsError'));
+            return;
+        }
+
         setIsSaving(true);
         setError(null);
         setSuccess(null);
 
         try {
-            // Handle logo upload if a new file was selected
-            let updatedLogoUrl = formData.logoUrl;
-            if (logoFile) {
-                try {
-                    const uploadResult = await agencyService.uploadLogo(agencyId, logoFile);
-                    updatedLogoUrl = uploadResult.logoUrl;
-                } catch (uploadErr) {
-                    console.error('❌ Error uploading logo:', uploadErr);
-                    throw new Error(t('agencySettings.logoUploadError'));
-                }
-            }
-
-            // Handle logo association upload if a new file was selected
-            let updatedLogoAssociationUrl = formData.logoUrlAssociation;
-            if (logoAssociationFile) {
-                try {
-                    // Note: You'll need to implement uploadLogoAssociation method in agencyService.js
-                    // For now, we'll use the same uploadLogo method pattern
-                    const uploadResult = await agencyService.uploadLogoAssociation(agencyId, logoAssociationFile);
-                    updatedLogoAssociationUrl = uploadResult.logoUrlAssociation; // Adjust based on your API response structure
-                } catch (uploadErr) {
-                    console.error('❌ Error uploading logo association:', uploadErr);
-                    throw new Error(t('agencySettings.logoAssociationUploadError'));
-                }
-            }
-
-            // Update agency data
-            const updatePayload = {
-                ...formData,
-                id: agencyId,
-                logoUrl: updatedLogoUrl,
-                logoUrlAssociation: updatedLogoAssociationUrl
-            };
-
-            await agencyService.update(agencyId, updatePayload);
+            const updatedAgency = await agencyService.update(agencyId, formData);
+            setAgency(updatedAgency);
             setSuccess(t('agencySettings.saveSuccess'));
-
-            // Reset file inputs
-            setLogoFile(null);
-            setLogoAssociationFile(null);
-
-            // Update the form data with the new URLs
-            setFormData(prev => ({
-                ...prev,
-                logoUrl: updatedLogoUrl,
-                logoUrlAssociation: updatedLogoAssociationUrl
-            }));
         } catch (err) {
-            console.error('❌ Error saving agency settings:', err);
+            console.error('❌ Error updating agency settings:', err);
             setError(err.message || t('agencySettings.saveError'));
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    // Separate handler for logo upload
+    const handleLogoUpload = async (e) => {
+        e.preventDefault();
+
+        if (!logoFile) {
+            setError(t('agencySettings.logoFileRequired'));
+            return;
+        }
+
+        setIsUploadingLogo(true);
+        setError(null);
+        setSuccess(null);
+
+        try {
+            const result = await agencyService.uploadLogo(agencyId, logoFile);
+
+            // Update the agency state with new logo URL
+            setAgency(prev => ({
+                ...prev,
+                logoUrl: result.logoUrl
+            }));
+
+            setLogoFile(null);
+            // Reset file input
+            const fileInput = document.getElementById('logoFile');
+            if (fileInput) fileInput.value = '';
+
+            setSuccess(t('agencySettings.logoUploadSuccess'));
+        } catch (err) {
+            console.error('❌ Error uploading logo:', err);
+            setError(t('agencySettings.logoUploadError'));
+        } finally {
+            setIsUploadingLogo(false);
+        }
+    };
+
+    // Separate handler for association logo upload
+    const handleLogoAssociationUpload = async (e) => {
+        e.preventDefault();
+
+        if (!logoAssociationFile) {
+            setError(t('agencySettings.logoAssociationFileRequired'));
+            return;
+        }
+
+        setIsUploadingLogoAssociation(true);
+        setError(null);
+        setSuccess(null);
+
+        try {
+            const result = await agencyService.uploadLogoAssociation(agencyId, logoAssociationFile);
+
+            // Update the agency state with new logo association URL
+            setAgency(prev => ({
+                ...prev,
+                logoUrlAssociation: result.logoUrlAssociation
+            }));
+
+            setLogoAssociationFile(null);
+            // Reset file input
+            const fileInput = document.getElementById('logoAssociationFile');
+            if (fileInput) fileInput.value = '';
+
+            setSuccess(t('agencySettings.logoAssociationUploadSuccess'));
+        } catch (err) {
+            console.error('❌ Error uploading association logo:', err);
+            setError(t('agencySettings.logoAssociationUploadError'));
+        } finally {
+            setIsUploadingLogoAssociation(false);
         }
     };
 
@@ -182,6 +184,7 @@ const AgencySettings = () => {
         e.preventDefault();
 
         if (!newAttachment.file || !newAttachment.fileName.trim()) {
+            setError(t('agencySettings.attachmentRequiredError'));
             return;
         }
 
@@ -242,40 +245,36 @@ const AgencySettings = () => {
 
     return (
         <div className={`agencySettings-container ${isDarkMode ? 'dark' : ''}`}>
-            <h1 className="agencySettings-title">{t('agencySettings.title')}</h1>
+            <div className="agencySettings-header">
+                <h1 className="agencySettings-title">{t('agencySettings.title')}</h1>
+                <p className="agencySettings-subtitle">{t('agencySettings.subtitle')}</p>
+            </div>
 
             {error && <div className="agencySettings-error">{error}</div>}
             {success && <div className="agencySettings-success">{success}</div>}
 
-            <form className="agencySettings-form" onSubmit={handleSubmit}>
-                <div className="form-section-settings">
-                    <h2 className="section-title">{t('agencySettings.generalInfo')}</h2>
+            {/* Agency Information Section */}
+            <div className="form-section-settings">
+                <h2 className="section-title">
+                    <span className="section-icon">ℹ️</span>
+                    {t('agencySettings.generalInfo')}
+                </h2>
 
-                    <div className="form-group">
-                        <label htmlFor="name">{t('agency.fields.name')}</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="address">{t('agency.fields.address')}</label>
-                        <input
-                            type="text"
-                            id="address"
-                            name="address"
-                            value={formData.address}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
+                <form className="agencySettings-form" onSubmit={handleSubmit}>
                     <div className="form-row">
+                        <div className="form-group">
+                            <label htmlFor="name">{t('agency.fields.name')} *</label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                                placeholder={t('agency.fields.namePlaceholder')}
+                            />
+                        </div>
+
                         <div className="form-group">
                             <label htmlFor="email">{t('agency.fields.email')}</label>
                             <input
@@ -284,9 +283,25 @@ const AgencySettings = () => {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
+                                placeholder={t('agency.fields.emailPlaceholder')}
                             />
                         </div>
+                    </div>
 
+                    <div className="form-group">
+                        <label htmlFor="address">{t('agency.fields.address')} *</label>
+                        <input
+                            type="text"
+                            id="address"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            required
+                            placeholder={t('agency.fields.addressPlaceholder')}
+                        />
+                    </div>
+
+                    <div className="form-row">
                         <div className="form-group">
                             <label htmlFor="phoneOne">{t('agency.fields.phoneOne')}</label>
                             <input
@@ -295,99 +310,22 @@ const AgencySettings = () => {
                                 name="phoneOne"
                                 value={formData.phoneOne}
                                 onChange={handleChange}
-                                required
+                                placeholder={t('agency.fields.phonePlaceholder')}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="phoneTwo">{t('agency.fields.phoneTwo')}</label>
+                            <input
+                                type="tel"
+                                id="phoneTwo"
+                                name="phoneTwo"
+                                value={formData.phoneTwo}
+                                onChange={handleChange}
+                                placeholder={t('agency.fields.phonePlaceholder')}
                             />
                         </div>
                     </div>
-
-                    <div className="form-group">
-                        <label htmlFor="phoneTwo">{t('agency.fields.phoneTwo')}</label>
-                        <input
-                            type="tel"
-                            id="phoneTwo"
-                            name="phoneTwo"
-                            value={formData.phoneTwo || ''}
-                            onChange={handleChange}
-                        />
-                    </div>
-                </div>
-
-                <div className="form-section-settings">
-                    <h2 className="section-title">{t('agencySettings.logo')}</h2>
-
-                    <div className="logo-container">
-                        {formData.logoUrl ? (
-                            <img
-                                src={apiBaseUrl + formData.logoUrl}
-                                alt={t('agencySettings.logoAlt')}
-                                className="agency-logo-preview"
-                            />
-                        ) : (
-                            <div className="logo-placeholder">
-                                {t('agencySettings.noLogo')}
-                            </div>
-                        )}
-
-                        <div className="logo-upload">
-                            <label className="file-upload-label">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleLogoChange}
-                                    className="file-input"
-                                />
-                                <span className="upload-button">
-                                    {t('agencySettings.uploadLogo')}
-                                </span>
-                            </label>
-                            {logoFile && (
-                                <p className="selected-file">
-                                    {logoFile.name}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="form-section-settings">
-                    <h2 className="section-title">{t('agencySettings.logoAssociation')}</h2>
-
-                    <div className="logo-container">
-                        {formData.logoUrlAssociation ? (
-                            <img
-                                src={apiBaseUrl + formData.logoUrlAssociation}
-                                alt={t('agencySettings.logoAssociationAlt')}
-                                className="agency-logo-preview"
-                            />
-                        ) : (
-                            <div className="logo-placeholder">
-                                {t('agencySettings.noLogoAssociation')}
-                            </div>
-                        )}
-
-                        <div className="logo-upload">
-                            <label className="file-upload-label">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleLogoAssociationChange}
-                                    className="file-input"
-                                />
-                                <span className="upload-button">
-                                    {t('agencySettings.uploadLogoAssociation')}
-                                </span>
-                            </label>
-                            {logoAssociationFile && (
-                                <p className="selected-file">
-                                    {logoAssociationFile.name}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="form-section-settings">
-                    <h2 className="section-title">{t('agencySettings.termsAndConditions')}</h2>
 
                     <div className="form-group">
                         <label htmlFor="conditions">{t('agency.fields.conditions')}</label>
@@ -396,39 +334,170 @@ const AgencySettings = () => {
                             name="conditions"
                             value={formData.conditions}
                             onChange={handleChange}
-                            rows="8"
-                            className="conditions-textarea"
-                            placeholder={t('agencySettings.conditionsPlaceholder')}
+                            rows="4"
+                            placeholder={t('agency.fields.conditionsPlaceholder')}
                         />
                     </div>
+
+                    <div className="form-actions">
+                        <button
+                            type="submit"
+                            className="btn-primary"
+                            disabled={isSaving}
+                        >
+                            {isSaving ? (
+                                <>
+                                    <div className="btn-spinner"></div>
+                                    {t('common.saving')}
+                                </>
+                            ) : (
+                                t('agencySettings.saveInfo')
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {/* Main Logo Section */}
+            <div className="form-section-settings">
+                <h2 className="section-title">
+                    <span className="section-icon">🏢</span>
+                    {t('agencySettings.mainLogo')}
+                </h2>
+
+                <div className="logo-section">
+                    <div className="logo-preview">
+                        {agency?.logoUrl ? (
+                            <img
+                                src={`${apiBaseUrl}${agency.logoUrl}`}
+                                alt={t('agencySettings.currentLogo')}
+                                className="agency-logo-preview"
+                            />
+                        ) : (
+                            <div className="logo-placeholder">
+                                <span className="placeholder-icon">🏢</span>
+                                <p>{t('agencySettings.noLogo')}</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <form className="logo-upload-form" onSubmit={handleLogoUpload}>
+                        <div className="form-group">
+                            <label htmlFor="logoFile" className="file-upload-label">
+                                {t('agencySettings.selectLogo')}
+                            </label>
+                            <input
+                                type="file"
+                                id="logoFile"
+                                accept="image/*"
+                                onChange={(e) => setLogoFile(e.target.files[0])}
+                                className="file-input"
+                            />
+                            {logoFile && (
+                                <p className="selected-file">
+                                    {t('agencySettings.selectedFile')}: {logoFile.name}
+                                </p>
+                            )}
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="btn-secondary"
+                            disabled={!logoFile || isUploadingLogo}
+                        >
+                            {isUploadingLogo ? (
+                                <>
+                                    <div className="btn-spinner"></div>
+                                    {t('common.uploading')}
+                                </>
+                            ) : (
+                                t('agencySettings.uploadLogo')
+                            )}
+                        </button>
+                    </form>
                 </div>
+            </div>
 
-                <div className="form-actions">
-                    <button
-                        type="submit"
-                        className="btn-primary"
-                        disabled={isSaving}
-                    >
-                        {isSaving ? t('common.saving') : t('common.save')}
-                    </button>
+            {/* Association Logo Section */}
+            <div className="form-section-settings">
+                <h2 className="section-title">
+                    <span className="section-icon">🤝</span>
+                    {t('agencySettings.associationLogo')}
+                </h2>
+
+                <div className="logo-section">
+                    <div className="logo-preview">
+                        {agency?.logoUrlAssociation ? (
+                            <img
+                                src={`${apiBaseUrl}${agency.logoUrlAssociation}`}
+                                alt={t('agencySettings.currentAssociationLogo')}
+                                className="agency-logo-preview"
+                            />
+                        ) : (
+                            <div className="logo-placeholder">
+                                <span className="placeholder-icon">🤝</span>
+                                <p>{t('agencySettings.noAssociationLogo')}</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <form className="logo-upload-form" onSubmit={handleLogoAssociationUpload}>
+                        <div className="form-group">
+                            <label htmlFor="logoAssociationFile" className="file-upload-label">
+                                {t('agencySettings.selectAssociationLogo')}
+                            </label>
+                            <input
+                                type="file"
+                                id="logoAssociationFile"
+                                accept="image/*"
+                                onChange={(e) => setLogoAssociationFile(e.target.files[0])}
+                                className="file-input"
+                            />
+                            {logoAssociationFile && (
+                                <p className="selected-file">
+                                    {t('agencySettings.selectedFile')}: {logoAssociationFile.name}
+                                </p>
+                            )}
+                        </div>
+
+                        <button
+                            type="submit"
+                            className="btn-secondary"
+                            disabled={!logoAssociationFile || isUploadingLogoAssociation}
+                        >
+                            {isUploadingLogoAssociation ? (
+                                <>
+                                    <div className="btn-spinner"></div>
+                                    {t('common.uploading')}
+                                </>
+                            ) : (
+                                t('agencySettings.uploadAssociationLogo')
+                            )}
+                        </button>
+                    </form>
                 </div>
-            </form>
+            </div>
 
-            <div className="form-section-settings attachments-section">
-                <h2 className="section-title">{t('agencySettings.attachments')}</h2>
+            {/* Attachments Section */}
+            <div className="form-section-settings">
+                <h2 className="section-title">
+                    <span className="section-icon">📎</span>
+                    {t('agencySettings.attachments')}
+                </h2>
 
-                {attachments.length === 0 ? (
-                    <p className="no-attachments">{t('agencySettings.noAttachments')}</p>
-                ) : (
-                    <ul className="attachments-list">
+                {attachments.length > 0 && (
+                    <div className="attachments-list">
                         {attachments.map((attachment) => (
-                            <li key={attachment.id} className="attachment-item">
-                                <span className="attachment-name">
-                                    {attachment.fileName}
-                                </span>
+                            <div key={attachment.id} className="attachment-item">
+                                <div className="attachment-info">
+                                    <span className="attachment-name">{attachment.fileName}</span>
+                                    <span className="attachment-date">
+                                        {new Date(attachment.createdAt).toLocaleDateString()}
+                                    </span>
+                                </div>
                                 <div className="attachment-actions">
                                     <a
-                                        href={attachment.filePath}
+                                        href={`${apiBaseUrl}${attachment.fileUrl}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="btn-view"
@@ -436,69 +505,68 @@ const AgencySettings = () => {
                                         {t('common.view')}
                                     </a>
                                     <button
-                                        type="button"
-                                        className="btn-delete"
                                         onClick={() => handleRemoveAttachment(attachment.id)}
+                                        className="btn-delete"
                                     >
                                         {t('common.delete')}
                                     </button>
                                 </div>
-                            </li>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 )}
 
-                <div className="add-attachment-form">
+                <form className="add-attachment-form" onSubmit={handleAddAttachment}>
                     <h3>{t('agencySettings.addAttachment')}</h3>
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label htmlFor="attachmentName">
-                                {t('agencySettings.attachmentName')}
-                            </label>
+                            <label htmlFor="attachmentName">{t('agencySettings.attachmentName')}</label>
                             <input
                                 type="text"
                                 id="attachmentName"
                                 value={newAttachment.fileName}
-                                onChange={handleAttachmentNameChange}
+                                onChange={(e) => setNewAttachment(prev => ({
+                                    ...prev,
+                                    fileName: e.target.value
+                                }))}
                                 placeholder={t('agencySettings.attachmentNamePlaceholder')}
+                                required
                             />
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="attachmentFile">
-                                {t('agencySettings.attachmentFile')}
+                            <label htmlFor="attachmentFile" className="file-upload-label">
+                                {t('agencySettings.selectFile')}
                             </label>
-                            <label className="file-upload-label">
-                                <input
-                                    type="file"
-                                    id="attachmentFile"
-                                    onChange={handleAttachmentFileChange}
-                                    className="file-input"
-                                />
-                                <span className="upload-button">
-                                    {t('agencySettings.selectFile')}
-                                </span>
-                            </label>
-                            {newAttachment.file && (
-                                <p className="selected-file">
-                                    {newAttachment.file.name}
-                                </p>
-                            )}
+                            <input
+                                type="file"
+                                id="attachmentFile"
+                                onChange={(e) => setNewAttachment(prev => ({
+                                    ...prev,
+                                    file: e.target.files[0]
+                                }))}
+                                className="file-input"
+                                required
+                            />
                         </div>
                     </div>
 
                     <button
-                        type="button"
+                        type="submit"
                         className="btn-add-attachment"
-                        onClick={handleAddAttachment}
-                        disabled={isUploadingAttachment || !newAttachment.file || !newAttachment.fileName}
+                        disabled={isUploadingAttachment || !newAttachment.file || !newAttachment.fileName.trim()}
                     >
-                        {isUploadingAttachment
-                            ? t('common.uploading')
-                            : t('agencySettings.addAttachmentBtn')}
+                        {isUploadingAttachment ? (
+                            <>
+                                <div className="btn-spinner"></div>
+                                {t('common.uploading')}
+                            </>
+                        ) : (
+                            t('agencySettings.addAttachment')
+                        )}
                     </button>
-                </div>
+                </form>
             </div>
         </div>
     );

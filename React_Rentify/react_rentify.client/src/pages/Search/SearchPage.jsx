@@ -56,9 +56,8 @@ const SearchPage = () => {
                         carService.getByAgencyId(agencyId).then(data => {
                             resultObj.cars = data.filter(car =>
                                 car.licensePlate?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                car.car_Model?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                car.car_Model?.car_Manufacturer?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                car.vin?.toLowerCase().includes(searchQuery.toLowerCase())
+                                car.fields.model?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                car.fields?.manufacturer?.toLowerCase().includes(searchQuery.toLowerCase())
                             );
                         })
                     );
@@ -169,7 +168,7 @@ const SearchPage = () => {
                                             >
                                                 <div className="result-card-header">
                                                     <h3 className="result-card-title">
-                                                        {car.car_Model?.car_Manufacturer?.name} {car.car_Model?.name}
+                                                        {car.fields.manufacturer} {car.fields.model}
                                                     </h3>
                                                     <span className="result-card-badge">
                                                         {car.licensePlate}
@@ -177,16 +176,12 @@ const SearchPage = () => {
                                                 </div>
                                                 <div className="result-card-content">
                                                     <p className="result-card-detail">
-                                                        <span className="detail-label">{t('car.fields.vin')}:</span>
-                                                        <span className="detail-value">{car.vin || '-'}</span>
-                                                    </p>
-                                                    <p className="result-card-detail">
                                                         <span className="detail-label">{t('car.fields.year')}:</span>
-                                                        <span className="detail-value">{car.year || '-'}</span>
+                                                        <span className="detail-value">{car.fields.year || '-'}</span>
                                                     </p>
                                                     <p className="result-card-detail">
                                                         <span className="detail-label">{t('car.fields.status')}:</span>
-                                                        <span className="detail-value">{car.status || '-'}</span>
+                                                        <span className="detail-value">{t('car.status.' + car.status.toLowerCase())}</span>
                                                     </p>
                                                 </div>
                                             </Link>

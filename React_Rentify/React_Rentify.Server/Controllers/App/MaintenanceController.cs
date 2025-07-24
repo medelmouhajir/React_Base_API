@@ -212,6 +212,15 @@ namespace React_Rentify.Server.Controllers.App
             try
             {
                 _context.Set<Maintenance_Record>().Add(record);
+                if( ! record.IsCompleted && record.ScheduledDate.Date <= DateTime.UtcNow.Date)
+                {
+                    carExists.Status = "Maintenance";
+                    _context.Set<Car>().Update(carExists);
+                }else if( record.IsCompleted && carExists.Status == "Maintenance")
+                {
+                    carExists.Status = "Available";
+                    _context.Set<Car>().Update(carExists);
+                }
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -294,6 +303,12 @@ namespace React_Rentify.Server.Controllers.App
             existingRecord.Remarks = dto.Remarks;
 
             _context.Entry(existingRecord).State = EntityState.Modified;
+            if (existingRecord.IsCompleted && existingRecord.Car.Status == "Maintenance")
+            {
+                existingRecord.Car.Status = "Available";
+                _context.Set<Car>().Update(existingRecord.Car);
+            }
+
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Updated maintenance record {RecordId}", id);

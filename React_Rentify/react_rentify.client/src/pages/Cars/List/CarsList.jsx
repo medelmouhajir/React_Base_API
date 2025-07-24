@@ -365,8 +365,8 @@ const CarsList = () => {
             >
                 <div className="car-card-header">
                     <h3 className="car-name">{manufacturerName} {modelName}</h3>
-                    <span className={`status ${car.isAvailable ? 'available' : 'unavailable'}`}>
-                        {car.isAvailable ? t('car.available') : t('car.unavailable')}
+                    <span className={`status ${car.status.toLowerCase() == 'available' ? 'available' : 'unavailable'}`}>
+                        {t('car.status.' + car.status.toLowerCase())}
                     </span>
                 </div>
 
@@ -657,8 +657,8 @@ const CarsList = () => {
                                             </td>
                                             <td>{car.dailyRate}</td>
                                             <td>
-                                                <span className={`status ${car.isAvailable ? 'available' : 'unavailable'}`}>
-                                                    {car.isAvailable ? t('car.available') : t('car.unavailable')}
+                                                <span className={`status ${car.status.toLowerCase() === 'available' ? 'available' : 'unavailable'}`}>
+                                                    {t('car.status.' + car.status.toLowerCase())}
                                                 </span>
                                             </td>
                                             <td>

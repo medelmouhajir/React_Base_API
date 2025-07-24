@@ -93,7 +93,19 @@
     "error": "Error",
     "dateFrom": "From Date",
     "dateTo": "To Date",
-    "allRightsReserved": "All rights reserved"
+    "allRightsReserved": "All rights reserved",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "accessDenied": "Access Denied",
+    "admin": "Admin",
+    "sortBy": "Sort by",
+    "clearFilters": "Clear Filters",
+    "showingResults": "Showing {{count}} of {{total}} customers",
+    "cardView": "Card View",
+    "cards": "Cards",
+    "tableView": "Table View",
+    "table": "Table",
+    "clearSearch": "Clear Search"
   },
   "landing": {
     "features": "Features",
@@ -227,27 +239,70 @@
     "resetLinkSent": "Password reset link sent to your email",
     "logoutSuccess": "Logged out successfully",
     "logoutError": "Failed to log out",
-    "logout": "Logout"
+    "logout": "Logout",
+    "verifyingAccess": "Verifying access…",
+    "accessDenied": "Access Denied",
+    "insufficientPermissions": "You do not have sufficient permissions to view this page.",
+    "requiredRole": "Required Role",
+    "yourRole": "Your Role"
   },
   "filters": {
-    "pageTitle": "Filter Settings",
+    "pageTitle": "Filters",
+    "pageDescription": "Select a filter to refine your search",
+    "helpTitle": "Need help?",
+    "helpText": "Choose a filter above to narrow down your results",
 
     "manufacturer": {
       "title": "Manufacturers",
+      "description": "Filter by car manufacturer",
       "fetchError": "Error loading manufacturers",
       "confirmRemove": "Are you sure you want to remove this manufacturer?",
-      "removeError": "Error removing manufacturer"
+      "removeError": "Error removing manufacturer",
+      "nameRequired": "Manufacturer name is required.",
+      "addError": "Failed to add manufacturer.",
+      "subtitle": "Manage the list of car manufacturers.",
+      "add": "Add Manufacturer",
+      "emptyTitle": "No Manufacturers Found",
+      "emptyDescription": "You haven’t added any manufacturers yet.",
+      "addFirst": "Add Your First Manufacturer",
+      "totalCount": "Total Manufacturers",
+      "nameLabel": "Manufacturer Name",
+      "namePlaceholder": "Enter manufacturer name"
     },
     "models": {
       "title": "Car Models",
+      "description": "Filter by car manufacturer",
       "fetchError": "Error loading car models",
-      "confirmRemove": "Are you sure you want to remove this model?"
+      "confirmRemove": "Are you sure you want to remove this model?",
+      "nameAndManufacturerRequired": "Model name and manufacturer are required.",
+      "addError": "Failed to add car model. Please try again.",
+      "add": "Add Model",
+      "searchPlaceholder": "Search models...",
+      "allManufacturers": "All Manufacturers",
+      "showingResults": "Showing {{count}} of {{total}} models",
+      "modelName": "Model Name",
+      "manufacturer": "Manufacturer",
+      "noResultsFound": "No results found.",
+      "noModels": "No car models available.",
+      "tryDifferentSearch": "Try a different search term.",
+      "addFirstModel": "Add your first car model.",
+      "addNew": "Add New Model",
+      "enterModelName": "Enter model name",
+      "remove": "Remove Model"
     },
     "years": {
       "title": "Car Years",
+      "description": "Filter by car year",
       "fetchError": "Error loading car years",
       "confirmRemove": "Are you sure you want to remove this year?",
-      "removeError": "Error removing year"
+      "removeError": "Error removing year",
+      "invalidYear": "Invalid year. Please enter a year between 1900 and next year.",
+      "noResults": "No years found.",
+      "add": "Add Year",
+      "addFirst": "Add Your First Year",
+      "YearValue": "Year",
+      "yearLabel": "Year",
+      "yearPlaceholder": "Enter year"
     }
   },
   "maintenance": {
@@ -487,6 +542,12 @@
       "errorNoDates": "Please select start and end dates.",
       "error": "Failed to add reservation. Please try again."
     },
+    "remove": {
+      "title": "Remove Reservation",
+      "warning": "This action cannot be undone.",
+      "confirmText": "Are you sure you want to remove this reservation?",
+      "confirm": "Delete"
+    },
     "noCustomersSelected": "No customers selected.",
     "customer": "Customer",
     "noCustomer": "No customer",
@@ -525,15 +586,95 @@
   },
   "agency": {
     "list": {
-      "fetchError": "Error loading agencies"
+      "fetchError": "Error loading agencies",
+      "title": "Agencies",
+      "searchPlaceholder": "Search agencies…",
+      "agencies": "agencies",
+      "noResults": "No agencies found for your search",
+      "noAgencies": "No agencies available",
+      "tryDifferentSearch": "Try a different search term",
+      "createFirstAgency": "Create your first agency to get started",
+      "createAgency": "Create Agency",
+      "editSubscription": "Edit Subscription",
+      "subscription": "Subscription"
     },
     "fields": {
       "name": "Name",
-      "address": "Address",
+      "namePlaceholder": "Enter agency name",
       "email": "Email",
+      "emailPlaceholder": "Enter email address",
+      "address": "Address",
+      "addressPlaceholder": "Enter address",
       "phoneOne": "Primary Phone",
-      "phoneTwo": "Secondary Phone"
+      "phoneTwo": "Secondary Phone",
+      "phonePlaceholder": "Enter phone number",
+      "conditions": "Terms and Conditions",
+      "conditionsPlaceholder": "Enter terms and conditions"
+    },
+    "stuff": {
+      "fetchError": "Error loading staff. Please try again.",
+      "removeError": "Error removing staff member. Please try again.",
+      "createError": "Error creating staff member. Please try again.",
+      "confirmRemove": "Are you sure you want to remove this staff member?",
+      "confirmResetPassword": "Are you sure you want to reset this staff member's password?",
+      "passwordResetSuccess": "Password has been reset. New password: {{password}}",
+      "passwordResetError": "Error resetting password. Please try again.",
+      "title": "Agency Staff",
+      "subtitle": "Manage your agency's staff members",
+      "addStaff": "Add Staff",
+      "addNewStaff": "Add New Staff Member",
+      "searchPlaceholder": "Search staff...",
+      "totalStaff": "Total Staff: {{count}}",
+      "fields": {
+        "fullName": "Full Name",
+        "email": "Email Address",
+        "phoneNumber": "Phone Number",
+        "role": "Role",
+        "password": "Password"
+      },
+      "placeholders": {
+        "fullName": "Enter full name",
+        "email": "Enter email address",
+        "phoneNumber": "Enter phone number",
+        "password": "Enter password"
+      },
+      "roles": {
+        "manager": "Manager",
+        "owner": "Owner"
+      },
+      "noSearchResults": "No staff match your search.",
+      "noStaff": "No staff members found.",
+      "tryDifferentSearch": "Try a different search term.",
+      "addFirstStaff": "Add your first staff member."
     }
+  },
+  "agencyDetails": {
+    "fetchError": "Failed to load agency details.",
+    "deleteSuccess": "Agency deleted successfully.",
+    "deleteError": "Failed to delete agency.",
+    "notFound": "Agency not found.",
+    "subtitle": "Agency Details",
+    "editAgency": "Edit Agency",
+    "manageSubscription": "Manage Subscription",
+    "manageStaff": "Manage Staff",
+    "viewReports": "View Reports",
+    "viewFinancials": "View Financials",
+    "deleteAgency": "Delete Agency",
+    "confirmDelete": "Confirm Deletion",
+    "confirmDeleteButton": "Delete",
+    "deleteWarning": "Are you sure you want to delete this agency?",
+    "basicInformation": "Basic Information",
+    "logoAlt": "Agency logo",
+    "noLogo": "No logo available",
+    "statistics": "Statistics",
+    "staffMembers": "Staff Members",
+    "vehicles": "Vehicles",
+    "customers": "Customers",
+    "reservations": "Reservations",
+    "manageAll": "Manage All Staff",
+    "viewAllStaff": "View all {{count}} staff",
+    "attachments": "Attachments",
+    "conditions": "Conditions"
   },
   "agencySettings": {
     "fetchError": "Error fetching agency data. Please try again.",
@@ -557,7 +698,25 @@
     "attachmentAddedSuccess": "Attachment added successfully.",
     "attachmentAddedError": "Failed to add attachment.",
     "attachmentRemovedSuccess": "Attachment removed successfully.",
-    "attachmentRemovedError": "Failed to remove attachment."
+    "attachmentRemovedError": "Failed to remove attachment.",
+    "requiredFieldsError": "Please fill in all required fields",
+    "logoFileRequired": "Please select a logo file to upload",
+    "logoUploadSuccess": "Logo uploaded successfully",
+    "logoAssociationFileRequired": "Please select an association logo file to upload",
+    "logoAssociationUploadSuccess": "Association logo uploaded successfully",
+    "logoAssociationUploadError": "Error uploading association logo",
+    "attachmentRequiredError": "Please provide a name and select a file for the attachment",
+    "subtitle": "Manage your agency information and assets",
+    "saveInfo": "Save Changes",
+    "mainLogo": "Main Logo",
+    "currentLogo": "Current Logo",
+    "selectLogo": "Select Logo",
+    "selectedFile": "Selected file",
+    "associationLogo": "Association Logo",
+    "currentAssociationLogo": "Current Association Logo",
+    "noAssociationLogo": "No association logo uploaded",
+    "selectAssociationLogo": "Select Association Logo",
+    "uploadAssociationLogo": "Upload Association Logo"
   },
   "footer": {
     "company": "Company",
@@ -634,10 +793,25 @@
       "deleteError": "An error occurred while deleting the customer.",
       "addNew": "Add New Customer",
       "actions": "Actions",
-      "noRecords": "No customers found."
+      "noRecords": "No customers found.",
+      "total": "Total",
+      "blacklisted": "Blacklisted",
+      "searchPlaceholder": "Search customers...",
+      "status": "Status",
+      "active": "Active",
+      "noResults": "No customers found",
+      "noCustomers": "No customers yet",
+      "tryDifferentSearch": "Try adjusting your search or filters",
+      "getStarted": "Add your first customer to get started",
+      "addFirstCustomer": "Add First Customer",
+      "totalCustomers": "Total: {{count}} customers"
     },
     "search": {
       "placeholder": "Search customers..."
+    },
+    "status": {
+      "blacklisted": "Blacklisted",
+      "active": "Active"
     }
   },
   "invoice": {
@@ -655,7 +829,8 @@
       "remainingBalance": "Remaining Balance",
       "isPaid": "Paid",
       "reservation": "Reservation",
-      "id": "Invoice ID"
+      "id": "Invoice ID",
+      "status": "Status"
     },
     "actions": {
       "view": "View Invoice",
@@ -671,7 +846,15 @@
       "title": "Invoices",
       "new": "New Invoice",
       "actions": "Actions",
-      "noData": "No invoices found."
+      "noData": "No invoices found.",
+      "fetchError": "Failed to load invoices. Please try again.",
+      "total": "Total",
+      "paid": "Paid",
+      "search": "Search invoices...",
+      "noInvoices": "No Invoices Found",
+      "noResults": "No invoices match your search criteria. Try adjusting your filters.",
+      "noInvoicesMessage": "Get started by creating your first invoice.",
+      "createFirst": "Create First Invoice"
     },
     "filters": {
       "from": "From",
@@ -687,6 +870,12 @@
       "paymentsTitle": "Payments",
       "addPayment": "Add Payment",
       "noPayments": "No payments recorded."
+    },
+    "sort": {
+      "dateDesc": "Date (Newest)",
+      "dateAsc": "Date (Oldest)",
+      "amountDesc": "Amount (High to Low)",
+      "amountAsc": "Amount (Low to High)"
     }
   },
   "car": {
@@ -897,7 +1086,22 @@
     "licensePlate": "License Plate",
     "maintenanceDue": "Maintenance Due",
     "unknown": "Unknown",
-    "notScheduled": "Not Scheduled"
+    "notScheduled": "Not Scheduled",
+    "maintenanceAlert": "Upcoming Maintenance",
+    "maintenanceAlertMessage": "You have {{count}} maintenance task(s) due soon",
+    "viewMaintenance": "View Maintenance",
+    "lowAvailabilityAlert": "Low Car Availability",
+    "lowAvailabilityMessage": "{{available}} of {{total}} cars are currently available",
+    "manageCars": "Manage Cars",
+    "pendingReservationsAlert": "Pending Reservations",
+    "pendingReservationsMessage": "There are {{count}} pending reservations",
+    "reviewReservations": "Review Reservations",
+    "newReservation": "New Reservation",
+    "overview": "Overview",
+    "viewAll": "View All",
+    "unknownCustomer": "Unknown Customer",
+    "unknownCar": "Unknown Car",
+    "unavailable": "Unavailable"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -1443,6 +1647,37 @@
       "lastMonth": "Last Month",
       "thisQuarter": "This Quarter",
       "thisYear": "This Year"
+    }
+  },
+  "admin": {
+    "accessDeniedMessage": "You do not have permission to view this page.",
+    "alerts": {
+      "highOpenTickets": "There are currently {{count}} open tickets.",
+      "inactiveAgencies": "{{count}} agencies are inactive."
+    },
+    "dashboard": {
+      "welcomeMessage": "Welcome, {{name}}!",
+      "quickActions": "Quick Actions",
+      "manageAgencies": "Manage Agencies",
+      "viewTickets": "View Tickets",
+      "manageFilters": "Manage Filters",
+      "systemSettings": "System Settings",
+      "systemAlerts": "System Alerts",
+      "recentTickets": "Recent Tickets",
+      "agenciesOverview": "Agencies Overview",
+      "ticketBreakdown": "Ticket Status Breakdown"
+    },
+    "stats": {
+      "totalAgencies": "Total Agencies",
+      "active": "Active",
+      "totalTickets": "Total Tickets",
+      "open": "Open",
+      "totalStaff": "Total Staff",
+      "acrossAgencies": "Across Agencies",
+      "activeCars": "Active Cars",
+      "systemWide": "System-wide",
+      "status": "Status",
+      "cars": "Cars"
     }
   }
 }

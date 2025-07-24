@@ -160,8 +160,8 @@ namespace React_Rentify.Server
                             // Production origins
                             "http://152.53.243.82:5249",
                             "https://152.53.243.82:5249",
-                            "https://rentify.ma",
-                            "https://www.rentify.ma"
+                            "https://renter.ma",
+                            "https://www.renter.ma"
                         )
                         .AllowAnyMethod()
                         .AllowAnyHeader()

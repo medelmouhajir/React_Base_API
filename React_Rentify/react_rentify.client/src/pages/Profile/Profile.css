@@ -5,17 +5,11 @@
   ------------------------------------------------------------*/
 :root {
     /* Base colors */
-    --primary-color: #4a90e2;
     --primary-hover: #3b78c3;
-    --secondary-color: #6b7280;
     --secondary-hover: #4b5563;
     --danger-color: #ef4444;
     --danger-hover: #dc2626;
     /* Light theme */
-    --bg-color-light: #ffffff;
-    --card-bg-light: #f9fafb;
-    --text-color-light: #111827;
-    --text-secondary-light: #6b7280;
     --border-color-light: #e5e7eb;
     --input-bg-light: #ffffff;
     --input-text-light: #111827;
@@ -27,10 +21,6 @@
     --success-bg-light: #dcfce7;
     --success-text-light: #166534;
     /* Dark theme */
-    --bg-color-dark: #121212;
-    --card-bg-dark: #1e1e1e;
-    --text-color-dark: #f9fafb;
-    --text-secondary-dark: #d1d5db;
     --border-color-dark: #374151;
     --input-bg-dark: #1f2937;
     --input-text-dark: #f9fafb;

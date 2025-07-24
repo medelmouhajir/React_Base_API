@@ -1,231 +1,206 @@
-/* src/pages/Agencie/List/AgenciesList.css */
+/* src/pages/Agencies/List/AgenciesList.css */
 
-/* Container */
-.agencies-list-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-hover: #3b78c3;
+    --secondary-hover: #c9302c;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    /* Light theme */
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-hover-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --table-header-bg-light: #f3f4f6;
+    --table-row-hover-light: rgba(0, 0, 0, 0.025);
+    /* Dark theme */
+    --border-color-dark: #374151;
+    --input-bg-dark: #1f2937;
+    --input-text-dark: #f9fafb;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover-dark: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --table-header-bg-dark: #1f2937;
+    --table-row-hover-dark: rgba(255, 255, 255, 0.05);
+    /* Common */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --transition-speed: 0.25s;
+    --transition-fast: 0.15s;
 }
 
-/* Header */
-.list-header {
+/*---------------------------------------------
+  Container and Layout
+---------------------------------------------*/
+.agencies-list-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    color: var(--text-color-light);
+    transition: color var(--transition-speed);
+}
+
+    .agencies-list-container.dark {
+        color: var(--text-color-dark);
+    }
+
+/*---------------------------------------------
+  Header Section
+---------------------------------------------*/
+.al-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-}
-
-.list-title {
-    font-size: 1.75rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-.btn-add {
-    background-color: #d9534f;
-    color: #fff;
-    border: none;
-    padding: 0.75rem 1.25rem;
-    border-radius: 0.375rem;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-    .btn-add:hover {
-        background-color: #c9302c;
-    }
-
-/* Search Bar */
-.search-bar-wrapper-2 {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.search-input-2 {
-    width: 100%;
-    max-width: 300px;
-    padding: 0.5rem 1rem;
-    font-size: 0.95rem;
-    border: 1px solid #ccc;
-    border-radius: 0.375rem;
-    transition: border-color 0.2s;
-}
-
-    .search-input-2:focus {
-        outline: none;
-        border-color: #4a90e2;
-    }
-
-/* Table Wrapper */
-.table-wrapper {
-    overflow-x: auto;
-}
-
-.data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-}
-
-    .data-table th,
-    .data-table td {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    .data-table th {
-        background-color: #f1f1f1;
-        color: #333;
-    }
-
-
-/* Actions cell */
-.actions-cell {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.action-button {
-    background-color: transparent;
-    border: 1px solid #ccc;
-    color: #333;
-    padding: 0.4rem 0.75rem;
-    border-radius: 0.375rem;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
-}
-
-    .action-button.btn-details {
-        border-color: #4a90e2;
-        color: #4a90e2;
-    }
-
-        .action-button.btn-details:hover {
-            background-color: #e7f0fb;
-        }
-
-    .action-button.btn-edit {
-        border-color: #ffc107;
-        color: #856404;
-    }
-
-        .action-button.btn-edit:hover {
-            background-color: #fff8e1;
-        }
-
-    .action-button.btn-subscription {
-        border-color: #5cb85c;
-        color: #3c763d;
-    }
-
-        .action-button.btn-subscription:hover {
-            background-color: #e9f7ef;
-        }
-
-/* Mobile Cards Wrapper */
-.cards-wrapper {
-    display: none;
+    margin-bottom: 2rem;
     gap: 1rem;
 }
 
-/* Agency Card */
-.agency-card {
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.card-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.card-field {
-    font-size: 0.9rem;
-    color: #333;
+.al-title {
+    font-size: 1.875rem;
+    font-weight: 600;
     margin: 0;
+    color: var(--text-color-light);
 }
 
-.field-label {
-    font-weight: 500;
-    color: #555;
+.agencies-list-container.dark .al-title {
+    color: var(--text-color-dark);
 }
 
-.card-actions {
+.al-btn-add {
     display: flex;
+    align-items: center;
     gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.card-btn {
-    flex: 1;
-    text-align: center;
-    font-size: 0.85rem;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 0.375rem;
-    background-color: transparent;
-    color: #333;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
+    transition: all var(--transition-speed);
+    box-shadow: var(--shadow-light);
 }
 
-    .card-btn.btn-details {
-        border-color: #4a90e2;
-        color: #4a90e2;
+    .al-btn-add:hover {
+        background-color: var(--secondary-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-hover-light);
     }
 
-        .card-btn.btn-details:hover {
-            background-color: #e7f0fb;
-        }
+.al-btn-icon {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
 
-    .card-btn.btn-edit {
-        border-color: #ffc107;
-        color: #856404;
+/*---------------------------------------------
+  Search Section
+---------------------------------------------*/
+.al-search-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+.al-search-container {
+    position: relative;
+    max-width: 400px;
+    margin-left: auto;
+}
+
+.al-search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 2.5rem;
+    font-size: 0.95rem;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg-light);
+    color: var(--input-text-light);
+    transition: all var(--transition-speed);
+}
+
+    .al-search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
     }
 
-        .card-btn.btn-edit:hover {
-            background-color: #fff8e1;
-        }
+.agencies-list-container.dark .al-search-input {
+    border-color: var(--border-color-dark);
+    background-color: var(--input-bg-dark);
+    color: var(--input-text-dark);
+}
 
-    .card-btn.btn-subscription {
-        border-color: #5cb85c;
-        color: #3c763d;
-    }
+.al-search-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary-light);
+    pointer-events: none;
+}
 
-        .card-btn.btn-subscription:hover {
-            background-color: #e9f7ef;
-        }
+.agencies-list-container.dark .al-search-icon {
+    color: var(--text-secondary-dark);
+}
 
-/* Loading Spinner */
+/*---------------------------------------------
+  Results Info
+---------------------------------------------*/
+.al-results-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.al-results-count {
+    font-size: 0.875rem;
+    color: var(--text-secondary-light);
+    font-weight: 500;
+}
+
+.agencies-list-container.dark .al-results-count {
+    color: var(--text-secondary-dark);
+}
+
+/*---------------------------------------------
+  Loading State
+---------------------------------------------*/
 .al-loading-wrapper {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 60vh;
+    gap: 1rem;
 }
 
 .al-spinner {
     width: 3rem;
     height: 3rem;
-    border: 0.4rem solid transparent;
-    border-top-color: #4a90e2;
+    border: 0.25rem solid var(--border-color-light);
+    border-top-color: var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
+}
+
+.agencies-list-container.dark .al-spinner {
+    border-color: var(--border-color-dark);
+    border-top-color: var(--primary-color);
+}
+
+.al-loading-text {
+    color: var(--text-secondary-light);
+    font-size: 0.95rem;
+}
+
+.agencies-list-container.dark .al-loading-text {
+    color: var(--text-secondary-dark);
 }
 
 @keyframes spin {
@@ -234,42 +209,595 @@
     }
 }
 
-/* Error Message */
-.al-error-message {
-    color: #d9534f;
-    background-color: #f8d7da;
-    padding: 1rem;
-    border-radius: 0.375rem;
-    text-align: center;
-    font-size: 0.95rem;
+/*---------------------------------------------
+  Error State
+---------------------------------------------*/
+.al-error-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    gap: 1rem;
 }
 
-/* Responsive Breakpoints */
+.al-error-message {
+    color: var(--danger-color);
+    background-color: rgba(239, 68, 68, 0.1);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 0.95rem;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.al-retry-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+    .al-retry-btn:hover {
+        background-color: var(--primary-hover);
+    }
+
+/*---------------------------------------------
+  Empty State
+---------------------------------------------*/
+.al-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+    gap: 1rem;
+}
+
+.al-empty-icon {
+    font-size: 4rem;
+    opacity: 0.5;
+}
+
+.al-empty-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color-light);
+}
+
+.agencies-list-container.dark .al-empty-title {
+    color: var(--text-color-dark);
+}
+
+.al-empty-description {
+    font-size: 0.95rem;
+    color: var(--text-secondary-light);
+    margin: 0;
+    max-width: 400px;
+}
+
+.agencies-list-container.dark .al-empty-description {
+    color: var(--text-secondary-dark);
+}
+
+.al-empty-action {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+    .al-empty-action:hover {
+        background-color: var(--primary-hover);
+    }
+
+/*---------------------------------------------
+  Desktop Table View
+---------------------------------------------*/
+.al-desktop-view {
+    display: block;
+}
+
+.al-table-wrapper {
+    background-color: var(--bg-color-light);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+    border: 1px solid var(--border-color-light);
+}
+
+.agencies-list-container.dark .al-table-wrapper {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.al-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+    .al-table th {
+        background-color: var(--table-header-bg-light);
+        color: var(--text-color-light);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.8125rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid var(--border-color-light);
+    }
+
+.agencies-list-container.dark .al-table th {
+    background-color: var(--table-header-bg-dark);
+    color: var(--text-color-dark);
+    border-bottom-color: var(--border-color-dark);
+}
+
+.al-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color-light);
+    color: var(--text-color-light);
+}
+
+.agencies-list-container.dark .al-table td {
+    border-bottom-color: var(--border-color-dark);
+    color: var(--text-color-dark);
+}
+
+.al-table-row:hover {
+    background-color: var(--table-row-hover-light);
+}
+
+.agencies-list-container.dark .al-table-row:hover {
+    background-color: var(--table-row-hover-dark);
+}
+
+.al-cell-name {
+    font-weight: 600;
+}
+
+.al-email-link,
+.al-phone-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-speed);
+}
+
+    .al-email-link:hover,
+    .al-phone-link:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+
+/*---------------------------------------------
+  Table Actions
+---------------------------------------------*/
+.al-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.al-action-btn {
+    background-color: transparent;
+    border: 1px solid;
+    padding: 0.375rem 0.75rem;
+    border-radius: calc(var(--border-radius) - 2px);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.al-btn-details {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+    .al-btn-details:hover {
+        background-color: rgba(74, 144, 226, 0.1);
+    }
+
+.al-btn-edit {
+    border-color: var(--warning-color);
+    color: var(--warning-color);
+}
+
+    .al-btn-edit:hover {
+        background-color: rgba(245, 158, 11, 0.1);
+    }
+
+.al-btn-subscription {
+    border-color: var(--success-color);
+    color: var(--success-color);
+}
+
+    .al-btn-subscription:hover {
+        background-color: rgba(16, 185, 129, 0.1);
+    }
+
+/*---------------------------------------------
+  Mobile Cards View
+---------------------------------------------*/
+.al-mobile-view {
+    display: none;
+}
+
+.al-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.al-agency-card {
+    background-color: var(--bg-color-light);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius-lg);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-light);
+    transition: all var(--transition-speed);
+}
+
+.agencies-list-container.dark .al-agency-card {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.al-agency-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover-light);
+}
+
+.agencies-list-container.dark .al-agency-card:hover {
+    box-shadow: var(--shadow-hover-dark);
+}
+
+.al-card-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.agencies-list-container.dark .al-card-header {
+    border-bottom-color: var(--border-color-dark);
+}
+
+.al-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color-light);
+}
+
+.agencies-list-container.dark .al-card-title {
+    color: var(--text-color-dark);
+}
+
+.al-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.al-card-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.al-field-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-secondary-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.agencies-list-container.dark .al-field-label {
+    color: var(--text-secondary-dark);
+}
+
+.al-field-value {
+    font-size: 0.9375rem;
+    color: var(--text-color-light);
+}
+
+.agencies-list-container.dark .al-field-value {
+    color: var(--text-color-dark);
+}
+
+.al-field-link {
+    font-size: 0.9375rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-speed);
+}
+
+    .al-field-link:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+    }
+
+/*---------------------------------------------
+  Mobile Card Actions
+---------------------------------------------*/
+.al-card-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.al-card-btn {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border: 1px solid;
+    border-radius: var(--border-radius);
+    background-color: transparent;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*---------------------------------------------
+  Responsive Design
+---------------------------------------------*/
+@media (max-width: 1024px) {
+    .agencies-list-container {
+        padding: 1.25rem;
+    }
+}
+
 @media (max-width: 768px) {
-    /* Hide table on small screens */
-    .table-wrapper {
-        display: none;
+    .agencies-list-container {
+        padding: 1rem;
     }
 
-    /* Show cards on small screens */
-    .cards-wrapper {
-        display: flex;
+    /* Header adjustments */
+    .al-header {
         flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
     }
 
-    /* Adjust search bar */
-    .search-bar-wrapper {
+    .al-title {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .al-btn-add {
+        width: 100%;
         justify-content: center;
     }
 
-    /* Adjust header stacking */
-    .list-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.75rem;
+    /* Search adjustments */
+    .al-search-container {
+        max-width: none;
+        margin: 0;
     }
 
-    .btn-add {
+    /* Hide desktop table, show mobile cards */
+    .al-desktop-view {
+        display: none;
+    }
+
+    .al-mobile-view {
+        display: block;
+    }
+
+    /* Results info */
+    .al-results-info {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .agencies-list-container {
+        padding: 0.75rem;
+    }
+
+    .al-title {
+        font-size: 1.375rem;
+    }
+
+    .al-agency-card {
+        padding: 1rem;
+    }
+
+    .al-card-actions {
+        flex-direction: column;
+    }
+
+    .al-card-btn {
         width: 100%;
     }
+
+    .al-card-field {
+        gap: 0.125rem;
+    }
+
+    .al-field-label {
+        font-size: 0.75rem;
+    }
+
+    .al-field-value,
+    .al-field-link {
+        font-size: 0.875rem;
+    }
+}
+
+/*---------------------------------------------
+  Touch Device Optimizations
+---------------------------------------------*/
+@media (hover: none) {
+    /* Larger touch targets */
+    .al-btn-add,
+    .al-action-btn,
+    .al-card-btn,
+    .al-retry-btn,
+    .al-empty-action {
+        min-height: 2.75rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .al-search-input {
+        padding: 0.875rem 1rem;
+        padding-right: 2.75rem;
+        font-size: 1rem;
+    }
+
+    /* Better touch feedback */
+    .al-btn-add:active,
+    .al-action-btn:active,
+    .al-card-btn:active,
+    .al-retry-btn:active,
+    .al-empty-action:active {
+        opacity: 0.8;
+        transform: scale(0.98);
+    }
+
+    .al-agency-card:active {
+        transform: scale(0.99);
+    }
+
+    /* Remove hover effects for touch devices */
+    .al-agency-card:hover {
+        transform: none;
+        box-shadow: var(--shadow-light);
+    }
+
+    .agencies-list-container.dark .al-agency-card:hover {
+        box-shadow: var(--shadow-dark);
+    }
+}
+
+/*---------------------------------------------
+  High contrast mode support
+---------------------------------------------*/
+@media (prefers-contrast: high) {
+    .al-search-input:focus {
+        border-width: 2px;
+        border-color: var(--primary-color);
+    }
+
+    .al-action-btn,
+    .al-card-btn {
+        border-width: 2px;
+    }
+
+    .al-agency-card {
+        border-width: 2px;
+    }
+}
+
+/*---------------------------------------------
+  Reduced motion preferences
+---------------------------------------------*/
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .al-agency-card:hover,
+    .al-btn-add:hover {
+        transform: none;
+    }
+}
+
+/*---------------------------------------------
+  Print styles
+---------------------------------------------*/
+@media print {
+    .agencies-list-container {
+        padding: 0;
+        max-width: 100%;
+        color: black;
+    }
+
+    .al-header,
+    .al-search-wrapper,
+    .al-mobile-view {
+        display: none;
+    }
+
+    .al-desktop-view {
+        display: block !important;
+    }
+
+    .al-table-wrapper {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+
+    .al-table th {
+        background-color: #f0f0f0 !important;
+        color: black !important;
+    }
+
+    .al-table td {
+        color: black !important;
+    }
+
+    .al-actions {
+        display: none;
+    }
+
+    .al-email-link,
+    .al-phone-link {
+        color: black !important;
+        text-decoration: underline;
+    }
+}
+
+/*---------------------------------------------
+  Focus management for accessibility
+---------------------------------------------*/
+.al-search-input:focus,
+.al-btn-add:focus,
+.al-action-btn:focus,
+.al-card-btn:focus,
+.al-retry-btn:focus,
+.al-empty-action:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.agencies-list-container.dark .al-search-input:focus,
+.agencies-list-container.dark .al-btn-add:focus,
+.agencies-list-container.dark .al-action-btn:focus,
+.agencies-list-container.dark .al-card-btn:focus,
+.agencies-list-container.dark .al-retry-btn:focus,
+.agencies-list-container.dark .al-empty-action:focus {
+    outline-color: #60a5fa;
 }

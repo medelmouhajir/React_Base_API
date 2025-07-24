@@ -93,7 +93,19 @@
     "error": "خطأ",
     "dateFrom": "من التاريخ",
     "dateTo": "حتى التاريخ",
-    "allRightsReserved": "جميع الحقوق محفوظة"
+    "allRightsReserved": "جميع الحقوق محفوظة",
+    "paid": "مدفوعة",
+    "unpaid": "غير مدفوعة",
+    "accessDenied": "تم رفض الوصول",
+    "admin": "المسؤول",
+    "sortBy": "الترتيب حسب",
+    "clearFilters": "مسح الفلاتر",
+    "showingResults": "عرض {{count}} من أصل {{total}} عميل",
+    "cardView": "عرض البطاقات",
+    "cards": "بطاقات",
+    "tableView": "عرض الجدول",
+    "table": "جدول",
+    "clearSearch": "مسح البحث"
   },
   "landing": {
     "features": "الميزات",
@@ -225,26 +237,70 @@
     "resetLinkSent": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني",
     "logoutSuccess": "تم تسجيل الخروج بنجاح",
     "logoutError": "فشل تسجيل الخروج",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "verifyingAccess": "جارٍ التحقق من الوصول…",
+    "accessDenied": "تم رفض الوصول",
+    "insufficientPermissions": "ليست لديك الأذونات الكافية لعرض هذه الصفحة.",
+    "requiredRole": "الدور المطلوب",
+    "yourRole": "دورك"
   },
   "filters": {
-    "pageTitle": "إعدادات الفلترة",
+    "pageTitle": "المُرشحات",
+    "pageDescription": "اختر مُرشحاً لتضييق نتائج البحث",
+    "helpTitle": "تحتاج مساعدة؟",
+    "helpText": "اختر أحد المرشحات أعلاه لتضييق النتائج",
+
     "manufacturer": {
       "title": "المصنعون",
+      "description": "التصفية حسب الشركة المصنعة للسيارة",
       "fetchError": "خطأ في تحميل بيانات المصنعين",
       "confirmRemove": "هل أنت متأكد أنك تريد إزالة هذا المُصنّع؟",
-      "removeError": "خطأ في إزالة المصنع"
+      "removeError": "خطأ في إزالة المصنع",
+      "nameRequired": "اسم الشركة المصنعة مطلوب.",
+      "addError": "فشل في إضافة الشركة المصنعة.",
+      "subtitle": "إدارة قائمة الشركات المصنعة للسيارات.",
+      "add": "إضافة شركة مصنعة",
+      "emptyTitle": "لم يتم العثور على شركات مصنعة",
+      "emptyDescription": "لم تقم بإضافة أي شركات مصنعة بعد.",
+      "addFirst": "أضف أول شركة مصنعة لك",
+      "totalCount": "إجمالي الشركات المصنعة",
+      "nameLabel": "اسم الشركة المصنعة",
+      "namePlaceholder": "أدخل اسم الشركة المصنعة"
     },
     "models": {
       "title": "طرازات السيارات",
+      "description": "التصفية حسب طراز السيارة",
       "fetchError": "خطأ في تحميل طرازات السيارات",
-      "confirmRemove": "هل أنت متأكد أنك تريد إزالة هذا الطراز؟"
+      "confirmRemove": "هل أنت متأكد أنك تريد إزالة هذا الطراز؟",
+      "nameAndManufacturerRequired": "اسم النموذج والشركة المصنعة مطلوبان.",
+      "addError": "فشل في إضافة نموذج السيارة. حاول مرة أخرى.",
+      "add": "إضافة نموذج",
+      "searchPlaceholder": "ابحث في النماذج...",
+      "allManufacturers": "جميع الشركات المصنعة",
+      "showingResults": "عرض {{count}} من أصل {{total}} نماذج",
+      "modelName": "اسم النموذج",
+      "manufacturer": "الشركة المصنعة",
+      "noResultsFound": "لا توجد نتائج.",
+      "noModels": "لا توجد نماذج سيارات متاحة.",
+      "tryDifferentSearch": "حاول استخدام مصطلح بحث مختلف.",
+      "addFirstModel": "أضف نموذج السيارة الأول.",
+      "addNew": "إضافة نموذج جديد",
+      "enterModelName": "أدخل اسم النموذج",
+      "remove": "إزالة النموذج"
     },
     "years": {
       "title": "سنوات السيارات",
+      "description": "التصفية حسب سنة تصنيع السيارة",
       "fetchError": "خطأ في تحميل سنوات السيارات",
       "confirmRemove": "هل أنت متأكد أنك تريد إزالة هذه السنة؟",
-      "removeError": "خطأ في إزالة السنة"
+      "removeError": "خطأ في إزالة السنة",
+      "invalidYear": "السنة غير صالحة. الرجاء إدخال سنة بين 1900 والسنة القادمة.",
+      "noResults": "لا توجد سنوات.",
+      "add": "إضافة سنة",
+      "addFirst": "أضف السنة الأولى",
+      "YearValue": "السنة",
+      "yearLabel": "السنة",
+      "yearPlaceholder": "أدخل السنة"
     }
   },
   "maintenance": {
@@ -484,6 +540,12 @@
       "price": "أدخل السعر",
       "selectCustomer": "اختر عميل"
     },
+    "remove": {
+      "title": "حذف الحجز",
+      "warning": "لا يمكن التراجع عن هذا الإجراء.",
+      "confirmText": "هل أنت متأكد أنك تريد حذف هذا الحجز؟",
+      "confirm": "حذف"
+    },
     "noCustomersSelected": "لا يوجد عملاء محددين.",
     "customer": "العميل",
     "noCustomer": "لا يوجد عميل",
@@ -522,15 +584,95 @@
   },
   "agency": {
     "list": {
-      "fetchError": "خطأ في تحميل الوكالات"
+      "fetchError": "خطأ في تحميل الوكالات",
+      "title": "الوكالات",
+      "searchPlaceholder": "ابحث في الوكالات…",
+      "agencies": "وكالات",
+      "noResults": "لم يتم العثور على وكالات لهذا البحث",
+      "noAgencies": "لا توجد وكالات متاحة",
+      "tryDifferentSearch": "حاول مصطلح بحث مختلف",
+      "createFirstAgency": "أنشئ وكالتك الأولى للبدء",
+      "createAgency": "إنشاء وكالة",
+      "editSubscription": "تعديل الاشتراك",
+      "subscription": "الاشتراك"
     },
     "fields": {
       "name": "الاسم",
-      "address": "العنوان",
+      "namePlaceholder": "أدخل اسم الوكالة",
       "email": "البريد الإلكتروني",
-      "phoneOne": "الهاتف الأساسي",
-      "phoneTwo": "الهاتف الثانوي"
+      "emailPlaceholder": "أدخل عنوان البريد الإلكتروني",
+      "address": "العنوان",
+      "addressPlaceholder": "أدخل العنوان",
+      "phoneOne": "الهاتف الرئيسي",
+      "phoneTwo": "الهاتف الثانوي",
+      "phonePlaceholder": "أدخل رقم الهاتف",
+      "conditions": "الشروط والأحكام",
+      "conditionsPlaceholder": "أدخل الشروط والأحكام"
+    },
+    "stuff": {
+      "fetchError": "خطأ في تحميل الموظفين. الرجاء المحاولة مرة أخرى.",
+      "removeError": "خطأ في إزالة الموظف. الرجاء المحاولة مرة أخرى.",
+      "createError": "خطأ في إنشاء الموظف. الرجاء المحاولة مرة أخرى.",
+      "confirmRemove": "هل أنت متأكد أنك تريد إزالة هذا الموظف؟",
+      "confirmResetPassword": "هل أنت متأكد أنك تريد إعادة تعيين كلمة مرور هذا الموظف؟",
+      "passwordResetSuccess": "تم إعادة تعيين كلمة المرور. كلمة المرور الجديدة: {{password}}",
+      "passwordResetError": "خطأ في إعادة تعيين كلمة المرور. الرجاء المحاولة مرة أخرى.",
+      "title": "موظفو الوكالة",
+      "subtitle": "إدارة موظفي وكالتك",
+      "addStaff": "إضافة موظف",
+      "addNewStaff": "إضافة موظف جديد",
+      "searchPlaceholder": "ابحث عن الموظفين...",
+      "totalStaff": "إجمالي الموظفين: {{count}}",
+      "fields": {
+        "fullName": "الاسم الكامل",
+        "email": "البريد الإلكتروني",
+        "phoneNumber": "رقم الهاتف",
+        "role": "الدور",
+        "password": "كلمة المرور"
+      },
+      "placeholders": {
+        "fullName": "أدخل الاسم الكامل",
+        "email": "أدخل البريد الإلكتروني",
+        "phoneNumber": "أدخل رقم الهاتف",
+        "password": "أدخل كلمة المرور"
+      },
+      "roles": {
+        "manager": "مدير",
+        "owner": "مالك"
+      },
+      "noSearchResults": "لا يوجد موظفون يطابقون بحثك.",
+      "noStaff": "لا يوجد موظفين.",
+      "tryDifferentSearch": "حاول مصطلح بحث مختلف.",
+      "addFirstStaff": "أضف أول موظف لك."
     }
+  },
+  "agencyDetails": {
+    "fetchError": "فشل في تحميل تفاصيل الوكالة.",
+    "deleteSuccess": "تم حذف الوكالة بنجاح.",
+    "deleteError": "فشل في حذف الوكالة.",
+    "notFound": "لم يتم العثور على الوكالة.",
+    "subtitle": "تفاصيل الوكالة",
+    "editAgency": "تعديل الوكالة",
+    "manageSubscription": "إدارة الاشتراك",
+    "manageStaff": "إدارة الموظفين",
+    "viewReports": "عرض التقارير",
+    "viewFinancials": "عرض البيانات المالية",
+    "deleteAgency": "حذف الوكالة",
+    "confirmDelete": "تأكيد الحذف",
+    "confirmDeleteButton": "حذف",
+    "deleteWarning": "هل أنت متأكد من رغبتك في حذف هذه الوكالة؟",
+    "basicInformation": "المعلومات الأساسية",
+    "logoAlt": "شعار الوكالة",
+    "noLogo": "لا يوجد شعار",
+    "statistics": "الإحصائيات",
+    "staffMembers": "الموظفون",
+    "vehicles": "المركبات",
+    "customers": "العملاء",
+    "reservations": "الحجوزات",
+    "manageAll": "إدارة جميع الموظفين",
+    "viewAllStaff": "عرض جميع الموظفين ({{count}})",
+    "attachments": "المرفقات",
+    "conditions": "الشروط"
   },
   "agencySettings": {
     "fetchError": "حدث خطأ أثناء جلب بيانات الوكالة. حاول مرة أخرى.",
@@ -554,7 +696,25 @@
     "attachmentAddedSuccess": "تم إضافة المرفق بنجاح.",
     "attachmentAddedError": "فشل في إضافة المرفق.",
     "attachmentRemovedSuccess": "تم إزالة المرفق بنجاح.",
-    "attachmentRemovedError": "فشل في إزالة المرفق."
+    "attachmentRemovedError": "فشل في إزالة المرفق.",
+    "requiredFieldsError": "يرجى تعبئة جميع الحقول المطلوبة",
+    "logoFileRequired": "يرجى اختيار ملف الشعار لتحميله",
+    "logoUploadSuccess": "تم تحميل الشعار بنجاح",
+    "logoAssociationFileRequired": "يرجى اختيار ملف شعار الجمعية لتحميله",
+    "logoAssociationUploadSuccess": "تم تحميل شعار الجمعية بنجاح",
+    "logoAssociationUploadError": "حدث خطأ أثناء تحميل شعار الجمعية",
+    "attachmentRequiredError": "يرجى إدخال اسم الملف واختيار الملف للإرفاق",
+    "subtitle": "قم بإدارة معلومات وأصول وكالتك",
+    "saveInfo": "حفظ التغييرات",
+    "mainLogo": "الشعار الرئيسي",
+    "currentLogo": "الشعار الحالي",
+    "selectLogo": "اختر الشعار",
+    "selectedFile": "الملف المحدد",
+    "associationLogo": "شعار الجمعية",
+    "currentAssociationLogo": "شعار الجمعية الحالي",
+    "noAssociationLogo": "لم يتم تحميل شعار الجمعية",
+    "selectAssociationLogo": "اختر شعار الجمعية",
+    "uploadAssociationLogo": "تحميل شعار الجمعية"
   },
   "footer": {
     "company": "الشركة",
@@ -593,7 +753,18 @@
       "deleteError": "حدث خطأ أثناء حذف العميل.",
       "addNew": "إضافة عميل جديد",
       "actions": "الإجراءات",
-      "noRecords": "لا يوجد عملاء."
+      "noRecords": "لا يوجد عملاء.",
+      "total": "الإجمالي",
+      "blacklisted": "في القائمة السوداء",
+      "searchPlaceholder": "البحث في العملاء...",
+      "status": "الحالة",
+      "active": "نشط",
+      "noResults": "لم يتم العثور على عملاء",
+      "noCustomers": "لا يوجد عملاء بعد",
+      "tryDifferentSearch": "حاول تعديل البحث أو الفلاتر",
+      "getStarted": "أضف أول عميل للبدء",
+      "addFirstCustomer": "أضف أول عميل",
+      "totalCustomers": "المجموع: {{count}} عميل"
     },
     "errorLoading": "فشل في تحميل العملاء",
     "add": {
@@ -635,6 +806,10 @@
     },
     "search": {
       "placeholder": "ابحث في العملاء..."
+    },
+    "status": {
+      "blacklisted": "في القائمة السوداء",
+      "active": "نشط"
     }
   },
   "invoice": {
@@ -652,7 +827,8 @@
       "remainingBalance": "الرصيد المتبقي",
       "isPaid": "مدفوع",
       "reservation": "الحجز",
-      "id": "معرّف الفاتورة"
+      "id": "معرّف الفاتورة",
+      "status": "الحالة"
     },
     "actions": {
       "view": "عرض الفاتورة",
@@ -668,7 +844,21 @@
       "title": "الفواتير",
       "new": "فاتورة جديدة",
       "actions": "الإجراءات",
-      "noData": "لم يتم العثور على أي فواتير."
+      "noData": "لم يتم العثور على أي فواتير.",
+      "fetchError": "فشل في تحميل الفواتير. الرجاء المحاولة مرة أخرى.",
+      "total": "الإجمالي",
+      "paid": "مدفوعة",
+      "search": "ابحث في الفواتير...",
+      "noInvoices": "لم يتم العثور على فواتير",
+      "noResults": "لا توجد فواتير تطابق معايير البحث. حاول تعديل الفلاتر.",
+      "noInvoicesMessage": "ابدأ بإنشاء فاتورتك الأولى.",
+      "createFirst": "إنشاء الفاتورة الأولى"
+    },
+    "sort": {
+      "dateDesc": "التاريخ (الأحدث)",
+      "dateAsc": "التاريخ (الأقدم)",
+      "amountDesc": "المبلغ (من الأعلى إلى الأقل)",
+      "amountAsc": "المبلغ (من الأقل إلى الأعلى)"
     },
     "filters": {
       "from": "من",
@@ -895,7 +1085,22 @@
     "licensePlate": "رقم اللوحة",
     "maintenanceDue": "موعد الصيانة",
     "unknown": "غير معروف",
-    "notScheduled": "غير مجدول"
+    "notScheduled": "غير مجدول",
+    "maintenanceAlert": "صيانة قادمة",
+    "maintenanceAlertMessage": "لديك {{count}} مهمة صيانة قادمة",
+    "viewMaintenance": "عرض الصيانة",
+    "lowAvailabilityAlert": "توفر السيارات منخفض",
+    "lowAvailabilityMessage": "{{available}} من أصل {{total}} سيارة متاحة حاليًا",
+    "manageCars": "إدارة السيارات",
+    "pendingReservationsAlert": "حجوزات معلقة",
+    "pendingReservationsMessage": "هناك {{count}} حجزًا معلقًا",
+    "reviewReservations": "مراجعة الحجوزات",
+    "overview": "نظرة عامة",
+    "viewAll": "عرض الكل",
+    "unknownCustomer": "عميل غير معروف",
+    "unknownCar": "سيارة غير معروفة",
+    "unavailable": "غير متاحة",
+    "newReservation": "حجز جديد"
   },
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -1441,6 +1646,37 @@
       "lastMonth": "الشهر الماضي",
       "thisQuarter": "هذا الربع",
       "thisYear": "هذا العام"
+    }
+  },
+  "admin": {
+    "accessDeniedMessage": "ليس لديك الأذونات اللازمة لعرض هذه الصفحة.",
+    "alerts": {
+      "highOpenTickets": "هناك حالياً {{count}} تذكرة مفتوحة.",
+      "inactiveAgencies": "هناك {{count}} وكالة غير نشطة."
+    },
+    "dashboard": {
+      "welcomeMessage": "مرحباً، {{name}}!",
+      "quickActions": "الإجراءات السريعة",
+      "manageAgencies": "إدارة الوكالات",
+      "viewTickets": "عرض التذاكر",
+      "manageFilters": "إدارة الفلاتر",
+      "systemSettings": "إعدادات النظام",
+      "systemAlerts": "تنبيهات النظام",
+      "recentTickets": "أحدث التذاكر",
+      "agenciesOverview": "نظرة عامة على الوكالات",
+      "ticketBreakdown": "تفصيل حالة التذاكر"
+    },
+    "stats": {
+      "totalAgencies": "إجمالي الوكالات",
+      "active": "نشطة",
+      "totalTickets": "إجمالي التذاكر",
+      "open": "مفتوحة",
+      "totalStaff": "إجمالي الموظفين",
+      "acrossAgencies": "عبر جميع الوكالات",
+      "activeCars": "السيارات النشطة",
+      "systemWide": "على مستوى النظام",
+      "status": "الحالة",
+      "cars": "السيارات"
     }
   }
 }

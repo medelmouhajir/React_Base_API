@@ -267,7 +267,7 @@ namespace React_Rentify.Server.Controllers
                 LicensePlate = dto.LicensePlate,
                 Color = dto.Color,
                 IsAvailable = dto.IsAvailable,
-                Status = dto.Status,
+                Status = "Available",
                 DailyRate = dto.DailyRate,
                 HourlyRate = dto.HourlyRate,
                 DeviceSerialNumber = dto.DeviceSerialNumber,

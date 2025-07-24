@@ -44,6 +44,7 @@ services:
       - DOTNET_USE_POLLING_FILE_WATCHER=1
       # Enable debugging
       - DOTNET_EnableDiagnostics=1
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=mangati_db_1;Username=postgres;Password=postgres
     depends_on:
       - db
     networks:

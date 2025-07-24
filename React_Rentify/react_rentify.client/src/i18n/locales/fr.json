@@ -93,7 +93,19 @@
     "error": "Erreur",
     "dateFrom": "Date de début",
     "dateTo": "Date de fin",
-    "allRightsReserved": "Tous droits réservés"
+    "allRightsReserved": "Tous droits réservés",
+    "paid": "Payé",
+    "unpaid": "Impayé",
+    "accessDenied": "Accès refusé",
+    "admin": "Admin",
+    "sortBy": "Trier par",
+    "clearFilters": "Effacer les filtres",
+    "showingResults": "Affichage de {{count}} sur {{total}} clients",
+    "cardView": "Affichage en cartes",
+    "cards": "Cartes",
+    "tableView": "Affichage en tableau",
+    "table": "Tableau",
+    "clearSearch": "Effacer la recherche"
   },
   "landing": {
     "features": "Fonctionnalités",
@@ -213,26 +225,70 @@
     "resetLinkSent": "Le lien de réinitialisation a été envoyé à votre e-mail",
     "logoutSuccess": "Déconnecté avec succès",
     "logoutError": "Échec de la déconnexion",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "verifyingAccess": "Vérification de l’accès…",
+    "accessDenied": "Accès refusé",
+    "insufficientPermissions": "Vous n’avez pas les permissions nécessaires pour voir cette page.",
+    "requiredRole": "Rôle requis",
+    "yourRole": "Votre rôle"
   },
   "filters": {
-    "pageTitle": "Paramètres de filtrage",
+    "pageTitle": "Filtres",
+    "pageDescription": "Sélectionnez un filtre pour affiner votre recherche",
+    "helpTitle": "Besoin d'aide ?",
+    "helpText": "Choisissez un filtre ci‑dessus pour affiner vos résultats",
+
     "manufacturer": {
       "title": "Fabricants",
+      "description": "Filtrer par constructeur de voiture",
       "fetchError": "Erreur lors du chargement des fabricants",
       "confirmRemove": "Êtes‑vous sûr de vouloir supprimer ce fabricant ?",
-      "removeError": "Erreur lors de la suppression du fabricant"
+      "removeError": "Erreur lors de la suppression du fabricant",
+      "nameRequired": "Le nom du constructeur est requis.",
+      "addError": "Échec de l'ajout du constructeur.",
+      "subtitle": "Gérez la liste des constructeurs automobiles.",
+      "add": "Ajouter un constructeur",
+      "emptyTitle": "Aucun constructeur trouvé",
+      "emptyDescription": "Vous n’avez pas encore ajouté de constructeurs.",
+      "addFirst": "Ajoutez votre premier constructeur",
+      "totalCount": "Nombre total de constructeurs",
+      "nameLabel": "Nom du constructeur",
+      "namePlaceholder": "Entrez le nom du constructeur"
     },
     "models": {
       "title": "Modèles de voitures",
+      "description": "Filtrer par constructeur de voiture",
       "fetchError": "Erreur lors du chargement des modèles de voitures",
-      "confirmRemove": "Êtes‑vous sûr de vouloir supprimer ce modèle ?"
+      "confirmRemove": "Êtes‑vous sûr de vouloir supprimer ce modèle ?",
+      "nameAndManufacturerRequired": "Le nom du modèle et le constructeur sont requis.",
+      "addError": "Échec de l'ajout du modèle de voiture. Veuillez réessayer.",
+      "add": "Ajouter un modèle",
+      "searchPlaceholder": "Rechercher des modèles...",
+      "allManufacturers": "Tous les constructeurs",
+      "showingResults": "Affichage de {{count}} sur {{total}} modèles",
+      "modelName": "Nom du modèle",
+      "manufacturer": "Constructeur",
+      "noResultsFound": "Aucun résultat trouvé.",
+      "noModels": "Aucun modèle de voiture disponible.",
+      "tryDifferentSearch": "Essayez un autre terme de recherche.",
+      "addFirstModel": "Ajoutez votre premier modèle de voiture.",
+      "addNew": "Ajouter un nouveau modèle",
+      "enterModelName": "Entrez le nom du modèle",
+      "remove": "Supprimer le modèle"
     },
     "years": {
       "title": "Années des voitures",
+      "description": "Filtrer par année de voiture",
       "fetchError": "Erreur lors du chargement des années des voitures",
       "confirmRemove": "Êtes‑vous sûr de vouloir supprimer cette année ?",
-      "removeError": "Erreur lors de la suppression de l’année"
+      "removeError": "Erreur lors de la suppression de l’année",
+      "invalidYear": "Année invalide. Veuillez entrer une année entre 1900 et l'année prochaine.",
+      "noResults": "Aucune année trouvée.",
+      "add": "Ajouter une année",
+      "addFirst": "Ajoutez votre première année",
+      "YearValue": "Année",
+      "yearLabel": "Année",
+      "yearPlaceholder": "Entrez l'année"
     }
   },
   "maintenance": {
@@ -472,6 +528,12 @@
       "price": "Entrez le prix",
       "selectCustomer": "Sélectionnez un client"
     },
+    "remove": {
+      "title": "Supprimer la réservation",
+      "warning": "Cette action est irréversible.",
+      "confirmText": "Êtes-vous sûr de vouloir supprimer cette réservation ?",
+      "confirm": "Supprimer"
+    },
     "noCustomersSelected": "Aucun client sélectionné.",
     "customer": "Client",
     "noCustomer": "Aucun client",
@@ -510,15 +572,95 @@
   },
   "agency": {
     "list": {
-      "fetchError": "Erreur lors du chargement des agences"
+      "fetchError": "Erreur lors du chargement des agences",
+      "title": "Agences",
+      "searchPlaceholder": "Rechercher des agences…",
+      "agencies": "agences",
+      "noResults": "Aucune agence trouvée pour votre recherche",
+      "noAgencies": "Aucune agence disponible",
+      "tryDifferentSearch": "Essayez un autre terme de recherche",
+      "createFirstAgency": "Créez votre première agence pour démarrer",
+      "createAgency": "Créer une agence",
+      "editSubscription": "Modifier l’abonnement",
+      "subscription": "Abonnement"
     },
     "fields": {
       "name": "Nom",
-      "address": "Adresse",
+      "namePlaceholder": "Entrez le nom de l’agence",
       "email": "Email",
+      "emailPlaceholder": "Entrez l’adresse email",
+      "address": "Adresse",
+      "addressPlaceholder": "Entrez l’adresse",
       "phoneOne": "Téléphone principal",
-      "phoneTwo": "Téléphone secondaire"
+      "phoneTwo": "Téléphone secondaire",
+      "phonePlaceholder": "Entrez le numéro de téléphone",
+      "conditions": "Conditions générales",
+      "conditionsPlaceholder": "Entrez les conditions générales"
+    },
+    "stuff": {
+      "fetchError": "Erreur lors du chargement du personnel. Veuillez réessayer.",
+      "removeError": "Erreur lors de la suppression du membre du personnel. Veuillez réessayer.",
+      "createError": "Erreur lors de la création du membre du personnel. Veuillez réessayer.",
+      "confirmRemove": "Êtes-vous sûr de vouloir supprimer ce membre du personnel ?",
+      "confirmResetPassword": "Êtes-vous sûr de vouloir réinitialiser le mot de passe de ce membre du personnel ?",
+      "passwordResetSuccess": "Le mot de passe a été réinitialisé. Nouveau mot de passe : {{password}}",
+      "passwordResetError": "Erreur lors de la réinitialisation du mot de passe. Veuillez réessayer.",
+      "title": "Personnel de l’agence",
+      "subtitle": "Gérez les membres du personnel de votre agence",
+      "addStaff": "Ajouter du personnel",
+      "addNewStaff": "Ajouter un nouveau membre du personnel",
+      "searchPlaceholder": "Rechercher du personnel…",
+      "totalStaff": "Nombre total de membres : {{count}}",
+      "fields": {
+        "fullName": "Nom complet",
+        "email": "Adresse e-mail",
+        "phoneNumber": "Numéro de téléphone",
+        "role": "Rôle",
+        "password": "Mot de passe"
+      },
+      "placeholders": {
+        "fullName": "Entrez le nom complet",
+        "email": "Entrez l’adresse e-mail",
+        "phoneNumber": "Entrez le numéro de téléphone",
+        "password": "Entrez le mot de passe"
+      },
+      "roles": {
+        "manager": "Gestionnaire",
+        "owner": "Propriétaire"
+      },
+      "noSearchResults": "Aucun résultat ne correspond à votre recherche.",
+      "noStaff": "Aucun membre du personnel trouvé.",
+      "tryDifferentSearch": "Essayez un autre terme de recherche.",
+      "addFirstStaff": "Ajoutez votre premier membre du personnel."
     }
+  },
+  "agencyDetails": {
+    "fetchError": "Échec du chargement des détails de l'agence.",
+    "deleteSuccess": "Agence supprimée avec succès.",
+    "deleteError": "Échec de la suppression de l'agence.",
+    "notFound": "Agence introuvable.",
+    "subtitle": "Détails de l'agence",
+    "editAgency": "Modifier l'agence",
+    "manageSubscription": "Gérer l'abonnement",
+    "manageStaff": "Gérer le personnel",
+    "viewReports": "Voir les rapports",
+    "viewFinancials": "Voir les finances",
+    "deleteAgency": "Supprimer l'agence",
+    "confirmDelete": "Confirmer la suppression",
+    "confirmDeleteButton": "Supprimer",
+    "deleteWarning": "Êtes-vous sûr de vouloir supprimer cette agence ?",
+    "basicInformation": "Informations de base",
+    "logoAlt": "Logo de l'agence",
+    "noLogo": "Aucun logo disponible",
+    "statistics": "Statistiques",
+    "staffMembers": "Membres du personnel",
+    "vehicles": "Véhicules",
+    "customers": "Clients",
+    "reservations": "Réservations",
+    "manageAll": "Gérer tout le personnel",
+    "viewAllStaff": "Voir les {{count}} membres du personnel",
+    "attachments": "Pièces jointes",
+    "conditions": "Conditions"
   },
   "agencySettings": {
     "fetchError": "Une erreur est survenue lors de la récupération des données de l'agence. Veuillez réessayer.",
@@ -542,7 +684,25 @@
     "attachmentAddedSuccess": "Pièce jointe ajoutée avec succès.",
     "attachmentAddedError": "Échec de l'ajout de la pièce jointe.",
     "attachmentRemovedSuccess": "Pièce jointe supprimée avec succès.",
-    "attachmentRemovedError": "Échec de la suppression de la pièce jointe."
+    "attachmentRemovedError": "Échec de la suppression de la pièce jointe.",
+    "requiredFieldsError": "Veuillez remplir tous les champs obligatoires",
+    "logoFileRequired": "Veuillez sélectionner un fichier de logo à télécharger",
+    "logoUploadSuccess": "Logo téléchargé avec succès",
+    "logoAssociationFileRequired": "Veuillez sélectionner un fichier de logo d’association à télécharger",
+    "logoAssociationUploadSuccess": "Logo d’association téléchargé avec succès",
+    "logoAssociationUploadError": "Erreur lors du téléchargement du logo d’association",
+    "attachmentRequiredError": "Veuillez fournir un nom et sélectionner un fichier pour la pièce jointe",
+    "subtitle": "Gérez les informations et les ressources de votre agence",
+    "saveInfo": "Enregistrer les modifications",
+    "mainLogo": "Logo principal",
+    "currentLogo": "Logo actuel",
+    "selectLogo": "Sélectionner un logo",
+    "selectedFile": "Fichier sélectionné",
+    "associationLogo": "Logo d’association",
+    "currentAssociationLogo": "Logo d’association actuel",
+    "noAssociationLogo": "Aucun logo d’association téléchargé",
+    "selectAssociationLogo": "Sélectionner un logo d’association",
+    "uploadAssociationLogo": "Téléverser le logo d’association"
   },
   "footer": {
     "company": "Entreprise",
@@ -581,7 +741,18 @@
       "deleteError": "Une erreur est survenue lors de la suppression du client.",
       "addNew": "Ajouter un nouveau client",
       "actions": "Actions",
-      "noRecords": "Aucun client."
+      "noRecords": "Aucun client.",
+      "total": "Total",
+      "blacklisted": "En liste noire",
+      "searchPlaceholder": "Rechercher des clients...",
+      "status": "Statut",
+      "active": "Actif",
+      "noResults": "Aucun client trouvé",
+      "noCustomers": "Pas encore de clients",
+      "tryDifferentSearch": "Essayez d'ajuster votre recherche ou vos filtres",
+      "getStarted": "Ajoutez votre premier client pour commencer",
+      "addFirstCustomer": "Ajouter un premier client",
+      "totalCustomers": "Total : {{count}} clients"
     },
     "errorLoading": "Échec du chargement des clients",
     "add": {
@@ -623,6 +794,10 @@
     },
     "search": {
       "placeholder": "Recherchez parmi les clients..."
+    },
+    "status": {
+      "blacklisted": "En liste noire",
+      "active": "Actif"
     }
   },
   "invoice": {
@@ -640,7 +815,8 @@
       "remainingBalance": "Solde restant",
       "isPaid": "Payée",
       "reservation": "Réservation",
-      "id": "ID de la facture"
+      "id": "ID de la facture",
+      "status": "Statut"
     },
     "actions": {
       "view": "Voir la facture",
@@ -656,7 +832,21 @@
       "title": "Factures",
       "new": "Nouvelle facture",
       "actions": "Actions",
-      "noData": "Aucune facture trouvée."
+      "noData": "Aucune facture trouvée.",
+      "fetchError": "Impossible de charger les factures. Veuillez réessayer.",
+      "total": "Total",
+      "paid": "Payé",
+      "search": "Rechercher des factures...",
+      "noInvoices": "Aucune facture trouvée",
+      "noResults": "Aucune facture ne correspond à vos critères de recherche. Essayez d'ajuster vos filtres.",
+      "noInvoicesMessage": "Commencez par créer votre première facture.",
+      "createFirst": "Créer la première facture"
+    },
+    "sort": {
+      "dateDesc": "Date (Plus récentes)",
+      "dateAsc": "Date (Plus anciennes)",
+      "amountDesc": "Montant (Décroissant)",
+      "amountAsc": "Montant (Croissant)"
     },
     "filters": {
       "from": "De",
@@ -883,7 +1073,22 @@
     "licensePlate": "Plaque d'immatriculation",
     "maintenanceDue": "Date d'entretien",
     "unknown": "Inconnu",
-    "notScheduled": "Non planifié"
+    "notScheduled": "Non planifié",
+    "maintenanceAlert": "Maintenance à venir",
+    "maintenanceAlertMessage": "Vous avez {{count}} tâche(s) de maintenance à venir",
+    "viewMaintenance": "Voir la maintenance",
+    "lowAvailabilityAlert": "Disponibilité faible des voitures",
+    "lowAvailabilityMessage": "{{available}} sur {{total}} voitures sont actuellement disponibles",
+    "manageCars": "Gérer les voitures",
+    "pendingReservationsAlert": "Réservations en attente",
+    "pendingReservationsMessage": "Il y a {{count}} réservation(s) en attente",
+    "reviewReservations": "Consulter les réservations",
+    "newReservation": "Nouvelle réservation",
+    "overview": "Aperçu",
+    "viewAll": "Voir tout",
+    "unknownCustomer": "Client inconnu",
+    "unknownCar": "Voiture inconnue",
+    "unavailable": "Indisponible"
   },
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -1421,6 +1626,37 @@
       "lastMonth": "Le mois dernier",
       "thisQuarter": "Ce trimestre",
       "thisYear": "Cette année"
+    }
+  },
+  "admin": {
+    "accessDeniedMessage": "Vous n'avez pas l'autorisation d'accéder à cette page.",
+    "alerts": {
+      "highOpenTickets": "Il y a actuellement {{count}} tickets ouverts.",
+      "inactiveAgencies": "{{count}} agences sont inactives."
+    },
+    "dashboard": {
+      "welcomeMessage": "Bienvenue, {{name}} !",
+      "quickActions": "Actions rapides",
+      "manageAgencies": "Gérer les agences",
+      "viewTickets": "Voir les tickets",
+      "manageFilters": "Gérer les filtres",
+      "systemSettings": "Paramètres du système",
+      "systemAlerts": "Alertes système",
+      "recentTickets": "Tickets récents",
+      "agenciesOverview": "Aperçu des agences",
+      "ticketBreakdown": "Répartition des tickets par statut"
+    },
+    "stats": {
+      "totalAgencies": "Nombre total d'agences",
+      "active": "Actifs",
+      "totalTickets": "Nombre total de tickets",
+      "open": "Ouverts",
+      "totalStaff": "Nombre total de personnel",
+      "acrossAgencies": "Dans toutes les agences",
+      "activeCars": "Voitures actives",
+      "systemWide": "Au niveau du système",
+      "status": "Statut",
+      "cars": "Voitures"
     }
   }
 }

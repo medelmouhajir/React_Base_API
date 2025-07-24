@@ -221,7 +221,7 @@ const ExpenseList = () => {
                 <div className="filters-row">
                     <div className="search-group">
                         <div className="search-input-wrapper">
-                            <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <svg className="search-icon-expenses" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <circle cx="11" cy="11" r="8" strokeWidth={2} />
                                 <path d="m21 21-4.35-4.35" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
@@ -230,7 +230,7 @@ const ExpenseList = () => {
                                 placeholder={t('expenses.searchPlaceholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="search-input"
+                                className="search-input-expenses"
                             />
                         </div>
                     </div>

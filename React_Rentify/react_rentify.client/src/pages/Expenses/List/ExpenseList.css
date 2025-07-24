@@ -320,7 +320,7 @@
     position: relative;
 }
 
-.search-icon {
+.search-icon-expenses {
     position: absolute;
     left: 0.75rem;
     top: 50%;
@@ -331,7 +331,7 @@
     stroke-width: 2;
 }
 
-.search-input,
+.search-input-expenses,
 .filter-select,
 .date-input,
 .sort-select {
@@ -345,11 +345,11 @@
     transition: all var(--transition-fast);
 }
 
-.search-input {
+.search-input-expenses {
     padding-left: 2.5rem;
 }
 
-    .search-input:focus,
+    .search-input-expenses:focus,
     .filter-select:focus,
     .date-input:focus,
     .sort-select:focus {
@@ -358,7 +358,7 @@
         box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
     }
 
-    .search-input::placeholder {
+    .search-input-expenses::placeholder {
         color: var(--text-secondary);
     }
 
@@ -885,12 +885,12 @@
 /*---------------------------------------------
   RTL Support
 ---------------------------------------------*/
-[dir='rtl'] .search-icon {
+[dir='rtl'] .search-icon-expenses {
     left: auto;
     right: 0.75rem;
 }
 
-[dir='rtl'] .search-input {
+[dir='rtl'] .search-input-expenses {
     padding-left: 1rem;
     padding-right: 2.5rem;
 }

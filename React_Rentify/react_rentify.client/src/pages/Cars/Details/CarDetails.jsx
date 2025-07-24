@@ -178,9 +178,8 @@ const CarDetails = () => {
         return new Date(dateString).toLocaleDateString();
     };
 
-    // Create a new reservation for this car
     const handleAddReservation = () => {
-        navigate('/reservations/add', { state: { preSelectedCarId: id } });
+        navigate(`/reservations/add?carId=${id}`);
     };
 
     // Touch event handlers for swipe gestures on mobile

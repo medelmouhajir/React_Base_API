@@ -795,6 +795,7 @@ namespace React_Rentify.Server.Controllers.App
 
 
             var reservation = await _context.Set<Reservation>()
+                .Include(x=> x.Car)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (reservation == null)
@@ -819,7 +820,11 @@ namespace React_Rentify.Server.Controllers.App
             reservation.OdometerStart = dto.OdometerStart;
             reservation.FuelLevelStart = 100;
 
+            reservation.Car.Status = "Rented";
+
             _context.Entry(reservation).State = EntityState.Modified;
+
+            _context.Entry(reservation.Car).State = EntityState.Modified;
 
             try
             {
@@ -841,6 +846,7 @@ namespace React_Rentify.Server.Controllers.App
 
 
             var reservation = await _context.Set<Reservation>()
+                .Include(x => x.Car)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (reservation == null)
@@ -866,7 +872,11 @@ namespace React_Rentify.Server.Controllers.App
             reservation.OdometerEnd = dto.OdometerEnd;
             reservation.FuelLevelEnd = 100;
 
+            reservation.Car.Status = "Available";
+
             _context.Entry(reservation).State = EntityState.Modified;
+
+            _context.Entry(reservation.Car).State = EntityState.Modified;
 
             try
             {

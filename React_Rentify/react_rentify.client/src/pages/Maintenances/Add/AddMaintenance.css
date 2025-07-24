@@ -71,10 +71,10 @@
   Container & Page Layout
 ---------------------------------------------*/
 .addMaintenance-container {
-    max-width: 800px;
+    max-width: 95%;
     margin: 0 auto 2rem;
     padding: 1.5rem;
-    background-color: var(--card-bg);
+    background-color: transparent;
     color: var(--text-color);
     border-radius: 0.5rem;
     box-shadow: var(--shadow-md);

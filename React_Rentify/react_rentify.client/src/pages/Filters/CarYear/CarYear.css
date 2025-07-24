@@ -1,132 +1,172 @@
 /* src/pages/Filters/CarYear/CarYear.css */
 
-/* Container */
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --warning-color: #f59e0b;
+    /* Light theme */
+    --card-nested-bg-light: #ffffff;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #60a5fa;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-hover-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --table-header-bg-light: #f3f4f6;
+    --table-row-hover-light: rgba(0, 0, 0, 0.025);
+    /* Dark theme */
+    --card-nested-bg-dark: #334155;
+    --border-color-dark: #475569;
+    --input-bg-dark: #374151;
+    --input-text-dark: #f9fafb;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #3b82f6;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover-dark: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --table-header-bg-dark: #2d3748;
+    --table-row-hover-dark: rgba(255, 255, 255, 0.05);
+    /* Common */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --transition-speed: 0.25s;
+    --transition-fast: 0.15s;
+    --transition-normal: 0.3s;
+}
+
+/* Light theme (default) */
+.car-year-container {
+    --bg-color: transparent;
+    --card-bg: var(--card-bg-light);
+    --card-nested-bg: var(--card-nested-bg-light);
+    --text-color: var(--text-color-light);
+    --text-secondary: var(--text-secondary-light);
+    --border-color: var(--border-color-light);
+    --input-bg: var(--input-bg-light);
+    --input-text: var(--input-text-light);
+    --input-border: var(--input-border-light);
+    --input-focus-border: var(--input-focus-border-light);
+    --shadow: var(--shadow-light);
+    --shadow-hover: var(--shadow-hover-light);
+    --table-header-bg: var(--table-header-bg-light);
+    --table-row-hover: var(--table-row-hover-light);
+}
+
+/* Dark mode colors */
+[data-theme='dark'] .car-year-container {
+    --bg-color: transparent;
+    --card-bg: var(--card-bg-dark);
+    --card-nested-bg: var(--card-nested-bg-dark);
+    --text-color: var(--text-color-dark);
+    --text-secondary: var(--text-secondary-dark);
+    --border-color: var(--border-color-dark);
+    --input-bg: var(--input-bg-dark);
+    --input-text: var(--input-text-dark);
+    --input-border: var(--input-border-dark);
+    --input-focus-border: var(--input-focus-border-dark);
+    --shadow: var(--shadow-dark);
+    --shadow-hover: var(--shadow-hover-dark);
+    --table-header-bg: var(--table-header-bg-dark);
+    --table-row-hover: var(--table-row-hover-dark);
+}
+
+/*------------------------------------------------------------
+  Container and Layout
+  ------------------------------------------------------------*/
 .car-year-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 1rem;
+    padding: 1.5rem;
+    color: var(--text-color);
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    transition: color var(--transition-speed);
 }
 
-/* Header */
+/*------------------------------------------------------------
+  Header Section
+  ------------------------------------------------------------*/
 .cy-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .cy-title {
     font-size: 1.75rem;
     font-weight: 600;
     margin: 0;
+    color: var(--text-color);
 }
 
 .cy-add-btn {
-    background-color: #d9534f;
-    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--primary-color);
+    color: #ffffff;
     border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.375rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--border-radius);
     font-size: 0.95rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all var(--transition-fast);
+    min-height: 2.75rem;
 }
 
     .cy-add-btn:hover {
-        background-color: #c9302c;
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-hover);
     }
 
-/* Table */
-.cy-table-wrapper {
-    overflow-x: auto;
-}
-
-.cy-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-}
-
-    .cy-table th,
-    .cy-table td {
-        padding: 0.75rem 1rem;
-        text-align: left;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    .cy-add-btn:active {
+        transform: translateY(0);
     }
 
-    .cy-table th {
-        background-color: #f1f1f1;
-        color: #333;
-    }
-
-    .cy-table tr:hover td {
-        background-color: #fafafa;
-    }
-
-/* Actions cell */
-.cy-actions-cell {
-    display: flex;
-    justify-content: flex-start;
+.cy-add-icon {
+    font-size: 1.25rem;
+    font-weight: bold;
+    line-height: 1;
 }
 
-.cy-remove-btn {
-    background-color: transparent;
-    border: 1px solid #d9534f;
-    color: #d9534f;
-    padding: 0.4rem 0.8rem;
-    border-radius: 0.375rem;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+.cy-add-text {
+    white-space: nowrap;
 }
 
-    .cy-remove-btn:hover {
-        background-color: #f2dede;
-    }
-
-/* Cards (mobile) */
-.cy-cards-wrapper {
-    display: none;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.cy-card {
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.cy-card-year {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #333;
-}
-
-/* Loading Spinner */
+/*------------------------------------------------------------
+  Loading State
+  ------------------------------------------------------------*/
 .cy-loading-wrapper {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    height: 50vh;
+    align-items: center;
+    padding: 3rem 1rem;
+    gap: 1rem;
 }
 
 .cy-spinner {
     width: 2.5rem;
     height: 2.5rem;
-    border: 0.35rem solid transparent;
-    border-top-color: #4a90e2;
+    border: 3px solid var(--border-color);
     border-radius: 50%;
+    border-top-color: var(--primary-color);
     animation: spin 1s linear infinite;
+}
+
+.cy-loading-text {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
 }
 
 @keyframes spin {
@@ -135,153 +175,655 @@
     }
 }
 
-/* Error Message */
-.cy-error-message {
-    color: #d9534f;
-    background-color: #f8d7da;
-    padding: 0.75rem 1rem;
-    border-radius: 0.375rem;
-    font-size: 0.9rem;
-    text-align: center;
-}
-
-/* Modal Overlay */
-.cy-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+/*------------------------------------------------------------
+  Error State
+  ------------------------------------------------------------*/
+.cy-error-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 1rem;
+    padding: 2rem 1rem;
+}
+
+.cy-error-message {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--error-color);
     padding: 1rem;
-}
-
-/* Modal */
-.cy-modal {
-    background-color: #fff;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--error-color);
     width: 100%;
-    max-width: 400px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    position: relative;
-}
-
-.cy-modal-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0 0 1rem;
     text-align: center;
 }
 
-.cy-modal-error {
-    color: #d9534f;
-    background-color: #f8d7da;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.375rem;
-    font-size: 0.85rem;
-    margin-bottom: 0.75rem;
-    text-align: center;
+.cy-retry-btn {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
 }
 
-/* Modal Form */
-.cy-modal-form {
+    .cy-retry-btn:hover {
+        background-color: var(--primary-hover);
+    }
+
+/*------------------------------------------------------------
+  No Results State
+  ------------------------------------------------------------*/
+.cy-no-results {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    border: 2px dashed var(--border-color);
+}
+
+    .cy-no-results p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+/*------------------------------------------------------------
+  Desktop Table View
+  ------------------------------------------------------------*/
+.cy-desktop-view {
+    display: block;
+}
+
+.cy-table-wrapper {
+    background-color: var(--card-nested-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.cy-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+    .cy-table th,
+    .cy-table td {
+        padding: 1rem 1.25rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .cy-table th {
+        background-color: var(--table-header-bg);
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+    .cy-table tbody tr {
+        transition: background-color var(--transition-fast);
+    }
+
+        .cy-table tbody tr:hover {
+            background-color: var(--table-row-hover);
+        }
+
+        .cy-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+.cy-year-cell {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.cy-actions-cell {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.cy-remove-btn {
+    background-color: transparent;
+    border: 1px solid var(--secondary-color);
+    color: var(--secondary-color);
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-weight: 500;
+}
+
+    .cy-remove-btn:hover {
+        background-color: var(--secondary-color);
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    .cy-remove-btn:active {
+        transform: translateY(0);
+    }
+
+/*------------------------------------------------------------
+  Mobile Cards View
+  ------------------------------------------------------------*/
+.cy-mobile-view {
+    display: none;
+}
+
+.cy-cards-wrapper {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
+.cy-card {
+    background-color: var(--card-nested-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all var(--transition-fast);
+}
+
+    .cy-card:hover {
+        box-shadow: var(--shadow-hover);
+        transform: translateY(-1px);
+    }
+
+.cy-card-content {
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cy-card-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.cy-card-year {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.cy-card-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.cy-card-actions {
+    display: flex;
+    align-items: center;
+}
+
+.cy-card-remove-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: transparent;
+    border: 1px solid var(--secondary-color);
+    color: var(--secondary-color);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-weight: 500;
+    min-height: 2.75rem;
+}
+
+    .cy-card-remove-btn:hover {
+        background-color: var(--secondary-color);
+        color: #ffffff;
+    }
+
+    .cy-card-remove-btn:active {
+        transform: scale(0.98);
+    }
+
+.cy-remove-icon {
+    font-size: 1.25rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.cy-remove-text {
+    white-space: nowrap;
+}
+
+/*------------------------------------------------------------
+  Modal Styles
+  ------------------------------------------------------------*/
+.cy-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.cy-modal-container {
+    background-color: var(--card-nested-bg);
+    border-radius: var(--border-radius-lg);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border-color);
+}
+
+.cy-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+}
+
+.cy-modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.cy-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+    transition: color var(--transition-fast);
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+}
+
+    .cy-modal-close:hover {
+        color: var(--text-color);
+        background-color: var(--table-row-hover);
+    }
+
+.cy-modal-body {
+    padding: 1.5rem;
+}
+
+.cy-modal-error {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--error-color);
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--error-color);
+    font-size: 0.875rem;
+}
+
+.cy-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 .cy-form-group {
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
 }
 
-    .cy-form-group label {
-        margin-bottom: 0.4rem;
-        font-size: 0.9rem;
-        font-weight: 500;
-        color: #555;
+.cy-form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.cy-form-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--input-border);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    font-size: 1rem;
+    transition: all var(--transition-fast);
+}
+
+    .cy-form-input:focus {
+        outline: none;
+        border-color: var(--input-focus-border);
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
     }
 
-    .cy-form-group input {
-        padding: 0.6rem 0.8rem;
-        font-size: 0.9rem;
-        border: 1px solid #ccc;
-        border-radius: 0.375rem;
-        transition: border-color 0.2s;
+    .cy-form-input::placeholder {
+        color: var(--text-secondary);
     }
 
-        .cy-form-group input:focus {
-            outline: none;
-            border-color: #4a90e2;
-        }
-
-/* Modal Actions */
 .cy-modal-actions {
     display: flex;
     justify-content: flex-end;
     gap: 0.75rem;
 }
 
-.cy-btn-primary,
-.cy-btn-secondary {
-    font-size: 0.9rem;
-    font-weight: 500;
-    padding: 0.6rem 1rem;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
-}
-
+.cy-btn-secondary,
 .cy-btn-primary {
-    background-color: #4a90e2;
-    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
     border: none;
+    min-height: 2.75rem;
+    min-width: 5rem;
 }
-
-    .cy-btn-primary:disabled {
-        background-color: #a0c4e5;
-        cursor: not-allowed;
-    }
-
-    .cy-btn-primary:hover:not(:disabled) {
-        background-color: #3b78c3;
-    }
 
 .cy-btn-secondary {
     background-color: transparent;
-    color: #4a4a4a;
-    border: 1px solid #ccc;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
 }
 
-    .cy-btn-secondary:hover {
-        background-color: #f5f5f5;
+    .cy-btn-secondary:hover:not(:disabled) {
+        background-color: var(--table-row-hover);
+        color: var(--text-color);
     }
 
-/* Responsive Breakpoints */
+.cy-btn-primary {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+    .cy-btn-primary:hover:not(:disabled) {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+    }
+
+    .cy-btn-primary:disabled,
+    .cy-btn-secondary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+/*------------------------------------------------------------
+  Responsive Design & Media Queries
+  ------------------------------------------------------------*/
+@media (max-width: 1024px) {
+    .car-year-container {
+        padding: 1.25rem;
+    }
+
+    .cy-table th,
+    .cy-table td {
+        padding: 0.875rem 1rem;
+    }
+}
+
 @media (max-width: 768px) {
-    /* Hide table on small screens */
-    ..cy-table-wrapper {
-        display: none;
+    .car-year-container {
+        padding: 1rem;
+        gap: 1.25rem;
     }
 
-    /* Show cards on small screens */
-    .cy-cards-wrapper {
-        display: flex;
+    .cy-title {
+        font-size: 1.5rem;
     }
 
-    /* Adjust header stacking */
     .cy-header {
         flex-direction: column;
         align-items: stretch;
-        gap: 0.75rem;
+        text-align: center;
     }
 
     .cy-add-btn {
         width: 100%;
+        justify-content: center;
+    }
+
+    /* Hide desktop table, show mobile cards */
+    .cy-desktop-view {
+        display: none;
+    }
+
+    .cy-mobile-view {
+        display: block;
+    }
+
+    /* Modal adjustments */
+    .cy-modal-overlay {
+        padding: 0.5rem;
+        align-items: flex-end;
+    }
+
+    .cy-modal-container {
+        max-width: 100%;
+        border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+        max-height: 85vh;
+    }
+
+    .cy-modal-header,
+    .cy-modal-body {
+        padding: 1.25rem;
+    }
+
+    .cy-modal-actions {
+        flex-direction: column;
+    }
+
+    .cy-btn-secondary,
+    .cy-btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .car-year-container {
+        padding: 0.75rem;
+        gap: 1rem;
+    }
+
+    .cy-title {
+        font-size: 1.375rem;
+    }
+
+    .cy-card-content {
+        padding: 1rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .cy-card-main {
+        text-align: center;
+    }
+
+    .cy-card-remove-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .cy-modal-header,
+    .cy-modal-body {
+        padding: 1rem;
+    }
+
+    .cy-modal-title {
+        font-size: 1.125rem;
+    }
+
+    .cy-no-results {
+        padding: 2rem 1rem;
+    }
+}
+
+/*------------------------------------------------------------
+  Touch Device Optimizations
+  ------------------------------------------------------------*/
+@media (hover: none) {
+    .cy-add-btn:active,
+    .cy-remove-btn:active,
+    .cy-card-remove-btn:active,
+    .cy-retry-btn:active,
+    .cy-btn-primary:active,
+    .cy-btn-secondary:active {
+        opacity: 0.8;
+        transform: scale(0.98);
+    }
+
+    .cy-card:active {
+        transform: scale(0.99);
+    }
+
+    /* Larger touch targets */
+    .cy-add-btn,
+    .cy-remove-btn,
+    .cy-card-remove-btn,
+    .cy-btn-primary,
+    .cy-btn-secondary {
+        min-height: 3rem;
+        padding-top: 0.875rem;
+        padding-bottom: 0.875rem;
+    }
+
+    .cy-modal-close {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.75rem;
+    }
+
+    /* Remove hover effects on touch devices */
+    .cy-add-btn:hover,
+    .cy-remove-btn:hover,
+    .cy-card-remove-btn:hover,
+    .cy-card:hover,
+    .cy-table tbody tr:hover {
+        transform: none;
+        box-shadow: var(--shadow);
+        background-color: initial;
+    }
+}
+
+/*------------------------------------------------------------
+  High Contrast Mode Support
+  ------------------------------------------------------------*/
+@media (prefers-contrast: high) {
+    .cy-table {
+        border: 2px solid var(--text-color);
+    }
+
+    .cy-add-btn,
+    .cy-btn-primary {
+        border: 2px solid var(--primary-color);
+    }
+
+    .cy-remove-btn,
+    .cy-card-remove-btn {
+        border: 2px solid var(--secondary-color);
+    }
+
+    .cy-modal-container {
+        border: 2px solid var(--text-color);
+    }
+}
+
+/*------------------------------------------------------------
+  Reduced Motion Support
+  ------------------------------------------------------------*/
+@media (prefers-reduced-motion: reduce) {
+    .cy-spinner {
+        animation: none;
+    }
+
+    .cy-add-btn,
+    .cy-remove-btn,
+    .cy-card-remove-btn,
+    .cy-card,
+    .cy-table tbody tr,
+    .cy-btn-primary,
+    .cy-btn-secondary,
+    .cy-modal-close,
+    .cy-form-input {
+        transition: none;
+    }
+
+        .cy-add-btn:hover,
+        .cy-remove-btn:hover,
+        .cy-card-remove-btn:hover,
+        .cy-card:hover,
+        .cy-btn-primary:hover {
+            transform: none;
+        }
+}
+
+/*------------------------------------------------------------
+  Print Styles
+  ------------------------------------------------------------*/
+@media print {
+    .car-year-container {
+        padding: 0;
+        max-width: 100%;
+        box-shadow: none;
+    }
+
+    .cy-header {
+        margin-bottom: 1rem;
+        page-break-after: avoid;
+    }
+
+    .cy-add-btn,
+    .cy-remove-btn,
+    .cy-card-remove-btn,
+    .cy-modal-overlay {
+        display: none;
+    }
+
+    .cy-desktop-view {
+        display: block;
+    }
+
+    .cy-mobile-view {
+        display: none;
+    }
+
+    .cy-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        .cy-table th,
+        .cy-table td {
+            border: 1px solid #000;
+            padding: 0.5rem;
+        }
+
+    .cy-actions-cell {
+        display: none;
     }
 }

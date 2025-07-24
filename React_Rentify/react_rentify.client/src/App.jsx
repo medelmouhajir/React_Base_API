@@ -28,7 +28,10 @@ const Login = lazy(() => import('./pages/Auth/Login'));
 const ForgotPassword = lazy(() => import('./pages/Auth/ForgotPassword'));
 
 // Main App
-const Dashboard = lazy(() => import('./pages/Dashboard/Dashboard'));
+const RoleBasedDashboard = lazy(() => import('./components/redirections/RoleBasedDashboard'));
+
+
+
 const CarsList = lazy(() => import('./pages/Cars/List/CarsList'));
 //const Customers = lazy(() => import('./pages/customers/Customers'));
 const ReservationsList = lazy(() => import('./pages/Reservations/List/ReservationsList'));
@@ -40,6 +43,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 
 const AgencyCreate = lazy(() => import('./pages/Agencies/Create/AgencyCreate'));
+const AgencyDetails = lazy(() => import('./pages/Agencies/Details/AgencyDetails'));
 const AgenciesList = lazy(() => import('./pages/Agencies/List/AgenciesList'));
 const AgencyStuff = lazy(() => import('./pages/Agencies/Stuff/AgencyStuff'));
 
@@ -140,11 +144,12 @@ function App() {
                                     </ProtectedRoute>
                                 }
                             >
-                                <Route path="/dashboard" element={<Dashboard />} />
+                                <Route path="/dashboard" element={<RoleBasedDashboard />} />
 
                                 <Route path="/agencies" element={<AgenciesList />} />
                                 <Route path="/agencies/create" element={<AgencyCreate />} />
-                                <Route path="/agencies/:id/stuff" element={<AgencyStuff />} />
+                                <Route path="/agencies/:id" element={<AgencyDetails />} />
+                                <Route path="/agencies/:id/staff" element={<AgencyStuff />} />
 
 
                                 <Route path="/filters" element={<Filters />} />

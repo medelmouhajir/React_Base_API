@@ -1,6 +1,6 @@
 ﻿// src/pages/Reservations/Add/ReservationAdd.jsx
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
@@ -15,6 +15,7 @@ const ReservationAdd = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
     const agencyId = user?.agencyId;
+    const [searchParams] = useSearchParams();
 
     const [formData, setFormData] = useState({
         CarId: '',
@@ -65,6 +66,35 @@ const ReservationAdd = () => {
             loadData();
         }
     }, [agencyId, t]);
+
+    // Listen for URL parameters and set selected car/customers
+    useEffect(() => {
+        const carIdFromUrl = searchParams.get('carId');
+        const customerIdFromUrl = searchParams.get('customerId');
+
+        // Set selected car if carId parameter exists
+        if (carIdFromUrl && cars.length > 0) {
+            const foundCar = cars.find(car => car.id === carIdFromUrl);
+            if (foundCar) {
+                setSelectedCar(foundCar);
+                setFormData(prev => ({
+                    ...prev,
+                    CarId: carIdFromUrl
+                }));
+                console.log('✅ Car pre-selected from URL:', foundCar.model + ' - ' + foundCar.licensePlate);
+            }
+        }
+
+        // Add customer to selected customers if customerId parameter exists
+        if (customerIdFromUrl && customers.length > 0) {
+            const foundCustomer = customers.find(customer => customer.id === customerIdFromUrl);
+            if (foundCustomer && !selectedCustomers.find(c => c.id === customerIdFromUrl)) {
+                setSelectedCustomers(prev => [...prev, foundCustomer]);
+                console.log('✅ Customer pre-selected from URL:', foundCustomer.fullName);
+            }
+        }
+    }, [searchParams, cars, customers, selectedCustomers]);
+
 
     // Filter cars based on search term
     const filteredCars = useMemo(() => {
@@ -444,7 +474,7 @@ const ReservationAdd = () => {
                 <div className="modal-overlay" onClick={() => setShowCarModal(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
-                            <h3 className="modal-title">{t('reservation.add.selectCar')}</h3>
+                            <h3 className="modal-title">{t('reservation.selectCar.title')}</h3>
                             <button
                                 type="button"
                                 onClick={() => setShowCarModal(false)}

@@ -11,17 +11,16 @@
     border-radius: var(--radius-lg, 0.5rem);
     box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06));
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    background-color: transparent;
 }
 
     /* Light and Dark Mode Themes */
     .addcar-container.light {
-        background-color: var(--color-bg-light, #ffffff);
         color: var(--color-text-light-primary, #111827);
         border: 1px solid var(--color-border-light, #e5e7eb);
     }
 
     .addcar-container.dark {
-        background-color: var(--color-bg-dark, #111827);
         color: var(--color-text-dark-primary, #f9fafb);
         border: 1px solid var(--color-border-dark, #374151);
     }
