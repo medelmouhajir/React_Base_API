@@ -282,15 +282,15 @@ const SelectCarModal = ({ currentCarId, startDate, endDate, onClose, onSelect })
                 ) : (
                     <>
                         <div className="select-car-toolbar">
-                            <div className="search-container">
+                            <div className="search-select-car-container">
                                 <input
                                     type="text"
-                                    className="search-input"
+                                    className="search-select-car-input"
                                     placeholder={t('reservation.selectCar.searchPlaceholder')}
                                     value={filters.search}
                                     onChange={handleSearchChange}
                                 />
-                                <span className="search-icon">🔍</span>
+                                <span className="search-select-car-icon">🔍</span>
                             </div>
                             <div className="sort-container">
                                 <label htmlFor="sortBy">{t('reservation.selectCar.sortBy')}</label>

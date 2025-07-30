@@ -22,7 +22,6 @@ const AddCar = () => {
         LicensePlate: '',
         Color: '',
         IsAvailable: true,
-        Status: '',
         DailyRate: '',
         HourlyRate: '',
         DeviceSerialNumber: '',
@@ -273,18 +272,6 @@ const AddCar = () => {
                     />
                 </div>
 
-                {/* Status */}
-                <div className="form-group">
-                    <label htmlFor="Status">{t('car.fields.status')}</label>
-                    <input
-                        type="text"
-                        id="Status"
-                        name="Status"
-                        placeholder={t('car.placeholders.status')}
-                        value={formData.Status}
-                        onChange={handleChange}
-                    />
-                </div>
 
                 {/* Daily Rate */}
                 <div className={`form-group ${isFieldInvalid('DailyRate') ? 'form-group-error' : ''}`}>

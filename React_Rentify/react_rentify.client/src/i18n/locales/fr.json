@@ -105,7 +105,9 @@
     "cards": "Cartes",
     "tableView": "Affichage en tableau",
     "table": "Tableau",
-    "clearSearch": "Effacer la recherche"
+    "clearSearch": "Effacer la recherche",
+    "creating": "Création...",
+    "createInvoice": "Créer une facture"
   },
   "landing": {
     "features": "Fonctionnalités",
@@ -305,7 +307,9 @@
         "car": "Filtrer par voiture",
         "allCars": "Toutes les voitures",
         "date": "Filtrer par date",
-        "clear": "Effacer les filtres"
+        "clear": "Effacer les filtres",
+        "searchPlaceholder": "Rechercher description, remarques ou plaque d'immatriculation...",
+        "allStatuses": "Tous les statuts"
       },
       "table": {
         "car": "Voiture",
@@ -377,7 +381,9 @@
     "delete": {
       "title": "Supprimer l’enregistrement de maintenance",
       "confirm": "Êtes-vous sûr de vouloir supprimer cet enregistrement de maintenance ? Cette action est irréversible."
-    }
+    },
+    "noDescription": "Pas de description",
+    "car": "Voiture"
   },
   "reservation": {
     "list": {
@@ -816,7 +822,9 @@
       "isPaid": "Payée",
       "reservation": "Réservation",
       "id": "ID de la facture",
-      "status": "Statut"
+      "status": "Statut",
+      "searchReservation": "Rechercher une réservation",
+      "isPaidDescription": "Cochez si le paiement a été reçu"
     },
     "actions": {
       "view": "Voir la facture",
@@ -862,7 +870,26 @@
       "paymentsTitle": "Paiements",
       "addPayment": "Ajouter un paiement",
       "noPayments": "Aucun paiement enregistré."
-    }
+    },
+    "add": {
+      "title": "Créer une nouvelle facture",
+      "subtitle": "Générer une facture pour une réservation terminée",
+      "fetchError": "Échec du chargement des données requises",
+      "error": "Erreur lors de la création de la facture. Veuillez réessayer."
+    },
+    "sections": {
+      "reservation": "Détails de la réservation",
+      "details": "Détails de la facture",
+      "payment": "Statut du paiement"
+    },
+    "placeholders": {
+      "searchReservation": "Recherche par ID, client, voiture ou lieu…",
+      "selectReservation": "Choisir une réservation…",
+      "amount": "0,00",
+      "selectPaymentMethod": "Sélectionner le moyen de paiement…"
+    },
+    "noReservationsFound": "Aucune réservation ne correspond à votre recherche",
+    "selectedReservation": "Réservation sélectionnée"
   },
   "car": {
     "fields": {

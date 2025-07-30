@@ -9,7 +9,7 @@ import './App.css';
 
 // Contexts
 import { AuthProvider } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 
 // Layouts
 import LandingLayout from './layouts/LandingLayout';
@@ -33,7 +33,6 @@ const RoleBasedDashboard = lazy(() => import('./components/redirections/RoleBase
 
 
 const CarsList = lazy(() => import('./pages/Cars/List/CarsList'));
-//const Customers = lazy(() => import('./pages/customers/Customers'));
 const ReservationsList = lazy(() => import('./pages/Reservations/List/ReservationsList'));
 const MaintenancesList = lazy(() => import('./pages/Maintenances/List/MaintenancesList'));
 const InvoicesList = lazy(() => import('./pages/Invoices/List/InvoicesList'));
@@ -112,13 +111,27 @@ const CarCheck = lazy(() => import('./pages/Gadgets/CarChecks/CarCheck'));
 const IdentityReader = lazy(() => import('./pages/Gadgets/IdentityReaders/IdentityReader'));
 
 //// Other standalone pages
-//const MaintenancePage = lazy(() => import('./pages/maintenance/Maintenance'));
 const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
-//const ReportsPage = lazy(() => import('./pages/reports/Reports'));
-//const AgenciesPage = lazy(() => import('./pages/admin/Agencies'));
-//const StaffPage = lazy(() => import('./pages/admin/Staff'));
 const SearchPage = lazy(() => import('./pages/Search/SearchPage'));
 
+const ThemedToastContainer = () => {
+    const { isDarkMode } = useTheme();
+
+    return (
+        <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme={isDarkMode ? 'dark' : 'light'}
+        />
+    );
+};
 
 function App() {
     // Initialize RTL direction
@@ -188,9 +201,6 @@ function App() {
                                 <Route path="/invoices/add" element={<AddInvoice />} />
                                 <Route path="/invoices/:id" element={<InvoiceDetails />} />
 
-                                {/* Maintenance */}
-                                {/*<Route path="/maintenance" element={<MaintenancePage />} />*/}
-
                                 {/* GPS Tracking */}
                                 <Route path="/gps" element={<GpsHome />} />
 
@@ -218,16 +228,9 @@ function App() {
                                 <Route path="/gadgets/carcheck" element={<CarCheck />} />
                                 <Route path="/gadgets/identity" element={<IdentityReader />} />
 
-                                {/* Reports */}
-                                {/*<Route path="/reports" element={<ReportsPage />} />*/}
-
                                 {/* Settings */}
                                 <Route path="/settings/agency" element={<AgencySettings />} />
                                 <Route path="/settings" element={<SettingsHome />} />
-
-                                {/* Admin Routes */}
-                                {/*<Route path="/agencies" element={<AgenciesPage />} />*/}
-                                {/*<Route path="/staff" element={<StaffPage />} />*/}
 
                                 {/* User Routes */}
                                 <Route path="/profile" element={<Profile />} />
@@ -243,18 +246,8 @@ function App() {
                     </Suspense>
 
                     {/* Toast notifications */}
-                    <ToastContainer
-                        position="top-right"
-                        autoClose={5000}
-                        hideProgressBar={false}
-                        newestOnTop
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                        theme="colored"
-                    />
+                    <ThemedToastContainer />
+
                 </ThemeProvider>
             </AuthProvider>
         </Router>

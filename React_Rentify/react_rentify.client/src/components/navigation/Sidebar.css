@@ -105,7 +105,9 @@
     height: 100%;
     width: 100%;
     position: relative;
-    padding: 0.5rem 0 4rem 0; /* Add bottom padding to prevent overlap with toggle button */
+    padding: 0.5rem 0 4rem 0;
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
 }
 
 /* =========================
@@ -356,7 +358,9 @@
         }
 
     .sidebar-inner {
-        padding: 1rem 0 1rem 0; /* Remove extra bottom padding on mobile since no toggle button */
+        padding: 1rem 0 1rem 0;
+        overflow-y: auto;
+        overflow-x: hidden; /* Hide horizontal scrollbar on mobile too */
     }
 
     .sidebar-item {

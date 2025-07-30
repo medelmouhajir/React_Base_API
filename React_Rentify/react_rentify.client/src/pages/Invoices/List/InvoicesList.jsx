@@ -180,7 +180,7 @@ const InvoicesList = () => {
 
             {/* Search and Controls */}
             <div className="controls-section">
-                <div className="search-wrapper">
+                <div className="search-invoices-wrapper">
                     <input
                         type="text"
                         className="search-input-invoices"
@@ -188,7 +188,7 @@ const InvoicesList = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <div className="search-icon">🔍</div>
+                    <div className="search-invoices-icon">🔍</div>
                 </div>
 
                 <div className="controls-actions">

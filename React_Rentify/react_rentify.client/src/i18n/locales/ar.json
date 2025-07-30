@@ -105,7 +105,9 @@
     "cards": "بطاقات",
     "tableView": "عرض الجدول",
     "table": "جدول",
-    "clearSearch": "مسح البحث"
+    "clearSearch": "مسح البحث",
+    "creating": "جارٍ الإنشاء...",
+    "createInvoice": "إنشاء فاتورة"
   },
   "landing": {
     "features": "الميزات",
@@ -317,7 +319,9 @@
         "car": "تصفية حسب السيارة",
         "allCars": "جميع السيارات",
         "date": "تصفية حسب التاريخ",
-        "clear": "مسح الفلاتر"
+        "clear": "مسح الفلاتر",
+        "searchPlaceholder": "ابحث في الوصف أو الملاحظات أو لوحة الترخيص...",
+        "allStatuses": "كل الحالات"
       },
       "table": {
         "car": "السيارة",
@@ -389,7 +393,9 @@
     "delete": {
       "title": "حذف سجل الصيانة",
       "confirm": "هل أنت متأكد أنك تريد حذف سجل الصيانة هذا؟ لا يمكن التراجع عن هذا الإجراء."
-    }
+    },
+    "noDescription": "لا يوجد وصف",
+    "car": "السيارة"
   },
   "reservation": {
     "list": {
@@ -828,7 +834,9 @@
       "isPaid": "مدفوع",
       "reservation": "الحجز",
       "id": "معرّف الفاتورة",
-      "status": "الحالة"
+      "status": "الحالة",
+      "searchReservation": "بحث عن الحجز",
+      "isPaidDescription": "علّم هذا إذا تم استلام الدفع"
     },
     "actions": {
       "view": "عرض الفاتورة",
@@ -874,7 +882,26 @@
       "paymentsTitle": "المدفوعات",
       "addPayment": "إضافة دفعة",
       "noPayments": "لا توجد دفعات مسجلة."
-    }
+    },
+    "add": {
+      "title": "إنشاء فاتورة جديدة",
+      "subtitle": "إنشاء فاتورة للحجز المكتمل",
+      "fetchError": "فشل في تحميل البيانات المطلوبة",
+      "error": "خطأ في إنشاء الفاتورة. حاول مرة أخرى."
+    },
+    "sections": {
+      "reservation": "تفاصيل الحجز",
+      "details": "تفاصيل الفاتورة",
+      "payment": "حالة الدفع"
+    },
+    "placeholders": {
+      "searchReservation": "ابحث بالمعرّف أو العميل أو السيارة أو الموقع...",
+      "selectReservation": "اختر حجزاً...",
+      "amount": "0.00",
+      "selectPaymentMethod": "اختر طريقة الدفع..."
+    },
+    "noReservationsFound": "لم يتم العثور على حجوزات مطابقة لبحثك",
+    "selectedReservation": "الحجز المحدد"
   },
   "car": {
     "car": "سيارة",

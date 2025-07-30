@@ -234,14 +234,14 @@
     }
 }
 
-.search-wrapper {
+.search-invoices-wrapper {
     position: relative;
     flex: 1;
     max-width: 100%;
 }
 
 @media (min-width: 768px) {
-    .search-wrapper {
+    .search-invoices-wrapper {
         max-width: 24rem;
     }
 }
@@ -269,7 +269,7 @@
         color: var(--text-muted);
     }
 
-.search-icon {
+.search-invoices-icon {
     position: absolute;
     right: 0.75rem;
     top: 50%;

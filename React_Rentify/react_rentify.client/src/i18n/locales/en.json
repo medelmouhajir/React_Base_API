@@ -105,7 +105,9 @@
     "cards": "Cards",
     "tableView": "Table View",
     "table": "Table",
-    "clearSearch": "Clear Search"
+    "clearSearch": "Clear Search",
+    "creating": "Creating...",
+    "createInvoice": "Create Invoice"
   },
   "landing": {
     "features": "Features",
@@ -316,7 +318,9 @@
         "car": "Filter by Car",
         "allCars": "All Cars",
         "date": "Filter by Date",
-        "clear": "Clear Filters"
+        "clear": "Clear Filters",
+        "searchPlaceholder": "Search description, remarks, or license plate...",
+        "allStatuses": "All Statuses"
       },
       "error": "Error loading maintenance records.",
       "confirmDelete": "Are you sure you want to delete this record?",
@@ -328,6 +332,14 @@
         "cost": "Cost",
         "isCompleted": "Completed",
         "actions": "Actions"
+      },
+      "recordsFound": "records found",
+      "noRecordsDescription": "Create your first maintenance record to get started.",
+      "addFirst": "Add First Record",
+      "status": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "overdue": "Overdue"
       }
     },
     "add": {
@@ -391,7 +403,9 @@
     "delete": {
       "title": "Delete Maintenance Record",
       "confirm": "Are you sure you want to delete this maintenance record? This action cannot be undone."
-    }
+    },
+    "noDescription": "No description",
+    "car": "Car"
   },
   "reservation": {
     "list": {
@@ -830,7 +844,9 @@
       "isPaid": "Paid",
       "reservation": "Reservation",
       "id": "Invoice ID",
-      "status": "Status"
+      "status": "Status",
+      "searchReservation": "Search Reservation",
+      "isPaidDescription": "Check this if payment has been received"
     },
     "actions": {
       "view": "View Invoice",
@@ -876,7 +892,26 @@
       "dateAsc": "Date (Oldest)",
       "amountDesc": "Amount (High to Low)",
       "amountAsc": "Amount (Low to High)"
-    }
+    },
+    "add": {
+      "title": "Create New Invoice",
+      "subtitle": "Generate an invoice for a completed reservation",
+      "fetchError": "Failed to load required data",
+      "error": "Error creating invoice. Please try again."
+    },
+    "sections": {
+      "reservation": "Reservation Details",
+      "details": "Invoice Details",
+      "payment": "Payment Status"
+    },
+    "placeholders": {
+      "searchReservation": "Search by ID, customer, car, or location...",
+      "selectReservation": "Choose a reservation...",
+      "amount": "0.00",
+      "selectPaymentMethod": "Select payment method..."
+    },
+    "noReservationsFound": "No reservations found matching your search",
+    "selectedReservation": "Selected Reservation"
   },
   "car": {
     "car": "Car",

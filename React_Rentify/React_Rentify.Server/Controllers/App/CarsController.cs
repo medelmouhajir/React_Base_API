@@ -634,7 +634,6 @@ namespace React_Rentify.Server.Controllers
         public string LicensePlate { get; set; }
         public string Color { get; set; }
         public bool IsAvailable { get; set; } = true;
-        public string Status { get; set; }
         public decimal DailyRate { get; set; }
         public decimal? HourlyRate { get; set; }
         public string? DeviceSerialNumber { get; set; }

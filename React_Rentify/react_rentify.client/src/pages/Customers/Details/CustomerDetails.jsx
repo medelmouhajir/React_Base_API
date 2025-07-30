@@ -292,68 +292,7 @@ const CustomerDetails = () => {
                     )}
             </section>
 
-            {/* — Attachments Section — */}
-            <section className="cd-section cd-attachments">
-                <h3>{t('customerDetails.attachmentsHeading')}</h3>
-                {attachments.length === 0 ? (
-                    <p className="cd-empty">{t('customerDetails.noAttachments')}</p>
-                ) : (
-                    <ul className="cd-attachment-list">
-                        {attachments.map((att) => (
-                            <li key={att.id} className="cd-attachment-item">
-                                <a
-                                    href={att.filePath}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="cd-attachment-link"
-                                >
-                                    {att.fileName}
-                                </a>
-                                <button
-                                    className="cd-attachment-remove"
-                                    onClick={() => handleRemoveAttachment(att.id)}
-                                >
-                                    ✕
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
 
-                {/* Add Attachment Form */}
-                <div className="cd-attachment-add">
-                    <h4>{t('customerDetails.addAttachment')}</h4>
-                    <div className="cd-attachment-inputs">
-                        <input
-                            type="text"
-                            className="cd-input"
-                            placeholder={t('customerDetails.placeholders.fileName')}
-                            value={newAttachment.fileName}
-                            onChange={(e) =>
-                                setNewAttachment((prev) => ({ ...prev, fileName: e.target.value }))
-                            }
-                        />
-                        <input
-                            type="text"
-                            className="cd-input"
-                            placeholder={t('customerDetails.placeholders.filePath')}
-                            value={newAttachment.filePath}
-                            onChange={(e) =>
-                                setNewAttachment((prev) => ({ ...prev, filePath: e.target.value }))
-                            }
-                        />
-                    </div>
-                    <button
-                        className="cd-attachment-add-btn"
-                        onClick={handleAddAttachment}
-                        disabled={addingAttachment || !newAttachment.fileName.trim() || !newAttachment.filePath.trim()}
-                    >
-                        {addingAttachment
-                            ? t('common.saving')
-                            : t('customerDetails.addAttachmentBtn')}
-                    </button>
-                </div>
-            </section>
         </div>
     );
 };

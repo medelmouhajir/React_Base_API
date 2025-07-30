@@ -106,7 +106,7 @@
     max-width: 500px;
 }
 
-.search-icon-expenses {
+.search-icon-gadgets {
     position: absolute;
     left: 1rem;
     top: 50%;
@@ -117,7 +117,7 @@
     pointer-events: none;
 }
 
-.gadgets-home-container.dark .search-icon-expenses {
+.gadgets-home-container.dark .search-icon-gadgets {
     color: var(--text-secondary-dark);
 }
 
@@ -494,13 +494,13 @@
         font-size: 0.875rem;
     }
 
-    .search-icon-expenses,
+    .search-icon-gadgets,
     .search-clear {
         width: 1rem;
         height: 1rem;
     }
 
-    .search-icon-expenses {
+    .search-icon-gadgets {
         left: 0.875rem;
     }
 

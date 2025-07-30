@@ -330,7 +330,7 @@ const LandingPage = () => {
                         <div className="feature-showcase">
                             <div className={`feature-image feature-image-${activeFeature}`}>
                                 <img
-                                    src={`/assets/feature-${activeFeature + 1}.png`}
+                                    src={`/landing/feature-${activeFeature + 1}.png`}
                                     alt={features[activeFeature].title}
                                     onError={(e) => {
                                         e.target.onerror = null;

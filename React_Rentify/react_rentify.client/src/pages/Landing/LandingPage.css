@@ -950,3 +950,8 @@
     border-color: #dc2626;
     color: #f87171;
 }
+
+.features-tabs .feature-tab.animate-on-scroll {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
