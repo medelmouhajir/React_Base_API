@@ -192,7 +192,24 @@
       "title": "Ready to Create Your Manga?",
       "description": "Join Mangati and start your journey today.",
       "buttonText": "Get Started"
-    }
+    },
+    "welcomeBack": "Welcome back",
+    "welcome": "Welcome",
+    "exploreLibrary": "Explore the library",
+    "discoverManga": "Discover Manga",
+    "allSeries": "All Series",
+    "recentSeries": "Recent Series",
+    "myFavorites": "My Favorites",
+    "allSeriesSubtitle": "Browse all available series",
+    "noSeries": "No series available",
+    "noSeriesMessage": "No series have been added yet.",
+    "recentSeriesSubtitle": "Check out the latest additions",
+    "noRecentSeries": "No recent series",
+    "noRecentSeriesMessage": "No series have been added recently.",
+    "myFavoritesSubtitle": "Your favorite series in one place",
+    "noFavorites": "No favorites yet",
+    "noFavoritesMessage": "You haven't added any series to your favorites.",
+    "exploreSeries": "Explore series"
   },
   "series": {
     "title": "All Series",
@@ -235,7 +252,10 @@
     "status": {
       "ongoing": "Ongoing",
       "completed": "Completed",
-      "canceled": "Canceled"
+      "canceled": "Canceled",
+      "cancelled": "Cancelled",
+      "draft": "Draft",
+      "published": "Published"
     },
     "chapters": {
       "title": "Chapters",
@@ -261,7 +281,11 @@
       "resumeReading": "Resume Reading"
     },
     "favorite": "Add to Favorites",
-    "unfavorite": "Remove from Favorites"
+    "unfavorite": "Remove from Favorites",
+    "addFavorite": "Add to favorites",
+    "removeFavorite": "Remove from favorites",
+    "noSynopsis": "No synopsis available",
+    "by": "by"
   },
   "mySeries": {
     "title": "My Series",
@@ -306,25 +330,26 @@
     "clearSearch": "Clear Search"
   },
   "search": {
-    "title": "Search Series",
-    "subtitle": "Find your next favorite manga series",
-    "placeholder": "Search by title, author, or keywords...",
-    "buttonSearch": "Search",
-    "buttonClear": "Clear",
-    "filterLanguage": "Language",
-    "filterTags": "Tags",
-    "allLanguages": "All Languages",
+    "errorLoadingFilters": "Error loading filters",
+    "errorSearching": "Error performing search",
+    "title": "Search",
+    "subtitle": "Find your favorite series",
+    "placeholder": "Search by title...",
+    "search": "Search",
+    "clear": "Clear",
+    "filters": "Filters",
+    "language": "Language",
+    "allLanguages": "All languages",
+    "tags": "Tags",
+    "results": "Results",
+    "resultsFound": "results found",
     "searching": "Searching...",
-    "resultsFound": "{{count}} results found",
     "noResults": "No results found",
-    "tryAdjustingFilters": "Try adjusting your search filters or try a different keyword",
-    "startSearching": "Start your search",
-    "useFilters": "Use the search bar and filters to find manga series",
-    "trending": "Trending Series",
-    "errorLoadingFilters": "Failed to load filters",
-    "errorSearching": "An error occurred while searching",
-    "hideFilters": "Hide Filters",
-    "showFilters": "Show Filters"
+    "noResultsSubtitle": "Try a different search term",
+    "trending": "Trending",
+    "trendingSubtitle": "Popular series right now",
+    "loadingTrending": "Loading trending...",
+    "noTrending": "No trending series at the moment"
   },
   "account": {
     "title": "My Account",

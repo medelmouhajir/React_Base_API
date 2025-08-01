@@ -160,7 +160,8 @@ const IdentityReader = () => {
             fields.forEach(field => {
                 if (!result[field]) {
                     initialManualData[field] = '';
-                }
+                } else
+                    initialManualData[field] = result[field];
             });
             setManualData(initialManualData);
 
@@ -185,15 +186,15 @@ const IdentityReader = () => {
         try {
             const customerData = {
                 agencyId: user.agencyId,
-                fullName: extractedData.fullName || manualData.fullName || '',
-                email: extractedData.email || manualData.email || '',
-                phoneNumber: extractedData.phoneNumber || manualData.phoneNumber || '',
-                nationalId: extractedData.nationalId || manualData.nationalId || '',
-                passportId: extractedData.passportId || manualData.passportId || '',
-                licenseNumber: extractedData.licenseNumber || manualData.licenseNumber || '',
-                address: extractedData.address || manualData.address || '',
-                dateOfBirth: (extractedData.dateOfBirth || manualData.dateOfBirth)
-                    ? new Date(extractedData.dateOfBirth || manualData.dateOfBirth).toISOString()
+                fullName: manualData.fullName || extractedData.fullName || '',
+                email: manualData.email || extractedData.email || '',
+                phoneNumber: manualData.phoneNumber || extractedData.phoneNumber || '',
+                nationalId: manualData.nationalId || extractedData.nationalId || '',
+                passportId: manualData.passportId || extractedData.passportId || '',
+                licenseNumber: manualData.licenseNumber || extractedData.licenseNumber || '',
+                address: manualData.address || extractedData.address || '',
+                dateOfBirth: (manualData.dateOfBirth || extractedData.dateOfBirth)
+                    ? new Date(manualData.dateOfBirth || extractedData.dateOfBirth).toISOString()
                     : null
             };
 
@@ -398,129 +399,95 @@ const IdentityReader = () => {
                             {/* Full Name */}
                             <div className="data-item">
                                 <strong>{t('identityReader.fullName')}:</strong>
-                                {extractedData.fullName ? (
-                                    <span className="extracted-value">{extractedData.fullName}</span>
-                                ) : (
-                                    <input
-                                        type="text"
-                                        placeholder={t('identityReader.enterManually')}
-                                        value={manualData.fullName || ''}
-                                        onChange={(e) => handleManualDataChange('fullName', e.target.value)}
-                                        className="manual-input"
-                                    />
-                                )}
+                                <input
+                                    type="text"
+                                    placeholder={t('identityReader.enterManually')}
+                                    value={manualData.fullName || ''}
+                                    onChange={(e) => handleManualDataChange('fullName', e.target.value)}
+                                    className="manual-input"
+                                />
                             </div>
 
                             {/* Email */}
                             <div className="data-item">
                                 <strong>{t('identityReader.email')}:</strong>
-                                {extractedData.email ? (
-                                    <span className="extracted-value">{extractedData.email}</span>
-                                ) : (
-                                    <input
-                                        type="email"
-                                        placeholder={t('identityReader.enterManually')}
-                                        value={manualData.email || ''}
-                                        onChange={(e) => handleManualDataChange('email', e.target.value)}
-                                        className="manual-input"
-                                    />
-                                )}
+                                <input
+                                    type="email"
+                                    placeholder={t('identityReader.enterManually')}
+                                    value={manualData.email || ''}
+                                    onChange={(e) => handleManualDataChange('email', e.target.value)}
+                                    className="manual-input"
+                                />
                             </div>
 
                             {/* Phone Number */}
                             <div className="data-item">
                                 <strong>{t('identityReader.phoneNumber')}:</strong>
-                                {extractedData.phoneNumber ? (
-                                    <span className="extracted-value">{extractedData.phoneNumber}</span>
-                                ) : (
-                                    <input
-                                        type="tel"
-                                        placeholder={t('identityReader.enterManually')}
-                                        value={manualData.phoneNumber || ''}
-                                        onChange={(e) => handleManualDataChange('phoneNumber', e.target.value)}
-                                        className="manual-input"
-                                    />
-                                )}
+                                <input
+                                    type="tel"
+                                    placeholder={t('identityReader.enterManually')}
+                                    value={manualData.phoneNumber || ''}
+                                    onChange={(e) => handleManualDataChange('phoneNumber', e.target.value)}
+                                    className="manual-input"
+                                />
                             </div>
 
                             {/* National ID */}
                             <div className="data-item">
                                 <strong>{t('identityReader.nationalId')}:</strong>
-                                {extractedData.nationalId ? (
-                                    <span className="extracted-value">{extractedData.nationalId}</span>
-                                ) : (
-                                    <input
-                                        type="text"
-                                        placeholder={t('identityReader.enterManually')}
-                                        value={manualData.nationalId || ''}
-                                        onChange={(e) => handleManualDataChange('nationalId', e.target.value)}
-                                        className="manual-input"
-                                    />
-                                )}
+                                <input
+                                    type="text"
+                                    placeholder={t('identityReader.enterManually')}
+                                    value={manualData.nationalId || ''}
+                                    onChange={(e) => handleManualDataChange('nationalId', e.target.value)}
+                                    className="manual-input"
+                                />
                             </div>
 
                             {/* Passport ID */}
                             <div className="data-item">
                                 <strong>{t('identityReader.passportId')}:</strong>
-                                {extractedData.passportId ? (
-                                    <span className="extracted-value">{extractedData.passportId}</span>
-                                ) : (
-                                    <input
-                                        type="text"
-                                        placeholder={t('identityReader.enterManually')}
-                                        value={manualData.passportId || ''}
-                                        onChange={(e) => handleManualDataChange('passportId', e.target.value)}
-                                        className="manual-input"
-                                    />
-                                )}
+                                <input
+                                    type="text"
+                                    placeholder={t('identityReader.enterManually')}
+                                    value={manualData.passportId || ''}
+                                    onChange={(e) => handleManualDataChange('passportId', e.target.value)}
+                                    className="manual-input"
+                                />
                             </div>
 
                             {/* License Number */}
                             <div className="data-item">
                                 <strong>{t('identityReader.licenseNumber')}:</strong>
-                                {extractedData.licenseNumber ? (
-                                    <span className="extracted-value">{extractedData.licenseNumber}</span>
-                                ) : (
-                                    <input
-                                        type="text"
-                                        placeholder={t('identityReader.enterManually')}
-                                        value={manualData.licenseNumber || ''}
-                                        onChange={(e) => handleManualDataChange('licenseNumber', e.target.value)}
-                                        className="manual-input"
-                                    />
-                                )}
+                                <input
+                                    type="text"
+                                    placeholder={t('identityReader.enterManually')}
+                                    value={manualData.licenseNumber || ''}
+                                    onChange={(e) => handleManualDataChange('licenseNumber', e.target.value)}
+                                    className="manual-input"
+                                />
                             </div>
 
                             {/* Address */}
                             <div className="data-item">
                                 <strong>{t('identityReader.address')}:</strong>
-                                {extractedData.address ? (
-                                    <span className="extracted-value">{extractedData.address}</span>
-                                ) : (
-                                    <textarea
-                                        placeholder={t('identityReader.enterManually')}
-                                        value={manualData.address || ''}
-                                        onChange={(e) => handleManualDataChange('address', e.target.value)}
-                                        className="manual-input manual-textarea"
-                                    />
-                                )}
+                                <textarea
+                                    placeholder={t('identityReader.enterManually')}
+                                    value={manualData.address || ''}
+                                    onChange={(e) => handleManualDataChange('address', e.target.value)}
+                                    className="manual-input manual-textarea"
+                                />
                             </div>
 
                             {/* Date of Birth */}
                             <div className="data-item">
                                 <strong>{t('identityReader.dateOfBirth')}:</strong>
-                                {extractedData.dateOfBirth ? (
-                                    <span className="extracted-value">
-                                        {new Date(extractedData.dateOfBirth).toLocaleDateString()}
-                                    </span>
-                                ) : (
-                                    <input
-                                        type="date"
-                                        value={manualData.dateOfBirth || ''}
-                                        onChange={(e) => handleManualDataChange('dateOfBirth', e.target.value)}
-                                        className="manual-input"
-                                    />
-                                )}
+                                <input
+                                    type="date"
+                                    value={manualData.dateOfBirth || ''}
+                                    onChange={(e) => handleManualDataChange('dateOfBirth', e.target.value)}
+                                    className="manual-input"
+                                />
                             </div>
                         </div>
 

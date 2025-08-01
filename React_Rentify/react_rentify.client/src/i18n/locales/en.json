@@ -568,35 +568,28 @@
     "price": "Price"
   },
   "customerDetails": {
-    "confirmRemoveBlacklist": "Are you sure you want to remove this blacklist entry?",
-    "errorRemoveBlacklist": "Failed to remove blacklist entry.",
-    "errorAddBlacklist": "Failed to add blacklist entry.",
+    "errorAddBlacklist": "Error adding to blacklist. Please try again.",
+    "errorAddAttachment": "Error adding attachment. Please try again.",
     "confirmRemoveAttachment": "Are you sure you want to remove this attachment?",
-    "errorRemoveAttachment": "Failed to remove attachment.",
-    "errorAddAttachment": "Failed to add attachment.",
-    "notFound": "Customer not found.",
-    "heading": "{{name}}'s Details",
+    "errorRemoveAttachment": "Error removing attachment. Please try again.",
+    "confirmDelete": "Are you sure you want to delete this customer?",
+    "notFound": "Customer not found",
+    "heading": "Customer Details: {{name}}",
+    "newReservation": "New Reservation",
+    "basicInfo": "Basic Information",
     "reservationsHeading": "Reservations",
     "noReservations": "No reservations found.",
-    "unknownCar": "Unknown car",
+    "createFirstReservation": "Create First Reservation",
+    "unknownCar": "Unknown Car",
     "paid": "Paid",
     "unpaid": "Unpaid",
     "blacklistHeading": "Blacklist Entries",
     "notBlacklisted": "This customer is not blacklisted.",
-    "reportedBy": "Reported by",
-    "unknownAgency": "Unknown agency",
-    "dateAdded": "Date added",
-    "addBlacklist": "Add to Blacklist",
-    "addBlacklistBtn": "Add to Blacklist",
-    "attachmentsHeading": "Attachments",
-    "noAttachments": "No attachments.",
-    "addAttachment": "Add Attachment",
-    "addAttachmentBtn": "Add Attachment",
-    "placeholders": {
-      "blacklistReason": "Enter reason for blacklisting",
-      "fileName": "File name",
-      "filePath": "File URL or path"
-    }
+    "yourAgency": "Your Agency",
+    "otherAgency": "Other Agency",
+    "addToBlacklist": "Add to Blacklist",
+    "blacklistReasonPlaceholder": "Enter reason for blacklisting...",
+    "addBlacklistBtn": "Add to Blacklist"
   },
   "agency": {
     "list": {
@@ -1714,5 +1707,30 @@
       "status": "Status",
       "cars": "Cars"
     }
+  },
+  "gps": {
+    "errors": {
+      "fetchCars": "Error fetching cars"
+    },
+    "hidePanel": "Hide panel",
+    "showPanel": "Show panel",
+    "carsTitle": "Cars",
+    "collapsePanel": "Collapse panel",
+    "expandPanel": "Expand panel",
+    "minimizePanel": "Minimize panel",
+    "closePanel": "Close panel",
+    "filterPlaceholder": "Filter by model or license plate...",
+    "online": "Online",
+    "offline": "Offline",
+    "lastSeen": "Last seen",
+    "focusOnMap": "Focus on map",
+    "startEngine": "Start engine",
+    "lockCar": "Lock car",
+    "hornBeep": "Horn beep",
+    "noGpsData": "No GPS data",
+    "noMatchingCars": "No matching cars found",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "centerMap": "Center map"
   }
 }

@@ -558,35 +558,28 @@
     "price": "السعر"
   },
   "customerDetails": {
-    "confirmRemoveBlacklist": "هل أنت متأكد أنك تريد إزالة هذا الإدخال من القائمة السوداء؟",
-    "errorRemoveBlacklist": "فشل في إزالة الإدخال من القائمة السوداء.",
-    "errorAddBlacklist": "فشل في إضافة الإدخال إلى القائمة السوداء.",
+    "errorAddBlacklist": "حدث خطأ أثناء الإضافة إلى القائمة السوداء. حاول مرة أخرى.",
+    "errorAddAttachment": "حدث خطأ أثناء إضافة المرفق. حاول مرة أخرى.",
     "confirmRemoveAttachment": "هل أنت متأكد أنك تريد إزالة هذا المرفق؟",
-    "errorRemoveAttachment": "فشل في إزالة المرفق.",
-    "errorAddAttachment": "فشل في إضافة المرفق.",
-    "notFound": "العميل غير موجود.",
-    "heading": "تفاصيل {{name}}",
+    "errorRemoveAttachment": "حدث خطأ أثناء إزالة المرفق. حاول مرة أخرى.",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا العميل؟",
+    "notFound": "لم يتم العثور على العميل",
+    "heading": "تفاصيل العميل: {{name}}",
+    "newReservation": "حجز جديد",
+    "basicInfo": "المعلومات الأساسية",
     "reservationsHeading": "الحجوزات",
     "noReservations": "لا توجد حجوزات.",
+    "createFirstReservation": "إنشاء أول حجز",
     "unknownCar": "سيارة غير معروفة",
     "paid": "مدفوع",
     "unpaid": "غير مدفوع",
-    "blacklistHeading": "إدخالات القائمة السوداء",
-    "notBlacklisted": "هذا العميل غير مدرج في القائمة السوداء.",
-    "reportedBy": "أُبلغ عنه بواسطة",
-    "unknownAgency": "وكالة غير معروفة",
-    "dateAdded": "تاريخ الإضافة",
-    "addBlacklist": "إضافة إلى القائمة السوداء",
-    "addBlacklistBtn": "إضافة إلى القائمة السوداء",
-    "attachmentsHeading": "المرفقات",
-    "noAttachments": "لا توجد مرفقات.",
-    "addAttachment": "إضافة مرفق",
-    "addAttachmentBtn": "إضافة مرفق",
-    "placeholders": {
-      "blacklistReason": "أدخل سبب الإضافة إلى القائمة السوداء",
-      "fileName": "اسم الملف",
-      "filePath": "رابط أو مسار الملف"
-    }
+    "blacklistHeading": "سجلات القائمة السوداء",
+    "notBlacklisted": "هذا العميل ليس في القائمة السوداء.",
+    "yourAgency": "وكالتك",
+    "otherAgency": "وكالة أخرى",
+    "addToBlacklist": "إضافة إلى القائمة السوداء",
+    "blacklistReasonPlaceholder": "أدخل سبب وضع العميل في القائمة السوداء...",
+    "addBlacklistBtn": "إضافة إلى القائمة السوداء"
   },
   "agency": {
     "list": {
@@ -1705,5 +1698,30 @@
       "status": "الحالة",
       "cars": "السيارات"
     }
+  },
+  "gps": {
+    "errors": {
+      "fetchCars": "حدث خطأ أثناء تحميل السيارات"
+    },
+    "hidePanel": "إخفاء اللوحة",
+    "showPanel": "إظهار اللوحة",
+    "carsTitle": "السيارات",
+    "collapsePanel": "طي اللوحة",
+    "expandPanel": "توسيع اللوحة",
+    "minimizePanel": "تصغير اللوحة",
+    "closePanel": "إغلاق اللوحة",
+    "filterPlaceholder": "تصفية حسب الطراز أو لوحة الترخيص...",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "lastSeen": "آخر ظهور",
+    "focusOnMap": "التركيز على الخريطة",
+    "startEngine": "تشغيل المحرك",
+    "lockCar": "قفل السيارة",
+    "hornBeep": "الزمور",
+    "noGpsData": "لا توجد بيانات GPS",
+    "noMatchingCars": "لم يتم العثور على سيارات مطابقة",
+    "zoomIn": "تكبير",
+    "zoomOut": "تصغير",
+    "centerMap": "توسيط الخريطة"
   }
 }

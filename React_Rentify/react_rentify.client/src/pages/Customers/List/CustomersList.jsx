@@ -21,10 +21,21 @@ const CustomersList = () => {
     const [sortConfig, setSortConfig] = useState({ key: 'fullName', direction: 'ascending' });
     const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'table'
     const [showFilters, setShowFilters] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
     // Filter states
     const [statusFilter, setStatusFilter] = useState('all');
     const [sortBy, setSortBy] = useState('fullName');
+
+    // Handle window resize for mobile detection
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Fetch customers on mount or when agencyId changes
     useEffect(() => {
@@ -52,118 +63,87 @@ const CustomersList = () => {
     const handleDelete = async (customer, e) => {
         e.stopPropagation();
 
-        const confirmMessage = t('customer.list.confirmDelete', 'Are you sure you want to delete this customer?');
-        if (!window.confirm(`${confirmMessage}\n\n${customer.fullName}`)) return;
+        const confirmMessage = t('customer.list.confirmDelete',
+            `Are you sure you want to delete ${customer.fullName}? This action cannot be undone.`);
+
+        if (!window.confirm(confirmMessage)) return;
 
         try {
             await customerService.delete(customer.id);
             setCustomers(prev => prev.filter(c => c.id !== customer.id));
-
-            // Show success feedback (you can replace with toast notification)
-            console.log('✅ Customer deleted successfully');
         } catch (err) {
             console.error('❌ Error deleting customer:', err);
-            setError(t('customer.list.deleteError', 'Failed to delete customer'));
+            alert(t('customer.list.deleteError', 'Failed to delete customer'));
         }
     };
 
-    // Sorting function with enhanced logic
-    const requestSort = (key) => {
-        let direction = 'ascending';
-        if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-            direction = 'descending';
-        }
-        setSortConfig({ key, direction });
+    // Enhanced filtering and sorting
+    const filteredAndSortedCustomers = useMemo(() => {
+        let filtered = customers.filter(customer => {
+            // Search filter
+            const searchTermLower = searchTerm.toLowerCase();
+            const matchesSearch = !searchTerm ||
+                customer.fullName?.toLowerCase().includes(searchTermLower) ||
+                customer.email?.toLowerCase().includes(searchTermLower) ||
+                customer.phoneNumber?.toLowerCase().includes(searchTermLower) ||
+                customer.licenseNumber?.toLowerCase().includes(searchTermLower);
+
+            // Status filter
+            const matchesStatus = statusFilter === 'all' ||
+                (statusFilter === 'blacklisted' && customer.isBlacklisted) ||
+                (statusFilter === 'active' && !customer.isBlacklisted);
+
+            return matchesSearch && matchesStatus;
+        });
+
+        // Sort filtered results
+        filtered.sort((a, b) => {
+            const aValue = a[sortBy] || '';
+            const bValue = b[sortBy] || '';
+
+            if (typeof aValue === 'string') {
+                return sortConfig.direction === 'ascending'
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
+            }
+
+            if (sortConfig.direction === 'ascending') {
+                return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+            } else {
+                return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+            }
+        });
+
+        return filtered;
+    }, [customers, searchTerm, statusFilter, sortBy, sortConfig.direction]);
+
+    // Handle sorting
+    const handleSort = (key) => {
+        setSortConfig(prev => ({
+            key,
+            direction: prev.key === key && prev.direction === 'ascending' ? 'descending' : 'ascending'
+        }));
         setSortBy(key);
     };
 
-    // Memoized filtered and sorted customers for performance
-    const filteredAndSortedCustomers = useMemo(() => {
-        let result = [...customers];
-
-        // Apply search filter
-        if (searchTerm.trim()) {
-            const searchTermLower = searchTerm.toLowerCase();
-            result = result.filter(customer => {
-                const searchableFields = [
-                    customer.fullName,
-                    customer.email,
-                    customer.phoneNumber,
-                    customer.licenseNumber,
-                    customer.nationalId,
-                    customer.passportId,
-                    customer.address
-                ].filter(Boolean);
-
-                return searchableFields.some(field =>
-                    field.toLowerCase().includes(searchTermLower)
-                );
-            });
-        }
-
-        // Apply status filter
-        if (statusFilter !== 'all') {
-            const isBlacklistedFilter = statusFilter === 'blacklisted';
-            result = result.filter(customer => customer.isBlacklisted === isBlacklistedFilter);
-        }
-
-        // Apply sorting
-        if (sortConfig.key) {
-            result.sort((a, b) => {
-                let aValue = a[sortConfig.key];
-                let bValue = b[sortConfig.key];
-
-                // Handle different data types
-                if (sortConfig.key === 'dateOfBirth') {
-                    aValue = new Date(aValue).getTime();
-                    bValue = new Date(bValue).getTime();
-                } else if (typeof aValue === 'string' && typeof bValue === 'string') {
-                    aValue = aValue.toLowerCase();
-                    bValue = bValue.toLowerCase();
-                } else if (typeof aValue === 'boolean') {
-                    aValue = aValue ? 1 : 0;
-                    bValue = bValue ? 1 : 0;
-                }
-
-                if (aValue < bValue) {
-                    return sortConfig.direction === 'ascending' ? -1 : 1;
-                }
-                if (aValue > bValue) {
-                    return sortConfig.direction === 'ascending' ? 1 : -1;
-                }
-                return 0;
-            });
-        }
-
-        return result;
-    }, [customers, searchTerm, statusFilter, sortConfig]);
-
-    // Navigation handlers
-    const navigateToDetails = (id) => {
-        navigate(`/customers/${id}`);
-    };
-
-    const navigateToEdit = (id, e) => {
-        e.stopPropagation();
-        navigate(`/customers/${id}/edit`);
-    };
-
-    // Clear all filters
-    const clearFilters = () => {
-        setSearchTerm('');
-        setStatusFilter('all');
-        setSortBy('fullName');
-        setSortConfig({ key: 'fullName', direction: 'ascending' });
+    // Handle customer card click
+    const handleCustomerClick = (customerId) => {
+        navigate(`/customers/${customerId}`);
     };
 
     // Format date helper
     const formatDate = (dateString) => {
-        if (!dateString) return '-';
+        if (!dateString) return '—';
         try {
             return new Date(dateString).toLocaleDateString();
         } catch {
-            return '-';
+            return '—';
         }
+    };
+
+    // Handle view mode toggle
+    const toggleViewMode = () => {
+        setViewMode(prev => prev === 'cards' ? 'table' : 'cards');
     };
 
     // Loading state
@@ -193,11 +173,19 @@ const CustomersList = () => {
                     </h1>
                     <div className="header-stats">
                         <span className="stat-item">
-                            {t('customer.list.total', 'Total')}: {totalCustomers}
+                            <span className="stat-label">{t('customer.list.total', 'Total')}:</span>
+                            <span className="stat-value">{totalCustomers}</span>
                         </span>
                         {blacklistedCustomers > 0 && (
                             <span className="stat-item blacklisted">
-                                {t('customer.list.blacklisted', 'Blacklisted')}: {blacklistedCustomers}
+                                <span className="stat-label">{t('customer.list.blacklisted', 'Blacklisted')}:</span>
+                                <span className="stat-value">{blacklistedCustomers}</span>
+                            </span>
+                        )}
+                        {filteredCount !== totalCustomers && (
+                            <span className="stat-item filtered">
+                                <span className="stat-label">{t('customer.list.showing', 'Showing')}:</span>
+                                <span className="stat-value">{filteredCount}</span>
                             </span>
                         )}
                     </div>
@@ -210,7 +198,7 @@ const CustomersList = () => {
                         aria-label={t('customer.list.addNew', 'Add New Customer')}
                     >
                         <span className="btn-icon">+</span>
-                        <span className="btn-text">{t('customer.list.addNew', 'Add New')}</span>
+                        <span className="btn-text">{t('customer.list.addNew', 'Add Customer')}</span>
                     </button>
                 </div>
             </div>
@@ -232,346 +220,308 @@ const CustomersList = () => {
 
             {/* Search and Filter Section */}
             <div className="customerlist-controls">
-                <div className="search-section">
-                    <div className="search-input-customers-wrapper">
+                <div className="search-customers-section">
+                    <div className="search-customers-input-wrapper">
                         <input
                             type="text"
-                            className="search-input-customers"
-                            placeholder={t('customer.list.searchPlaceholder', 'Search customers...')}
+                            className="search-customers-input"
+                            placeholder={t('customer.list.searchPlaceholder', 'Search customers by name, email, phone...')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             aria-label={t('customer.list.searchPlaceholder', 'Search customers')}
                         />
-                        <span className="search-icon-customers">🔍</span>
+                        <span className="search-customers-icon">🔍</span>
                     </div>
 
-                    <button
-                        className={`filter-toggle ${showFilters ? 'active' : ''}`}
-                        onClick={() => setShowFilters(!showFilters)}
-                        aria-label={t('common.filters', 'Filters')}
-                    >
-                        <span className="filter-icon">⚙️</span>
-                        <span className="filter-text">{t('common.filters', 'Filters')}</span>
-                    </button>
+                    <div className="control-buttons">
+                        <button
+                            className={`filter-toggle ${showFilters ? 'active' : ''}`}
+                            onClick={() => setShowFilters(!showFilters)}
+                            aria-label={t('customer.list.toggleFilters', 'Toggle Filters')}
+                        >
+                            <span className="filter-icon">⚙️</span>
+                            <span className="filter-text">{t('customer.list.filters', 'Filters')}</span>
+                        </button>
+
+                        {!isMobile && (
+                            <button
+                                className={`view-toggle ${viewMode}`}
+                                onClick={toggleViewMode}
+                                aria-label={t('customer.list.toggleView', 'Toggle View Mode')}
+                                title={viewMode === 'cards' ? t('customer.list.tableView', 'Table View') : t('customer.list.cardView', 'Card View')}
+                            >
+                                <span className="view-icon">
+                                    {viewMode === 'cards' ? '☰' : '▦'}
+                                </span>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Expandable Filters */}
                 {showFilters && (
                     <div className="filters-section">
-                        <div className="filter-group">
-                            <label className="filter-label">
-                                {t('customer.list.status', 'Status')}:
-                            </label>
-                            <select
-                                className="filter-select"
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                            >
-                                <option value="all">{t('common.all', 'All')}</option>
-                                <option value="active">{t('customer.list.active', 'Active')}</option>
-                                <option value="blacklisted">{t('customer.list.blacklisted', 'Blacklisted')}</option>
-                            </select>
-                        </div>
+                        <div className="filter-grid">
+                            <div className="filter-group">
+                                <label className="filter-label">
+                                    {t('customer.list.filterByStatus', 'Status')}
+                                </label>
+                                <select
+                                    className="filter-select"
+                                    value={statusFilter}
+                                    onChange={(e) => setStatusFilter(e.target.value)}
+                                >
+                                    <option value="all">{t('customer.list.allCustomers', 'All Customers')}</option>
+                                    <option value="active">{t('customer.list.activeOnly', 'Active Only')}</option>
+                                    <option value="blacklisted">{t('customer.list.blacklistedOnly', 'Blacklisted Only')}</option>
+                                </select>
+                            </div>
 
-                        <div className="filter-group">
-                            <label className="filter-label">
-                                {t('common.sortBy', 'Sort by')}:
-                            </label>
-                            <select
-                                className="filter-select"
-                                value={sortBy}
-                                onChange={(e) => requestSort(e.target.value)}
-                            >
-                                <option value="fullName">{t('customer.fields.fullName', 'Full Name')}</option>
-                                <option value="phoneNumber">{t('customer.fields.phoneNumber', 'Phone')}</option>
-                                <option value="email">{t('customer.fields.email', 'Email')}</option>
-                                <option value="dateOfBirth">{t('customer.fields.dateOfBirth', 'Date of Birth')}</option>
-                                <option value="isBlacklisted">{t('customer.fields.isBlacklisted', 'Status')}</option>
-                            </select>
-                        </div>
+                            <div className="filter-group">
+                                <label className="filter-label">
+                                    {t('customer.list.sortBy', 'Sort By')}
+                                </label>
+                                <select
+                                    className="filter-select"
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value)}
+                                >
+                                    <option value="fullName">{t('customer.fields.fullName', 'Full Name')}</option>
+                                    <option value="email">{t('customer.fields.email', 'Email')}</option>
+                                    <option value="phoneNumber">{t('customer.fields.phoneNumber', 'Phone Number')}</option>
+                                    <option value="dateOfBirth">{t('customer.fields.dateOfBirth', 'Date of Birth')}</option>
+                                </select>
+                            </div>
 
-                        <div className="filter-actions">
-                            <button
-                                className="btn-clear-filters"
-                                onClick={clearFilters}
-                            >
-                                {t('common.clearFilters', 'Clear Filters')}
-                            </button>
+                            <div className="filter-group">
+                                <label className="filter-label">
+                                    {t('customer.list.sortOrder', 'Order')}
+                                </label>
+                                <select
+                                    className="filter-select"
+                                    value={sortConfig.direction}
+                                    onChange={(e) => setSortConfig(prev => ({ ...prev, direction: e.target.value }))}
+                                >
+                                    <option value="ascending">{t('customer.list.ascending', 'A-Z / Low-High')}</option>
+                                    <option value="descending">{t('customer.list.descending', 'Z-A / High-Low')}</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 )}
-
-                {/* Results Summary */}
-                <div className="results-summary">
-                    {searchTerm || statusFilter !== 'all' ? (
-                        <p className="results-text">
-                            {t('common.showingResults', 'Showing {{count}} of {{total}} customers', {
-                                count: filteredCount,
-                                total: totalCustomers
-                            })}
-                        </p>
-                    ) : (
-                        <p className="results-text">
-                            {t('customer.list.totalCustomers', 'Total: {{count}} customers', {
-                                count: totalCustomers
-                            })}
-                        </p>
-                    )}
-                </div>
             </div>
 
-            {/* View Mode Toggle (Desktop) */}
-            <div className="view-mode-toggle desktop-only">
-                <button
-                    className={`view-btn ${viewMode === 'cards' ? 'active' : ''}`}
-                    onClick={() => setViewMode('cards')}
-                    aria-label={t('common.cardView', 'Card View')}
-                >
-                    <span className="view-icon">⊞</span>
-                    <span>{t('common.cards', 'Cards')}</span>
-                </button>
-                <button
-                    className={`view-btn ${viewMode === 'table' ? 'active' : ''}`}
-                    onClick={() => setViewMode('table')}
-                    aria-label={t('common.tableView', 'Table View')}
-                >
-                    <span className="view-icon">☰</span>
-                    <span>{t('common.table', 'Table')}</span>
-                </button>
-            </div>
-
-            {/* No Results State */}
-            {filteredAndSortedCustomers.length === 0 && !isLoading && (
-                <div className="no-results">
-                    <div className="no-results-icon">👥</div>
-                    <h3 className="no-results-title">
-                        {searchTerm || statusFilter !== 'all'
-                            ? t('customer.list.noResults', 'No customers found')
-                            : t('customer.list.noCustomers', 'No customers yet')
-                        }
-                    </h3>
-                    <p className="no-results-description">
-                        {searchTerm || statusFilter !== 'all'
-                            ? t('customer.list.tryDifferentSearch', 'Try adjusting your search or filters')
-                            : t('customer.list.getStarted', 'Add your first customer to get started')
-                        }
-                    </p>
-                    {(searchTerm || statusFilter !== 'all') && (
-                        <button
-                            className="btn-clear-search"
-                            onClick={clearFilters}
-                        >
-                            {t('common.clearSearch', 'Clear Search')}
-                        </button>
-                    )}
-                    {!searchTerm && statusFilter === 'all' && (
-                        <button
-                            className="btn-add-first"
-                            onClick={() => navigate('/customers/add')}
-                        >
-                            {t('customer.list.addFirstCustomer', 'Add First Customer')}
-                        </button>
-                    )}
-                </div>
-            )}
-
-            {/* Desktop Table View */}
-            {viewMode === 'table' && filteredAndSortedCustomers.length > 0 && (
-                <div className="customerlist-table-wrapper desktop-only">
-                    <div className="table-container">
-                        <table className="customerlist-table">
-                            <thead>
-                                <tr>
-                                    <th
-                                        onClick={() => requestSort('fullName')}
-                                        className={`sortable ${sortConfig.key === 'fullName' ? `sorted-${sortConfig.direction}` : ''}`}
-                                    >
-                                        {t('customer.fields.fullName', 'Full Name')}
-                                        <span className="sort-indicator"></span>
-                                    </th>
-                                    <th
-                                        onClick={() => requestSort('phoneNumber')}
-                                        className={`sortable ${sortConfig.key === 'phoneNumber' ? `sorted-${sortConfig.direction}` : ''}`}
-                                    >
-                                        {t('customer.fields.phoneNumber', 'Phone')}
-                                        <span className="sort-indicator"></span>
-                                    </th>
-                                    <th
-                                        onClick={() => requestSort('email')}
-                                        className={`sortable ${sortConfig.key === 'email' ? `sorted-${sortConfig.direction}` : ''}`}
-                                    >
-                                        {t('customer.fields.email', 'Email')}
-                                        <span className="sort-indicator"></span>
-                                    </th>
-                                    <th
-                                        onClick={() => requestSort('licenseNumber')}
-                                        className={`sortable ${sortConfig.key === 'licenseNumber' ? `sorted-${sortConfig.direction}` : ''}`}
-                                    >
-                                        {t('customer.fields.licenseNumber', 'License')}
-                                        <span className="sort-indicator"></span>
-                                    </th>
-                                    <th
-                                        onClick={() => requestSort('dateOfBirth')}
-                                        className={`sortable ${sortConfig.key === 'dateOfBirth' ? `sorted-${sortConfig.direction}` : ''}`}
-                                    >
-                                        {t('customer.fields.dateOfBirth', 'Date of Birth')}
-                                        <span className="sort-indicator"></span>
-                                    </th>
-                                    <th
-                                        onClick={() => requestSort('isBlacklisted')}
-                                        className={`sortable ${sortConfig.key === 'isBlacklisted' ? `sorted-${sortConfig.direction}` : ''}`}
-                                    >
-                                        {t('customer.fields.isBlacklisted', 'Status')}
-                                        <span className="sort-indicator"></span>
-                                    </th>
-                                    <th className="actions-header">
-                                        {t('customer.list.actions', 'Actions')}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredAndSortedCustomers.map((customer) => (
-                                    <tr
-                                        key={customer.id}
-                                        className="table-row clickable"
-                                        onClick={() => navigateToDetails(customer.id)}
-                                    >
-                                        <td className="customer-name-cell">
-                                            {customer.fullName}
-                                        </td>
-                                        <td>{customer.phoneNumber || '-'}</td>
-                                        <td>{customer.email || '-'}</td>
-                                        <td>{customer.licenseNumber || '-'}</td>
-                                        <td>{formatDate(customer.dateOfBirth)}</td>
-                                        <td>
-                                            <span className={`status-badge ${customer.isBlacklisted ? 'blacklisted' : 'active'}`}>
-                                                {customer.isBlacklisted
-                                                    ? t('customer.status.blacklisted', 'Blacklisted')
-                                                    : t('customer.status.active', 'Active')
-                                                }
-                                            </span>
-                                        </td>
-                                        <td className="table-actions">
-                                            <div className="action-buttons">
-                                                <button
-                                                    onClick={(e) => navigateToEdit(customer.id, e)}
-                                                    className="btn-table-action edit"
-                                                    title={t('common.edit', 'Edit')}
-                                                >
-                                                    ✏️
-                                                </button>
-                                                <button
-                                                    onClick={(e) => handleDelete(customer, e)}
-                                                    className="btn-table-action delete"
-                                                    title={t('common.delete', 'Delete')}
-                                                >
-                                                    🗑️
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+            {/* Results Section */}
+            <div className="customerlist-results">
+                {filteredAndSortedCustomers.length === 0 ? (
+                    <div className="customerlist-empty">
+                        <div className="empty-icon">👥</div>
+                        <h3 className="empty-title">
+                            {searchTerm || statusFilter !== 'all'
+                                ? t('customer.list.noResults', 'No customers match your criteria')
+                                : t('customer.list.noCustomers', 'No customers yet')
+                            }
+                        </h3>
+                        <p className="empty-description">
+                            {searchTerm || statusFilter !== 'all'
+                                ? t('customer.list.tryDifferentSearch', 'Try adjusting your search or filters')
+                                : t('customer.list.addFirstCustomer', 'Add your first customer to get started')
+                            }
+                        </p>
+                        {!searchTerm && statusFilter === 'all' && (
+                            <button
+                                className="btn-add-empty"
+                                onClick={() => navigate('/customers/add')}
+                            >
+                                {t('customer.list.addFirst', 'Add First Customer')}
+                            </button>
+                        )}
                     </div>
-                </div>
-            )}
-
-            {/* Mobile Card View (Default) */}
-            {(viewMode === 'cards' || window.innerWidth <= 768) && filteredAndSortedCustomers.length > 0 && (
-                <div className="customerlist-cards">
-                    {filteredAndSortedCustomers.map((customer) => (
-                        <div
-                            key={customer.id}
-                            className="customer-card"
-                            onClick={() => navigateToDetails(customer.id)}
-                        >
-                            <div className="customer-card-header">
-                                <h3 className="customer-name">
-                                    {customer.fullName}
-                                </h3>
-                                <div className="customer-status">
-                                    <span className={`status-badge ${customer.isBlacklisted ? 'blacklisted' : 'active'}`}>
-                                        {customer.isBlacklisted
-                                            ? t('customer.status.blacklisted', 'Blacklisted')
-                                            : t('customer.status.active', 'Active')
-                                        }
-                                    </span>
-                                </div>
+                ) : (
+                    <>
+                        {/* Table View - Desktop */}
+                        {viewMode === 'table' && !isMobile && (
+                            <div className="customerlist-table-container">
+                                <table className="customerlist-table">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                className={`sortable ${sortBy === 'fullName' ? `sorted-${sortConfig.direction}` : ''}`}
+                                                onClick={() => handleSort('fullName')}
+                                            >
+                                                {t('customer.fields.fullName', 'Full Name')}
+                                                <span className="sort-indicator"></span>
+                                            </th>
+                                            <th
+                                                className={`sortable ${sortBy === 'email' ? `sorted-${sortConfig.direction}` : ''}`}
+                                                onClick={() => handleSort('email')}
+                                            >
+                                                {t('customer.fields.email', 'Email')}
+                                                <span className="sort-indicator"></span>
+                                            </th>
+                                            <th
+                                                className={`sortable ${sortBy === 'phoneNumber' ? `sorted-${sortConfig.direction}` : ''}`}
+                                                onClick={() => handleSort('phoneNumber')}
+                                            >
+                                                {t('customer.fields.phoneNumber', 'Phone')}
+                                                <span className="sort-indicator"></span>
+                                            </th>
+                                            <th>{t('customer.fields.status', 'Status')}</th>
+                                            <th className="actions-header">{t('common.actions', 'Actions')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredAndSortedCustomers.map((customer) => (
+                                            <tr
+                                                key={customer.id}
+                                                onClick={() => handleCustomerClick(customer.id)}
+                                                className="table-row"
+                                            >
+                                                <td className="customer-name-cell">
+                                                    {customer.fullName}
+                                                    {customer.isBlacklisted && (
+                                                        <span className="blacklist-badge">⚠️</span>
+                                                    )}
+                                                </td>
+                                                <td>{customer.email || '—'}</td>
+                                                <td>{customer.phoneNumber || '—'}</td>
+                                                <td>
+                                                    <span className={`status-badge ${customer.isBlacklisted ? 'blacklisted' : 'active'}`}>
+                                                        {customer.isBlacklisted
+                                                            ? t('customer.status.blacklisted', 'Blacklisted')
+                                                            : t('customer.status.active', 'Active')
+                                                        }
+                                                    </span>
+                                                </td>
+                                                <td className="table-actions">
+                                                    <div className="action-buttons">
+                                                        <Link
+                                                            to={`/customers/${customer.id}/edit`}
+                                                            className="btn-table-action edit"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            title={t('common.edit', 'Edit')}
+                                                        >
+                                                            ✏️
+                                                        </Link>
+                                                        <button
+                                                            onClick={(e) => handleDelete(customer, e)}
+                                                            className="btn-table-action delete"
+                                                            title={t('common.delete', 'Delete')}
+                                                        >
+                                                            🗑️
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
+                        )}
 
-                            <div className="customer-card-body">
-                                <div className="customer-info">
-                                    {customer.phoneNumber && (
-                                        <div className="info-item">
-                                            <span className="info-label">
-                                                {t('customer.fields.phoneNumber', 'Phone')}:
-                                            </span>
-                                            <span className="info-value">
-                                                <a href={`tel:${customer.phoneNumber}`} onClick={(e) => e.stopPropagation()}>
-                                                    {customer.phoneNumber}
-                                                </a>
-                                            </span>
+                        {/* Card View - Mobile and Desktop */}
+                        {(viewMode === 'cards' || isMobile) && (
+                            <div className="customerlist-cards">
+                                {filteredAndSortedCustomers.map((customer) => (
+                                    <div
+                                        key={customer.id}
+                                        className={`customer-card ${customer.isBlacklisted ? 'blacklisted' : ''}`}
+                                        onClick={() => handleCustomerClick(customer.id)}
+                                    >
+                                        <div className="customer-card-header">
+                                            <div className="customer-name-section">
+                                                <h3 className="customer-name">
+                                                    {customer.fullName}
+                                                    {customer.isBlacklisted && (
+                                                        <span className="blacklist-indicator" title={t('customer.status.blacklisted', 'Blacklisted')}>
+                                                            ⚠️
+                                                        </span>
+                                                    )}
+                                                </h3>
+                                                <span className={`status-badge ${customer.isBlacklisted ? 'blacklisted' : 'active'}`}>
+                                                    {customer.isBlacklisted
+                                                        ? t('customer.status.blacklisted', 'Blacklisted')
+                                                        : t('customer.status.active', 'Active')
+                                                    }
+                                                </span>
+                                            </div>
                                         </div>
-                                    )}
 
-                                    {customer.email && (
-                                        <div className="info-item">
-                                            <span className="info-label">
-                                                {t('customer.fields.email', 'Email')}:
-                                            </span>
-                                            <span className="info-value">
-                                                <a href={`mailto:${customer.email}`} onClick={(e) => e.stopPropagation()}>
-                                                    {customer.email}
-                                                </a>
-                                            </span>
+                                        <div className="customer-card-content">
+                                            <div className="customer-info">
+                                                {customer.phoneNumber && (
+                                                    <div className="info-item">
+                                                        <span className="info-label">
+                                                            📞 {t('customer.fields.phoneNumber', 'Phone')}:
+                                                        </span>
+                                                        <span className="info-value">
+                                                            <a href={`tel:${customer.phoneNumber}`} onClick={(e) => e.stopPropagation()}>
+                                                                {customer.phoneNumber}
+                                                            </a>
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                {customer.email && (
+                                                    <div className="info-item">
+                                                        <span className="info-label">
+                                                            ✉️ {t('customer.fields.email', 'Email')}:
+                                                        </span>
+                                                        <span className="info-value">
+                                                            <a href={`mailto:${customer.email}`} onClick={(e) => e.stopPropagation()}>
+                                                                {customer.email}
+                                                            </a>
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                                {customer.licenseNumber && (
+                                                    <div className="info-item">
+                                                        <span className="info-label">
+                                                            🆔 {t('customer.fields.licenseNumber', 'License')}:
+                                                        </span>
+                                                        <span className="info-value">{customer.licenseNumber}</span>
+                                                    </div>
+                                                )}
+
+                                                <div className="info-item">
+                                                    <span className="info-label">
+                                                        🎂 {t('customer.fields.dateOfBirth', 'Date of Birth')}:
+                                                    </span>
+                                                    <span className="info-value">{formatDate(customer.dateOfBirth)}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    )}
 
-                                    {customer.licenseNumber && (
-                                        <div className="info-item">
-                                            <span className="info-label">
-                                                {t('customer.fields.licenseNumber', 'License')}:
-                                            </span>
-                                            <span className="info-value">{customer.licenseNumber}</span>
+                                        <div className="customer-card-actions">
+                                            <Link
+                                                to={`/customers/${customer.id}`}
+                                                className="btn-action primary"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {t('common.details', 'Details')}
+                                            </Link>
+                                            <Link
+                                                to={`/customers/${customer.id}/edit`}
+                                                className="btn-action secondary"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {t('common.edit', 'Edit')}
+                                            </Link>
+                                            <button
+                                                onClick={(e) => handleDelete(customer, e)}
+                                                className="btn-action danger"
+                                            >
+                                                {t('common.delete', 'Delete')}
+                                            </button>
                                         </div>
-                                    )}
-
-                                    <div className="info-item">
-                                        <span className="info-label">
-                                            {t('customer.fields.dateOfBirth', 'Date of Birth')}:
-                                        </span>
-                                        <span className="info-value">{formatDate(customer.dateOfBirth)}</span>
                                     </div>
-                                </div>
+                                ))}
                             </div>
-
-                            <div className="customer-card-actions">
-                                <Link
-                                    to={`/customers/${customer.id}`}
-                                    className="btn-action primary"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    {t('common.details', 'Details')}
-                                </Link>
-                                <Link
-                                    to={`/customers/${customer.id}/edit`}
-                                    className="btn-action secondary"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    {t('common.edit', 'Edit')}
-                                </Link>
-                                <button
-                                    onClick={(e) => handleDelete(customer, e)}
-                                    className="btn-action danger"
-                                >
-                                    {t('common.delete', 'Delete')}
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        )}
+                    </>
+                )}
+            </div>
         </div>
     );
 };

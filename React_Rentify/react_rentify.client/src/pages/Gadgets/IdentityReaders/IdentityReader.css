@@ -210,57 +210,9 @@
     flex-wrap: wrap;
 }
 
-.upload-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem 1.5rem;
-    border: none;
-    border-radius: var(--border-radius);
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all var(--transition-speed);
-    min-width: 140px;
-}
 
-    .upload-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
 
-    .upload-btn.file-upload {
-        background: var(--primary-color);
-        color: white;
-    }
 
-        .upload-btn.file-upload:hover:not(:disabled) {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-light);
-        }
-
-    .upload-btn.camera-capture {
-        background: var(--success-color);
-        color: white;
-    }
-
-        .upload-btn.camera-capture:hover:not(:disabled) {
-            background: #059669;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-light);
-        }
-
-    .upload-btn.clear-all {
-        background: var(--danger-color);
-        color: white;
-    }
-
-        .upload-btn.clear-all:hover:not(:disabled) {
-            background: var(--danger-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-light);
-        }
 
 .btn-icon {
     font-size: 1.1rem;
@@ -689,5 +641,290 @@
 
     .manual-input {
         font-size: 0.9rem;
+    }
+}
+/* IdentityReader Button Improvements - Add to IdentityReader.css */
+
+/* Upload Button */
+.upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    background: var(--primary-color, #9333ea);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(147, 51, 234, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+    .upload-btn:hover {
+        background: var(--primary-color-hover, #a855f7);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px -3px rgba(147, 51, 234, 0.3);
+    }
+
+    .upload-btn:active {
+        transform: translateY(0);
+    }
+
+    .upload-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.3);
+    }
+
+    .upload-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .upload-btn svg {
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+
+/* File Upload Button */
+.file-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--card-bg, #ffffff);
+    color: var(--text-color, #1e293b);
+    border: 2px solid var(--border-color, #e2e8f0);
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+    .file-upload:hover {
+        border-color: var(--primary-color, #9333ea);
+        background: var(--hover-bg, rgba(147, 51, 234, 0.05));
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(147, 51, 234, 0.15);
+    }
+
+    .file-upload:focus-within {
+        outline: none;
+        border-color: var(--primary-color, #9333ea);
+        box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
+    }
+
+    .file-upload svg {
+        width: 1rem;
+        height: 1rem;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+    }
+
+    .file-upload:hover svg {
+        opacity: 1;
+    }
+
+/* Camera Capture Button */
+.camera-capture {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--success-color, #10b981);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+    .camera-capture:hover {
+        background: var(--success-color-hover, #059669);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px -3px rgba(16, 185, 129, 0.3);
+    }
+
+    .camera-capture:active {
+        transform: translateY(0);
+    }
+
+    .camera-capture:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+    }
+
+    .camera-capture:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .camera-capture svg {
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+
+/* Clear All Button */
+.clear-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color, #ef4444);
+    border: 2px solid var(--danger-color, #ef4444);
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+    .clear-all:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    }
+
+    .clear-all:active {
+        transform: translateY(0);
+    }
+
+    .clear-all:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+    }
+
+    .clear-all:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .clear-all svg {
+        width: 1rem;
+        height: 1rem;
+    }
+
+/* Dark Mode Adjustments */
+:root.dark-mode .file-upload {
+    background: var(--card-bg, #1e293b);
+    border-color: var(--border-color, #334155);
+    color: var(--text-color, #f3f4f6);
+}
+
+    :root.dark-mode .file-upload:hover {
+        background: rgba(147, 51, 234, 0.1);
+        border-color: var(--primary-color, #a855f7);
+    }
+
+:root.dark-mode .clear-all {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #f87171;
+    color: #f87171;
+}
+
+    :root.dark-mode .clear-all:hover {
+        background: rgba(239, 68, 68, 0.25);
+    }
+
+/* Loading State for Buttons */
+.upload-btn--loading,
+.camera-capture--loading {
+    position: relative;
+    pointer-events: none;
+}
+
+    .upload-btn--loading::after,
+    .camera-capture--loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 1rem;
+        height: 1rem;
+        margin: -0.5rem 0 0 -0.5rem;
+        border: 2px solid transparent;
+        border-top: 2px solid currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .upload-btn,
+    .file-upload,
+    .camera-capture,
+    .clear-all {
+        padding: 0.75rem 1rem;
+        font-size: 0.8rem;
+    }
+
+        .upload-btn svg,
+        .camera-capture svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .file-upload svg,
+        .clear-all svg {
+            width: 0.875rem;
+            height: 0.875rem;
+        }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .upload-btn,
+    .file-upload,
+    .camera-capture,
+    .clear-all {
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+        transform: none !important;
+    }
+
+        .upload-btn:hover,
+        .file-upload:hover,
+        .camera-capture:hover,
+        .clear-all:hover {
+            transform: none;
+        }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .upload-btn,
+    .camera-capture {
+        border: 2px solid currentColor;
+    }
+
+    .file-upload,
+    .clear-all {
+        border-width: 3px;
     }
 }

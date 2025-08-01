@@ -111,6 +111,14 @@ function App() {
                 }
             />
 
+            <Route
+                path="/viewer/:id"
+                element={
+                    <ProtectedRoute>
+                        <Viewer />
+                    </ProtectedRoute>
+                }
+            />
             {/* Main App Routes */}
             <Route
                 path="/*"
@@ -126,7 +134,6 @@ function App() {
                             <Route path="/series/:id" element={<SerieDetails />} />
                             <Route path="/series/create" element={<Create />} />
                             <Route path="/series/:id/chapters/:id/edit" element={<ChapterEdit />} />
-                            <Route path="/viewer/:id" element={<Viewer />} />
                             <Route path="/search" element={<Search />} />
                             <Route path="/favorites" element={<Favorites />} />
                             <Route path="/myseries" element={<MySeries />} />

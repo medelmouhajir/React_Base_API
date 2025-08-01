@@ -45,7 +45,7 @@ namespace React_Mangati.Server.Controllers.Data
                         f.Serie.Title,
                         f.Serie.Synopsis,
                         f.Serie.CoverImageUrl,
-                        f.Serie.Status
+                        Status = f.Serie.Status.ToString()
                     }
                 })
                 .ToListAsync();

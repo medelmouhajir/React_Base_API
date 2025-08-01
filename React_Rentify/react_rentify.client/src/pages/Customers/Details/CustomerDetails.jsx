@@ -44,38 +44,28 @@ const CustomerDetails = () => {
                 });
                 setReservations(sorted);
 
-                // 3. Search blacklist entries matching this customer (by nationalId, passportId, licenseNumber)
                 const searchParams = {
                     nationalId: cust.nationalId || '',
                     passportId: cust.passportId || '',
                     licenseNumber: cust.licenseNumber || '',
                 };
                 const blList = await blacklistService.search(searchParams);
-                setBlacklistEntries(blList || []);
+
+                setBlacklistEntries(blList);
+
             } catch (err) {
-                console.error('❌ Error loading customer details:', err);
+                console.error('❌ Error fetching customer data:', err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchData();
+        if (customerId) {
+            fetchData();
+        }
     }, [customerId]);
 
-    // Handle removal of a blacklist entry
-    const handleRemoveBlacklist = async (entryId) => {
-        if (!window.confirm(t('customerDetails.confirmRemoveBlacklist'))) return;
 
-        try {
-            await blacklistService.delete(entryId);
-            setBlacklistEntries((prev) => prev.filter((e) => e.id !== entryId));
-        } catch (err) {
-            console.error('❌ Error removing blacklist entry:', err);
-            alert(t('customerDetails.errorRemoveBlacklist'));
-        }
-    };
-
-    // Handle adding a new blacklist entry
     const handleAddBlacklist = async () => {
         if (!blacklistReason.trim()) return;
         setAddingBlacklist(true);
@@ -135,164 +125,260 @@ const CustomerDetails = () => {
         }
     };
 
+    // Handle delete customer
+    const handleDeleteCustomer = async () => {
+        if (!window.confirm(t('customerDetails.confirmDelete'))) return;
+
+        try {
+            await customerService.delete(customerId);
+            navigate('/customers');
+        } catch (err) {
+            console.error('❌ Error deleting customer:', err);
+            alert(t('customerDetails.errorDelete'));
+        }
+    };
+
     if (loading) {
         return (
-            <div className="cd-loading">
-                {t('common.loading')}…
+            <div className="customer-details-container">
+                <div className="customer-details-loading">
+                    <div className="loading-spinner"></div>
+                    <span>{t('common.loading')}…</span>
+                </div>
             </div>
         );
     }
 
     if (!customer) {
         return (
-            <div className="cd-not-found">
-                {t('customerDetails.notFound')}
+            <div className="customer-details-container">
+                <div className="customer-details-error">
+                    <h2>{t('customerDetails.notFound')}</h2>
+                    <button
+                        className="cd-back-btn"
+                        onClick={() => navigate('/customers')}
+                    >
+                        ← {t('common.goBack')}
+                    </button>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="cd-container">
-            {/* — Customer Basic Info — */}
+        <div className="customer-details-container">
+            {/* Header with Action Buttons */}
+            <div className="customer-details-header">
+                <div className="cd-header-content">
+                    <h1 className="cd-title">
+                        {t('customerDetails.heading', { name: customer.fullName })}
+                    </h1>
+                    <div className="cd-status-badge">
+                        <span className={`cd-status ${customer.isBlacklisted ? 'blacklisted' : 'active'}`}>
+                            {customer.isBlacklisted ? t('customer.status.blacklisted') : t('customer.status.active')}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="cd-action-buttons">
+                    <Link
+                        to={`/customers/${customerId}/edit`}
+                        className="cd-btn cd-btn-primary"
+                    >
+                        <svg className="cd-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        {t('common.edit')}
+                    </Link>
+
+                    <button
+                        onClick={handleDeleteCustomer}
+                        className="cd-btn cd-btn-danger"
+                    >
+                        <svg className="cd-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        {t('common.remove')}
+                    </button>
+
+                    <Link
+                        to={`/reservations/add?customerId=${customerId}`}
+                        className="cd-btn cd-btn-success"
+                    >
+                        <svg className="cd-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        {t('customerDetails.newReservation')}
+                    </Link>
+                </div>
+            </div>
+
+            {/* Customer Basic Info */}
             <section className="cd-section cd-info">
-                <h2>{t('customerDetails.heading', { name: customer.fullName })}</h2>
+                <h2 className="cd-section-title">{t('customerDetails.basicInfo')}</h2>
                 <div className="cd-info-grid">
-                    <div>
+                    <div className="cd-info-item">
                         <span className="cd-label">{t('customer.fields.phoneNumber')}:</span>
-                        <span className="cd-value">{customer.phoneNumber}</span>
+                        <span className="cd-value">
+                            <a href={`tel:${customer.phoneNumber}`}>{customer.phoneNumber}</a>
+                        </span>
                     </div>
-                    <div>
+                    <div className="cd-info-item">
                         <span className="cd-label">{t('customer.fields.email')}:</span>
-                        <span className="cd-value">{customer.email}</span>
+                        <span className="cd-value">
+                            <a href={`mailto:${customer.email}`}>{customer.email}</a>
+                        </span>
                     </div>
-                    <div>
+                    <div className="cd-info-item">
                         <span className="cd-label">{t('customer.fields.nationalId')}:</span>
                         <span className="cd-value">{customer.nationalId || '—'}</span>
                     </div>
-                    <div>
+                    <div className="cd-info-item">
                         <span className="cd-label">{t('customer.fields.passportId')}:</span>
                         <span className="cd-value">{customer.passportId || '—'}</span>
                     </div>
-                    <div>
+                    <div className="cd-info-item">
                         <span className="cd-label">{t('customer.fields.licenseNumber')}:</span>
                         <span className="cd-value">{customer.licenseNumber}</span>
                     </div>
-                    <div>
+                    <div className="cd-info-item">
                         <span className="cd-label">{t('customer.fields.dateOfBirth')}:</span>
                         <span className="cd-value">
                             {new Date(customer.dateOfBirth).toLocaleDateString()}
                         </span>
                     </div>
-                    <div className="cd-info-wide">
+                    <div className="cd-info-item cd-info-wide">
                         <span className="cd-label">{t('customer.fields.address')}:</span>
                         <span className="cd-value">{customer.address}</span>
                     </div>
-                    <div>
-                        <span className="cd-label">{t('customer.fields.isBlacklisted')}:</span>
-                        <span className={`cd-value ${customer.isBlacklisted ? 'cd-yes' : 'cd-no'}`}>
-                            {customer.isBlacklisted ? t('common.yes') : t('common.no')}
-                        </span>
-                    </div>
                 </div>
-                <button
-                    className="cd-back-btn"
-                    onClick={() => navigate(-1)}
-                >
-                    ← {t('common.goBack')}
-                </button>
             </section>
 
-            {/* — Reservations List — */}
+            {/* Reservations List */}
             <section className="cd-section cd-reservations">
-                <h3>{t('customerDetails.reservationsHeading')}</h3>
+                <div className="cd-section-header">
+                    <h3 className="cd-section-title">{t('customerDetails.reservationsHeading')}</h3>
+                    <span className="cd-count-badge">{reservations.length}</span>
+                </div>
+
                 {reservations.length === 0 ? (
-                    <p className="cd-empty">{t('customerDetails.noReservations')}</p>
+                    <div className="cd-empty-state">
+                        <svg className="cd-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <p>{t('customerDetails.noReservations')}</p>
+                        <Link
+                            to={`/reservations/add?customerId=${customerId}`}
+                            className="cd-btn cd-btn-primary cd-btn-sm"
+                        >
+                            {t('customerDetails.createFirstReservation')}
+                        </Link>
+                    </div>
                 ) : (
-                    <ul className="cd-reservation-list">
+                    <div className="cd-reservation-list">
                         {reservations.map((r) => (
-                            <li
+                            <div
                                 key={r.id}
                                 className={`cd-reservation-item ${r.isPaid ? 'cd-paid' : 'cd-unpaid'}`}
                                 onClick={() => navigate(`/reservations/${r.id}`)}
                                 role="button"
                                 tabIndex={0}
                             >
-                                <div className="cd-resv-main">
-                                    <span className="cd-resv-car">{r.carModel || r.carLicensePlate || t('customerDetails.unknownCar')}</span>
-                                    <span className="cd-resv-dates">
-                                        {new Date(r.startDate).toLocaleDateString()} – {new Date(r.endDate).toLocaleDateString()}
-                                    </span>
+                                <div className="cd-resv-content">
+                                    <div className="cd-resv-main">
+                                        <h4 className="cd-resv-car">
+                                            {r.carModel || r.carLicensePlate || t('customerDetails.unknownCar')}
+                                        </h4>
+                                        <p className="cd-resv-dates">
+                                            {new Date(r.startDate).toLocaleDateString()} – {new Date(r.endDate).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                    <div className="cd-resv-meta">
+                                        <span className={`cd-resv-status ${r.isPaid ? 'paid' : 'unpaid'}`}>
+                                            {r.isPaid ? t('customerDetails.paid') : t('customerDetails.unpaid')}
+                                        </span>
+                                        {r.totalAmount && (
+                                            <span className="cd-resv-amount">
+                                                {new Intl.NumberFormat('en-US', {
+                                                    style: 'currency',
+                                                    currency: 'USD'
+                                                }).format(r.totalAmount)}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="cd-resv-status">
-                                    {r.isPaid ? t('customerDetails.paid') : t('customerDetails.unpaid')}
-                                </div>
-                            </li>
+                                <svg className="cd-resv-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 )}
             </section>
 
-            {/* — Blacklist Entries — */}
+            {/* Blacklist Entries */}
             <section className="cd-section cd-blacklist">
-                <h3>{t('customerDetails.blacklistHeading')}</h3>
+                <h3 className="cd-section-title">{t('customerDetails.blacklistHeading')}</h3>
+
                 {blacklistEntries.length === 0 && !customer.isBlacklisted ? (
-                    <p className="cd-empty">{t('customerDetails.notBlacklisted')}</p>
+                    <p className="cd-empty-text">{t('customerDetails.notBlacklisted')}</p>
                 ) : (
                     <div className="cd-blacklist-grid">
                         {blacklistEntries.map((entry) => {
                             const ownEntry = entry.reportedByAgencyId === user.agencyId;
                             return (
-                                <div key={entry.id} className={`cd-blacklist-entry ${ownEntry ? 'cd-own' : 'cd-other'}`}>
-                                    <div className="cd-bl-main">
-                                        <div><strong>{entry.fullName}</strong></div>
-                                        <div>{entry.reason}</div>
-                                        <div className="cd-bl-meta">
-                                            {t('customerDetails.reportedBy')}: {entry.reportedByAgencyName || t('customerDetails.unknownAgency')}
-                                        </div>
-                                        <div className="cd-bl-meta">
-                                            {t('customerDetails.dateAdded')}: {new Date(entry.dateAdded).toLocaleDateString()}
-                                        </div>
+                                <div key={entry.id} className={`cd-blacklist-entry ${ownEntry ? 'own' : 'other'}`}>
+                                    <div className="cd-bl-header">
+                                        <span className="cd-bl-agency">
+                                            {ownEntry ? t('customerDetails.yourAgency') : (entry.reportedByAgencyName || t('customerDetails.otherAgency'))}
+                                        </span>
+                                        <span className="cd-bl-date">
+                                            {new Date(entry.dateAdded).toLocaleDateString()}
+                                        </span>
                                     </div>
-                                    {ownEntry && (
-                                        <button
-                                            className="cd-bl-remove"
-                                            onClick={() => handleRemoveBlacklist(entry.id)}
-                                        >
-                                            {t('common.remove')}
-                                        </button>
-                                    )}
+                                    <p className="cd-bl-reason">{entry.reason}</p>
                                 </div>
                             );
                         })}
                     </div>
                 )}
 
-                {/* Add to blacklist (only if not already reported by this agency) */}
-                {!customer.isBlacklisted &&
-                    !blacklistEntries.some((e) => e.reportedByAgencyId === user.agencyId) && (
-                        <div className="cd-bl-add">
-                            <h4>{t('customerDetails.addBlacklist')}</h4>
+                {/* Add to Blacklist Form */}
+                {!customer.isBlacklisted && (
+                    <div className="cd-add-blacklist">
+                        <h4 className="cd-add-bl-title">{t('customerDetails.addToBlacklist')}</h4>
+                        <div className="cd-add-bl-form">
                             <textarea
-                                className="cd-bl-reason"
+                                placeholder={t('customerDetails.blacklistReasonPlaceholder')}
                                 value={blacklistReason}
                                 onChange={(e) => setBlacklistReason(e.target.value)}
-                                placeholder={t('customerDetails.placeholders.blacklistReason')}
-                                rows={3}
+                                className="cd-bl-reason-input"
+                                rows="3"
                             />
                             <button
-                                className="cd-bl-add-btn"
                                 onClick={handleAddBlacklist}
                                 disabled={addingBlacklist || !blacklistReason.trim()}
+                                className="cd-btn cd-btn-danger cd-btn-sm"
                             >
                                 {addingBlacklist
                                     ? t('common.saving')
                                     : t('customerDetails.addBlacklistBtn')}
                             </button>
                         </div>
-                    )}
+                    </div>
+                )}
             </section>
 
 
+            {/* Back Button */}
+            <div className="cd-back-section">
+                <button
+                    className="cd-back-btn"
+                    onClick={() => navigate('/customers')}
+                >
+                    ← {t('common.goBack')}
+                </button>
+            </div>
         </div>
     );
 };

@@ -215,7 +215,7 @@ namespace React_Rentify.Server.Controllers
                 NationalId = dto.NationalId,
                 PassportId = dto.PassportId,
                 LicenseNumber = dto.LicenseNumber,
-                DateOfBirth = dto.DateOfBirth,
+                DateOfBirth = dto.DateOfBirth ?? new DateTime(),
                 Address = dto.Address,
                 IsBlacklisted = dto.IsBlacklisted,
                 Customer_Attachments = new List<Customer_Attachment>()
@@ -472,7 +472,7 @@ namespace React_Rentify.Server.Controllers
         public string? NationalId { get; set; }
         public string? PassportId { get; set; }
         public string LicenseNumber { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public string Address { get; set; }
         public bool IsBlacklisted { get; set; }
     }

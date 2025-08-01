@@ -191,7 +191,24 @@
       "title": "هل أنت جاهز لإنشاء مانغا الخاصة بك؟",
       "description": "انضم إلى مانغاتي وابدأ رحلتك اليوم.",
       "buttonText": "ابدأ الآن"
-    }
+    },
+    "welcomeBack": "مرحبًا بعودتك",
+    "welcome": "مرحبًا",
+    "exploreLibrary": "استكشف المكتبة",
+    "discoverManga": "اكتشف المانغا",
+    "allSeries": "جميع السلاسل",
+    "recentSeries": "السلاسل الحديثة",
+    "myFavorites": "مفضلتي",
+    "allSeriesSubtitle": "تصفح جميع السلاسل المتاحة",
+    "noSeries": "لا توجد سلاسل",
+    "noSeriesMessage": "لم تتم إضافة أي سلاسل بعد.",
+    "recentSeriesSubtitle": "اطلع على أحدث الإضافات",
+    "noRecentSeries": "لا توجد سلاسل حديثة",
+    "noRecentSeriesMessage": "لم تتم إضافة أي سلاسل مؤخرًا.",
+    "myFavoritesSubtitle": "سلاسك المفضلة في مكان واحد",
+    "noFavorites": "لا توجد مفضلات بعد",
+    "noFavoritesMessage": "لم تضف أي سلاسل إلى المفضلات بعد.",
+    "exploreSeries": "استكشاف السلاسل"
   },
   "series": {
     "title": "جميع السلاسل",
@@ -234,7 +251,10 @@
     "status": {
       "ongoing": "مستمرة",
       "completed": "مكتملة",
-      "canceled": "ملغاة"
+      "canceled": "ملغاة",
+      "cancelled": "ملغي",
+      "draft": "مسودة",
+      "published": "منشور"
     },
     "chapters": {
       "title": "الفصول",
@@ -260,7 +280,11 @@
       "resumeReading": "متابعة القراءة"
     },
     "favorite": "إضافة إلى المفضلة",
-    "unfavorite": "إزالة من المفضلة"
+    "unfavorite": "إزالة من المفضلة",
+    "addFavorite": "إضافة إلى المفضلات",
+    "removeFavorite": "إزالة من المفضلات",
+    "noSynopsis": "لا يوجد ملخص",
+    "by": "بواسطة"
   },
   "mySeries": {
     "title": "سلاسلي",
@@ -305,25 +329,26 @@
     "clearSearch": "مسح البحث"
   },
   "search": {
-    "title": "البحث في السلاسل",
-    "subtitle": "ابحث عن سلسلة المانجا المفضلة التالية",
-    "placeholder": "ابحث بالعنوان أو المؤلف أو الكلمات الرئيسية...",
-    "buttonSearch": "بحث",
-    "buttonClear": "مسح",
-    "filterLanguage": "اللغة",
-    "filterTags": "الوسوم",
-    "allLanguages": "جميع اللغات",
-    "searching": "جاري البحث...",
-    "resultsFound": "تم العثور على {{count}} نتيجة",
-    "noResults": "لم يتم العثور على نتائج",
-    "tryAdjustingFilters": "حاول تعديل مرشحات البحث أو جرّب كلمة رئيسية مختلفة",
-    "startSearching": "ابدأ البحث",
-    "useFilters": "استخدم شريط البحث والمرشحات للعثور على سلاسل المانجا",
-    "trending": "السلاسل الرائجة",
-    "errorLoadingFilters": "فشل في تحميل المرشحات",
+    "errorLoadingFilters": "حدث خطأ أثناء تحميل الفلاتر",
     "errorSearching": "حدث خطأ أثناء البحث",
-    "hideFilters": "إخفاء المرشحات",
-    "showFilters": "إظهار المرشحات"
+    "title": "بحث",
+    "subtitle": "ابحث عن مسلسلاتك المفضلة",
+    "placeholder": "ابحث بالعنوان...",
+    "search": "بحث",
+    "clear": "مسح",
+    "filters": "الفلاتر",
+    "language": "اللغة",
+    "allLanguages": "كل اللغات",
+    "tags": "العلامات",
+    "results": "النتائج",
+    "resultsFound": "نتيجة",
+    "searching": "جاري البحث...",
+    "noResults": "لا توجد نتائج",
+    "noResultsSubtitle": "حاول مصطلح بحث آخر",
+    "trending": "الشائع",
+    "trendingSubtitle": "المسلسلات الأكثر مشاهدة حالياً",
+    "loadingTrending": "جاري تحميل الشائع...",
+    "noTrending": "لا توجد مسلسلات شائعة حالياً"
   },
   "account": {
     "title": "حسابي",

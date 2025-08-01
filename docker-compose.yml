@@ -240,4 +240,5 @@ networks:
 
 volumes:
   postgres_data:
+    external: false
   mangati_uploads:

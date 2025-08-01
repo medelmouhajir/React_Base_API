@@ -186,24 +186,32 @@ namespace React_Rentify.Server.Controllers.Users
         [Authorize]
         public async Task<IActionResult> GetCurrentUser()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
+            try
             {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(new
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    AgencyId = user.AgencyId,
+                    Role = GetRoleFromEnumToString(user.Role),
+                    IsActive = user.IsActive,
+                    user.PhoneNumber
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("Error in : AuthController => GetCurrentUser, error : " + ex.Message);
                 return NotFound();
             }
-
-            return Ok(new
-            {
-                Id = user.Id,
-                Email = user.Email,
-                FullName = user.FullName,
-                AgencyId = user.AgencyId,
-                Role = GetRoleFromEnumToString(user.Role),
-                IsActive = user.IsActive,
-                user.PhoneNumber
-            });
         }
 
         [HttpPost("logout")]

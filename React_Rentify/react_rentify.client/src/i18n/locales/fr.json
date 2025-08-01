@@ -546,35 +546,28 @@
     "price": "Prix"
   },
   "customerDetails": {
-    "confirmRemoveBlacklist": "Êtes-vous sûr de vouloir retirer cette entrée de la liste noire ?",
-    "errorRemoveBlacklist": "Échec de la suppression de l'entrée de la liste noire.",
-    "errorAddBlacklist": "Échec de l'ajout de l'entrée à la liste noire.",
-    "confirmRemoveAttachment": "Êtes-vous sûr de vouloir supprimer cette pièce jointe ?",
-    "errorRemoveAttachment": "Échec de la suppression de la pièce jointe.",
-    "errorAddAttachment": "Échec de l'ajout de la pièce jointe.",
-    "notFound": "Client introuvable.",
-    "heading": "Détails de {{name}}",
+    "errorAddBlacklist": "Erreur lors de l'ajout à la liste noire. Veuillez réessayer.",
+    "errorAddAttachment": "Erreur lors de l'ajout de la pièce jointe. Veuillez réessayer.",
+    "confirmRemoveAttachment": "Êtes-vous sûr de vouloir supprimer cette pièce jointe ?",
+    "errorRemoveAttachment": "Erreur lors de la suppression de la pièce jointe. Veuillez réessayer.",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce client ?",
+    "notFound": "Client introuvable",
+    "heading": "Détails du client : {{name}}",
+    "newReservation": "Nouvelle réservation",
+    "basicInfo": "Informations de base",
     "reservationsHeading": "Réservations",
-    "noReservations": "Aucune réservation.",
-    "unknownCar": "Véhicule inconnu",
+    "noReservations": "Aucune réservation trouvée.",
+    "createFirstReservation": "Créer la première réservation",
+    "unknownCar": "Voiture inconnue",
     "paid": "Payé",
-    "unpaid": "Impayé",
+    "unpaid": "Non payé",
     "blacklistHeading": "Entrées de la liste noire",
     "notBlacklisted": "Ce client n'est pas sur la liste noire.",
-    "reportedBy": "Signalé par",
-    "unknownAgency": "Agence inconnue",
-    "dateAdded": "Date d'ajout",
-    "addBlacklist": "Ajouter à la liste noire",
-    "addBlacklistBtn": "Ajouter à la liste noire",
-    "attachmentsHeading": "Pièces jointes",
-    "noAttachments": "Aucune pièce jointe.",
-    "addAttachment": "Ajouter une pièce jointe",
-    "addAttachmentBtn": "Ajouter une pièce jointe",
-    "placeholders": {
-      "blacklistReason": "Entrez la raison de la mise sur liste noire",
-      "fileName": "Nom du fichier",
-      "filePath": "Lien ou chemin du fichier"
-    }
+    "yourAgency": "Votre agence",
+    "otherAgency": "Autre agence",
+    "addToBlacklist": "Ajouter à la liste noire",
+    "blacklistReasonPlaceholder": "Entrez la raison de la mise en liste noire…",
+    "addBlacklistBtn": "Ajouter à la liste noire"
   },
   "agency": {
     "list": {
@@ -1685,5 +1678,30 @@
       "status": "Statut",
       "cars": "Voitures"
     }
+  },
+  "gps": {
+    "errors": {
+      "fetchCars": "Erreur lors du chargement des véhicules"
+    },
+    "hidePanel": "Masquer le panneau",
+    "showPanel": "Afficher le panneau",
+    "carsTitle": "Véhicules",
+    "collapsePanel": "Réduire le panneau",
+    "expandPanel": "Développer le panneau",
+    "minimizePanel": "Minimiser le panneau",
+    "closePanel": "Fermer le panneau",
+    "filterPlaceholder": "Filtrer par modèle ou immatriculation...",
+    "online": "En ligne",
+    "offline": "Hors ligne",
+    "lastSeen": "Dernière connexion",
+    "focusOnMap": "Centrer sur la carte",
+    "startEngine": "Démarrer le moteur",
+    "lockCar": "Verrouiller le véhicule",
+    "hornBeep": "Klaxon",
+    "noGpsData": "Pas de données GPS",
+    "noMatchingCars": "Aucun véhicule correspondant",
+    "zoomIn": "Zoomer",
+    "zoomOut": "Dézoomer",
+    "centerMap": "Centrer la carte"
   }
 }

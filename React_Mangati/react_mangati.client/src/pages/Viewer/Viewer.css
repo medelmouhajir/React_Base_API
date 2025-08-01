@@ -1,25 +1,63 @@
-﻿/* Enhanced Manga Viewer Styles */
+﻿/* Enhanced Manga Viewer Styles - Full Page Version */
 
 .manga-viewer {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     color: #e2e8f0;
-    overflow-x: hidden;
-    position: relative;
-    max-width: 100% !important;
+    overflow: hidden; /* Prevent scrollbars on main container */
+    position: fixed; /* Fixed positioning to ensure full page coverage */
+    top: 0;
+    left: 0;
+    z-index: 1000; /* High z-index to ensure it's above other elements */
+    margin: 0;
+    padding: 0;
 }
 
-/* Content Area */
+/* Content Area - Now fills remaining space after toolbar */
 .viewer-content {
     flex: 1;
-    margin-top: 124px; /* Space for main nav (64px) + toolbar (60px) */
-    min-height: calc(100vh - 124px);
+    height: calc(100vh - 60px); /* Subtract toolbar height */
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
+    overflow: auto; /* Allow scrolling within content area */
+    margin: 0;
+    padding: 0;
+}
+
+/* Toolbar positioning - Fixed at top */
+.viewer-toolbar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+/* Ensure body doesn't have scroll when viewer is active */
+body:has(.manga-viewer) {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Alternative approach for browsers that don't support :has() */
+.viewer-active {
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Override any inherited margins or paddings */
+.manga-viewer * {
+    box-sizing: border-box;
 }
 
 /* Animations */
@@ -44,8 +82,11 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .viewer-content {
-        margin-top: 106px; /* Mobile nav (56px) + toolbar (50px) */
-        min-height: calc(100vh - 106px);
+        height: calc(100vh - 50px); /* Smaller toolbar on mobile */
+    }
+
+    .viewer-toolbar {
+        height: 50px;
     }
 }
 
@@ -53,6 +94,7 @@
 @media (prefers-contrast: high) {
     .manga-viewer {
         background: #000;
+        border: 2px solid #fff;
     }
 }
 
@@ -64,10 +106,10 @@
     }
 }
 
-/* Print styles */
+/* Print styles - Hide everything for print */
 @media print {
-    .viewer-content {
-        margin-top: 0 !important;
+    .manga-viewer {
+        display: none !important;
     }
 }
 
@@ -81,13 +123,38 @@
     direction: rtl;
 }
 
-/* Utility classes */
-.fullscreen {
-    position: fixed;
+/* Fullscreen mode support */
+.manga-viewer:fullscreen {
+    background: #000;
+}
+
+.manga-viewer:-webkit-full-screen {
+    background: #000;
+}
+
+.manga-viewer:-moz-full-screen {
+    background: #000;
+}
+
+/* Loading states specific to full-page viewer */
+.manga-viewer .loading-screen {
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 1100;
-    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: inherit;
+    z-index: 1002;
+}
+
+/* Ensure zoom indicator is visible in full-page mode */
+.zoom-indicator {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1003;
 }

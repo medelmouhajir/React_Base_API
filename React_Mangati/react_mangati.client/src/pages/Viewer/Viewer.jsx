@@ -1,4 +1,4 @@
-﻿// src/pages/Viewer/Viewer.jsx - Main container component
+﻿// src/pages/Viewer/Viewer.jsx - Full Page Implementation
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import pageService from '../../services/pageService';
@@ -51,6 +51,17 @@ const Viewer = () => {
         resetZoom
     });
 
+    // Full-page viewer effect - Add/remove body class
+    useEffect(() => {
+        // Add class to body to hide scroll and reset margins
+        document.body.classList.add('viewer-active');
+
+        // Cleanup function to restore normal body behavior
+        return () => {
+            document.body.classList.remove('viewer-active');
+        };
+    }, []);
+
     // Load initial reading progress
     useEffect(() => {
         const loadInitialProgress = async () => {
@@ -58,119 +69,67 @@ const Viewer = () => {
 
             try {
                 const progress = await getReadingProgress(parseInt(id));
-                if (progress && progress.lastReadPage >= 0) {
-                    setCurrentPageIndex(progress.lastReadPage);
+                if (progress && progress.lastReadPage !== undefined) {
                     setCurrentIndex(progress.lastReadPage);
+                    setCurrentPageIndex(progress.lastReadPage);
                 }
             } catch (error) {
-                console.error('Error loading reading progress:', error);
+                console.error('Error loading initial progress:', error);
             }
         };
 
         loadInitialProgress();
     }, [user, id, getReadingProgress]);
 
-    // Save reading progress periodically
+    // Load chapter and pages
     useEffect(() => {
-        if (!user || !id || currentPageIndex < 0) return;
+        const loadChapter = async () => {
+            if (!id) return;
 
-        const saveTimer = setTimeout(() => {
-            saveReadingProgress(parseInt(id), currentPageIndex)
-                .catch(error => console.error('Error saving reading progress:', error));
-        }, 3000); // Save after 3 seconds of inactivity
-
-        return () => clearTimeout(saveTimer);
-    }, [user, id, currentPageIndex, saveReadingProgress]);
-
-    // Save on page exit
-    useEffect(() => {
-        if (!user || !id) return;
-
-        const handleBeforeUnload = () => {
-            saveReadingProgress(parseInt(id), currentPageIndex);
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [user, id, currentPageIndex, saveReadingProgress]);
-
-    // Set up initial scroll position
-    useEffect(() => {
-        if (mode === 'infinite' && pages.length > 0 && !loading && currentPageIndex > 0) {
-            const timer = setTimeout(() => {
-                const pageElements = document.querySelectorAll('.page-wrapper');
-                if (pageElements.length > currentPageIndex) {
-                    pageElements[currentPageIndex].scrollIntoView({ behavior: 'auto' });
-                }
-            }, 300);
-
-            return () => clearTimeout(timer);
-        }
-    }, [mode, pages.length, loading, currentPageIndex]);
-
-    // Set up intersection observer for infinite scroll mode
-    useEffect(() => {
-        if (mode !== 'infinite' || pages.length === 0) return;
-
-        observerRef.current = new IntersectionObserver(
-            (entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const pageIndex = parseInt(entry.target.dataset.index);
-                        setCurrentPageIndex(pageIndex);
-                    }
-                });
-            },
-            {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.5
-            }
-        );
-
-        const pageElements = document.querySelectorAll('.page-wrapper');
-        pageElements.forEach(el => {
-            observerRef.current.observe(el);
-        });
-
-        return () => {
-            if (observerRef.current) {
-                observerRef.current.disconnect();
-            }
-        };
-    }, [mode, pages]);
-
-    // Fetch chapter and pages data
-    useEffect(() => {
-        const fetchData = async () => {
             try {
                 setLoading(true);
 
-                // Fetch chapter details
-                const chapterResponse = await chapterService.getById(id);
-                setChapter(chapterResponse.data);
+                // Load chapter details
+                const chapterData = await chapterService.getById(id);
+                setChapter(chapterData.data);
 
-                // Fetch pages for this chapter
-                const pagesResponse = await pageService.getByChapterId(id);
-                const sortedPages = pagesResponse.data.sort((a, b) => a.order - b.order);
-                setPages(sortedPages);
+                // Load pages
+                const pagesData = await pageService.getByChapterId(id);
+                if (pagesData.data && pagesData.data.length > 0) {
+                    setPages(pagesData.data);
+                } else {
+                    setPages([]);
+                }
             } catch (error) {
-                console.error('Error fetching chapter data:', error);
+                console.error('Error loading chapter:', error);
+                setPages([]);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchData();
+        loadChapter();
     }, [id]);
+
+    // Save reading progress
+    useEffect(() => {
+        const saveProgress = async () => {
+            if (!user || !id || !pages.length) return;
+
+            try {
+                await saveReadingProgress(parseInt(id), currentPageIndex);
+            } catch (error) {
+                console.error('Error saving progress:', error);
+            }
+        };
+
+        const debounceTimer = setTimeout(saveProgress, 1000);
+        return () => clearTimeout(debounceTimer);
+    }, [user, id, currentPageIndex, pages.length, saveReadingProgress]);
 
     // Handle mode change
     const handleModeChange = (newMode) => {
         setMode(newMode);
-        if (newMode === 'infinite') {
-            // Reset to first page when switching to infinite
-            setCurrentIndex(0);
-        }
     };
 
     // Navigation functions
@@ -201,12 +160,19 @@ const Viewer = () => {
         setCurrentPageIndex(lastIndex);
     };
 
+    // Handle back navigation
+    const handleBack = () => {
+        // Clean up body class before navigating
+        document.body.classList.remove('viewer-active');
+        navigate(-1);
+    };
+
     if (loading) {
         return (
             <div className="manga-viewer">
                 <ViewerToolbar
                     title="Loading..."
-                    onBack={() => navigate(-1)}
+                    onBack={handleBack}
                 />
                 <LoadingState message="Loading chapter..." />
             </div>
@@ -226,7 +192,7 @@ const Viewer = () => {
                 onResetZoom={resetZoom}
                 currentPage={currentIndex + 1}
                 totalPages={pages.length}
-                onBack={() => navigate(-1)}
+                onBack={handleBack}
                 onNextPage={goToNextPage}
                 onPrevPage={goToPrevPage}
                 onFirstPage={goToFirstPage}
@@ -237,7 +203,7 @@ const Viewer = () => {
             {/* Content Area */}
             <div className="viewer-content" ref={contentRef}>
                 {pages.length === 0 ? (
-                    <NoPages onBack={() => navigate(-1)} />
+                    <NoPages onBack={handleBack} />
                 ) : (
                     <>
                         {mode === 'horizontal' && (
