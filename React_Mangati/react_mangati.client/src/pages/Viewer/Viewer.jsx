@@ -78,7 +78,7 @@ const Viewer = () => {
             }
         };
 
-        loadInitialProgress();
+        //loadInitialProgress();
     }, [user, id, getReadingProgress]);
 
     // Load chapter and pages
@@ -231,6 +231,8 @@ const Viewer = () => {
                                 pages={pages}
                                 zoom={zoom}
                                 baseUrl={import.meta.env.VITE_API_URL}
+                                currentIndex={currentIndex}  // Add this prop
+                                chapter={chapter}            // Add this prop
                             />
                         )}
                     </>
