@@ -1,0 +1,6 @@
+@React_Virtuello.Server_HostAddress = http://localhost:5023
+
+GET {{React_Virtuello.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

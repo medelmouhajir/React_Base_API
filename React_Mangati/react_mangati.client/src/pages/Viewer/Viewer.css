@@ -1,36 +1,35 @@
-﻿/* Enhanced Manga Viewer Styles - Full Page Version */
+﻿/* Enhanced Manga Viewer Styles - InfiniteScroll Only with Mobile Focus */
 
 .manga-viewer {
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Full viewport height */
-    width: 100vw; /* Full viewport width */
+    height: 100vh;
+    width: 100vw;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     color: #e2e8f0;
-    overflow: hidden; /* Prevent scrollbars on main container */
-    position: fixed; /* Fixed positioning to ensure full page coverage */
+    overflow: hidden;
+    position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000; /* High z-index to ensure it's above other elements */
+    z-index: 1000;
     margin: 0;
     padding: 0;
 }
 
-/* Content Area - Now fills remaining space after toolbar */
+/* Content Area - Optimized for InfiniteScroll */
 .viewer-content {
     flex: 1;
-    height: calc(100vh - 60px); /* Subtract toolbar height */
+    height: calc(100vh - 60px);
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
     position: relative;
-    overflow: auto; /* Allow scrolling within content area */
+    overflow: hidden;
     margin: 0;
     padding: 0;
 }
 
-/* Toolbar positioning - Fixed at top */
+/* Toolbar positioning - Responsive */
 .viewer-toolbar {
     position: sticky;
     top: 0;
@@ -41,18 +40,139 @@
     flex-shrink: 0;
 }
 
-/* Ensure body doesn't have scroll when viewer is active */
-body:has(.manga-viewer) {
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
+/* Loading State */
+.viewer-content--loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
 }
 
-/* Alternative approach for browsers that don't support :has() */
-.viewer-active {
+.loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+}
+
+.loader-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid rgba(96, 165, 250, 0.2);
+    border-top: 3px solid #60a5fa;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loader p {
+    font-size: 1rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* Error State */
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    gap: 1.5rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+    .error-state svg {
+        width: 4rem;
+        height: 4rem;
+        color: #ef4444;
+        margin-bottom: 0.5rem;
+    }
+
+    .error-state h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin: 0;
+    }
+
+    .error-state p {
+        font-size: 1rem;
+        color: #94a3b8;
+        margin: 0;
+        max-width: 400px;
+    }
+
+/* No Pages State */
+.no-pages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    gap: 1.5rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+    .no-pages svg {
+        width: 4rem;
+        height: 4rem;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+    }
+
+    .no-pages p {
+        font-size: 1.125rem;
+        color: #94a3b8;
+        margin: 0;
+    }
+
+/* Zoom Indicator */
+.zoom-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    z-index: 1002;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.zoom-indicator--visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.zoom-indicator svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Ensure body doesn't have scroll when viewer is active */
+body.viewer-active {
     overflow: hidden !important;
     margin: 0 !important;
     padding: 0 !important;
+    height: 100vh !important;
 }
 
 /* Override any inherited margins or paddings */
@@ -79,7 +199,19 @@ body:has(.manga-viewer) {
     }
 }
 
-/* Mobile Responsive */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Responsive Enhancements */
 @media (max-width: 768px) {
     .viewer-content {
         height: calc(100vh - 50px); /* Smaller toolbar on mobile */
@@ -88,73 +220,117 @@ body:has(.manga-viewer) {
     .viewer-toolbar {
         height: 50px;
     }
+
+    /* Touch-friendly error and loading states */
+    .error-state,
+    .no-pages {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+        .error-state h3 {
+            font-size: 1.25rem;
+        }
+
+        .error-state p,
+        .no-pages p {
+            font-size: 0.9rem;
+        }
+
+    /* Zoom indicator adjustments for mobile */
+    .zoom-indicator {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+
+        .zoom-indicator svg {
+            width: 1rem;
+            height: 1rem;
+        }
+
+    /* Loader adjustments */
+    .loader-spinner {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-width: 2px;
+    }
+
+    .loader p {
+        font-size: 0.9rem;
+    }
 }
 
-/* High contrast mode */
+/* Tablet responsive */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .viewer-content {
+        height: calc(100vh - 55px);
+    }
+
+    .viewer-toolbar {
+        height: 55px;
+    }
+}
+
+/* High contrast mode support */
 @media (prefers-contrast: high) {
     .manga-viewer {
         background: #000;
         border: 2px solid #fff;
     }
-}
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        transition: none !important;
-        animation: none !important;
+    .zoom-indicator {
+        background: #000;
+        border: 2px solid #fff;
+    }
+
+    .error-state svg,
+    .no-pages svg {
+        stroke-width: 3;
     }
 }
 
-/* Print styles - Hide everything for print */
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .manga-viewer,
+    .zoom-indicator,
+    .loader-spinner,
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .zoom-indicator--visible {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1400px) {
+    .error-state,
+    .no-pages {
+        gap: 2rem;
+    }
+
+        .error-state h3 {
+            font-size: 1.75rem;
+        }
+
+        .error-state p,
+        .no-pages p {
+            font-size: 1.125rem;
+        }
+
+    .zoom-indicator {
+        padding: 1rem 1.25rem;
+        font-size: 1.125rem;
+    }
+}
+
+/* Print styles (hide viewer entirely) */
 @media print {
     .manga-viewer {
         display: none !important;
     }
-}
-
-/* Dark mode specific adjustments */
-:root.dark-mode .manga-viewer {
-    background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-}
-
-/* Special cases for RTL layouts */
-[dir="rtl"] .manga-viewer {
-    direction: rtl;
-}
-
-/* Fullscreen mode support */
-.manga-viewer:fullscreen {
-    background: #000;
-}
-
-.manga-viewer:-webkit-full-screen {
-    background: #000;
-}
-
-.manga-viewer:-moz-full-screen {
-    background: #000;
-}
-
-/* Loading states specific to full-page viewer */
-.manga-viewer .loading-screen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: inherit;
-    z-index: 1002;
-}
-
-/* Ensure zoom indicator is visible in full-page mode */
-.zoom-indicator {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    z-index: 1003;
 }

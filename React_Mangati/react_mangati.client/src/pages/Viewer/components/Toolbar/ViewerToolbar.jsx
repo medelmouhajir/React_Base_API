@@ -1,11 +1,9 @@
-// src/pages/Viewer/components/Toolbar/ViewerToolbar.jsx
+// src/pages/Viewer/components/Toolbar/ViewerToolbar.jsx - InfiniteScroll Only
 import React from 'react';
 import './ViewerToolbar.css';
 
 const ViewerToolbar = ({
     chapter,
-    mode,
-    onModeChange,
     zoom,
     onZoomIn,
     onZoomOut,
@@ -13,14 +11,11 @@ const ViewerToolbar = ({
     currentPage,
     totalPages,
     onBack,
-    onNextPage,
-    onPrevPage,
-    onFirstPage,
-    onLastPage,
-    showNavigation = true
+    showNavigation = false // Not used for infinite scroll but kept for consistency
 }) => {
     return (
         <div className="viewer-toolbar">
+            {/* Left Section - Back button and title */}
             <div className="toolbar-section toolbar-section--left">
                 <button
                     className="toolbar-btn toolbar-btn--icon"
@@ -39,39 +34,23 @@ const ViewerToolbar = ({
                 </h2>
             </div>
 
+            {/* Center Section - Reading mode indicator (InfiniteScroll only) */}
             <div className="toolbar-section toolbar-section--center">
-                {/* Reading Mode Selector */}
-                <div className="mode-selector">
-                    <button
-                        className={`mode-btn ${mode === 'infinite' ? 'mode-btn--active' : ''}`}
-                        onClick={() => onModeChange('infinite')}
-                        title="Infinite scroll mode"
-                    >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m0 0l-4-4m4 4l4-4" />
-                        </svg>
-                        <span>Scroll</span>
-                    </button>
-                    <button
-                        className={`mode-btn ${mode === 'horizontal' ? 'mode-btn--active' : ''}`}
-                        onClick={() => onModeChange('horizontal')}
-                        title="Horizontal page mode"
-                    >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12M8 12h12m-12 5h12" />
-                        </svg>
-                        <span>Pages</span>
-                    </button>
-                    <button
-                        className={`mode-btn ${mode === 'vertical' ? 'mode-btn--active' : ''}`}
-                        onClick={() => onModeChange('vertical')}
-                        title="Vertical page mode"
-                    >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m-7-7h14" />
-                        </svg>
-                        <span>Vertical</span>
-                    </button>
+                <div className="reading-mode-indicator">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m0 0l-4-4m4 4l4-4" />
+                    </svg>
+                    <span>Infinite Scroll</span>
+                </div>
+            </div>
+
+            {/* Right Section - Controls */}
+            <div className="toolbar-section toolbar-section--right">
+                {/* Page Progress Indicator */}
+                <div className="page-progress">
+                    <span className="page-indicator">
+                        {currentPage} / {totalPages}
+                    </span>
                 </div>
 
                 <div className="toolbar-divider"></div>
@@ -79,98 +58,75 @@ const ViewerToolbar = ({
                 {/* Zoom Controls */}
                 <div className="zoom-controls">
                     <button
-                        className="toolbar-btn toolbar-btn--icon"
+                        className="toolbar-btn toolbar-btn--icon toolbar-btn--small"
                         onClick={onZoomOut}
                         disabled={zoom <= 50}
                         title="Zoom out"
                     >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                            <line x1="8" y1="11" x2="14" y2="11" />
                         </svg>
                     </button>
+
                     <button
-                        className="toolbar-btn toolbar-btn--text"
+                        className="toolbar-btn toolbar-btn--text toolbar-btn--small"
                         onClick={onResetZoom}
                         title="Reset zoom"
                     >
                         {zoom}%
                     </button>
+
                     <button
-                        className="toolbar-btn toolbar-btn--icon"
+                        className="toolbar-btn toolbar-btn--icon toolbar-btn--small"
                         onClick={onZoomIn}
                         disabled={zoom >= 200}
                         title="Zoom in"
                     >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                            <line x1="11" y1="8" x2="11" y2="14" />
+                            <line x1="8" y1="11" x2="14" y2="11" />
                         </svg>
                     </button>
                 </div>
-            </div>
 
-            <div className="toolbar-section toolbar-section--right">
-                {/* Navigation Controls - Hidden in infinite mode */}
-                {showNavigation && (
-                    <>
-                        <div className="nav-controls">
-                            <button
-                                className="toolbar-btn toolbar-btn--icon"
-                                onClick={onFirstPage}
-                                disabled={currentPage === 1}
-                                title="First page"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M18.5 19.5l-7-7 7-7m-13 0v14" />
-                                </svg>
-                            </button>
-                            <button
-                                className="toolbar-btn toolbar-btn--icon"
-                                onClick={onPrevPage}
-                                disabled={currentPage === 1}
-                                title="Previous page"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
+                <div className="toolbar-divider"></div>
 
-                            <span className="page-indicator">
-                                {currentPage}/{totalPages}
-                            </span>
-
-                            <button
-                                className="toolbar-btn toolbar-btn--icon"
-                                onClick={onNextPage}
-                                disabled={currentPage === totalPages}
-                                title="Next page"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </button>
-                            <button
-                                className="toolbar-btn toolbar-btn--icon"
-                                onClick={onLastPage}
-                                disabled={currentPage === totalPages}
-                                title="Last page"
-                            >
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.5 19.5l7-7-7-7m13 0v14" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div className="toolbar-divider"></div>
-                    </>
-                )}
+                {/* Settings Button */}
+                <button
+                    className="toolbar-btn toolbar-btn--icon"
+                    onClick={() => {
+                        // Future: Open settings modal
+                        console.log('Settings clicked');
+                    }}
+                    title="Reading settings"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="m12 1v6m0 6v6" />
+                        <path d="m12 1l4 4m-8 0l4-4" />
+                        <path d="m12 23l4-4m-8 0l4 4" />
+                        <path d="m1 12h6m6 0h6" />
+                        <path d="m1 12l4-4m0 8l-4-4" />
+                        <path d="m23 12l-4-4m0 8l4-4" />
+                    </svg>
+                </button>
 
                 {/* Full Screen Button */}
                 <button
                     className="toolbar-btn toolbar-btn--icon"
                     onClick={() => {
                         if (!document.fullscreenElement) {
-                            document.documentElement.requestFullscreen();
+                            document.documentElement.requestFullscreen().catch(err => {
+                                console.warn('Could not enter fullscreen:', err);
+                            });
                         } else {
-                            document.exitFullscreen();
+                            document.exitFullscreen().catch(err => {
+                                console.warn('Could not exit fullscreen:', err);
+                            });
                         }
                     }}
                     title="Toggle fullscreen"

@@ -1,4 +1,4 @@
-﻿// src/pages/Viewer/Viewer.jsx - Full Page Implementation
+﻿// src/pages/Viewer/Viewer.jsx - Enhanced InfiniteScroll Only Implementation
 import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import pageService from '../../services/pageService';
@@ -9,8 +9,6 @@ import useUserData from '../../hooks/useUserData';
 // Import components
 import {
     ViewerToolbar,
-    HorizontalViewer,
-    VerticalViewer,
     InfiniteScrollViewer,
     LoadingState,
     NoPages,
@@ -18,7 +16,7 @@ import {
 } from './components';
 
 // Import hooks
-import { useViewerKeyboard, useViewerZoom } from './hooks';
+import { useViewerZoom } from './hooks';
 
 import './Viewer.css';
 
@@ -28,10 +26,9 @@ const Viewer = () => {
     const [pages, setPages] = useState([]);
     const [chapter, setChapter] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [mode, setMode] = useState('infinite'); // Default viewing mode
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const contentRef = useRef(null);
-    const observerRef = useRef(null);
 
     const { user } = useAuth();
     const { saveReadingProgress, getReadingProgress } = useUserData();
@@ -40,54 +37,23 @@ const Viewer = () => {
     // Use custom hooks
     const { zoom, zoomIn, zoomOut, resetZoom, zoomIndicatorVisible } = useViewerZoom();
 
-    // Register keyboard navigation
-    useViewerKeyboard({
-        mode,
-        currentIndex,
-        totalPages: pages.length,
-        setCurrentIndex,
-        zoomIn,
-        zoomOut,
-        resetZoom
-    });
-
-    // Full-page viewer effect - Add/remove body class
+    // Add body class for full page mode when component mounts
     useEffect(() => {
-        // Add class to body to hide scroll and reset margins
         document.body.classList.add('viewer-active');
 
-        // Cleanup function to restore normal body behavior
         return () => {
             document.body.classList.remove('viewer-active');
         };
     }, []);
 
-    // Load initial reading progress
-    useEffect(() => {
-        const loadInitialProgress = async () => {
-            if (!user || !id) return;
-
-            try {
-                const progress = await getReadingProgress(parseInt(id));
-                if (progress && progress.lastReadPage !== undefined) {
-                    setCurrentIndex(progress.lastReadPage);
-                    setCurrentPageIndex(progress.lastReadPage);
-                }
-            } catch (error) {
-                console.error('Error loading initial progress:', error);
-            }
-        };
-
-        //loadInitialProgress();
-    }, [user, id, getReadingProgress]);
-
-    // Load chapter and pages
+    // Load chapter data
     useEffect(() => {
         const loadChapter = async () => {
             if (!id) return;
 
             try {
                 setLoading(true);
+                setError(null);
 
                 // Load chapter details
                 const chapterData = await chapterService.getById(id);
@@ -95,148 +61,180 @@ const Viewer = () => {
 
                 // Load pages
                 const pagesData = await pageService.getByChapterId(id);
-                if (pagesData.data && pagesData.data.length > 0) {
-                    setPages(pagesData.data);
-                } else {
-                    setPages([]);
+                setPages(pagesData.data || []);
+
+                // Load reading progress if user is authenticated
+                if (user) {
+                    try {
+                        const progress = await getReadingProgress(id);
+                        if (progress && progress.currentPage) {
+                            setCurrentIndex(progress.currentPage);
+                            setCurrentPageIndex(progress.currentPage);
+                        }
+                    } catch (progressError) {
+                        console.warn('Could not load reading progress:', progressError);
+                    }
                 }
-            } catch (error) {
-                console.error('Error loading chapter:', error);
-                setPages([]);
+            } catch (err) {
+                console.error('Error loading chapter:', err);
+                setError(err.message || 'Failed to load chapter');
             } finally {
                 setLoading(false);
             }
         };
 
         loadChapter();
-    }, [id]);
+    }, [id, user, getReadingProgress]);
 
-    // Save reading progress
+    // Save reading progress when current page changes
     useEffect(() => {
-        const saveProgress = async () => {
-            if (!user || !id || !pages.length) return;
+        if (user && chapter && currentPageIndex >= 0) {
+            const timeoutId = setTimeout(() => {
+                saveReadingProgress(chapter.id, currentPageIndex)
+                    .catch(err => console.warn('Could not save reading progress:', err));
+            }, 1000); // Debounce saves
 
-            try {
-                await saveReadingProgress(parseInt(id), currentPageIndex);
-            } catch (error) {
-                console.error('Error saving progress:', error);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [user, chapter, currentPageIndex, saveReadingProgress]);
+
+    // Keyboard navigation for zoom controls only (page navigation handled by InfiniteScrollViewer)
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Zoom controls
+            if (e.key === '+' || e.key === '=') {
+                e.preventDefault();
+                zoomIn();
+            } else if (e.key === '-' || e.key === '_') {
+                e.preventDefault();
+                zoomOut();
+            } else if (e.key === '0') {
+                e.preventDefault();
+                resetZoom();
+            }
+            // ESC to go back
+            else if (e.key === 'Escape') {
+                e.preventDefault();
+                handleBack();
             }
         };
 
-        const debounceTimer = setTimeout(saveProgress, 1000);
-        return () => clearTimeout(debounceTimer);
-    }, [user, id, currentPageIndex, pages.length, saveReadingProgress]);
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [zoomIn, zoomOut, resetZoom]);
 
-    // Handle mode change
-    const handleModeChange = (newMode) => {
-        setMode(newMode);
-    };
-
-    // Navigation functions
-    const goToNextPage = () => {
-        if (currentIndex < pages.length - 1) {
-            const newIndex = currentIndex + 1;
-            setCurrentIndex(newIndex);
-            setCurrentPageIndex(newIndex);
-        }
-    };
-
-    const goToPrevPage = () => {
-        if (currentIndex > 0) {
-            const newIndex = currentIndex - 1;
-            setCurrentIndex(newIndex);
-            setCurrentPageIndex(newIndex);
-        }
-    };
-
-    const goToFirstPage = () => {
-        setCurrentIndex(0);
-        setCurrentPageIndex(0);
-    };
-
-    const goToLastPage = () => {
-        const lastIndex = pages.length - 1;
-        setCurrentIndex(lastIndex);
-        setCurrentPageIndex(lastIndex);
-    };
-
-    // Handle back navigation
+    // Navigation handlers
     const handleBack = () => {
-        // Clean up body class before navigating
-        document.body.classList.remove('viewer-active');
-        navigate(-1);
+        if (chapter?.serie?.id) {
+            navigate(`/series/${chapter.serie.id}`);
+        } else {
+            navigate('/');
+        }
     };
 
-    if (loading) {
+    // Error handling
+    if (error) {
         return (
             <div className="manga-viewer">
                 <ViewerToolbar
-                    title="Loading..."
+                    chapter={chapter}
                     onBack={handleBack}
+                    zoom={zoom}
+                    onZoomIn={zoomIn}
+                    onZoomOut={zoomOut}
+                    onResetZoom={resetZoom}
+                    currentPage={currentPageIndex + 1}
+                    totalPages={pages.length}
+                    showNavigation={false}
                 />
-                <LoadingState message="Loading chapter..." />
+                <div className="viewer-content">
+                    <div className="error-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        <h3>Error Loading Chapter</h3>
+                        <p>{error}</p>
+                        <button className="toolbar-btn" onClick={handleBack}>
+                            Go Back
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }
 
+    // Loading state
+    if (loading) {
+        return (
+            <div className="manga-viewer">
+                <ViewerToolbar
+                    chapter={chapter}
+                    onBack={handleBack}
+                    zoom={zoom}
+                    onZoomIn={zoomIn}
+                    onZoomOut={zoomOut}
+                    onResetZoom={resetZoom}
+                    currentPage={1}
+                    totalPages={0}
+                    showNavigation={false}
+                />
+                <div className="viewer-content">
+                    <LoadingState message="Loading chapter..." />
+                </div>
+            </div>
+        );
+    }
+
+    // No pages state
+    if (!pages || pages.length === 0) {
+        return (
+            <div className="manga-viewer">
+                <ViewerToolbar
+                    chapter={chapter}
+                    onBack={handleBack}
+                    zoom={zoom}
+                    onZoomIn={zoomIn}
+                    onZoomOut={zoomOut}
+                    onResetZoom={resetZoom}
+                    currentPage={0}
+                    totalPages={0}
+                    showNavigation={false}
+                />
+                <div className="viewer-content">
+                    <NoPages onBack={handleBack} />
+                </div>
+            </div>
+        );
+    }
+
+    // Base URL for images
+    const baseUrl = import.meta.env.VITE_API_URL || 'https://localhost:7081';
+
     return (
         <div className="manga-viewer">
-            {/* Toolbar */}
             <ViewerToolbar
                 chapter={chapter}
-                mode={mode}
-                onModeChange={handleModeChange}
+                onBack={handleBack}
                 zoom={zoom}
                 onZoomIn={zoomIn}
                 onZoomOut={zoomOut}
                 onResetZoom={resetZoom}
-                currentPage={currentIndex + 1}
+                currentPage={currentPageIndex + 1}
                 totalPages={pages.length}
-                onBack={handleBack}
-                onNextPage={goToNextPage}
-                onPrevPage={goToPrevPage}
-                onFirstPage={goToFirstPage}
-                onLastPage={goToLastPage}
-                showNavigation={mode !== 'infinite'}
+                showNavigation={false}
             />
 
-            {/* Content Area */}
             <div className="viewer-content" ref={contentRef}>
-                {pages.length === 0 ? (
-                    <NoPages onBack={handleBack} />
-                ) : (
-                    <>
-                        {mode === 'horizontal' && (
-                            <HorizontalViewer
-                                pages={pages}
-                                currentIndex={currentIndex}
-                                zoom={zoom}
-                                baseUrl={import.meta.env.VITE_API_URL}
-                                onNextPage={goToNextPage}
-                                onPrevPage={goToPrevPage}
-                            />
-                        )}
-                        {mode === 'vertical' && (
-                            <VerticalViewer
-                                pages={pages}
-                                currentIndex={currentIndex}
-                                zoom={zoom}
-                                baseUrl={import.meta.env.VITE_API_URL}
-                                onNextPage={goToNextPage}
-                                onPrevPage={goToPrevPage}
-                            />
-                        )}
-                        {mode === 'infinite' && (
-                            <InfiniteScrollViewer
-                                pages={pages}
-                                zoom={zoom}
-                                baseUrl={import.meta.env.VITE_API_URL}
-                                currentIndex={currentIndex}  // Add this prop
-                                chapter={chapter}            // Add this prop
-                            />
-                        )}
-                    </>
-                )}
+                <InfiniteScrollViewer
+                    pages={pages}
+                    zoom={zoom}
+                    baseUrl={baseUrl}
+                    chapter={chapter}
+                    currentIndex={currentIndex}
+                    onPageChange={setCurrentPageIndex}
+                />
             </div>
 
             {/* Zoom Indicator */}

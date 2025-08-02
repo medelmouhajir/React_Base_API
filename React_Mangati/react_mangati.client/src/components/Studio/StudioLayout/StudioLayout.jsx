@@ -67,6 +67,8 @@ export const StudioLayout = ({ children }) => {
         }
     }, []);
 
+
+
     // Determine content margin based on sidebar state
     const getContentClasses = () => {
         const baseClass = 'studio-layout__content';

@@ -109,15 +109,6 @@ const Header = ({
                 {/* Logo */}
                 <div className="header__logo">
                     <Link to="/" className="header__logo-link">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" className="header__logo-image">
-                            <path
-                                d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
                         <span className="header__logo-text">{t('app.title')}</span>
                     </Link>
                 </div>

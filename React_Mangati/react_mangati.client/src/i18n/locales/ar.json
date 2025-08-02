@@ -431,7 +431,22 @@
       "infinite": "التمرير اللانهائي",
       "horizontal": "الصفحات الأفقية",
       "vertical": "الصفحات العمودية"
-    }
+    },
+    "pageAlt": "صفحة {{page}}",
+    "pageNum": "صفحة {{page}}",
+    "loadingChapter": "جارٍ تحميل الفصل...",
+    "noPagesDesc": "لا توجد صفحات للعرض في هذا الفصل.",
+    "back": "رجوع",
+    "chapter": "الفصل",
+    "zoomReset": "إعادة ضبط التكبير",
+    "fullscreen": "ملء الشاشة",
+    "exitFullscreen": "الخروج من ملء الشاشة",
+    "loadError": "فشل في تحميل الصورة",
+    "retry": "إعادة المحاولة",
+    "endOfChapter": "نهاية الفصل",
+    "endOfChapterDesc": "لقد وصلت إلى نهاية هذا الفصل.",
+    "backToSeries": "العودة إلى السلسلة",
+    "swipeToScroll": "اسحب للتمرير"
   },
   "roles": {
     "Admin": "مدير النظام",

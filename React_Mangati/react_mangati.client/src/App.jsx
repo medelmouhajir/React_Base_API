@@ -21,6 +21,8 @@ import ChapterEdit from './pages/Chapters/ChapterEdit';
 
 import Viewer from './pages/Viewer/Viewer';
 
+import ViewerExtra from './pages/ViewerExtra/ViewerExtra';
+
 import Search from './pages/Search/Search';
 
 import Favorites from './pages/Favorites/Favorites';
@@ -115,7 +117,7 @@ function App() {
                 path="/viewer/:id"
                 element={
                     <ProtectedRoute>
-                        <Viewer />
+                        <ViewerExtra />
                     </ProtectedRoute>
                 }
             />

@@ -432,7 +432,22 @@
       "infinite": "Infinite Scroll",
       "horizontal": "Horizontal Pages",
       "vertical": "Vertical Pages"
-    }
+    },
+    "pageAlt": "Page {{page}}",
+    "pageNum": "Page {{page}}",
+    "loadingChapter": "Loading chapter...",
+    "noPagesDesc": "There are no pages to display for this chapter.",
+    "back": "Back",
+    "chapter": "Chapter",
+    "zoomReset": "Reset zoom",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "loadError": "Failed to load image",
+    "retry": "Retry",
+    "endOfChapter": "End of Chapter",
+    "endOfChapterDesc": "You've reached the end of this chapter.",
+    "backToSeries": "Back to series",
+    "swipeToScroll": "Swipe to scroll"
   },
   "roles": {
     "Admin": "Administrator",
