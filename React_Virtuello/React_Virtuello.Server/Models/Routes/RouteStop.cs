@@ -5,7 +5,7 @@ namespace React_Virtuello.Server.Models.Routes
 {
     public class RouteStop
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public Guid Id { get; set; } = Guid.NewGuid();
 
 
         [Required]
@@ -22,7 +22,7 @@ namespace React_Virtuello.Server.Models.Routes
         public string? BusinessId { get; set; }
         public virtual Business? Business { get; set; }
 
-        public string SavedRouteId { get; set; }
+        public Guid SavedRouteId { get; set; }
         public virtual SavedRoute? SavedRoute { get; set; }
     }
 }

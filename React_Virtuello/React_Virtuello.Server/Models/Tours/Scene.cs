@@ -4,7 +4,7 @@ namespace React_Virtuello.Server.Models.Tours
 {
     public class Scene
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string? ImageUrl { get; set; }
         public string? ImageUrlHD { get; set; }
@@ -16,9 +16,9 @@ namespace React_Virtuello.Server.Models.Tours
         [DefaultValue(0)]
         public int OrderIndex { get; set; }
 
-        public int TourId { get; set; }
-        public Tour? Tour { get; set; }
+        public Guid TourId { get; set; }
+        public virtual Tour? Tour { get; set; }
 
-        public List<Hotspot>? Hotspots { get; set; }
+        public virtual ICollection<Hotspot>? Hotspots { get; set; }
     }
 }

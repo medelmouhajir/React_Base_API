@@ -2,10 +2,10 @@
 {
     public class Tag
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
 
-        public string? Icon { get; set; }
+        public string? Icon_Path { get; set; }
 
         public List<Business_Tag>? Businesses { get; set; }
     }

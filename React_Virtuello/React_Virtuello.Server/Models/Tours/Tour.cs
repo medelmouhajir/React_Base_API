@@ -5,7 +5,7 @@ namespace React_Virtuello.Server.Models.Tours
 {
     public class Tour
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Name { get; set; }
 
@@ -43,7 +43,7 @@ namespace React_Virtuello.Server.Models.Tours
         public string? EnablePreloadScenes { get; set; }
 
 
-        public string? BusinessId { get; set; }
+        public Guid? BusinessId { get; set; }
         public virtual Business? Business { get; set; }
 
         public virtual ICollection<Scene>? Scenes { get; set; }

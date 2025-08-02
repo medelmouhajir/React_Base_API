@@ -6,7 +6,7 @@ namespace React_Virtuello.Server.Models.Routes
 {
     public class SavedRoute
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public string Name { get; set; }
 
