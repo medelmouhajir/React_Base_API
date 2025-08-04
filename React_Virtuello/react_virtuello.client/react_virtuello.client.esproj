@@ -10,7 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\components\layouts\MainLayout\" />
-    <Folder Include="src\components\layouts\MapLayout\" />
+    <Folder Include="src\components\layouts\MapLayout\components\MapSidebar\" />
+    <Folder Include="src\components\layouts\MapLayout\components\MapSearchInput\" />
+    <Folder Include="src\components\layouts\MapLayout\components\MapContainer\" />
     <Folder Include="src\components\layouts\TourLayout\" />
     <Folder Include="src\i18n\locales\" />
   </ItemGroup>
