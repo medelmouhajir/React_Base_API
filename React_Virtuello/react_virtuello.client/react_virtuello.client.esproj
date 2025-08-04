@@ -14,7 +14,6 @@
     <Folder Include="src\components\layouts\MapLayout\components\MapSearchInput\" />
     <Folder Include="src\components\layouts\MapLayout\components\MapContainer\" />
     <Folder Include="src\components\layouts\TourLayout\" />
-    <Folder Include="src\i18n\locales\" />
     <Folder Include="src\services\" />
   </ItemGroup>
 </Project>
