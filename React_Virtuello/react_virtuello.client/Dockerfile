@@ -7,9 +7,9 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install all required dependencies based on your imports
-RUN npm install
-RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs react-leaflet@^4.0.0
+# Install dependencies with legacy peer deps to resolve React version conflicts
+RUN npm install --legacy-peer-deps
+RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs react-leaflet@^4.0.0 --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -36,9 +36,9 @@ RUN adduser -S nextjs -u 1001
 # Copy package files and change ownership
 COPY --chown=nextjs:nodejs package*.json ./
 
-# Install dependencies including dev dependencies
-RUN npm install
-RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs react-leaflet@^4.0.0
+# Install dependencies including dev dependencies with legacy peer deps
+RUN npm install --legacy-peer-deps
+RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs react-leaflet@^4.0.0 --legacy-peer-deps
 
 # Copy source code and change ownership
 COPY --chown=nextjs:nodejs . .
@@ -54,10 +54,10 @@ USER nextjs
 ENV DOCKER_CONTAINER=true
 
 # Expose the dev server port
-EXPOSE 54150
+EXPOSE 53256
 
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
 # Start Vite dev server with host binding
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "51350"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "53256"]
