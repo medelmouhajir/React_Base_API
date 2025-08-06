@@ -8,7 +8,8 @@ namespace React_Virtuello.Server.Models.Routes
     public class SavedRoute : BaseEntity
     {
 
-        public string Name { get; set; }
+        [Required, MaxLength(200)]
+        public string Name { get; set; } = string.Empty;
 
 
         public double StartLatitude { get; set; }
@@ -25,7 +26,8 @@ namespace React_Virtuello.Server.Models.Routes
 
         public virtual ICollection<RouteStop>? Stops { get; set; }
 
-        public string? UserId { get; set; }
+        [Required]
+        public string UserId { get; set; } = string.Empty;
         public virtual User? User { get; set; }
     }
 }
