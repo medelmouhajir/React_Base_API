@@ -1,6 +1,6 @@
 ﻿namespace React_Virtuello.Server.Models.Entities
 {
-    public abstract class LocationEntity : BaseEntity, ILocationEntity
+    public abstract class LocationEntity : AuditableEntity, ILocationEntity
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }

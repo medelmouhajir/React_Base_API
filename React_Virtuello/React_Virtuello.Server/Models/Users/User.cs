@@ -22,8 +22,8 @@ namespace React_Virtuello.Server.Models.Users
         public virtual ICollection<Tour>? Tours { get; set; }
 
 
-        public virtual ICollection<Event_Comment>? Event_Comments { get; set; }
+        public virtual ICollection<EventComment>? Event_Comments { get; set; }
 
-        public virtual ICollection<Business_Comment>? Business_Comments { get; set; }
+        public virtual ICollection<BusinessComment>? Business_Comments { get; set; }
     }
 }

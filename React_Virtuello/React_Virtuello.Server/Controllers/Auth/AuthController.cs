@@ -47,7 +47,7 @@ namespace React_Virtuello.Server.Controllers.Auth
                 Role = "Admin",
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
-                Picture_Path = null
+                PicturePath = null
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);

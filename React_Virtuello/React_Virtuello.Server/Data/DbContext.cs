@@ -66,7 +66,7 @@ namespace React_Virtuello.Server.Data
         // ----- Businesses -----
         public DbSet<Business> Businesses { get; set; }
         public DbSet<BusinessAttachment> BusinessAttachments { get; set; }
-        public DbSet<Business_Comment> Business_Comments { get; set; }
+        public DbSet<BusinessComment> Business_Comments { get; set; }
         public DbSet<Business_Tag> Business_Tags { get; set; }
         public DbSet<Business_Tour> Business_Tours { get; set; }
 
@@ -75,7 +75,7 @@ namespace React_Virtuello.Server.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<EventAttachment> EventAttachments { get; set; }
         public DbSet<Event_Category> Event_Categories { get; set; }
-        public DbSet<Event_Comment> Event_Comments { get; set; }
+        public DbSet<EventComment> Event_Comments { get; set; }
         public DbSet<Event_Tour> Event_Tours { get; set; }
 
 
