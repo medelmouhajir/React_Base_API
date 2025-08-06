@@ -1,21 +1,18 @@
 ﻿using React_Virtuello.Server.Models.Businesses;
+using React_Virtuello.Server.Models.Entities;
 using React_Virtuello.Server.Models.Users;
 using System.ComponentModel;
 
 namespace React_Virtuello.Server.Models.Tours
 {
-    public class Tour
+    public class Tour : BaseEntity
     {
-        public Guid Id { get; set; }
-
         public string Name { get; set; }
 
         public string? Description { get; set; }
 
 
         public string? Image_Path { get; set; }
-
-        public DateTime Date_Created { get; set; }
 
 
         [DefaultValue(false)]

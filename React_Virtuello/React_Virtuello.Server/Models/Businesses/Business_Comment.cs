@@ -1,11 +1,11 @@
-﻿using React_Virtuello.Server.Models.Users;
+﻿using React_Virtuello.Server.Models.Entities;
+using React_Virtuello.Server.Models.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace React_Virtuello.Server.Models.Businesses
 {
-    public class Business_Comment
+    public class Business_Comment : BaseEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
 
 
         [Range(1, 5)]
@@ -13,8 +13,6 @@ namespace React_Virtuello.Server.Models.Businesses
 
         [Required]
         public string Content { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 
         public string? UserId { get; set; }

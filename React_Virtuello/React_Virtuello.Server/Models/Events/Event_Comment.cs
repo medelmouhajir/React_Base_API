@@ -1,11 +1,11 @@
-﻿using React_Virtuello.Server.Models.Users;
+﻿using React_Virtuello.Server.Models.Entities;
+using React_Virtuello.Server.Models.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace React_Virtuello.Server.Models.Events
 {
-    public class Event_Comment
+    public class Event_Comment : BaseEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
 
 
         [Range(1, 5)]
@@ -14,7 +14,6 @@ namespace React_Virtuello.Server.Models.Events
         [Required]
         public string Content { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 
         public string? UserId { get; set; }

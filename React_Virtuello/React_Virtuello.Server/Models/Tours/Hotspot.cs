@@ -25,6 +25,6 @@
 
 
         public Guid SceneId { get; set; }
-        //public Scene? Scene { get; set; }
+        public Scene? Scene { get; set; }
     }
 }

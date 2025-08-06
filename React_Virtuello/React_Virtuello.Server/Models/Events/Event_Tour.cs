@@ -1,11 +1,10 @@
-﻿using React_Virtuello.Server.Models.Tours;
+﻿using React_Virtuello.Server.Models.Entities;
+using React_Virtuello.Server.Models.Tours;
 
 namespace React_Virtuello.Server.Models.Events
 {
-    public class Event_Tour
+    public class Event_Tour : BaseEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-
         public string Name { get; set; }
 
         public Guid TourId { get; set; }

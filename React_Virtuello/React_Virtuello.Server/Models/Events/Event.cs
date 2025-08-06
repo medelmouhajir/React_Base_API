@@ -1,11 +1,12 @@
-﻿using React_Virtuello.Server.Models.Users;
+﻿using React_Virtuello.Server.Models.Attachments;
+using React_Virtuello.Server.Models.Entities;
+using React_Virtuello.Server.Models.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace React_Virtuello.Server.Models.Events
 {
-    public class Event
+    public class Event : LocationEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required]
         public string Name { get; set; }
@@ -18,14 +19,9 @@ namespace React_Virtuello.Server.Models.Events
         public DateTime Date { get; set; }
 
 
-        //Location
-        [Required]
-        public double Latitude { get; set; }
-        [Required]
-        public double Longitude { get; set; }
 
 
-        public virtual ICollection<Event_Attachement>? Event_Attachements { get; set; }
+        public virtual ICollection<EventAttachment>? EventAttachments { get; set; }
 
         public virtual ICollection<Event_Tour>? Event_Tours { get; set; }
 

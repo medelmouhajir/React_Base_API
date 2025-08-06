@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using React_Virtuello.Server.Models.Entities;
 using React_Virtuello.Server.Models.Users;
 using System.ComponentModel.DataAnnotations;
 
 namespace React_Virtuello.Server.Models.Routes
 {
-    public class SavedRoute
+    public class SavedRoute : BaseEntity
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
 
         public string Name { get; set; }
 
@@ -19,10 +19,6 @@ namespace React_Virtuello.Server.Models.Routes
 
         [Required]
         public double EndLongitude { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime? UpdatedAt { get; set; }
 
 
 

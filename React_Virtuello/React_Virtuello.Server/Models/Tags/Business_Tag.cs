@@ -1,11 +1,10 @@
 ﻿using React_Virtuello.Server.Models.Businesses;
+using React_Virtuello.Server.Models.Entities;
 
 namespace React_Virtuello.Server.Models.Tags
 {
-    public class Business_Tag
+    public class Business_Tag : BaseEntity
     {
-        public int Guid { get; set; }
-
         public Guid BusinessId { get; set; }
         public virtual Business? Business { get; set; }
 
