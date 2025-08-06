@@ -1,8 +1,9 @@
-﻿namespace React_Virtuello.Server.Models.Icons
+﻿using React_Virtuello.Server.Models.Entities;
+
+namespace React_Virtuello.Server.Models.Icons
 {
-    public class Icon_Category
+    public class Icon_Category : BaseEntity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
 
         public virtual ICollection<Icon>? Icons { get; set; }

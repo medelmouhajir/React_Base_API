@@ -12,7 +12,7 @@ namespace React_Virtuello.Server.Models.Tours
         public string? Description { get; set; }
 
 
-        public string? Image_Path { get; set; }
+        public string? ImagePath { get; set; }
 
 
         [DefaultValue(false)]

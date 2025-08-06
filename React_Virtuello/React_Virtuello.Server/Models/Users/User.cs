@@ -8,7 +8,7 @@ namespace React_Virtuello.Server.Models.Users
     public class User : IdentityUser
     {
         public string Fullname { get; set; }
-        public string? Picture_Path { get; set; }
+        public string? PicturePath { get; set; }
 
         public string Role { get; set; }
 

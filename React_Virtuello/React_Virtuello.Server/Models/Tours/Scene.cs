@@ -1,10 +1,10 @@
-﻿using System.ComponentModel;
+﻿using React_Virtuello.Server.Models.Entities;
+using System.ComponentModel;
 
 namespace React_Virtuello.Server.Models.Tours
 {
-    public class Scene
+    public class Scene : BaseEntity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string? ImageUrl { get; set; }
         public string? ImageUrlHD { get; set; }

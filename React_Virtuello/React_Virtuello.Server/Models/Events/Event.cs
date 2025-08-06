@@ -16,9 +16,15 @@ namespace React_Virtuello.Server.Models.Events
         public string? Picture { get; set; }
 
         [Required]
-        public DateTime Date { get; set; }
+        public DateTime Start { get; set; }
+
+        public DateTime? End { get; set; }
 
 
+
+        public EventStatus Status { get; set; }
+
+        public EventType Type { get; set; }
 
 
         public virtual ICollection<EventAttachment>? EventAttachments { get; set; }
@@ -32,5 +38,25 @@ namespace React_Virtuello.Server.Models.Events
 
         public string OrganizerId { get; set; }
         public virtual User? Organizer { get; set; }
+
+    }
+    public enum EventStatus
+    {
+        Draft = 0,
+        Published = 1,
+        InProgress = 2,
+        Completed = 3,
+        Cancelled = 4
+    }
+
+    public enum EventType
+    {
+        Conference = 0,
+        Workshop = 1,
+        Exhibition = 2,
+        Concert = 3,
+        Sports = 4,
+        Festival = 5,
+        Other = 6
     }
 }

@@ -35,7 +35,7 @@ namespace React_Virtuello.Server.Data
                 .HasIndex(b => new { b.Latitude, b.Longitude });
 
             modelBuilder.Entity<Event>()
-                .HasIndex(e => e.Date);
+                .HasIndex(e => e.CreatedAt);
 
             // Configure cascading deletes appropriately
             modelBuilder.Entity<Scene>()
@@ -49,7 +49,7 @@ namespace React_Virtuello.Server.Data
                 .HasDatabaseName("IX_Business_Location");
 
             modelBuilder.Entity<Event>()
-                .HasIndex(e => e.Date)
+                .HasIndex(e => e.CreatedAt)
                 .HasDatabaseName("IX_Event_Date");
 
             modelBuilder.Entity<User>()

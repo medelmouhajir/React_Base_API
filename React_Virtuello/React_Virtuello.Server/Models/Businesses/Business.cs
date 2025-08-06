@@ -16,6 +16,11 @@ namespace React_Virtuello.Server.Models.Businesses
         [MaxLength(2000)]
         public string? Description { get; set; }
 
+
+        public BusinessStatus Status { get; set; } = BusinessStatus.Draft;
+
+
+
         [Phone]
         public string? Phone { get; set; }
 
@@ -23,15 +28,23 @@ namespace React_Virtuello.Server.Models.Businesses
         public string? Email { get; set; }
 
 
-        public string? Image_Path { get; set; }
-        public string? Logo { get; set; }
+        [MaxLength(500)]
+        public string? ImagePath { get; set; }
 
-        public DateTime Date_Created { get; set; }
+        [MaxLength(500)]
+        public string? LogoPath { get; set; }
 
 
-        public string? Whatsapp { get; set; }
+
+        [MaxLength(50)]
+        public string? WhatsApp { get; set; }
+
+        [MaxLength(100)]
         public string? Instagram { get; set; }
+
+        [MaxLength(100)]
         public string? Facebook { get; set; }
+
 
         [Url]
         public string? Website { get; set; }
@@ -46,5 +59,13 @@ namespace React_Virtuello.Server.Models.Businesses
         public virtual ICollection<Business_Comment>? Comments { get; set; }
         public virtual ICollection<BusinessAttachment>? Attachements { get; set; }
 
+    }
+    public enum BusinessStatus
+    {
+        Draft = 0,
+        Active = 1,
+        Suspended = 2,
+        Closed = 3,
+        UnderReview = 4
     }
 }

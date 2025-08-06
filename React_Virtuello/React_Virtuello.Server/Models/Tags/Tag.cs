@@ -1,11 +1,12 @@
-﻿namespace React_Virtuello.Server.Models.Tags
+﻿using React_Virtuello.Server.Models.Entities;
+
+namespace React_Virtuello.Server.Models.Tags
 {
-    public class Tag
+    public class Tag : BaseEntity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
 
-        public string? Icon_Path { get; set; }
+        public string? IconPath { get; set; }
 
         public List<Business_Tag>? Businesses { get; set; }
     }

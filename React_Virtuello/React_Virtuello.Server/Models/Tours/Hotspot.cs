@@ -1,21 +1,22 @@
-﻿namespace React_Virtuello.Server.Models.Tours
+﻿using React_Virtuello.Server.Models.Entities;
+
+namespace React_Virtuello.Server.Models.Tours
 {
-    public class Hotspot
+    public class Hotspot : BaseEntity
     {
-        public Guid Id { get; set; }
-        public string Type { get; set; } // e.g., 'info', 'youtube', 'image', 'website'
+        public HotspotType Type { get; set; }
         public string? Text { get; set; }
         public string? Message { get; set; }
 
 
-        public Position Position { get; set; } // { x, y, z }
+        public virtual Position? Position { get; set; } // { x, y, z }
         public Guid? TargetSceneId { get; set; }
 
         public string? Icon { get; set; }
         public int IconHeight { get; set; } = 150;
         public int IconWidth { get; set; } = 150;
-        public string IconEffect { get; set; } = "RollUp"; // e.g., 'RollUp', 'Glow', 'Turning'
-        public string Rotation_mode { get; set; } = "none"; // e.g., 'none', 'floor', 'wall'
+        public IconEffect IconEffect { get; set; }
+        public RotationMode RotationMode { get; set; }
         public int IconColor { get; set; } = 0xffffff;
 
         public string? ImagePath { get; set; }
@@ -26,5 +27,26 @@
 
         public Guid SceneId { get; set; }
         public Scene? Scene { get; set; }
+    }
+    public enum HotspotType
+    {
+        Info = 0,
+        Youtube = 1,
+        Image = 2,
+        Website = 3,
+        Navigation = 4
+    }
+    public enum RotationMode
+    {
+        None = 0,
+        Floor = 1,
+        Wall = 2
+    }
+    public enum IconEffect
+    {
+        None = 0,
+        RollUp = 1,
+        Glow = 2,
+        Turning = 3
     }
 }
