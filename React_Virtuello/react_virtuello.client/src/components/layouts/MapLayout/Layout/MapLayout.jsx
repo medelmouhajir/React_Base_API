@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import MapSidebar from '../components/MapSidebar/MapSidebar';
 import MapSearchInput from '../components/MapSearchInput/MapSearchInput';
 import MapContainer from '../components/MapContainer/MapContainer';
+import MapTags from './components/MapTags/MapTags';
 import './MapLayout.css';
 
 const MapLayout = ({ 

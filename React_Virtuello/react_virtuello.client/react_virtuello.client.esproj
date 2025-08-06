@@ -13,6 +13,7 @@
     <Folder Include="src\components\layouts\MapLayout\components\MapSidebar\" />
     <Folder Include="src\components\layouts\MapLayout\components\MapSearchInput\" />
     <Folder Include="src\components\layouts\MapLayout\components\MapContainer\" />
+    <Folder Include="src\components\layouts\MapLayout\components\MapTags\" />
     <Folder Include="src\components\layouts\TourLayout\" />
   </ItemGroup>
 </Project>

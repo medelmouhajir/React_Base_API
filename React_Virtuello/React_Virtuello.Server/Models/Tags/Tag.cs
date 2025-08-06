@@ -2,7 +2,7 @@
 
 namespace React_Virtuello.Server.Models.Tags
 {
-    public class Tag : BaseEntity
+    public class Tag : AuditableEntity
     {
         public string Name { get; set; }
 
