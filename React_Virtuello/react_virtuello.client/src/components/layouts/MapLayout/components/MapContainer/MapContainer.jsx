@@ -49,15 +49,9 @@ const getIconSvg = (type) => {
 // Map event handler component
 const MapEventHandler = ({ onMapClick, onMapLoad }) => {
     const map = useMap();
-
-    useMapEvents({
-        click: onMapClick,
-        load: () => {
-            if (onMapLoad) {
-                onMapLoad(map);
-            }
-        }
-    });
+    useEffect(() => {
+        map.whenReady(() => onMapLoad(map));
+    }, [map, onMapLoad]);
 
     return null;
 };
@@ -86,8 +80,8 @@ const MapContainer = ({
     onLocationSelect,
     onMapLoad,
     className = '',
-    showControls = true,
-    showScale = true,
+    showControls = false,
+    showScale = false,
     enableScrollWheelZoom = true,
     enableDoubleClickZoom = true,
     maxZoom = 18,

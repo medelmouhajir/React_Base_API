@@ -28,12 +28,14 @@ namespace React_Virtuello.Server.Models.Businesses
         public double Latitude { get; set; }
         public double Longitude { get; set; }
 
-        public string? UserId { get; set; }
-        public virtual User? User { get; set; }
+        public string? OwnerId { get; set; }
+        public virtual User? Owner { get; set; }
 
 
-        public virtual ICollection<Tour>? Tours { get; set; }
+        public virtual ICollection<Business_Tour>? Tours { get; set; }
         public virtual ICollection<Business_Tag>? Tags { get; set; }
+        public virtual ICollection<Business_Comment>? Comments { get; set; }
+        public virtual ICollection<Business_Attachement>? Attachements { get; set; }
 
     }
 }

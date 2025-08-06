@@ -5,9 +5,9 @@ import MapSearchInput from '../components/MapSearchInput/MapSearchInput';
 import MapContainer from '../components/MapContainer/MapContainer';
 import './MapLayout.css';
 
-const MapLayout = ({
-    children,
-    sidebarContent = null,
+const MapLayout = ({ 
+    children, 
+    sidebarContent = null, 
     onLocationSelect,
     onSearchResult,
     defaultCenter = [34.0522, -6.7736], // Fes, Morocco coordinates
@@ -33,7 +33,7 @@ const MapLayout = ({
         if (onSearchResult) {
             onSearchResult(results);
         }
-
+        
         // Auto-open sidebar if there are results and content to show
         if (results.length > 0 && sidebarContent) {
             setIsSidebarOpen(true);
@@ -44,7 +44,7 @@ const MapLayout = ({
         setSelectedLocation(location);
         setMapCenter([location.lat, location.lng]);
         setMapZoom(16);
-
+        
         if (onLocationSelect) {
             onLocationSelect(location);
         }
@@ -181,6 +181,7 @@ const MapLayout = ({
             <MapContainer
                 center={mapCenter}
                 zoom={mapZoom}
+                whenReady={(map) => handleMapLoad(map)}
                 markers={markers}
                 routes={routes}
                 businesses={businesses}

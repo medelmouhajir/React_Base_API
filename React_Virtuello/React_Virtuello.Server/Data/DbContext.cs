@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using React_Virtuello.Server.Models.Businesses;
+using React_Virtuello.Server.Models.Events;
 using React_Virtuello.Server.Models.Icons;
 using React_Virtuello.Server.Models.Routes;
 using React_Virtuello.Server.Models.Tags;
@@ -27,6 +29,22 @@ namespace React_Virtuello.Server.Data
         public DbSet<User> Users { get; set; }
 
 
+        // ----- Businesses -----
+        public DbSet<Business> Businesses { get; set; }
+        public DbSet<Business_Attachement> Business_Attachements { get; set; }
+        public DbSet<Business_Comment> Business_Comments { get; set; }
+        public DbSet<Business_Tag> Business_Tags { get; set; }
+        public DbSet<Business_Tour> Business_Tours { get; set; }
+
+
+        // ----- Businesses -----
+        public DbSet<Event> Events { get; set; }
+        public DbSet<Event_Attachement> Event_Attachements { get; set; }
+        public DbSet<Event_Category> Event_Categories { get; set; }
+        public DbSet<Event_Comment> Event_Comments { get; set; }
+        public DbSet<Event_Tour> Event_Tours { get; set; }
+
+
         // ----- Tours -----
         public DbSet<Hotspot> Hotspots { get; set; }
         public DbSet<Position> Positions { get; set; }
@@ -36,7 +54,6 @@ namespace React_Virtuello.Server.Data
 
         // ----- Tags -----
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<Business_Tag> Business_Tags { get; set; }
 
 
         // ----- Routes -----

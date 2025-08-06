@@ -1,4 +1,5 @@
 ﻿using React_Virtuello.Server.Models.Businesses;
+using React_Virtuello.Server.Models.Users;
 using System.ComponentModel;
 
 namespace React_Virtuello.Server.Models.Tours
@@ -43,8 +44,8 @@ namespace React_Virtuello.Server.Models.Tours
         public string? EnablePreloadScenes { get; set; }
 
 
-        public Guid? BusinessId { get; set; }
-        public virtual Business? Business { get; set; }
+        public string? OwnerId { get; set; }
+        public virtual User? Owner { get; set; }
 
         public virtual ICollection<Scene>? Scenes { get; set; }
     }
