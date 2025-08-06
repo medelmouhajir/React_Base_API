@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace React_Virtuello.Server.Repositories.Interfaces
 {
-    public interface IRepository<TEntity> where TEntity : BaseEntity
+    public interface IRepository<TEntity> where TEntity : AuditableEntity
     {
         Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
