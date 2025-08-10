@@ -3,6 +3,7 @@ using React_Virtuello.Server.DTOs.Events;
 using React_Virtuello.Server.Models.Events;
 using React_Virtuello.Server.Repositories.Interfaces;
 using React_Virtuello.Server.ReponseDTOs;
+using React_Virtuello.Server.Services.Interfaces;
 
 namespace React_Virtuello.Server.Controllers.Events
 {
@@ -12,11 +13,16 @@ namespace React_Virtuello.Server.Controllers.Events
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<EventsController> _logger;
+        private readonly IFileUploadService _fileUploadService;
 
-        public EventsController(IUnitOfWork unitOfWork, ILogger<EventsController> logger)
+        public EventsController(
+            IUnitOfWork unitOfWork,
+            ILogger<EventsController> logger,
+            IFileUploadService fileUploadService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _fileUploadService = fileUploadService;
         }
 
         [HttpGet]
@@ -47,39 +53,38 @@ namespace React_Virtuello.Server.Controllers.Events
             return Ok(new ApiResponse<EventDto> { Success = true, Data = MapToDto(entity) });
         }
 
-        [HttpGet("upcoming")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<EventDto>>>> GetUpcoming([FromQuery] int take = 10)
-        {
-            var events = await _unitOfWork.Events.GetUpcomingEventsAsync(take);
-            return Ok(new ApiResponse<IEnumerable<EventDto>> { Success = true, Data = events.Select(MapToDto) });
-        }
-
-        [HttpGet("organizer/{organizerId}")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<EventDto>>>> GetByOrganizer(string organizerId)
-        {
-            var events = await _unitOfWork.Events.GetEventsByOrganizerAsync(organizerId);
-            return Ok(new ApiResponse<IEnumerable<EventDto>> { Success = true, Data = events.Select(MapToDto) });
-        }
-
-        [HttpGet("category/{categoryId}")]
-        public async Task<ActionResult<ApiResponse<IEnumerable<EventDto>>>> GetByCategory(Guid categoryId)
-        {
-            var events = await _unitOfWork.Events.GetEventsByCategoryAsync(categoryId);
-            return Ok(new ApiResponse<IEnumerable<EventDto>> { Success = true, Data = events.Select(MapToDto) });
-        }
-
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<EventDto>>> Create(CreateEventDto dto)
+        public async Task<ActionResult<ApiResponse<EventDto>>> Create([FromForm] CreateEventDto dto)
         {
             var entity = MapToEntity(dto);
+
+            // Handle picture upload
+            if (dto.PictureFile != null)
+            {
+                var pictureResult = await _fileUploadService.UploadImageAsync(dto.PictureFile, "events");
+                if (pictureResult.Success)
+                {
+                    entity.Picture = pictureResult.FilePath;
+                }
+                else
+                {
+                    return BadRequest(new ApiResponse<EventDto>
+                    {
+                        Success = false,
+                        Message = $"Picture upload failed: {pictureResult.Message}"
+                    });
+                }
+            }
+
             await _unitOfWork.Events.AddAsync(entity);
             await _unitOfWork.SaveChangesAsync();
-            var resultDto = MapToDto(entity);
-            return CreatedAtAction(nameof(GetById), new { id = entity.Id }, new ApiResponse<EventDto> { Success = true, Data = resultDto });
+
+            return CreatedAtAction(nameof(GetById), new { id = entity.Id },
+                new ApiResponse<EventDto> { Success = true, Data = MapToDto(entity) });
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApiResponse<EventDto>>> Update(Guid id, UpdateEventDto dto)
+        public async Task<ActionResult<ApiResponse<EventDto>>> Update(Guid id, [FromForm] UpdateEventDto dto)
         {
             var entity = await _unitOfWork.Events.GetByIdAsync(id);
             if (entity == null)
@@ -87,9 +92,44 @@ namespace React_Virtuello.Server.Controllers.Events
                 return NotFound(new ApiResponse<EventDto> { Success = false, Message = "Not found" });
             }
 
+            var oldPicturePath = entity.Picture;
             UpdateEntity(entity, dto);
+
+            // Handle picture upload
+            if (dto.PictureFile != null)
+            {
+                var pictureResult = await _fileUploadService.UploadImageAsync(dto.PictureFile, "events");
+                if (pictureResult.Success)
+                {
+                    entity.Picture = pictureResult.FilePath;
+                    // Delete old picture if exists
+                    if (!string.IsNullOrEmpty(oldPicturePath))
+                    {
+                        await _fileUploadService.DeleteFileAsync(oldPicturePath);
+                    }
+                }
+                else
+                {
+                    return BadRequest(new ApiResponse<EventDto>
+                    {
+                        Success = false,
+                        Message = $"Picture upload failed: {pictureResult.Message}"
+                    });
+                }
+            }
+            else if (!dto.KeepExistingPicture)
+            {
+                // Remove existing picture
+                if (!string.IsNullOrEmpty(entity.Picture))
+                {
+                    await _fileUploadService.DeleteFileAsync(entity.Picture);
+                    entity.Picture = null;
+                }
+            }
+
             await _unitOfWork.Events.UpdateAsync(entity);
             await _unitOfWork.SaveChangesAsync();
+
             return Ok(new ApiResponse<EventDto> { Success = true, Data = MapToDto(entity) });
         }
 
@@ -101,8 +141,16 @@ namespace React_Virtuello.Server.Controllers.Events
             {
                 return NotFound(new ApiResponse<string> { Success = false, Message = "Not found" });
             }
+
+            // Delete associated files
+            if (!string.IsNullOrEmpty(entity.Picture))
+            {
+                await _fileUploadService.DeleteFileAsync(entity.Picture);
+            }
+
             await _unitOfWork.Events.DeleteAsync(entity);
             await _unitOfWork.SaveChangesAsync();
+
             return Ok(new ApiResponse<string> { Success = true, Message = "Deleted" });
         }
 
@@ -127,7 +175,6 @@ namespace React_Virtuello.Server.Controllers.Events
         {
             Name = dto.Name,
             Description = dto.Description,
-            Picture = dto.Picture,
             Start = dto.Start,
             End = dto.End,
             Status = dto.Status,
@@ -143,7 +190,6 @@ namespace React_Virtuello.Server.Controllers.Events
         {
             entity.Name = dto.Name;
             entity.Description = dto.Description;
-            entity.Picture = dto.Picture;
             entity.Start = dto.Start;
             entity.End = dto.End;
             entity.Status = dto.Status;

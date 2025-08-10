@@ -3,6 +3,7 @@ using React_Virtuello.Server.DTOs.Tours;
 using React_Virtuello.Server.Models.Tours;
 using React_Virtuello.Server.Repositories.Interfaces;
 using React_Virtuello.Server.ReponseDTOs;
+using React_Virtuello.Server.Services.Interfaces;
 
 namespace React_Virtuello.Server.Controllers.Tours
 {
@@ -12,11 +13,16 @@ namespace React_Virtuello.Server.Controllers.Tours
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<ToursController> _logger;
+        private readonly IFileUploadService _fileUploadService;
 
-        public ToursController(IUnitOfWork unitOfWork, ILogger<ToursController> logger)
+        public ToursController(
+            IUnitOfWork unitOfWork,
+            ILogger<ToursController> logger,
+            IFileUploadService fileUploadService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _fileUploadService = fileUploadService;
         }
 
         [HttpGet]
@@ -55,26 +61,83 @@ namespace React_Virtuello.Server.Controllers.Tours
         }
 
         [HttpPost]
-        public async Task<ActionResult<ApiResponse<TourDto>>> Create(CreateTourDto dto)
+        public async Task<ActionResult<ApiResponse<TourDto>>> Create([FromForm] CreateTourDto dto)
         {
             var entity = MapToEntity(dto);
+
+            // Handle image upload
+            if (dto.ImageFile != null)
+            {
+                var imageResult = await _fileUploadService.UploadImageAsync(dto.ImageFile, "tours");
+                if (imageResult.Success)
+                {
+                    entity.ImagePath = imageResult.FilePath;
+                }
+                else
+                {
+                    return BadRequest(new ApiResponse<TourDto>
+                    {
+                        Success = false,
+                        Message = $"Image upload failed: {imageResult.Message}"
+                    });
+                }
+            }
+
             await _unitOfWork.Tours.AddAsync(entity);
             await _unitOfWork.SaveChangesAsync();
+
             var resultDto = MapToDto(entity);
-            return CreatedAtAction(nameof(GetById), new { id = entity.Id }, new ApiResponse<TourDto> { Success = true, Data = resultDto });
+            return CreatedAtAction(nameof(GetById), new { id = entity.Id },
+                new ApiResponse<TourDto> { Success = true, Data = resultDto });
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<ApiResponse<TourDto>>> Update(Guid id, UpdateTourDto dto)
+        public async Task<ActionResult<ApiResponse<TourDto>>> Update(Guid id, [FromForm] UpdateTourDto dto)
         {
             var entity = await _unitOfWork.Tours.GetByIdAsync(id);
             if (entity == null)
             {
                 return NotFound(new ApiResponse<TourDto> { Success = false, Message = "Not found" });
             }
+
+            var oldImagePath = entity.ImagePath;
             UpdateEntity(entity, dto);
+
+            // Handle image upload
+            if (dto.ImageFile != null)
+            {
+                var imageResult = await _fileUploadService.UploadImageAsync(dto.ImageFile, "tours");
+                if (imageResult.Success)
+                {
+                    entity.ImagePath = imageResult.FilePath;
+                    // Delete old image if exists
+                    if (!string.IsNullOrEmpty(oldImagePath))
+                    {
+                        await _fileUploadService.DeleteFileAsync(oldImagePath);
+                    }
+                }
+                else
+                {
+                    return BadRequest(new ApiResponse<TourDto>
+                    {
+                        Success = false,
+                        Message = $"Image upload failed: {imageResult.Message}"
+                    });
+                }
+            }
+            else if (!dto.KeepExistingImage)
+            {
+                // Remove existing image
+                if (!string.IsNullOrEmpty(entity.ImagePath))
+                {
+                    await _fileUploadService.DeleteFileAsync(entity.ImagePath);
+                    entity.ImagePath = null;
+                }
+            }
+
             await _unitOfWork.Tours.UpdateAsync(entity);
             await _unitOfWork.SaveChangesAsync();
+
             return Ok(new ApiResponse<TourDto> { Success = true, Data = MapToDto(entity) });
         }
 
@@ -86,8 +149,16 @@ namespace React_Virtuello.Server.Controllers.Tours
             {
                 return NotFound(new ApiResponse<string> { Success = false, Message = "Not found" });
             }
+
+            // Delete associated files
+            if (!string.IsNullOrEmpty(entity.ImagePath))
+            {
+                await _fileUploadService.DeleteFileAsync(entity.ImagePath);
+            }
+
             await _unitOfWork.Tours.DeleteAsync(entity);
             await _unitOfWork.SaveChangesAsync();
+
             return Ok(new ApiResponse<string> { Success = true, Message = "Deleted" });
         }
 
@@ -105,7 +176,6 @@ namespace React_Virtuello.Server.Controllers.Tours
         {
             Name = dto.Name,
             Description = dto.Description,
-            ImagePath = dto.ImagePath,
             OwnerId = dto.OwnerId
         };
 
@@ -113,7 +183,6 @@ namespace React_Virtuello.Server.Controllers.Tours
         {
             entity.Name = dto.Name;
             entity.Description = dto.Description;
-            entity.ImagePath = dto.ImagePath;
             entity.OwnerId = dto.OwnerId;
         }
     }

@@ -1,12 +1,16 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using React_Virtuello.Server.Models.Users;
-using System.Text;
-using React_Virtuello.Server.Repositories.Interfaces;
 using React_Virtuello.Server.Repositories.Implementations;
+using React_Virtuello.Server.Repositories.Interfaces;
+using React_Virtuello.Server.Services;
+using React_Virtuello.Server.Services.Interfaces;
+using System.Text;
 
 namespace React_Virtuello.Server
 {
@@ -74,6 +78,8 @@ namespace React_Virtuello.Server
             //builder.Services.AddScoped<ITourRepository, TourRepository>();
             //builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            //SetUploadFilesSettings(builder);
+
             var app = builder.Build();
 
 
@@ -105,6 +111,14 @@ namespace React_Virtuello.Server
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads")),
+                RequestPath = "/uploads"
+            });
+
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -127,7 +141,23 @@ namespace React_Virtuello.Server
             app.Run();
         }
 
+        private static void SetUploadFilesSettings(WebApplicationBuilder builder)
+        {
+            builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
+            builder.Services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10MB
+            });
+
+            builder.Services.AddScoped(provider =>
+            {
+                var environment = provider.GetRequiredService<IWebHostEnvironment>();
+                var uploadsPath = Path.Combine(environment.WebRootPath, "uploads");
+                Directory.CreateDirectory(uploadsPath);
+                return new DirectoryInfo(uploadsPath);
+            });
+        }
         private static void ConfigureCors(WebApplicationBuilder builder)
         {
             builder.Services.AddCors(options =>
