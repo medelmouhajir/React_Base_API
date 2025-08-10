@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using React_Virtuello.Server.Models.Users;
 using System.Text;
+using React_Virtuello.Server.Repositories.Interfaces;
+using React_Virtuello.Server.Repositories.Implementations;
 
 namespace React_Virtuello.Server
 {
@@ -63,6 +65,14 @@ namespace React_Virtuello.Server
 
             // Register HttpClient for API calls
             builder.Services.AddHttpClient();
+
+
+            // Register repositories and unit of work
+            //builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            //builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
+            //builder.Services.AddScoped<IEventRepository, EventRepository>();
+            //builder.Services.AddScoped<ITourRepository, TourRepository>();
+            //builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             var app = builder.Build();
 

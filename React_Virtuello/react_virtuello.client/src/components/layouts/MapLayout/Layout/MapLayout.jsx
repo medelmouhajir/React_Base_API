@@ -1,6 +1,6 @@
 ﻿import React, { useState, useCallback, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../../../../contexts/AuthContext';
+import { useAuth } from '../../../../contexts/AuthContext';
 import MapSidebar from '../components/MapSidebar/MapSidebar';
 import MapSearchInput from '../components/MapSearchInput/MapSearchInput';
 import MapContainer from '../components/MapContainer/MapContainer';
@@ -21,7 +21,7 @@ const MapLayout = ({
     className = ''
 }) => {
     const { t } = useTranslation();
-    const { user } = useContext(AuthContext);
+    const { user } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isTagsPanelVisible, setIsTagsPanelVisible] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
