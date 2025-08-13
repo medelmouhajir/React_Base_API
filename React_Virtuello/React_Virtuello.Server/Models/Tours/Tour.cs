@@ -17,9 +17,6 @@ namespace React_Virtuello.Server.Models.Tours
         [MaxLength(500)]
         public string? ImagePath { get; set; }
 
-        // Tour Settings
-        public TourSettings Settings { get; set; } = new();
-
         // Relationships
         public string? OwnerId { get; set; }
         public virtual User? Owner { get; set; }
@@ -30,11 +27,12 @@ namespace React_Virtuello.Server.Models.Tours
         // Computed properties
         public int SceneCount => Scenes?.Count ?? 0;
         public Scene? DefaultScene => Scenes?.OrderBy(s => s.OrderIndex).FirstOrDefault();
-    }
 
-    // Value object for tour settings
-    public class TourSettings
-    {
+
+
+
+
+        // Tour Settings
         public bool IsAutoRotating { get; set; } = false;
 
         [Range(0.1, 10.0)]
@@ -55,4 +53,5 @@ namespace React_Virtuello.Server.Models.Tours
         [MaxLength(20)]
         public string EnablePreloadScenes { get; set; } = "none";
     }
+
 }

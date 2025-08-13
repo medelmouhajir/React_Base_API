@@ -20,6 +20,17 @@ namespace React_Virtuello.Server.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Business>()
+                .HasMany(b => b.Comments)
+                .WithOne(c => c.Business)
+                .HasForeignKey(c => c.BusinessId);
+
+
+            modelBuilder.Entity<Event>()
+                .HasMany(b => b.EventComments)
+                .WithOne(c => c.Event)
+                .HasForeignKey(c => c.EventId);
+
             // Apply all configurations
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
