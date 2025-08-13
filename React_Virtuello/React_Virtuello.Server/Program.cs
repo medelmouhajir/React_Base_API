@@ -73,11 +73,11 @@ namespace React_Virtuello.Server
 
 
             // Register repositories and unit of work
-            //builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-            //builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
-            //builder.Services.AddScoped<IEventRepository, EventRepository>();
-            //builder.Services.AddScoped<ITourRepository, TourRepository>();
-            //builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
+            builder.Services.AddScoped<IEventRepository, EventRepository>();
+            builder.Services.AddScoped<ITourRepository, TourRepository>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             //SetUploadFilesSettings(builder);
 

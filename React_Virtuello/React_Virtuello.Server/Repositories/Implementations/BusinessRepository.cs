@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using React_Virtuello.Server.Data;
 using React_Virtuello.Server.Models.Businesses;
 using React_Virtuello.Server.Repositories.Interfaces;
 
@@ -6,7 +7,7 @@ namespace React_Virtuello.Server.Repositories.Implementations
 {
     public class BusinessRepository : Repository<Business>, IBusinessRepository
     {
-        public BusinessRepository(DbContext context) : base(context) { }
+        public BusinessRepository(DbContext_Virtuello context) : base(context) { }
 
         public async Task<IEnumerable<Business>> GetByLocationAsync(double latitude, double longitude, double radiusKm, CancellationToken cancellationToken = default)
         {

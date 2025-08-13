@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using React_Virtuello.Server.Data;
 using React_Virtuello.Server.Models.Common;
 using React_Virtuello.Server.Models.Entities;
 using React_Virtuello.Server.Repositories.Interfaces;
@@ -8,10 +9,10 @@ namespace React_Virtuello.Server.Repositories.Implementations
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : AuditableEntity
     {
-        protected readonly DbContext _context;
+        protected readonly DbContext_Virtuello _context;
         protected readonly DbSet<TEntity> _dbSet;
 
-        public Repository(DbContext context)
+        public Repository(DbContext_Virtuello context)
         {
             _context = context;
             _dbSet = context.Set<TEntity>();

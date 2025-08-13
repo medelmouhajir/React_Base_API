@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using React_Virtuello.Server.Data;
 using React_Virtuello.Server.Models.Tags;
 using React_Virtuello.Server.Repositories.Interfaces;
 
@@ -6,14 +7,14 @@ namespace React_Virtuello.Server.Repositories.Implementations
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly DbContext _context;
+        private readonly DbContext_Virtuello _context;
 
         private IBusinessRepository? _businessRepository;
         private IEventRepository? _eventRepository;
         private ITourRepository? _tourRepository;
         private IRepository<Tag>? _tagRepository;
 
-        public UnitOfWork(DbContext context)
+        public UnitOfWork(DbContext_Virtuello context)
         {
             _context = context;
         }

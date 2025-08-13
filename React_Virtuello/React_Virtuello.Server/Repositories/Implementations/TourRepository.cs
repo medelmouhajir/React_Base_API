@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using React_Virtuello.Server.Data;
 using React_Virtuello.Server.Models.Tours;
 using React_Virtuello.Server.Repositories.Interfaces;
 
@@ -6,7 +7,7 @@ namespace React_Virtuello.Server.Repositories.Implementations
 {
     public class TourRepository : Repository<Tour>, ITourRepository
     {
-        public TourRepository(DbContext context) : base(context) { }
+        public TourRepository(DbContext_Virtuello context) : base(context) { }
 
         public async Task<Tour?> GetWithScenesAsync(Guid id, CancellationToken cancellationToken = default)
         {

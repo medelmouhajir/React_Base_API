@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using React_Virtuello.Server.Data;
 using React_Virtuello.Server.Models.Events;
 using React_Virtuello.Server.Repositories.Interfaces;
 
@@ -6,7 +7,7 @@ namespace React_Virtuello.Server.Repositories.Implementations
 {
     public class EventRepository : Repository<Event>, IEventRepository
     {
-        public EventRepository(DbContext context) : base(context) { }
+        public EventRepository(DbContext_Virtuello context) : base(context) { }
 
         public async Task<IEnumerable<Event>> GetUpcomingEventsAsync(int take = 10, CancellationToken cancellationToken = default)
         {
