@@ -12,9 +12,9 @@ using System.Reflection;
 
 namespace React_Virtuello.Server.Data
 {
-    public class DbContext : IdentityDbContext<User>
+    public class DbContext_Virtuello : IdentityDbContext<User>
     {
-        public DbContext(DbContextOptions<DbContext> options)
+        public DbContext_Virtuello(DbContextOptions<DbContext> options)
             : base(options)
         {
         }

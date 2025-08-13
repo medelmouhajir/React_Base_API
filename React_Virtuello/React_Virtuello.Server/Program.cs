@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using React_Virtuello.Server.Data;
 using React_Virtuello.Server.Models.Users;
 using React_Virtuello.Server.Repositories.Implementations;
 using React_Virtuello.Server.Repositories.Interfaces;
@@ -28,7 +29,7 @@ namespace React_Virtuello.Server
             builder.Services.AddSwaggerGen();
 
             // Configure database
-            builder.Services.AddDbContext<DbContext>(options =>
+            builder.Services.AddDbContext<DbContext_Virtuello>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
@@ -57,7 +58,7 @@ namespace React_Virtuello.Server
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
             })
-            .AddEntityFrameworkStores<DbContext>()
+            .AddEntityFrameworkStores<DbContext_Virtuello>()
             .AddDefaultTokenProviders();
 
 
@@ -90,7 +91,7 @@ namespace React_Virtuello.Server
                 var services = scope.ServiceProvider;
                 try
                 {
-                    var context = services.GetRequiredService<DbContext>();
+                    var context = services.GetRequiredService<DbContext_Virtuello>();
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
@@ -168,8 +169,8 @@ namespace React_Virtuello.Server
                             // Development origins - include both HTTP and HTTPS
                             "http://localhost:51350",
                             "https://localhost:51350",
-                            "http://localhost:7069",
-                            "https://localhost:7069",
+                            "http://localhost:53256",
+                            "https://localhost:53256",
                             // Production origins
                             "http://152.53.243.82:51350",
                             "https://152.53.243.82:51350",

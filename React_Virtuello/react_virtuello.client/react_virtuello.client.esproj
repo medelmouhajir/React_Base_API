@@ -16,5 +16,6 @@
     <Folder Include="src\components\layouts\MapLayout\components\MapTags\" />
     <Folder Include="src\components\layouts\MapLayout\components\ProfileDropdown\" />
     <Folder Include="src\components\layouts\TourLayout\" />
+    <Folder Include="src\pages\Auth\" />
   </ItemGroup>
 </Project>

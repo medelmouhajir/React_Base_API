@@ -1,6 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import MapLayout from '../components/layouts/MapLayout/Layout/MapLayout';
+import Login from '../pages/Auth/Login';
+import Register from '../pages/Auth/Register';
 
 // Simple HomePage component
 const HomePage = () => (
@@ -95,6 +97,8 @@ const AppRoutes = () => {
         <Routes>
             {/* Default route redirects to home */}
             <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
             {/* Home page with map layout */}
             <Route
