@@ -6,7 +6,10 @@ const MapSearchInput = ({
     onResults,
     onLocationSelect,
     onToggleSidebar,
+    onToggleTags,
     isSidebarOpen = false,
+    isTagsPanelVisible = false,
+    isMobile = false,
     placeholder,
     className = '',
     debounceMs = 300,
@@ -44,93 +47,86 @@ const MapSearchInput = ({
                 {
                     id: 1,
                     name: `Restaurant ${searchQuery}`,
-                    address: 'Fes, Morocco',
-                    lat: 34.0522 + Math.random() * 0.01,
-                    lng: -6.7736 + Math.random() * 0.01,
-                    type: 'restaurant'
+                    address: 'Tangier, Morocco',
+                    type: 'restaurant',
+                    coordinates: [35.1765, -5.2339]
                 },
                 {
                     id: 2,
                     name: `Hotel ${searchQuery}`,
-                    address: 'Medina, Fes',
-                    lat: 34.0622 + Math.random() * 0.01,
-                    lng: -6.7636 + Math.random() * 0.01,
-                    type: 'hotel'
+                    address: 'Tangier, Morocco',
+                    type: 'hotel',
+                    coordinates: [35.1865, -5.2439]
                 },
                 {
                     id: 3,
-                    name: `Cafe ${searchQuery}`,
-                    address: 'Ville Nouvelle, Fes',
-                    lat: 34.0422 + Math.random() * 0.01,
-                    lng: -6.7836 + Math.random() * 0.01,
-                    type: 'cafe'
+                    name: `Café ${searchQuery}`,
+                    address: 'Tangier, Morocco',
+                    type: 'cafe',
+                    coordinates: [35.1665, -5.2239]
                 }
-            ].slice(0, maxResults);
+            ];
 
             // Simulate API delay
             await new Promise(resolve => setTimeout(resolve, 200));
 
             if (!controller.signal.aborted) {
-                return mockResults;
+                setSuggestions(mockResults.slice(0, maxResults));
+                setIsLoading(false);
+                setShowDropdown(true);
             }
         } catch (error) {
-            if (error.name !== 'AbortError') {
-                console.error('Search error:', error);
+            if (!controller.signal.aborted) {
+                console.error('Search failed:', error);
+                setSuggestions([]);
+                setIsLoading(false);
+                setShowDropdown(false);
             }
         }
-        return [];
     }, [maxResults]);
 
     // Debounced search
-    const performSearch = useCallback(async (searchQuery) => {
-        if (searchQuery.length < minSearchLength) {
+    useEffect(() => {
+        if (query.length >= minSearchLength) {
+            setIsLoading(true);
+
+            if (debounceRef.current) {
+                clearTimeout(debounceRef.current);
+            }
+
+            debounceRef.current = setTimeout(() => {
+                searchLocations(query);
+            }, debounceMs);
+        } else {
             setSuggestions([]);
             setShowDropdown(false);
-            if (onResults) onResults([]);
-            return;
-        }
-
-        setIsLoading(true);
-
-        try {
-            const results = await searchLocations(searchQuery);
-            setSuggestions(results || []);
-            setShowDropdown(showSuggestions && (results?.length > 0));
-            if (onResults) onResults(results || []);
-        } catch (error) {
-            console.error('Search failed:', error);
-            setSuggestions([]);
-            setShowDropdown(false);
-        } finally {
             setIsLoading(false);
         }
-    }, [searchLocations, minSearchLength, showSuggestions, onResults]);
 
-    // Handle input change with debouncing
-    const handleInputChange = useCallback((event) => {
-        const value = event.target.value;
-        setQuery(value);
-        setSelectedIndex(-1);
-
-        // Clear previous debounce
-        if (debounceRef.current) {
-            clearTimeout(debounceRef.current);
-        }
-
-        // Set new debounce
-        debounceRef.current = setTimeout(() => {
-            performSearch(value);
-        }, debounceMs);
-    }, [performSearch, debounceMs]);
-
-    // Handle keyboard navigation
-    const handleKeyDown = useCallback((event) => {
-        if (!showDropdown || suggestions.length === 0) {
-            if (event.key === 'Enter' && query.trim()) {
-                performSearch(query);
+        return () => {
+            if (debounceRef.current) {
+                clearTimeout(debounceRef.current);
             }
-            return;
-        }
+        };
+    }, [query, minSearchLength, debounceMs, searchLocations]);
+
+    // Handle click outside to close dropdown
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
+                inputRef.current && !inputRef.current.contains(event.target)) {
+                setShowDropdown(false);
+                setSelectedIndex(-1);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Keyboard navigation
+    const handleKeyDown = (event) => {
+        if (!showDropdown || suggestions.length === 0) return;
 
         switch (event.key) {
             case 'ArrowDown':
@@ -147,10 +143,10 @@ const MapSearchInput = ({
                 break;
             case 'Enter':
                 event.preventDefault();
-                if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+                if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
                     handleSuggestionSelect(suggestions[selectedIndex]);
                 } else if (query.trim()) {
-                    performSearch(query);
+                    handleSearch();
                 }
                 break;
             case 'Escape':
@@ -161,233 +157,179 @@ const MapSearchInput = ({
             default:
                 break;
         }
-    }, [showDropdown, suggestions, selectedIndex, query, performSearch]);
+    };
 
-    // Handle suggestion selection
-    const handleSuggestionSelect = useCallback((suggestion) => {
-        setQuery(suggestion.name);
-        setShowDropdown(false);
+    const handleInputChange = (event) => {
+        const value = event.target.value;
+        setQuery(value);
         setSelectedIndex(-1);
+    };
 
-        if (onLocationSelect) {
-            onLocationSelect({
-                lat: suggestion.lat,
-                lng: suggestion.lng,
-                name: suggestion.name,
-                address: suggestion.address,
-                id: suggestion.id,
-                type: suggestion.type
-            });
-        }
-
-        inputRef.current?.blur();
-    }, [onLocationSelect]);
-
-    // Handle clear
-    const handleClear = useCallback(() => {
-        setQuery('');
-        setSuggestions([]);
-        setShowDropdown(false);
-        setSelectedIndex(-1);
-        if (onResults) onResults([]);
-        inputRef.current?.focus();
-    }, [onResults]);
-
-    // Handle focus
-    const handleFocus = useCallback(() => {
+    const handleInputFocus = () => {
         setIsFocused(true);
-        if (suggestions.length > 0 && showSuggestions) {
+        if (suggestions.length > 0 && query.length >= minSearchLength) {
             setShowDropdown(true);
         }
-    }, [suggestions.length, showSuggestions]);
+    };
 
-    // Handle blur
-    const handleBlur = useCallback(() => {
+    const handleInputBlur = () => {
         setIsFocused(false);
-        // Delay hiding dropdown to allow click on suggestions
+        // Delay hiding dropdown to allow for suggestion clicks
         setTimeout(() => {
             setShowDropdown(false);
             setSelectedIndex(-1);
         }, 150);
-    }, []);
+    };
 
-    // Close dropdown on outside click
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target) &&
-                inputRef.current && !inputRef.current.contains(event.target)) {
-                setShowDropdown(false);
-                setSelectedIndex(-1);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    // Auto focus
-    useEffect(() => {
-        if (autoFocus && inputRef.current) {
-            inputRef.current.focus();
+    const handleSuggestionSelect = (suggestion) => {
+        setQuery(suggestion.name);
+        setShowDropdown(false);
+        setSelectedIndex(-1);
+        if (onLocationSelect) {
+            onLocationSelect(suggestion);
         }
-    }, [autoFocus]);
+        inputRef.current?.blur();
+    };
 
-    // Cleanup
-    useEffect(() => {
-        return () => {
-            if (debounceRef.current) {
-                clearTimeout(debounceRef.current);
-            }
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-        };
-    }, []);
+    const handleSearch = () => {
+        if (query.trim() && onResults) {
+            onResults(suggestions);
+        }
+        setShowDropdown(false);
+        inputRef.current?.blur();
+    };
+
+    const handleClear = () => {
+        setQuery('');
+        setSuggestions([]);
+        setShowDropdown(false);
+        setSelectedIndex(-1);
+        inputRef.current?.focus();
+    };
 
     const getLocationIcon = (type) => {
-        switch (type) {
-            case 'restaurant':
-                return '🍽️';
-            case 'hotel':
-                return '🏨';
-            case 'cafe':
-                return '☕';
-            default:
-                return '📍';
-        }
+        const icons = {
+            restaurant: '🍽️',
+            hotel: '🏨',
+            cafe: '☕',
+            shop: '🛍️',
+            attraction: '🎭',
+            default: '📍'
+        };
+        return icons[type] || icons.default;
     };
 
     return (
-        <div className={`map-search-input ${className}`}>
-            <div className="map-search-input__container">
-                {/* Sidebar Toggle Button */}
-                {onToggleSidebar && (
+        <div className={`gm-search-input ${className} ${isMobile ? 'gm-search-input--mobile' : 'gm-search-input--desktop'}`}>
+            {/* Search Input Container */}
+            <div className={`gm-search-input__container ${isFocused ? 'gm-search-input__container--focused' : ''}`}>
+                {/* Menu/Sidebar Toggle - Mobile Only */}
+                {isMobile && (
                     <button
-                        type="button"
+                        className="gm-search-input__menu-btn"
                         onClick={onToggleSidebar}
-                        className={`map-search-input__sidebar-toggle ${isSidebarOpen ? 'active' : ''}`}
-                        aria-label={isSidebarOpen ? t('map.close_sidebar') : t('map.open_sidebar')}
-                        title={isSidebarOpen ? t('map.close_sidebar') : t('map.open_sidebar')}
+                        aria-label={t('map.toggle_sidebar')}
                     >
-                        <svg
-                            className="map-search-input__sidebar-icon"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            aria-hidden="true"
-                        >
-                            <rect x="3" y="4" width="18" height="4" rx="1" fill="currentColor" />
-                            <rect x="3" y="10" width="18" height="4" rx="1" fill="currentColor" />
-                            <rect x="3" y="16" width="18" height="4" rx="1" fill="currentColor" />
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
                         </svg>
                     </button>
                 )}
 
-                {/* Search Input */}
-                <div className="map-search-input__input-wrapper">
-                    <div className="map-search-input__input-container">
-                        <svg
-                            className="map-search-input__search-icon"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            aria-hidden="true"
-                        >
-                            <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
-                            <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                        </svg>
-
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            value={query}
-                            onChange={handleInputChange}
-                            onKeyDown={handleKeyDown}
-                            onFocus={handleFocus}
-                            onBlur={handleBlur}
-                            placeholder={placeholder || t('map.search_placeholder')}
-                            className="map-search-input__input"
-                            aria-label={t('map.search_aria_label')}
-                            aria-expanded={showDropdown}
-                            aria-haspopup="listbox"
-                            aria-autocomplete="list"
-                            role="combobox"
-                        />
-
-                        {/* Loading Spinner */}
-                        {isLoading && (
-                            <div className="map-search-input__loading">
-                                <div className="spinner" aria-label={t('common.loading')}></div>
-                            </div>
-                        )}
-
-                        {/* Clear Button */}
-                        {query && !isLoading && (
-                            <button
-                                type="button"
-                                onClick={handleClear}
-                                className="map-search-input__clear"
-                                aria-label={t('common.clear')}
-                                title={t('common.clear')}
-                            >
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        d="M18 6L6 18M6 6L18 18"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
-                            </button>
-                        )}
-                    </div>
-
-                    {/* Suggestions Dropdown */}
-                    {showDropdown && suggestions.length > 0 && (
-                        <div
-                            ref={dropdownRef}
-                            className="map-search-input__dropdown"
-                            role="listbox"
-                            aria-label={t('map.search_suggestions')}
-                        >
-                            {suggestions.map((suggestion, index) => (
-                                <div
-                                    key={suggestion.id}
-                                    className={`map-search-input__suggestion ${index === selectedIndex ? 'selected' : ''
-                                        }`}
-                                    role="option"
-                                    aria-selected={index === selectedIndex}
-                                    onClick={() => handleSuggestionSelect(suggestion)}
-                                    onMouseEnter={() => setSelectedIndex(index)}
-                                >
-                                    <div className="map-search-input__suggestion-icon">
-                                        {getLocationIcon(suggestion.type)}
-                                    </div>
-                                    <div className="map-search-input__suggestion-content">
-                                        <div className="map-search-input__suggestion-name">
-                                            {suggestion.name}
-                                        </div>
-                                        {suggestion.address && (
-                                            <div className="map-search-input__suggestion-address">
-                                                {suggestion.address}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                {/* Search Icon */}
+                <div className="gm-search-input__search-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                    </svg>
                 </div>
+
+                {/* Input Field */}
+                <input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    onChange={handleInputChange}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
+                    onKeyDown={handleKeyDown}
+                    placeholder={placeholder || t('map.search_placeholder')}
+                    className="gm-search-input__input"
+                    autoComplete="off"
+                    autoFocus={autoFocus}
+                    aria-label={t('map.search_placeholder')}
+                    aria-expanded={showDropdown}
+                    aria-haspopup="listbox"
+                    role="combobox"
+                />
+
+                {/* Loading Spinner */}
+                {isLoading && (
+                    <div className="gm-search-input__loading">
+                        <svg className="gm-search-input__spinner" width="20" height="20" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeDasharray="32" strokeDashoffset="32">
+                                <animate attributeName="stroke-dasharray" dur="2s" values="0 32;16 16;0 32;0 32" repeatCount="indefinite" />
+                                <animate attributeName="stroke-dashoffset" dur="2s" values="0;-16;-32;-32" repeatCount="indefinite" />
+                            </circle>
+                        </svg>
+                    </div>
+                )}
+
+                {/* Clear Button */}
+                {query && !isLoading && (
+                    <button
+                        className="gm-search-input__clear"
+                        onClick={handleClear}
+                        aria-label={t('common.clear')}
+                        type="button"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                        </svg>
+                    </button>
+                )}
+
+                {/* Tags Toggle - Mobile Only */}
+                {isMobile && onToggleTags && (
+                    <button
+                        className={`gm-search-input__tags-btn ${isTagsPanelVisible ? 'gm-search-input__tags-btn--active' : ''}`}
+                        onClick={onToggleTags}
+                        aria-label={t('map.toggle_filters')}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z" />
+                        </svg>
+                    </button>
+                )}
             </div>
+
+            {/* Suggestions Dropdown */}
+            {showDropdown && showSuggestions && suggestions.length > 0 && (
+                <div ref={dropdownRef} className="gm-search-input__dropdown" role="listbox">
+                    {suggestions.map((suggestion, index) => (
+                        <div
+                            key={suggestion.id}
+                            className={`gm-search-input__suggestion ${index === selectedIndex ? 'gm-search-input__suggestion--selected' : ''
+                                }`}
+                            onClick={() => handleSuggestionSelect(suggestion)}
+                            onMouseEnter={() => setSelectedIndex(index)}
+                            role="option"
+                            aria-selected={index === selectedIndex}
+                        >
+                            <div className="gm-search-input__suggestion-icon">
+                                {getLocationIcon(suggestion.type)}
+                            </div>
+                            <div className="gm-search-input__suggestion-content">
+                                <div className="gm-search-input__suggestion-name">
+                                    {suggestion.name}
+                                </div>
+                                <div className="gm-search-input__suggestion-address">
+                                    {suggestion.address}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

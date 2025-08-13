@@ -77,283 +77,313 @@ const ProfileDropdown = ({ user, className = '' }) => {
         // Update document direction for RTL languages
         document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
         document.documentElement.lang = language;
-
-        setIsOpen(false);
     };
 
     const toggleTheme = () => {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('virtuello-theme', newTheme);
-
-        setIsOpen(false);
     };
 
-    // Generate user initials for avatar
-    const getUserInitials = (user) => {
-        if (!user?.fullName) return 'U';
-
-        const names = user.fullName.split(' ');
-        if (names.length >= 2) {
-            return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
-        }
-        return user.fullName.substring(0, 2).toUpperCase();
+    const getCurrentTheme = () => {
+        return document.documentElement.getAttribute('data-theme') || 'light';
     };
 
-    // Generate role badge color
+    const getInitials = (name) => {
+        if (!name) return '?';
+        return name.split(' ')
+            .map(part => part.charAt(0))
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+    };
+
     const getRoleColor = (role) => {
-        switch (role?.toLowerCase()) {
-            case 'admin':
-                return 'var(--error)';
-            case 'manager':
-                return 'var(--warning)';
-            case 'user':
-            default:
-                return 'var(--primary-600)';
-        }
+        const colors = {
+            admin: '#ea4335',
+            manager: '#fbbc04',
+            user: '#34a853',
+            premium: '#1a73e8'
+        };
+        return colors[role?.toLowerCase()] || colors.user;
     };
+
+    const menuItems = [
+        {
+            id: 'profile',
+            icon: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+            ),
+            label: t('profile.view_profile'),
+            onClick: () => {
+                // Handle profile navigation
+                setIsOpen(false);
+            }
+        },
+        {
+            id: 'settings',
+            icon: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+                </svg>
+            ),
+            label: t('profile.settings'),
+            onClick: () => {
+                // Handle settings navigation
+                setIsOpen(false);
+            }
+        },
+        {
+            id: 'help',
+            icon: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C7.59,4 4,12A10,10 0 0,0 12,2Z" />
+                </svg>
+            ),
+            label: t('profile.help_support'),
+            onClick: () => {
+                // Handle help navigation
+                setIsOpen(false);
+            }
+        }
+    ];
+
+    // Add admin/manager specific items
+    if (isAdmin || isManager) {
+        menuItems.splice(2, 0, {
+            id: 'admin',
+            icon: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12,1L21,5V11C21,16.55 17.16,21.74 12,23C6.84,21.74 3,16.55 3,11V5L12,1M12,7C10.9,7 10,7.9 10,9C10,10.1 10.9,11 12,11C13.1,11 14,10.1 14,9C14,7.9 13.1,7 12,7M17,20C17,16.69 14.31,14 11,14H13C16.31,14 17,16.69 17,20Z" />
+                </svg>
+            ),
+            label: isAdmin ? t('profile.admin_panel') : t('profile.manager_panel'),
+            onClick: () => {
+                // Handle admin/manager navigation
+                setIsOpen(false);
+            }
+        });
+    }
 
     if (!user) {
         return null;
     }
 
     return (
-        <div
-            className={`profile-dropdown ${className} ${isMobile ? 'profile-dropdown--mobile' : ''}`}
-            ref={dropdownRef}
-        >
-            {/* Profile Button */}
+        <div ref={dropdownRef} className={`gm-profile-dropdown ${className}`}>
+            {/* Trigger Button */}
             <button
-                className={`profile-dropdown__trigger ${isOpen ? 'profile-dropdown__trigger--active' : ''}`}
+                className={`gm-profile-dropdown__trigger ${isOpen ? 'gm-profile-dropdown__trigger--active' : ''}`}
                 onClick={toggleDropdown}
                 aria-expanded={isOpen}
                 aria-haspopup="true"
-                aria-label={t('profile.menu_aria_label', 'Open profile menu')}
+                aria-label={t('profile.open_menu')}
             >
-                {/* User Avatar */}
-                <div className="profile-dropdown__avatar">
+                {/* Avatar */}
+                <div className="gm-profile-dropdown__avatar">
                     {user.avatar ? (
                         <img
                             src={user.avatar}
-                            alt={user.fullName || user.email}
-                            className="profile-dropdown__avatar-image"
+                            alt={user.name || user.email}
+                            className="gm-profile-dropdown__avatar-image"
                         />
                     ) : (
-                        <span className="profile-dropdown__avatar-initials">
-                            {getUserInitials(user)}
-                        </span>
+                        <div className="gm-profile-dropdown__avatar-initials">
+                            {getInitials(user.name || user.email)}
+                        </div>
                     )}
-
-                    {/* Online status indicator */}
-                    <div className="profile-dropdown__status-indicator" />
+                    {user.isOnline && (
+                        <div className="gm-profile-dropdown__status-indicator" />
+                    )}
                 </div>
 
-                {/* User Info (Hidden on mobile) */}
+                {/* User Info (Desktop Only) */}
                 {!isMobile && (
-                    <div className="profile-dropdown__user-info">
-                        <div className="profile-dropdown__name">
-                            {user.fullName || user.email}
+                    <div className="gm-profile-dropdown__user-info">
+                        <div className="gm-profile-dropdown__name">
+                            {user.name || user.email?.split('@')[0] || t('profile.anonymous')}
                         </div>
-                        <div className="profile-dropdown__role">
-                            {t(`roles.${user.role?.toLowerCase()}`, user.role || 'User')}
-                        </div>
+                        {user.role && (
+                            <div
+                                className="gm-profile-dropdown__role"
+                                style={{ color: getRoleColor(user.role) }}
+                            >
+                                {t(`roles.${user.role.toLowerCase()}`)}
+                            </div>
+                        )}
                     </div>
                 )}
 
                 {/* Dropdown Arrow */}
-                <svg
-                    className="profile-dropdown__arrow"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="currentColor"
-                >
-                    <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <div className="gm-profile-dropdown__arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 10l5 5 5-5z" />
+                    </svg>
+                </div>
             </button>
 
             {/* Dropdown Menu */}
             {isOpen && (
-                <div className={`profile-dropdown__menu ${isMobile ? 'profile-dropdown__menu--mobile' : ''}`}>
-                    {/* Mobile Header */}
+                <>
+                    {/* Backdrop for mobile */}
                     {isMobile && (
-                        <div className="profile-dropdown__mobile-header">
-                            <div className="profile-dropdown__mobile-avatar">
-                                {user.avatar ? (
-                                    <img
-                                        src={user.avatar}
-                                        alt={user.fullName || user.email}
-                                        className="profile-dropdown__avatar-image"
-                                    />
-                                ) : (
-                                    <span className="profile-dropdown__avatar-initials">
-                                        {getUserInitials(user)}
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="profile-dropdown__mobile-info">
-                                <div className="profile-dropdown__mobile-name">
-                                    {user.fullName || user.email}
-                                </div>
-                                <div className="profile-dropdown__mobile-email">
-                                    {user.email}
-                                </div>
-                                <div
-                                    className="profile-dropdown__mobile-role"
-                                    style={{ backgroundColor: getRoleColor(user.role) }}
-                                >
-                                    {t(`roles.${user.role?.toLowerCase()}`, user.role || 'User')}
-                                </div>
-                            </div>
-
-                            <button
-                                className="profile-dropdown__close-btn"
-                                onClick={() => setIsOpen(false)}
-                                aria-label={t('common.close', 'Close')}
-                            >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                            </button>
-                        </div>
+                        <div
+                            className="gm-profile-dropdown__backdrop"
+                            onClick={() => setIsOpen(false)}
+                        />
                     )}
 
-                    {/* Menu Items */}
-                    <div className="profile-dropdown__menu-items">
-                        {/* Profile Section */}
-                        <div className="profile-dropdown__section">
-                            <div className="profile-dropdown__section-header">
-                                {t('profile.account', 'Account')}
-                            </div>
-
-                            <button className="profile-dropdown__item">
-                                <svg className="profile-dropdown__item-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                <span>{t('profile.view_profile', 'View Profile')}</span>
-                            </button>
-
-                            <button className="profile-dropdown__item">
-                                <svg className="profile-dropdown__item-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" stroke="currentColor" strokeWidth="2" fill="none" />
-                                    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" fill="none" />
-                                </svg>
-                                <span>{t('profile.account_settings', 'Account Settings')}</span>
-                            </button>
-
-                            {(isAdmin() || isManager()) && (
-                                <button className="profile-dropdown__item">
-                                    <svg className="profile-dropdown__item-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                    <span>{t('profile.dashboard', 'Dashboard')}</span>
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Preferences Section */}
-                        <div className="profile-dropdown__section">
-                            <div className="profile-dropdown__section-header">
-                                {t('profile.preferences', 'Preferences')}
-                            </div>
-
-                            {/* Language Selector */}
-                            <div className="profile-dropdown__item profile-dropdown__item--no-hover">
-                                <svg className="profile-dropdown__item-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" stroke="currentColor" strokeWidth="1.5" fill="currentColor" />
-                                </svg>
-                                <span>{t('profile.language', 'Language')}</span>
-
-                                <div className="profile-dropdown__language-buttons">
-                                    {['en', 'fr', 'ar'].map((lang) => (
-                                        <button
-                                            key={lang}
-                                            className={`profile-dropdown__lang-btn ${i18n.language === lang ? 'profile-dropdown__lang-btn--active' : ''}`}
-                                            onClick={() => changeLanguage(lang)}
-                                            aria-label={t(`languages.${lang}`, lang.toUpperCase())}
+                    <div className={`gm-profile-dropdown__menu ${isMobile ? 'gm-profile-dropdown__menu--mobile' : ''}`}>
+                        {/* Mobile Header */}
+                        {isMobile && (
+                            <div className="gm-profile-dropdown__mobile-header">
+                                <div className="gm-profile-dropdown__mobile-avatar">
+                                    {user.avatar ? (
+                                        <img
+                                            src={user.avatar}
+                                            alt={user.name || user.email}
+                                            className="gm-profile-dropdown__avatar-image"
+                                        />
+                                    ) : (
+                                        <div className="gm-profile-dropdown__avatar-initials">
+                                            {getInitials(user.name || user.email)}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="gm-profile-dropdown__mobile-info">
+                                    <div className="gm-profile-dropdown__mobile-name">
+                                        {user.name || user.email?.split('@')[0] || t('profile.anonymous')}
+                                    </div>
+                                    <div className="gm-profile-dropdown__mobile-email">
+                                        {user.email}
+                                    </div>
+                                    {user.role && (
+                                        <div
+                                            className="gm-profile-dropdown__mobile-role"
+                                            style={{ backgroundColor: getRoleColor(user.role) }}
                                         >
-                                            {lang.toUpperCase()}
+                                            {t(`roles.${user.role.toLowerCase()}`)}
+                                        </div>
+                                    )}
+                                </div>
+                                <button
+                                    className="gm-profile-dropdown__close-btn"
+                                    onClick={() => setIsOpen(false)}
+                                    aria-label={t('common.close')}
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Menu Items */}
+                        <div className="gm-profile-dropdown__menu-items">
+                            {/* Main Navigation */}
+                            <div className="gm-profile-dropdown__section">
+                                {menuItems.map((item) => (
+                                    <button
+                                        key={item.id}
+                                        className="gm-profile-dropdown__item"
+                                        onClick={item.onClick}
+                                    >
+                                        <div className="gm-profile-dropdown__item-icon">
+                                            {item.icon}
+                                        </div>
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Theme & Language */}
+                            <div className="gm-profile-dropdown__section">
+                                <div className="gm-profile-dropdown__section-header">
+                                    {t('profile.preferences')}
+                                </div>
+
+                                {/* Theme Toggle */}
+                                <button
+                                    className="gm-profile-dropdown__item"
+                                    onClick={toggleTheme}
+                                >
+                                    <div className="gm-profile-dropdown__item-icon">
+                                        {getCurrentTheme() === 'light' ? (
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18M20,15.31L23.31,12L20,8.69V4H15.31L12,0.69L8.69,4H4V8.69L0.69,12L4,15.31V20H8.69L12,23.31L15.31,20H20V15.31Z" />
+                                            </svg>
+                                        ) : (
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.4 6.35,17.41C9.37,20.43 14,20.54 17.33,17.97Z" />
+                                            </svg>
+                                        )}
+                                    </div>
+                                    {getCurrentTheme() === 'light' ? t('theme.dark_mode') : t('theme.light_mode')}
+                                    <div className="gm-profile-dropdown__theme-indicator">
+                                        {getCurrentTheme() === 'light' ? '🌙' : '☀️'}
+                                    </div>
+                                </button>
+
+                                {/* Language Selector */}
+                                <div className="gm-profile-dropdown__item gm-profile-dropdown__item--no-hover">
+                                    <div className="gm-profile-dropdown__item-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12.87,15.07L11.54,13.74L8.38,16.9L9.71,18.23L12.87,15.07M12,2C17.52,2 22,6.48 22,12C22,17.52 17.52,22 12,22C6.48,22 2,17.52 2,12C2,6.48 6.48,2 12,2M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M16.18,7.76L15.06,8.88L14.82,8.64L13.7,9.76L14.82,10.88L16.18,9.52L17.3,10.64L18.42,9.52L16.18,7.76M7.82,12.24L9.18,10.88L10.3,12L9.18,13.12L7.82,12.24M12,8.5L13.5,10L12,11.5L10.5,10L12,8.5Z" />
+                                        </svg>
+                                    </div>
+                                    {t('profile.language')}
+                                    <div className="gm-profile-dropdown__language-buttons">
+                                        <button
+                                            className={`gm-profile-dropdown__lang-btn ${i18n.language === 'en' ? 'gm-profile-dropdown__lang-btn--active' : ''}`}
+                                            onClick={() => changeLanguage('en')}
+                                        >
+                                            EN
                                         </button>
-                                    ))}
+                                        <button
+                                            className={`gm-profile-dropdown__lang-btn ${i18n.language === 'fr' ? 'gm-profile-dropdown__lang-btn--active' : ''}`}
+                                            onClick={() => changeLanguage('fr')}
+                                        >
+                                            FR
+                                        </button>
+                                        <button
+                                            className={`gm-profile-dropdown__lang-btn ${i18n.language === 'ar' ? 'gm-profile-dropdown__lang-btn--active' : ''}`}
+                                            onClick={() => changeLanguage('ar')}
+                                        >
+                                            AR
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Theme Toggle */}
-                            <button className="profile-dropdown__item" onClick={toggleTheme}>
-                                <svg className="profile-dropdown__item-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                <span>{t('profile.theme', 'Theme')}</span>
-                                <span className="profile-dropdown__theme-indicator">
-                                    {document.documentElement.getAttribute('data-theme') === 'dark' ? '🌙' : '☀️'}
-                                </span>
-                            </button>
-
-                            {/* Notifications (Future feature) */}
-                            <button className="profile-dropdown__item">
-                                <svg className="profile-dropdown__item-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                <span>{t('profile.notifications', 'Notifications')}</span>
-                            </button>
-                        </div>
-
-                        {/* Help & Support Section */}
-                        <div className="profile-dropdown__section">
-                            <div className="profile-dropdown__section-header">
-                                {t('profile.help_support', 'Help & Support')}
+                            {/* Logout */}
+                            <div className="gm-profile-dropdown__section">
+                                <button
+                                    className="gm-profile-dropdown__item gm-profile-dropdown__item--logout"
+                                    onClick={handleLogout}
+                                >
+                                    <div className="gm-profile-dropdown__item-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z" />
+                                        </svg>
+                                    </div>
+                                    {t('auth.logout')}
+                                </button>
                             </div>
-
-                            <button className="profile-dropdown__item">
-                                <svg className="profile-dropdown__item-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
-                                </svg>
-                                <span>{t('profile.help_center', 'Help Center')}</span>
-                            </button>
-
-                            <button className="profile-dropdown__item">
-                                <svg className="profile-dropdown__item-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M14 9V5a3 3 0 0 0-6 0v4M3 9h18l-2 9H5l-2-9z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                <span>{t('profile.feedback', 'Send Feedback')}</span>
-                            </button>
                         </div>
 
-                        {/* Logout Section */}
-                        <div className="profile-dropdown__section profile-dropdown__section--logout">
-                            <button
-                                className="profile-dropdown__item profile-dropdown__item--logout"
-                                onClick={handleLogout}
-                            >
-                                <svg className="profile-dropdown__item-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                <span>{t('profile.logout', 'Logout')}</span>
-                            </button>
-                        </div>
+                        {/* Footer (Mobile Only) */}
+                        {isMobile && (
+                            <div className="gm-profile-dropdown__footer">
+                                <div className="gm-profile-dropdown__footer-text">
+                                    Virtuello v1.0.0
+                                </div>
+                            </div>
+                        )}
                     </div>
-
-                    {/* Footer (Mobile only) */}
-                    {isMobile && (
-                        <div className="profile-dropdown__footer">
-                            <div className="profile-dropdown__footer-text">
-                                © 2024 WAN Solutions - Virtuello
-                            </div>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* Mobile Backdrop */}
-            {isMobile && isOpen && (
-                <div
-                    className="profile-dropdown__backdrop"
-                    onClick={() => setIsOpen(false)}
-                />
+                </>
             )}
         </div>
     );
