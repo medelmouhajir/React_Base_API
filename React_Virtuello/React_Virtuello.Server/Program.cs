@@ -127,13 +127,16 @@ namespace React_Virtuello.Server
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
 
             //app.UseHttpsRedirection();
             app.UseCors("AllowReactApp");
             app.UseAuthentication();
             app.UseAuthorization();
 
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
 
             app.MapControllers();
 

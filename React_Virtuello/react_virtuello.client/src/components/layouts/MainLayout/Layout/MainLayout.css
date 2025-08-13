@@ -1,0 +1,141 @@
+/* ===== MAIN LAYOUT COMPONENT ===== */
+
+.main-layout {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--bg-primary);
+    font-family: var(--font-family-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+/* ===== DESKTOP LAYOUT ===== */
+.main-layout--desktop {
+    /* Desktop specific styles */
+}
+
+/* ===== MOBILE LAYOUT ===== */
+.main-layout--mobile {
+    /* Mobile specific styles */
+}
+
+/* ===== NAVBAR ===== */
+.main-layout__navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-fixed);
+    transition: all var(--transition-normal);
+}
+
+/* ===== SIDEBAR ===== */
+.main-layout__sidebar {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    height: calc(100vh - var(--header-height));
+    z-index: var(--z-sticky);
+    transition: all var(--transition-normal);
+}
+
+.main-layout--mobile .main-layout__sidebar {
+    top: var(--mobile-header-height);
+    height: calc(100vh - var(--mobile-header-height));
+    z-index: var(--z-modal);
+}
+
+/* ===== MOBILE OVERLAY ===== */
+.main-layout__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-overlay);
+    z-index: var(--z-modal-backdrop);
+    backdrop-filter: blur(4px);
+    animation: fadeIn var(--transition-fast) ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-layout__content {
+    min-height: 100vh;
+    padding-top: var(--header-height);
+    transition: margin-left var(--transition-normal);
+    background-color: var(--bg-secondary);
+}
+
+.main-layout--mobile .main-layout__content {
+    padding-top: var(--mobile-header-height);
+    margin-left: 0 !important;
+}
+
+.main-layout__content-inner {
+    padding: var(--space-lg);
+    max-width: 100%;
+    min-height: calc(100vh - var(--header-height));
+}
+
+.main-layout--mobile .main-layout__content-inner {
+    padding: var(--space-md);
+    min-height: calc(100vh - var(--mobile-header-height));
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+    .main-layout__content-inner {
+        padding: var(--space-sm);
+    }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+    .main-layout,
+    .main-layout__navbar,
+    .main-layout__sidebar,
+    .main-layout__content {
+        transition: none;
+    }
+
+    .main-layout__overlay {
+        animation: none;
+    }
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+@media (prefers-contrast: high) {
+    .main-layout {
+        border: 2px solid var(--border-primary);
+    }
+
+    .main-layout__overlay {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+}
+
+/* ===== RTL SUPPORT ===== */
+[dir="rtl"] .main-layout__content {
+    margin-left: 0;
+    margin-right: var(--sidebar-width);
+}
+
+[dir="rtl"] .main-layout--mobile .main-layout__content {
+    margin-right: 0 !important;
+}
+
+[dir="rtl"] .main-layout__sidebar {
+    left: auto;
+    right: 0;
+}
