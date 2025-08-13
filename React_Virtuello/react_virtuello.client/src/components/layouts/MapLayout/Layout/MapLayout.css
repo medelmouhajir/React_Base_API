@@ -152,7 +152,7 @@
     left: 0;
     right: 0;
     height: var(--gm-mobile-header-height);
-    background-color: var(--gm-bg-card);
+    background-color: transparent;
     border-bottom: 1px solid var(--gm-border-primary);
     box-shadow: var(--gm-shadow-sm);
     display: flex;

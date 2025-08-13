@@ -80,96 +80,13 @@ function App() {
             <Router>
                 {/* Wrap everything with AuthProvider */}
                 <AuthProvider>
-                    {/* Theme Toggle - Floating Button */}
-                    <button
-                        onClick={toggleTheme}
-                        className="theme-toggle"
-                        style={{
-                            position: 'fixed',
-                            top: '20px',
-                            right: '20px',
-                            zIndex: 'var(--z-tooltip)',
-                            padding: '8px',
-                            border: 'none',
-                            borderRadius: 'var(--radius-full)',
-                            backgroundColor: 'var(--bg-card)',
-                            border: '1px solid var(--border-primary)',
-                            color: 'var(--text-primary)',
-                            cursor: 'pointer',
-                            boxShadow: 'var(--shadow-lg)',
-                            fontSize: '18px',
-                            width: '40px',
-                            height: '40px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'all var(--transition-fast)'
-                        }}
-                        title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-                    >
-                        {theme === 'light' ? '🌙' : '☀️'}
-                    </button>
 
-                    {/* Language Toggle - Floating Button */}
-                    <div
-                        className="language-toggle"
-                        style={{
-                            position: 'fixed',
-                            top: '20px',
-                            right: '80px',
-                            zIndex: 'var(--z-tooltip)',
-                            display: 'flex',
-                            gap: '4px',
-                            backgroundColor: 'var(--bg-card)',
-                            border: '1px solid var(--border-primary)',
-                            borderRadius: 'var(--radius-lg)',
-                            padding: '4px',
-                            boxShadow: 'var(--shadow-lg)'
-                        }}
-                    >
-                        {['en', 'fr', 'ar'].map((lang) => (
-                            <button
-                                key={lang}
-                                onClick={() => changeLanguage(lang)}
-                                className={`lang-btn ${i18n.language === lang ? 'active' : ''}`}
-                                style={{
-                                    padding: '6px 12px',
-                                    border: 'none',
-                                    borderRadius: 'var(--radius-md)',
-                                    backgroundColor: i18n.language === lang ? 'var(--primary-600)' : 'transparent',
-                                    color: i18n.language === lang ? 'var(--text-inverse)' : 'var(--text-secondary)',
-                                    fontSize: '12px',
-                                    fontWeight: '500',
-                                    cursor: 'pointer',
-                                    transition: 'all var(--transition-fast)'
-                                }}
-                            >
-                                {lang.toUpperCase()}
-                            </button>
-                        ))}
-                    </div>
 
                     {/* Main App Routes */}
                     <main className="app-main">
                         <AppRoutes />
                     </main>
 
-                    {/* Global Footer - Optional */}
-                    <footer
-                        className="app-footer"
-                        style={{
-                            position: 'fixed',
-                            bottom: '10px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            fontSize: '12px',
-                            color: 'var(--text-muted)',
-                            zIndex: 'var(--z-dropdown)',
-                            pointerEvents: 'none'
-                        }}
-                    >
-                        © 2024 WAN Solutions - Virtuello
-                    </footer>
                 </AuthProvider>
             </Router>
         </div>
