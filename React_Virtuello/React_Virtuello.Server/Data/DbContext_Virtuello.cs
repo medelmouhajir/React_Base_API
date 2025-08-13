@@ -14,7 +14,7 @@ namespace React_Virtuello.Server.Data
 {
     public class DbContext_Virtuello : IdentityDbContext<User>
     {
-        public DbContext_Virtuello(DbContextOptions<DbContext> options)
+        public DbContext_Virtuello(DbContextOptions<DbContext_Virtuello> options)
             : base(options)
         {
         }
