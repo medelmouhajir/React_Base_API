@@ -37,6 +37,27 @@ const MainLayout = ({
         return () => window.removeEventListener('resize', checkMobile);
     }, [sidebarOpen]);
 
+    useEffect(() => {
+        if (isMobile && sidebarOpen) {
+            // Prevent body scroll when sidebar is open
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+        } else {
+            // Restore body scroll
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+        }
+
+        return () => {
+            // Cleanup on unmount
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+        };
+    }, [isMobile, sidebarOpen]);
+
     // Handle sidebar toggle
     const handleSidebarToggle = () => {
         if (isMobile) {
@@ -107,7 +128,10 @@ const MainLayout = ({
                 <div
                     className="main-layout__overlay"
                     onClick={handleOverlayClick}
+                    onTouchStart={handleOverlayClick} // Add touch support
                     aria-hidden="true"
+                    role="button"
+                    tabIndex={0}
                 />
             )}
 

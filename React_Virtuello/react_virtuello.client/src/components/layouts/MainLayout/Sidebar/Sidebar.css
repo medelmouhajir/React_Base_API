@@ -34,16 +34,21 @@
     width: 85vw;
     max-width: 320px;
     height: 100%;
-    position: relative;
+    position: fixed; /* Changed from relative to fixed */
+    left: 0;
+    top: 0;
     box-shadow: var(--shadow-xl);
+    z-index: inherit; /* Inherit from parent container */
 }
 
     .sidebar--mobile:not(.sidebar--open) {
         transform: translateX(-100%);
+        visibility: hidden; /* Hide when closed */
     }
 
     .sidebar--mobile.sidebar--open {
         transform: translateX(0);
+        visibility: visible; /* Show when open */
         animation: slideInLeft var(--transition-normal) ease-out;
     }
 
@@ -444,10 +449,17 @@
 }
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 480px) {
+    .sidebar--mobile {
+        width: 100vw; /* Full width on very small screens */
+        max-width: none;
+    }
+}
+
 @media (max-width: 768px) {
     .sidebar--mobile {
         width: 90vw;
-        max-width: 280px;
+        max-width: 320px;
     }
 
     .sidebar__mobile-header {

@@ -44,6 +44,8 @@
     top: var(--mobile-header-height);
     height: calc(100vh - var(--mobile-header-height));
     z-index: var(--z-modal);
+    width: 85vw; /* Ensure consistent width */
+    max-width: 320px;
 }
 
 /* ===== MOBILE OVERLAY ===== */
@@ -54,7 +56,7 @@
     right: 0;
     bottom: 0;
     background-color: var(--bg-overlay);
-    z-index: var(--z-modal-backdrop);
+    z-index: calc(var(--z-modal) - 5); /* Ensure overlay is below sidebar */
     backdrop-filter: blur(4px);
     animation: fadeIn var(--transition-fast) ease-out;
 }
@@ -138,4 +140,26 @@
 [dir="rtl"] .main-layout__sidebar {
     left: auto;
     right: 0;
+}
+/* ===== IMPROVED MOBILE HANDLING ===== */
+.main-layout--mobile {
+    overflow: hidden; /* Prevent scroll when sidebar is open */
+}
+
+    .main-layout--mobile.sidebar-open {
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+    }
+
+        /* Ensure content doesn't scroll behind sidebar */
+        .main-layout--mobile.sidebar-open .main-layout__content {
+            overflow: hidden;
+            touch-action: none;
+        }
+
+/* Better overlay interaction */
+.main-layout__overlay {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
