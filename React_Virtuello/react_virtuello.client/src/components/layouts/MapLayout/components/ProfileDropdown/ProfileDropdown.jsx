@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../../contexts/AuthContext';
 import './ProfileDropdown.css';
 
@@ -9,6 +10,7 @@ const ProfileDropdown = ({ user, className = '' }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const dropdownRef = useRef(null);
+    const navigate = useNavigate();
 
     // Check for mobile viewport
     useEffect(() => {
@@ -145,6 +147,7 @@ const ProfileDropdown = ({ user, className = '' }) => {
             ),
             label: t('profile.help_support'),
             onClick: () => {
+                navigate('/myspace');
                 // Handle help navigation
                 setIsOpen(false);
             }

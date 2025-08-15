@@ -120,7 +120,7 @@ const Navbar = ({
 
                     {/* Logo */}
                     <div className="navbar__logo">
-                        <a href="/" className="navbar__logo-link">
+                        <a href="/myspace" className="navbar__logo-link">
                             <img
                                 src="/logo.svg"
                                 alt={t('app.name')}

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using React_Virtuello.Server.Data;
+using React_Virtuello.Server.Models.Events;
 using React_Virtuello.Server.Models.Tags;
 using React_Virtuello.Server.Repositories.Interfaces;
 
@@ -13,6 +14,7 @@ namespace React_Virtuello.Server.Repositories.Implementations
         private IEventRepository? _eventRepository;
         private ITourRepository? _tourRepository;
         private IRepository<Tag>? _tagRepository;
+        private IRepository<Event_Category>? _eventCategoryRepository;
 
         public UnitOfWork(DbContext_Virtuello context)
         {
@@ -23,6 +25,7 @@ namespace React_Virtuello.Server.Repositories.Implementations
         public IEventRepository Events => _eventRepository ??= new EventRepository(_context);
         public ITourRepository Tours => _tourRepository ??= new TourRepository(_context);
         public IRepository<Tag> Tags => _tagRepository ??= new Repository<Tag>(_context);
+        public IRepository<Event_Category> EventCategories => _eventCategoryRepository ??= new Repository<Event_Category>(_context);
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
             => await _context.SaveChangesAsync(cancellationToken);

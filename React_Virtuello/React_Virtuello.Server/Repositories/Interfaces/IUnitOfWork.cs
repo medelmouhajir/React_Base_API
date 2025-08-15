@@ -1,4 +1,5 @@
-﻿using React_Virtuello.Server.Models.Tags;
+﻿using React_Virtuello.Server.Models.Events;
+using React_Virtuello.Server.Models.Tags;
 using React_Virtuello.Server.Models.Users;
 
 namespace React_Virtuello.Server.Repositories.Interfaces
@@ -9,6 +10,7 @@ namespace React_Virtuello.Server.Repositories.Interfaces
         IEventRepository Events { get; }
         ITourRepository Tours { get; }
         IRepository<Tag> Tags { get; }
+        IRepository<Event_Category> EventCategories { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task BeginTransactionAsync(CancellationToken cancellationToken = default);

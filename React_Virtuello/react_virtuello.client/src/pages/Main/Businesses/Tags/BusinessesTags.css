@@ -1,0 +1,723 @@
+﻿/* ===== VIRTUELLO BUSINESSES TAGS COMPONENT ===== */
+
+.businesses-tags {
+    width: 100%;
+    min-height: 100vh;
+    padding: var(--space-lg);
+    background-color: transparent;
+    font-family: var(--font-family-primary);
+    color: var(--text-primary);
+}
+
+/* ===== DESKTOP STYLES ===== */
+.businesses-tags--desktop {
+    max-width: 95%;
+    margin: 0 auto;
+    padding: var(--space-2xl) var(--space-lg);
+}
+
+/* ===== MOBILE STYLES ===== */
+.businesses-tags--mobile {
+    padding: var(--space-md);
+}
+
+/* ===== HEADER ===== */
+.businesses-tags__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-2xl);
+    gap: var(--space-lg);
+}
+
+.businesses-tags__title h1 {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.businesses-tags__subtitle {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.businesses-tags__add-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+    .businesses-tags__add-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+
+/* ===== SEARCH ===== */
+.businesses-tags__search {
+    margin-bottom: var(--space-xl);
+}
+
+.businesses-tags__search-input {
+    position: relative;
+    max-width: 400px;
+}
+
+.businesses-tags__search-field {
+    width: 100%;
+    padding: var(--space-md) var(--space-md) var(--space-md) 48px;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    transition: all var(--transition-fast);
+}
+
+    .businesses-tags__search-field:focus {
+        outline: none;
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+
+.businesses-tags__search-icon {
+    position: absolute;
+    left: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.businesses-tags__search-clear {
+    position: absolute;
+    right: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: 2px;
+    transition: all var(--transition-fast);
+}
+
+    .businesses-tags__search-clear:hover {
+        color: var(--text-primary);
+        background-color: var(--bg-secondary);
+    }
+
+    .businesses-tags__search-clear svg {
+        width: 100%;
+        height: 100%;
+    }
+
+/* ===== ERROR MESSAGE ===== */
+.businesses-tags__error {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    background-color: var(--error-light);
+    border: 1px solid var(--error);
+    border-radius: var(--radius-md);
+    color: var(--error-dark);
+    margin-bottom: var(--space-lg);
+}
+
+    .businesses-tags__error svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+
+[data-theme="dark"] .businesses-tags__error {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: var(--error);
+    color: #fca5a5;
+}
+
+/* ===== CONTENT ===== */
+.businesses-tags__content {
+    min-height: 400px;
+}
+
+/* ===== LOADING STATE ===== */
+.businesses-tags__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: var(--space-lg);
+}
+
+    .businesses-tags__loading p {
+        color: var(--text-secondary);
+        font-size: var(--text-lg);
+        margin: 0;
+    }
+
+/* ===== EMPTY STATE ===== */
+.businesses-tags__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    padding: var(--space-xl);
+}
+
+.businesses-tags__empty-icon {
+    width: 64px;
+    height: 64px;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-lg);
+}
+
+.businesses-tags__empty h3 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.businesses-tags__empty p {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-lg);
+    max-width: 400px;
+}
+
+.businesses-tags__add-first-btn {
+    padding: var(--space-md) var(--space-xl);
+}
+
+/* ===== TAGS GRID ===== */
+.businesses-tags__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-lg);
+}
+
+/* ===== TAG CARD ===== */
+.businesses-tags__tag-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    transition: all var(--transition-fast);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+    .businesses-tags__tag-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--border-secondary);
+    }
+
+.businesses-tags__tag-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+}
+
+.businesses-tags__tag-icon-image {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+}
+
+.businesses-tags__tag-icon-default {
+    width: 24px;
+    height: 24px;
+    color: var(--text-secondary);
+}
+
+.businesses-tags__tag-info {
+    flex: 1;
+}
+
+.businesses-tags__tag-name {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin: 0;
+    line-height: var(--leading-tight);
+}
+
+.businesses-tags__tag-actions {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+
+.businesses-tags__action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+    .businesses-tags__action-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+.businesses-tags__action-btn--edit:hover {
+    background-color: var(--primary-light);
+    color: var(--primary-600);
+}
+
+.businesses-tags__action-btn--delete:hover {
+    background-color: var(--error-light);
+    color: var(--error);
+}
+
+/* ===== MODAL ===== */
+.businesses-tags__modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-overlay);
+    z-index: var(--z-modal-backdrop);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    padding: var(--space-lg);
+}
+
+.businesses-tags__modal {
+    background-color: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: auto;
+    z-index: var(--z-modal);
+    animation: modalSlideIn 0.2s ease-out;
+}
+
+.businesses-tags__modal--confirm {
+    max-width: 400px;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.businesses-tags__modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-xl) var(--space-xl) var(--space-lg);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+    .businesses-tags__modal-header h2 {
+        font-size: var(--text-xl);
+        font-weight: var(--font-semibold);
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+.businesses-tags__modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+    .businesses-tags__modal-close:hover {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+    }
+
+    .businesses-tags__modal-close svg {
+        width: 20px;
+        height: 20px;
+    }
+
+/* ===== FORM ===== */
+.businesses-tags__form {
+    padding: var(--space-xl);
+}
+
+.businesses-tags__form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.businesses-tags__form-label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+    .businesses-tags__form-label.required::after {
+        content: ' *';
+        color: var(--error);
+    }
+
+.businesses-tags__form-input {
+    width: 100%;
+    padding: var(--space-md);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    transition: all var(--transition-fast);
+}
+
+    .businesses-tags__form-input:focus {
+        outline: none;
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+
+    .businesses-tags__form-input.error {
+        border-color: var(--error);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    .businesses-tags__form-input::placeholder {
+        color: var(--text-tertiary);
+    }
+
+.businesses-tags__form-error {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--error);
+}
+
+    .businesses-tags__form-error::before {
+        content: '⚠';
+        font-size: var(--text-sm);
+    }
+
+/* ===== FILE INPUT ===== */
+.businesses-tags__file-input {
+    position: relative;
+}
+
+.businesses-tags__file-input-hidden {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.businesses-tags__file-input-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: var(--space-md);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+    .businesses-tags__file-input-btn:hover {
+        background-color: var(--bg-tertiary);
+        border-color: var(--border-secondary);
+    }
+
+    .businesses-tags__file-input-btn svg {
+        width: 20px;
+        height: 20px;
+        color: var(--text-secondary);
+    }
+
+.businesses-tags__current-icon {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+    padding: var(--space-sm);
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.businesses-tags__current-icon-image {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: var(--radius-xs);
+}
+
+/* ===== FORM ACTIONS ===== */
+.businesses-tags__form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border-primary);
+}
+
+.businesses-tags__form-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    min-width: 80px;
+}
+
+    .businesses-tags__form-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.businesses-tags__form-btn--cancel {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+}
+
+    .businesses-tags__form-btn--cancel:hover:not(:disabled) {
+        background-color: var(--bg-tertiary);
+        border-color: var(--border-secondary);
+    }
+
+.businesses-tags__form-btn--submit {
+    background-color: var(--primary-600);
+    color: var(--text-inverse);
+}
+
+    .businesses-tags__form-btn--submit:hover:not(:disabled) {
+        background-color: var(--primary-700);
+    }
+
+.businesses-tags__form-btn--danger {
+    background-color: var(--error);
+    color: var(--text-inverse);
+}
+
+    .businesses-tags__form-btn--danger:hover:not(:disabled) {
+        background-color: #dc2626;
+    }
+
+/* ===== CONFIRM CONTENT ===== */
+.businesses-tags__confirm-content {
+    padding: var(--space-xl);
+    text-align: center;
+}
+
+    .businesses-tags__confirm-content p {
+        font-size: var(--text-base);
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: var(--leading-relaxed);
+    }
+
+/* ===== SPINNER ===== */
+.businesses-tags__spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-primary);
+    border-top: 3px solid var(--primary-600);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.businesses-tags__spinner--small {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .businesses-tags--mobile .businesses-tags__header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-md);
+    }
+
+    .businesses-tags--mobile .businesses-tags__title h1 {
+        font-size: var(--text-3xl);
+    }
+
+    .businesses-tags--mobile .businesses-tags__add-btn {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .businesses-tags--mobile .businesses-tags__grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .businesses-tags--mobile .businesses-tags__modal {
+        margin: var(--space-md);
+        max-height: calc(100vh - 2 * var(--space-md));
+    }
+
+    .businesses-tags--mobile .businesses-tags__modal-header {
+        padding: var(--space-lg);
+    }
+
+    .businesses-tags--mobile .businesses-tags__form {
+        padding: var(--space-lg);
+    }
+
+    .businesses-tags--mobile .businesses-tags__form-actions {
+        flex-direction: column-reverse;
+        gap: var(--space-sm);
+    }
+
+    .businesses-tags--mobile .businesses-tags__form-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .businesses-tags--mobile {
+        padding: var(--space-sm);
+    }
+
+        .businesses-tags--mobile .businesses-tags__modal-overlay {
+            padding: var(--space-sm);
+        }
+
+        .businesses-tags--mobile .businesses-tags__modal {
+            margin: 0;
+        }
+
+        .businesses-tags--mobile .businesses-tags__tag-card {
+            padding: var(--space-md);
+        }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+    .businesses-tags__tag-card,
+    .businesses-tags__action-btn,
+    .businesses-tags__modal,
+    .businesses-tags__spinner {
+        animation: none;
+        transition: none;
+    }
+
+        .businesses-tags__tag-card:hover {
+            transform: none;
+        }
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+@media (prefers-contrast: high) {
+    .businesses-tags__tag-card {
+        border-width: 2px;
+    }
+
+    .businesses-tags__form-input:focus {
+        border-width: 2px;
+    }
+
+    .businesses-tags__action-btn {
+        border: 1px solid var(--border-primary);
+    }
+}
+
+/* ===== DARK MODE ADJUSTMENTS ===== */
+[data-theme="dark"] .businesses-tags__tag-card:hover {
+    border-color: var(--border-secondary);
+    box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .businesses-tags__action-btn--edit:hover {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+}
+
+[data-theme="dark"] .businesses-tags__action-btn--delete:hover {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+[data-theme="dark"] .businesses-tags__modal {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .businesses-tags__form-input:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .businesses-tags__form-input.error {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}

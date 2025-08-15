@@ -8,7 +8,7 @@ import './MainLayout.css';
 const MainLayout = ({
     children,
     showSidebar = true,
-    sidebarCollapsed = false,
+    sidebarCollapsed = true,
     onSidebarToggle,
     className = '',
     pageTitle = '',

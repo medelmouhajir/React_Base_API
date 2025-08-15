@@ -1,6 +1,8 @@
 // =============================================================================
 // EVENTS SERVICE
 // =============================================================================
+import apiClient from './apiClient';
+
 export const eventService = {
     // Get all events with pagination
     async getAll(page = 1, pageSize = 20) {
@@ -138,3 +140,5 @@ export const eventService = {
         }
     }
 };
+
+export default eventService;

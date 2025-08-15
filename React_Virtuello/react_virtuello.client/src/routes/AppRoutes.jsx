@@ -4,6 +4,16 @@ import MapLayout from '../components/layouts/MapLayout/Layout/MapLayout';
 import MainLayout from '../components/layouts/MainLayout/Layout/MainLayout';
 import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
+import BusinessesList from '../pages/Main/Businesses/List/BusinessesList';
+import BusinessesAdd from '../pages/Main/Businesses/Add/BusinessesAdd';
+import BusinessesDetails from '../pages/Main/Businesses/Details/BusinessesDetails';
+import BusinessesTags from '../pages/Main/Businesses/Tags/BusinessesTags';
+
+import ToursList from '../pages/Main/Tours/List/ToursList';
+import ToursAdd from '../pages/Main/Tours/Add/ToursAdd';
+
+
+import EventsAdd from '../pages/Main/Events/Add/EventsAdd';
 
 // Simple HomePage component
 const HomePage = () => (
@@ -129,6 +139,67 @@ const AppRoutes = () => {
                 }
             />
 
+            {/* Businesses management */}
+            <Route
+                path="/myspace/businesses"
+                element={
+                    <MainLayout>
+                        <BusinessesList />
+                    </MainLayout>
+                }
+            />
+            <Route
+                path="/myspace/businesses/add"
+                element={
+                    <MainLayout>
+                        <BusinessesAdd />
+                    </MainLayout>
+                }
+            />
+            <Route
+                path="/myspace/businesses/:id"
+                element={
+                    <MainLayout>
+                        <BusinessesDetails />
+                    </MainLayout>
+                }
+            />
+            <Route
+                path="/myspace/businesses/tags"
+                element={
+                    <MainLayout>
+                        <BusinessesTags />
+                    </MainLayout>
+                }
+            />
+
+            {/* Tours management */}
+            <Route
+                path="/myspace/tours/add"
+                element={
+                    <MainLayout>
+                        <ToursAdd />
+                    </MainLayout>
+                }
+            />
+            <Route
+                path="/myspace/tours"
+                element={
+                    <MainLayout>
+                        <ToursList />
+                    </MainLayout>
+                }
+            />
+
+            {/* events management */}
+            <Route
+                path="/myspace/events/add"
+                element={
+                    <MainLayout>
+                        <EventsAdd />
+                    </MainLayout>
+                }
+            />
             {/* Catch all route - redirect to home */}
             <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>

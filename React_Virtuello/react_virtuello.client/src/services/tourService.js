@@ -1,6 +1,8 @@
 // =============================================================================
 // TOURS SERVICE
 // =============================================================================
+import apiClient from './apiClient';
+
 export const tourService = {
     // Get all tours with pagination
     async getAll(page = 1, pageSize = 20) {
@@ -122,3 +124,5 @@ export const tourService = {
         }
     }
 };
+
+export default tourService;

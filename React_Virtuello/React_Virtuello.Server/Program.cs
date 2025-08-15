@@ -79,7 +79,7 @@ namespace React_Virtuello.Server
             builder.Services.AddScoped<ITourRepository, TourRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            //SetUploadFilesSettings(builder);
+            SetUploadFilesSettings(builder);
 
             var app = builder.Build();
 

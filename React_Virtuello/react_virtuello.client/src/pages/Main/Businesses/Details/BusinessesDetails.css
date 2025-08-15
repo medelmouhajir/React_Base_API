@@ -1,0 +1,42 @@
+.businesses-details {
+    padding: var(--space-lg);
+}
+
+.businesses-details__card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-md);
+    color: var(--text-primary);
+}
+
+.businesses-details__description {
+    margin-top: var(--space-sm);
+    color: var(--text-secondary);
+}
+
+.businesses-details__info {
+    list-style: none;
+    margin-top: var(--space-md);
+}
+
+    .businesses-details__info li {
+        margin-bottom: var(--space-sm);
+        color: var(--text-secondary);
+    }
+
+.error-message {
+    color: var(--error);
+    margin-bottom: var(--space-md);
+}
+
+@media (max-width: 768px) {
+    .businesses-details {
+        padding: var(--space-md);
+    }
+
+    .businesses-details__card {
+        padding: var(--space-md);
+    }
+}

@@ -2,7 +2,7 @@
 
 namespace React_Virtuello.Server.Models.Events
 {
-    public class Event_Category : BaseEntity
+    public class Event_Category : AuditableEntity
     {
         public string Name { get; set; }
 

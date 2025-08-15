@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../../contexts/AuthContext';
 import './Sidebar.css';
 
@@ -13,6 +14,7 @@ const Sidebar = ({
 }) => {
     const { t } = useTranslation();
     const { isAdmin, isManager } = useAuth();
+    const navigate = useNavigate();
     const [activeSubmenu, setActiveSubmenu] = useState(null);
     const [expandedGroups, setExpandedGroups] = useState(['main']);
 
@@ -23,7 +25,7 @@ const Sidebar = ({
                 id: 'dashboard',
                 group: 'main',
                 label: t('sidebar.dashboard'),
-                path: '/dashboard',
+                path: '/myspace',
                 icon: (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
@@ -60,19 +62,19 @@ const Sidebar = ({
                     {
                         id: 'all-businesses',
                         label: t('sidebar.all_businesses'),
-                        path: '/businesses',
+                        path: '/myspace/businesses',
                         roles: ['Admin', 'Manager', 'Customer']
                     },
                     {
                         id: 'add-business',
                         label: t('sidebar.add_business'),
-                        path: '/businesses/add',
+                        path: '/myspace/businesses/add',
                         roles: ['Admin', 'Manager']
                     },
                     {
                         id: 'business-categories',
                         label: t('sidebar.categories'),
-                        path: '/businesses/categories',
+                        path: '/myspace/businesses/tags',
                         roles: ['Admin', 'Manager']
                     }
                 ]
@@ -91,13 +93,13 @@ const Sidebar = ({
                     {
                         id: 'all-events',
                         label: t('sidebar.all_events'),
-                        path: '/events',
+                        path: '/myspace/events',
                         roles: ['Admin', 'Manager', 'Customer']
                     },
                     {
                         id: 'add-event',
                         label: t('sidebar.add_event'),
-                        path: '/events/add',
+                        path: '/myspace/events/add',
                         roles: ['Admin', 'Manager', 'Customer']
                     },
                     {
@@ -128,13 +130,13 @@ const Sidebar = ({
                     {
                         id: 'all-tours',
                         label: t('sidebar.all_tours'),
-                        path: '/tours',
+                        path: '/myspace/tours',
                         roles: ['Admin', 'Manager', 'Customer']
                     },
                     {
                         id: 'create-tour',
                         label: t('sidebar.create_tour'),
-                        path: '/tours/create',
+                        path: '/myspace/tours/add',
                         roles: ['Admin', 'Manager', 'Customer']
                     },
                     {
@@ -352,6 +354,8 @@ const Sidebar = ({
         if (isMobile && onClose) {
             onClose();
         }
+
+        navigate(item.path);
         // Add navigation logic here
         console.log('Navigating to:', item.path);
     };

@@ -2,6 +2,8 @@
 // =============================================================================
 // TAGS SERVICE
 // =============================================================================
+import apiClient from './apiClient';
+
 export const tagService = {
     // Get all tags
     async getAll() {
@@ -99,3 +101,5 @@ export const tagService = {
         }
     }
 };
+
+export default tagService;
