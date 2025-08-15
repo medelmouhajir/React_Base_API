@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../../contexts/AuthContext';
-import Navbar from '../components/Navbar/Navbar';
-import Sidebar from '../components/Sidebar/Sidebar';
+import { useAuth } from '../../../../contexts/AuthContext';
+import Navbar from '../Navbar/Navbar';
+import Sidebar from '../Sidebar/Sidebar';
 import './MainLayout.css';
 
 const MainLayout = ({

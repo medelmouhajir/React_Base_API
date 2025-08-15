@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import MapLayout from '../components/layouts/MapLayout/Layout/MapLayout';
+import MainLayout from '../components/layouts/MainLayout/Layout/MainLayout';
 import Login from '../pages/Auth/Login';
 import Register from '../pages/Auth/Register';
 
@@ -115,6 +116,16 @@ const AppRoutes = () => {
                     >
                         <HomePage />
                     </MapLayout>
+                }
+            />
+
+            {/* Main layout */}
+            <Route
+                path="/myspace"
+                element={
+                    <MainLayout>
+                        <HomePage />
+                    </MainLayout>
                 }
             />
 
