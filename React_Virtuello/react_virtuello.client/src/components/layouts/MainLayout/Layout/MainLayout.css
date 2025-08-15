@@ -41,10 +41,10 @@
 }
 
 .main-layout--mobile .main-layout__sidebar {
-    top: var(--mobile-header-height);
-    height: calc(100vh - var(--mobile-header-height));
+    top: 0; /* Full height on mobile */
+    height: 100vh;
     z-index: var(--z-modal);
-    width: 85vw; /* Ensure consistent width */
+    width: 85vw;
     max-width: 320px;
 }
 
@@ -56,9 +56,12 @@
     right: 0;
     bottom: 0;
     background-color: var(--bg-overlay);
-    z-index: calc(var(--z-modal) - 5); /* Ensure overlay is below sidebar */
+    z-index: calc(var(--z-modal) - 1); /* Just below sidebar */
     backdrop-filter: blur(4px);
-    animation: fadeIn var(--transition-fast) ease-out;
+    opacity: 1;
+    transition: opacity var(--transition-fast);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
 
 @keyframes fadeIn {
@@ -145,8 +148,8 @@
 .main-layout--mobile {
     overflow: hidden; /* Prevent scroll when sidebar is open */
 }
-
     .main-layout--mobile.sidebar-open {
+        overflow: hidden; /* Prevent scroll when sidebar is open */
         position: fixed;
         width: 100%;
         height: 100vh;
@@ -162,4 +165,8 @@
 .main-layout__overlay {
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+}
+/* ===== IMPROVED MOBILE HANDLING ===== */
+.main-layout--mobile.sidebar-open {
+    overflow: hidden;
 }

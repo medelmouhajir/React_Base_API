@@ -35,7 +35,7 @@ const MainLayout = ({
         checkMobile();
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
-    }, [sidebarOpen]);
+    }, []);
 
     useEffect(() => {
         if (isMobile && sidebarOpen) {
@@ -60,8 +60,12 @@ const MainLayout = ({
 
     // Handle sidebar toggle
     const handleSidebarToggle = () => {
+        console.log('Sidebar toggle clicked', { isMobile, sidebarOpen }); // Debug log
+
         if (isMobile) {
-            setSidebarOpen(!sidebarOpen);
+            const newSidebarOpen = !sidebarOpen;
+            console.log('Setting sidebarOpen to:', newSidebarOpen); // Debug log
+            setSidebarOpen(newSidebarOpen);
         } else {
             const newCollapsed = !internalCollapsed;
             setInternalCollapsed(newCollapsed);
@@ -99,7 +103,7 @@ const MainLayout = ({
     };
 
     return (
-        <div className={`main-layout ${isMobile ? 'main-layout--mobile' : 'main-layout--desktop'} ${className}`}>
+        <div className={`main-layout ${isMobile ? 'main-layout--mobile' : 'main-layout--desktop'} ${isMobile && sidebarOpen ? 'sidebar-open' : ''} ${className}`}>
             {/* Navigation Bar */}
             <Navbar
                 user={user}

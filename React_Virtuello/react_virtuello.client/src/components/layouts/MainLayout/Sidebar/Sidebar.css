@@ -33,22 +33,25 @@
 .sidebar--mobile {
     width: 85vw;
     max-width: 320px;
-    height: 100%;
-    position: fixed; /* Changed from relative to fixed */
+    height: 100vh; /* Full viewport height */
+    position: fixed;
     left: 0;
-    top: 0;
+    top: 0; /* Start from top, not offset by header */
     box-shadow: var(--shadow-xl);
-    z-index: inherit; /* Inherit from parent container */
+    z-index: var(--z-modal); /* Use proper z-index value, not inherit */
+    transform: translateX(-100%); /* Initially hidden */
+    transition: transform var(--transition-normal), visibility var(--transition-normal);
+    visibility: hidden;
 }
 
     .sidebar--mobile:not(.sidebar--open) {
         transform: translateX(-100%);
-        visibility: hidden; /* Hide when closed */
+        visibility: hidden;
     }
 
     .sidebar--mobile.sidebar--open {
         transform: translateX(0);
-        visibility: visible; /* Show when open */
+        visibility: visible;
         animation: slideInLeft var(--transition-normal) ease-out;
     }
 
