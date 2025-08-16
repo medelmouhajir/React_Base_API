@@ -1,0 +1,308 @@
+/* =============================================================================
+   FULLSCREEN MAP STYLES
+   ============================================================================= */
+
+.fullscreen-map {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+/* Map Container */
+.fullscreen-map__container {
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1;
+}
+
+/* Loading Overlay */
+.fullscreen-map__loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.fullscreen-map__loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+}
+
+.fullscreen-map__loading-spinner {
+    color: #3b82f6;
+    animation: mapLoadingPulse 2s ease-in-out infinite;
+}
+
+.fullscreen-map__loading-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #374151;
+    margin: 0;
+}
+
+.fullscreen-map__loading-progress {
+    width: 200px;
+    height: 4px;
+    background: rgba(59, 130, 246, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.fullscreen-map__loading-progress-bar {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Error Display */
+.fullscreen-map__error {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
+}
+
+.fullscreen-map__error-retry {
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    transition: all 0.2s ease;
+}
+
+    .fullscreen-map__error-retry:hover {
+        background: #dc2626;
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+
+    .fullscreen-map__error-retry:active {
+        transform: scale(0.95);
+    }
+
+/* Map State Classes */
+.fullscreen-map__container.map-moving {
+    cursor: grabbing !important;
+}
+
+    .fullscreen-map__container.map-moving * {
+        cursor: grabbing !important;
+    }
+
+.fullscreen-map__container.map-animating {
+    pointer-events: none;
+}
+
+/* User Location Marker */
+.user-location-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.user-location-marker__dot {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    background: #3b82f6;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+
+.user-location-marker__pulse {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid #3b82f6;
+    border-radius: 50%;
+    opacity: 0;
+    animation: userLocationPulse 2s ease-out infinite;
+}
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Map Focus Styles */
+.fullscreen-map__container:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: -2px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .fullscreen-map {
+        height: 100vh;
+        height: 100dvh; /* Use dynamic viewport height on mobile */
+    }
+
+    .fullscreen-map__loading-text {
+        font-size: 14px;
+    }
+
+    .fullscreen-map__loading-progress {
+        width: 150px;
+    }
+
+    .fullscreen-map__error {
+        top: 10px;
+        right: 10px;
+    }
+
+    .fullscreen-map__error-retry {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .fullscreen-map {
+        background: #111827;
+    }
+
+    .fullscreen-map__loading {
+        background: rgba(17, 24, 39, 0.95);
+    }
+
+    .fullscreen-map__loading-text {
+        color: #f3f4f6;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .fullscreen-map__loading {
+        background: rgba(255, 255, 255, 1);
+        border: 2px solid #000000;
+    }
+
+    .fullscreen-map__loading-text {
+        color: #000000;
+        font-weight: 600;
+    }
+
+    .user-location-marker__dot {
+        border: 4px solid #000000;
+        box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #000000;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .fullscreen-map__loading-spinner,
+    .user-location-marker__pulse {
+        animation: none;
+    }
+
+    .fullscreen-map__loading-progress-bar {
+        transition: none;
+    }
+
+    .fullscreen-map__error-retry {
+        transition: none;
+    }
+}
+
+/* Animations */
+@keyframes mapLoadingPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes userLocationPulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+}
+
+/* Leaflet Override Styles */
+.fullscreen-map .leaflet-container {
+    background: #f0f0f0;
+    font-family: inherit;
+}
+
+.fullscreen-map .leaflet-control-container {
+    display: none; /* Hide default controls - we'll add custom ones */
+}
+
+.fullscreen-map .leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.fullscreen-map .leaflet-popup-tip {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Performance Optimizations */
+.fullscreen-map * {
+    box-sizing: border-box;
+}
+
+.fullscreen-map .leaflet-marker-icon,
+.fullscreen-map .leaflet-marker-shadow {
+    will-change: transform;
+}
+
+/* Print Styles */
+@media print {
+    .fullscreen-map {
+        height: 50vh;
+    }
+
+    .fullscreen-map__loading,
+    .fullscreen-map__error {
+        display: none;
+    }
+}
