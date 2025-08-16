@@ -1,315 +1,369 @@
-﻿import React, { useState, useCallback, useEffect } from 'react';
+﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../../contexts/AuthContext';
-import MapSidebar from '../components/MapSidebar/MapSidebar';
-import MapSearchInput from '../components/MapSearchInput/MapSearchInput';
-import MapContainer from '../components/MapContainer/MapContainer';
-import MapTags from '../components/MapTags/MapTags';
-import ProfileDropdown from '../components/ProfileDropdown/ProfileDropdown';
+import { useMapFilters } from '../../../../hooks/useMapFilters';
+import MapContainer from './../components/MapContainer/MapContainer';
+import MapSidebar from './../components/MapSidebar/MapSidebar';
+import MapSearchInput from './../components/MapSearchInput/MapSearchInput';
+import { mapUtils } from './../utils/mapUtils';
 import './MapLayout.css';
 
 const MapLayout = ({
-    children,
-    sidebarContent = null,
+    // Configuration
+    showSidebar = true,
+    showSearch = true,
+    showBusinesses = true,
+    showEvents = true,
+    clustering = false,
+    tileLayer = 'openStreetMap',
+
+    // Initial state
+    initialCenter = mapUtils.DEFAULT_CONFIG.center,
+    initialZoom = mapUtils.DEFAULT_CONFIG.zoom,
+
+    // API configuration
+    apiBaseUrl = '',
+
+    // Event handlers
+    onBusinessSelect,
+    onEventSelect,
     onLocationSelect,
-    onSearchResult,
-    defaultCenter = [35.1765, -5.2339], // Tangier, Morocco coordinates
-    defaultZoom = 13,
-    markers = [],
-    routes = [],
-    businesses = [],
-    className = ''
+
+    // Custom styling
+    className = '',
+    style = {}
 }) => {
     const { t } = useTranslation();
     const { user } = useAuth();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [isTagsPanelVisible, setIsTagsPanelVisible] = useState(false);
-    const [searchResults, setSearchResults] = useState([]);
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [mapCenter, setMapCenter] = useState(defaultCenter);
-    const [mapZoom, setMapZoom] = useState(defaultZoom);
-    const [selectedTags, setSelectedTags] = useState([]);
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [isMobile, setIsMobile] = useState(false);
 
-    // Detect mobile screen size
-    useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth <= 768);
-        };
+    // Map filters hook
+    const {
+        // Data
+        businesses,
+        events,
+        tags,
+        categories,
+        loading,
+        error,
 
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+        // Filtered data
+        filteredBusinesses,
+        filteredEvents,
+        availableTags,
+        availableCategories,
 
-    // Auto-hide tags panel on desktop, keep mobile behavior separate
-    useEffect(() => {
-        if (!isMobile) {
-            setIsTagsPanelVisible(true); // Show tags by default on desktop
-        } else {
-            setIsTagsPanelVisible(false); // Hide tags by default on mobile
-        }
-    }, [isMobile]);
+        // Filter states
+        selectedTags,
+        selectedCategories,
+        searchQuery,
+        mapBounds,
+        centerLocation,
+        radiusKm,
 
-    // Event handlers
-    const handleSearchResults = useCallback((results) => {
-        setSearchResults(results);
-        if (onSearchResult) {
-            onSearchResult(results);
-        }
-        if (results.length > 0) {
-            setIsSidebarOpen(true);
-        }
-    }, [onSearchResult]);
+        // Filter actions
+        selectTag,
+        deselectTag,
+        toggleTag,
+        clearSelectedTags,
+        selectCategory,
+        deselectCategory,
+        toggleCategory,
+        clearSelectedCategories,
+        setSearchQuery,
+        setMapBounds,
+        setCenterLocation,
+        setRadiusKm,
+        refreshData
+    } = useMapFilters();
 
-    const handleLocationSelect = useCallback((location) => {
-        setSelectedLocation(location);
-        if (location && location.coordinates) {
-            setMapCenter(location.coordinates);
-            setMapZoom(16);
-        }
+    // Local state
+    const [selectedBusiness, setSelectedBusiness] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [sidebarOpen, setSidebarOpen] = useState(showSidebar);
+    const [mapCenter, setMapCenter] = useState(initialCenter);
+    const [mapZoom, setMapZoom] = useState(initialZoom);
+    const [showBusinessesLocal, setShowBusinessesLocal] = useState(showBusinesses);
+    const [showEventsLocal, setShowEventsLocal] = useState(showEvents);
+
+    // Handle map click
+    const handleMapClick = useCallback((latlng, event) => {
+        // Clear selections when clicking on empty map
+        setSelectedBusiness(null);
+        setSelectedEvent(null);
+
         if (onLocationSelect) {
-            onLocationSelect(location);
+            onLocationSelect(latlng, event);
         }
-        setIsSidebarOpen(true);
     }, [onLocationSelect]);
 
-    const handleMapClick = useCallback((event) => {
-        const { lat, lng } = event.latlng;
-        const clickedLocation = {
-            id: 'clicked',
-            name: t('map.selected_location'),
-            coordinates: [lat, lng],
-            address: `${lat.toFixed(6)}, ${lng.toFixed(6)}`
-        };
-        handleLocationSelect(clickedLocation);
-    }, [handleLocationSelect, t]);
-
-    const handleSidebarToggle = useCallback(() => {
-        setIsSidebarOpen(prev => !prev);
-    }, []);
-
-    const handleTagsPanelToggle = useCallback(() => {
-        setIsTagsPanelVisible(prev => !prev);
-    }, []);
-
-    const handleTagSelect = useCallback((tag) => {
-        setSelectedTags(prev => [...prev, tag]);
-    }, []);
-
-    const handleTagDeselect = useCallback((tag) => {
-        setSelectedTags(prev => prev.filter(t => t.id !== tag.id));
-    }, []);
-
-    const handleCategorySelect = useCallback((category) => {
-        setSelectedCategories(prev => [...prev, category]);
-    }, []);
-
-    const handleCategoryDeselect = useCallback((category) => {
-        setSelectedCategories(prev => prev.filter(c => c.id !== category.id));
-    }, []);
-
-    // Generate sidebar content
-    const generateSidebarContent = () => {
-        if (sidebarContent) {
-            return sidebarContent;
+    // Handle marker click
+    const handleMarkerClick = useCallback((item, type, event) => {
+        if (type === 'business') {
+            setSelectedBusiness(item);
+            setSelectedEvent(null);
+            if (onBusinessSelect) {
+                onBusinessSelect(item, event);
+            }
+        } else if (type === 'event') {
+            setSelectedEvent(item);
+            setSelectedBusiness(null);
+            if (onEventSelect) {
+                onEventSelect(item, event);
+            }
         }
+    }, [onBusinessSelect, onEventSelect]);
 
+    // Handle map bounds change
+    const handleBoundsChange = useCallback((bounds) => {
+        setMapBounds(bounds);
+    }, [setMapBounds]);
+
+    // Handle sidebar toggle
+    const toggleSidebar = useCallback(() => {
+        setSidebarOpen(prev => !prev);
+    }, []);
+
+    // Handle layer toggles
+    const toggleBusinessLayer = useCallback(() => {
+        setShowBusinessesLocal(prev => !prev);
+    }, []);
+
+    const toggleEventLayer = useCallback(() => {
+        setShowEventsLocal(prev => !prev);
+    }, []);
+
+    // Handle search
+    const handleSearch = useCallback((query) => {
+        setSearchQuery(query);
+    }, [setSearchQuery]);
+
+    // Handle filter actions
+    const handleTagSelect = useCallback((tagId) => {
+        toggleTag(tagId);
+    }, [toggleTag]);
+
+    const handleCategorySelect = useCallback((categoryId) => {
+        toggleCategory(categoryId);
+    }, [toggleCategory]);
+
+    // Clear all filters
+    const clearAllFilters = useCallback(() => {
+        clearSelectedTags();
+        clearSelectedCategories();
+        setSearchQuery('');
+        setCenterLocation(null);
+        setRadiusKm(10);
+    }, [clearSelectedTags, clearSelectedCategories, setSearchQuery, setCenterLocation, setRadiusKm]);
+
+    // Calculate active filter count
+    const activeFilterCount = useMemo(() => {
+        return selectedTags.length +
+            selectedCategories.length +
+            (searchQuery.trim() ? 1 : 0) +
+            (centerLocation ? 1 : 0);
+    }, [selectedTags.length, selectedCategories.length, searchQuery, centerLocation]);
+
+    // Auto-fit map when filters change
+    const fitMapToResults = useCallback(() => {
+        const allItems = [
+            ...(showBusinessesLocal ? filteredBusinesses : []),
+            ...(showEventsLocal ? filteredEvents : [])
+        ];
+
+        if (allItems.length > 0) {
+            const bounds = mapUtils.calculateBounds(allItems);
+            if (bounds) {
+                const center = mapUtils.getCenterPoint(allItems);
+                if (center) {
+                    setMapCenter([center.lat, center.lng]);
+                    setMapZoom(mapUtils.getOptimalZoom(bounds));
+                }
+            }
+        }
+    }, [filteredBusinesses, filteredEvents, showBusinessesLocal, showEventsLocal]);
+
+    // Error handling
+    useEffect(() => {
+        if (error) {
+            console.error('Map data error:', error);
+            // You could show a toast notification here
+        }
+    }, [error]);
+
+    // Render loading state
+    if (loading && businesses.length === 0 && events.length === 0) {
         return (
-            <div className="map-sidebar__default-content">
-                {/* Search Results */}
-                {searchResults.length > 0 && (
-                    <div className="search-results">
-                        <h3 className="search-results__title">
-                            {t('map.search_results')} ({searchResults.length})
-                        </h3>
-                        <div className="search-results__list">
-                            {searchResults.map((result) => (
-                                <div
-                                    key={result.id}
-                                    className="search-result-item"
-                                    onClick={() => handleLocationSelect(result)}
-                                >
-                                    <div className="search-result-item__name">{result.name}</div>
-                                    <div className="search-result-item__address">{result.address}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Selected Location Details */}
-                {selectedLocation && (
-                    <div className="selected-location">
-                        <h3 className="selected-location__title">{selectedLocation.name}</h3>
-                        <div className="selected-location__details">
-                            {selectedLocation.description && (
-                                <div className="selected-location__description">{selectedLocation.description}</div>
-                            )}
-                            {selectedLocation.address && (
-                                <div className="selected-location__address">{selectedLocation.address}</div>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Businesses List */}
-                {businesses.length > 0 && (
-                    <div className="businesses-list">
-                        <h3 className="businesses-list__title">
-                            {t('map.nearby_businesses')} ({businesses.length})
-                        </h3>
-                        <div className="businesses-list__items">
-                            {businesses.map((business) => (
-                                <div
-                                    key={business.id}
-                                    className="business-item"
-                                    onClick={() => handleLocationSelect(business)}
-                                >
-                                    <div className="business-item__name">{business.name}</div>
-                                    <div className="business-item__description">{business.description}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Empty State */}
-                {searchResults.length === 0 && !selectedLocation && businesses.length === 0 && (
-                    <div className="sidebar-empty-state">
-                        <div className="sidebar-empty-state__icon">🗺️</div>
-                        <h3 className="sidebar-empty-state__title">{t('map.explore_map')}</h3>
-                        <p className="sidebar-empty-state__description">
-                            {t('map.explore_description')}
-                        </p>
-                    </div>
-                )}
+            <div className="map-layout map-layout--loading">
+                <div className="map-layout__loading">
+                    <div className="loading-spinner"></div>
+                    <p>{t('map.loadingData', 'Loading map data...')}</p>
+                </div>
             </div>
         );
-    };
+    }
 
     return (
-        <div className={`map-layout ${className} ${isMobile ? 'map-layout--mobile' : 'map-layout--desktop'}`}>
-            {/* Desktop Layout - Search Input at top center, Profile top right, Tags floating */}
-            {!isMobile && (
-                <>
-                    {/* Search Input - Floating at top center */}
-                    <div className="map-layout__search-desktop">
+        <div className={`map-layout ${className}`} style={style}>
+            {/* Header with search and controls */}
+            {showSearch && (
+                <div className="map-layout__header">
+                    <div className="map-layout__search">
                         <MapSearchInput
-                            onResults={handleSearchResults}
-                            onLocationSelect={handleLocationSelect}
-                            onToggleSidebar={handleSidebarToggle}
-                            isSidebarOpen={isSidebarOpen}
-                            isMobile={false}
-                            placeholder={t('map.search_placeholder')}
-                            className="map-layout__search-input"
+                            value={searchQuery}
+                            onChange={handleSearch}
+                            placeholder={t('map.searchPlaceholder', 'Search businesses and events...')}
+                            loading={loading}
                         />
                     </div>
 
-                    {/* Profile Dropdown - Top Right */}
-                    <div className="map-layout__profile-desktop">
-                        <ProfileDropdown user={user} />
-                    </div>
+                    <div className="map-layout__header-controls">
+                        {/* Filter count badge */}
+                        {activeFilterCount > 0 && (
+                            <div className="filter-count-badge">
+                                {activeFilterCount} {t('map.filtersActive', 'filters active')}
+                                <button
+                                    onClick={clearAllFilters}
+                                    className="clear-filters-btn"
+                                    title={t('map.clearFilters', 'Clear all filters')}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        )}
 
-                    {/* Tags Panel - Floating */}
-                    <MapTags
-                        isVisible={isTagsPanelVisible}
-                        isMobile={false}
-                        onToggleVisibility={handleTagsPanelToggle}
-                        selectedTags={selectedTags}
-                        selectedCategories={selectedCategories}
-                        onTagSelect={handleTagSelect}
-                        onTagDeselect={handleTagDeselect}
-                        onCategorySelect={handleCategorySelect}
-                        onCategoryDeselect={handleCategoryDeselect}
-                        className="map-layout__tags-desktop"
-                    />
-                </>
-            )}
+                        {/* Layer toggles */}
+                        <div className="layer-toggles">
+                            <button
+                                className={`layer-toggle ${showBusinessesLocal ? 'active' : ''}`}
+                                onClick={toggleBusinessLayer}
+                                title={t('map.toggleBusinesses', 'Toggle businesses')}
+                            >
+                                <span className="layer-icon">🏢</span>
+                                <span className="layer-count">{filteredBusinesses.length}</span>
+                            </button>
 
-            {/* Mobile Layout - Search and Profile at top, Tags toggle button */}
-            {isMobile && (
-                <>
-                    {/* Mobile Header with Search and Profile */}
-                    <div className="map-layout__mobile-header">
-                        <div className="map-layout__search-mobile">
-                            <MapSearchInput
-                                onResults={handleSearchResults}
-                                onLocationSelect={handleLocationSelect}
-                                onToggleSidebar={handleSidebarToggle}
-                                onToggleTags={handleTagsPanelToggle}
-                                isSidebarOpen={isSidebarOpen}
-                                isTagsPanelVisible={isTagsPanelVisible}
-                                isMobile={true}
-                                placeholder={t('map.search_placeholder')}
-                                className="map-layout__search-input"
-                            />
+                            <button
+                                className={`layer-toggle ${showEventsLocal ? 'active' : ''}`}
+                                onClick={toggleEventLayer}
+                                title={t('map.toggleEvents', 'Toggle events')}
+                            >
+                                <span className="layer-icon">📅</span>
+                                <span className="layer-count">{filteredEvents.length}</span>
+                            </button>
                         </div>
 
-                        <div className="map-layout__profile-mobile">
-                            <ProfileDropdown user={user} />
-                        </div>
-                    </div>
+                        {/* Sidebar toggle */}
+                        {showSidebar && (
+                            <button
+                                className={`sidebar-toggle ${sidebarOpen ? 'active' : ''}`}
+                                onClick={toggleSidebar}
+                                title={t('map.toggleSidebar', 'Toggle sidebar')}
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+                                </svg>
+                            </button>
+                        )}
 
-                    {/* Mobile Tags Toggle Button */}
-                    <div className="map-layout__tags-toggle-mobile">
+                        {/* Fit to results button */}
                         <button
-                            className={`tags-toggle-btn ${isTagsPanelVisible ? 'tags-toggle-btn--active' : ''}`}
-                            onClick={handleTagsPanelToggle}
-                            aria-label={t('map.toggle_filters')}
+                            className="fit-results-btn"
+                            onClick={fitMapToResults}
+                            title={t('map.fitToResults', 'Fit map to results')}
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z" />
+                                <path d="M9,3V5H5V9H3V5A2,2 0 0,1 5,3M15,3H19A2,2 0 0,1 21,5V9H19V5H15M15,19H19V15H21V19A2,2 0 0,1 19,21H15M9,19V21H5A2,2 0 0,1 3,19V15H5V19" />
                             </svg>
-                            <span>{t('map.filters')}</span>
                         </button>
                     </div>
-
-                    {/* Mobile Tags Panel Overlay */}
-                    <MapTags
-                        isVisible={isTagsPanelVisible}
-                        isMobile={true}
-                        onToggleVisibility={handleTagsPanelToggle}
-                        selectedTags={selectedTags}
-                        selectedCategories={selectedCategories}
-                        onTagSelect={handleTagSelect}
-                        onTagDeselect={handleTagDeselect}
-                        onCategorySelect={handleCategorySelect}
-                        onCategoryDeselect={handleCategoryDeselect}
-                        className="map-layout__tags-mobile"
-                    />
-                </>
+                </div>
             )}
 
-            {/* Sidebar */}
-            <MapSidebar
-                isOpen={isSidebarOpen}
-                onClose={() => setIsSidebarOpen(false)}
-                onToggle={handleSidebarToggle}
-                title={t('map.sidebar_title')}
-                isMobile={isMobile}
-                className="map-layout__sidebar"
-            >
-                {generateSidebarContent()}
-            </MapSidebar>
+            {/* Main content area */}
+            <div className="map-layout__content">
+                {/* Sidebar */}
+                {showSidebar && (
+                    <MapSidebar
+                        isOpen={sidebarOpen}
+                        onClose={() => setSidebarOpen(false)}
 
-            {/* Map Container */}
-            <div className={`map-layout__map ${isSidebarOpen && !isMobile ? 'map-layout__map--sidebar-open' : ''}`}>
-                <MapContainer
-                    center={mapCenter}
-                    zoom={mapZoom}
-                    markers={markers}
-                    routes={routes}
-                    onMapClick={handleMapClick}
-                    onLocationSelect={handleLocationSelect}
-                    selectedLocation={selectedLocation}
-                    className="map-layout__map-component"
-                />
+                        // Data
+                        businesses={filteredBusinesses}
+                        events={filteredEvents}
+                        tags={availableTags}
+                        categories={availableCategories}
+
+                        // Selected items
+                        selectedBusiness={selectedBusiness}
+                        selectedEvent={selectedEvent}
+
+                        // Filter state
+                        selectedTags={selectedTags}
+                        selectedCategories={selectedCategories}
+                        centerLocation={centerLocation}
+                        radiusKm={radiusKm}
+
+                        // Actions
+                        onTagSelect={handleTagSelect}
+                        onCategorySelect={handleCategorySelect}
+                        onBusinessSelect={setSelectedBusiness}
+                        onEventSelect={setSelectedEvent}
+                        onLocationSelect={setCenterLocation}
+                        onRadiusChange={setRadiusKm}
+                        onClearFilters={clearAllFilters}
+
+                        // Configuration
+                        showBusinesses={showBusinessesLocal}
+                        showEvents={showEventsLocal}
+                        loading={loading}
+                        apiBaseUrl={apiBaseUrl}
+                    />
+                )}
+
+                {/* Map */}
+                <div className={`map-layout__map ${sidebarOpen ? 'with-sidebar' : 'full-width'}`}>
+                    <MapContainer
+                        // Map configuration
+                        center={mapCenter}
+                        zoom={mapZoom}
+                        tileLayer={tileLayer}
+
+                        // Data
+                        businesses={businesses}
+                        events={events}
+                        filteredBusinesses={filteredBusinesses}
+                        filteredEvents={filteredEvents}
+
+                        // Selected items
+                        selectedBusiness={selectedBusiness}
+                        selectedEvent={selectedEvent}
+
+                        // Event handlers
+                        onMapClick={handleMapClick}
+                        onMarkerClick={handleMarkerClick}
+                        onBoundsChange={handleBoundsChange}
+
+                        // Configuration
+                        showBusinesses={showBusinessesLocal}
+                        showEvents={showEventsLocal}
+                        clustering={clustering}
+                        apiBaseUrl={apiBaseUrl}
+                    />
+                </div>
             </div>
 
-            {/* Children (additional overlays) */}
-            {children}
+            {/* Error display */}
+            {error && (
+                <div className="map-layout__error">
+                    <div className="error-message">
+                        <span className="error-icon">⚠️</span>
+                        <span>{error}</span>
+                        <button onClick={() => refreshData()} className="retry-btn">
+                            {t('common.retry', 'Retry')}
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

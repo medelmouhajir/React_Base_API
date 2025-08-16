@@ -1,0 +1,312 @@
+/* ===== EVENT MARKER STYLES ===== */
+
+/* Event marker container */
+.event-marker {
+    position: relative;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+    .event-marker:hover {
+        transform: scale(1.1);
+        z-index: 1000;
+    }
+
+/* Event marker icon wrapper */
+.event-marker-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* ===== EVENT POPUP STYLES ===== */
+
+.event-marker-popup .leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border: none;
+    max-width: 320px;
+    min-width: 280px;
+}
+
+.event-marker-popup .leaflet-popup-content {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.event-marker-popup .leaflet-popup-tip {
+    background: white;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Event popup content */
+.event-popup {
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #374151;
+}
+
+/* Popup header */
+.popup-header {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.popup-title {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.3;
+}
+
+/* Category badge */
+.popup-category {
+    margin: 8px 0;
+}
+
+.popup-category-tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid #f3e8ff;
+}
+
+/* Description */
+.popup-description {
+    margin: 12px 0;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.5;
+    max-height: 80px;
+    overflow-y: auto;
+}
+
+/* Details section */
+.popup-details {
+    margin: 12px 0;
+    font-size: 12px;
+}
+
+.popup-detail {
+    margin: 6px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+    .popup-detail strong {
+        color: #374151;
+        font-weight: 600;
+        min-width: 60px;
+        flex-shrink: 0;
+    }
+
+/* Contact section */
+.popup-contact {
+    margin: 12px 0;
+    padding: 8px 0;
+    border-top: 1px solid #f3f4f6;
+    font-size: 12px;
+}
+
+.popup-contact-item {
+    margin: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .popup-contact-item strong {
+        color: #374151;
+        font-weight: 600;
+        min-width: 50px;
+        flex-shrink: 0;
+    }
+
+    .popup-contact-item a {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .popup-contact-item a:hover {
+            text-decoration: underline;
+        }
+
+/* Actions section */
+.popup-actions {
+    margin: 12px 0 8px 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.popup-button {
+    flex: 1;
+    min-width: 120px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+    .popup-button:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+.popup-button--secondary {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+    .popup-button--secondary:hover {
+        background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+    }
+
+/* Status badge */
+.popup-status {
+    margin-top: 8px;
+    text-align: right;
+}
+
+.popup-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.popup-status-badge--active {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+    border: 1px solid #10b981;
+}
+
+.popup-status-badge--inactive {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    border: 1px solid #ef4444;
+}
+
+/* ===== RESPONSIVE STYLES ===== */
+
+@media (max-width: 768px) {
+    .event-marker-popup .leaflet-popup-content-wrapper {
+        max-width: 280px;
+        min-width: 250px;
+    }
+
+    .event-popup {
+        padding: 12px;
+    }
+
+    .popup-title {
+        font-size: 15px;
+    }
+
+    .popup-actions {
+        flex-direction: column;
+    }
+
+    .popup-button {
+        min-width: auto;
+        width: 100%;
+    }
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+.popup-button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.popup-contact-item a:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+    border-radius: 2px;
+}
+
+/* ===== ANIMATION ===== */
+
+@keyframes eventMarkerPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+    }
+}
+
+.event-marker.pulse {
+    animation: eventMarkerPulse 2s infinite;
+}
+
+/* ===== DARK MODE SUPPORT ===== */
+
+@media (prefers-color-scheme: dark) {
+    .event-marker-popup .leaflet-popup-content-wrapper {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+
+    .event-marker-popup .leaflet-popup-tip {
+        background: #1f2937;
+    }
+
+    .event-popup {
+        color: #f3f4f6;
+    }
+
+    .popup-title {
+        color: #f9fafb;
+    }
+
+    .popup-header {
+        border-bottom-color: #374151;
+    }
+
+    .popup-description {
+        color: #d1d5db;
+    }
+
+    .popup-detail strong {
+        color: #f3f4f6;
+    }
+
+    .popup-contact {
+        border-top-color: #374151;
+    }
+
+    .popup-contact-item strong {
+        color: #f3f4f6;
+    }
+}

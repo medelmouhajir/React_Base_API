@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMapFilters } from '../hooks/useMapFilters';
+import { useMapFilters } from '../../../../../hooks/useMapFilters';
 import './MapTags.css';
 
 const MapTags = ({
