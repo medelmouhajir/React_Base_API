@@ -19,6 +19,8 @@
     <Folder Include="src\components\layouts\MapLayout\components\BusinessMarker\" />
     <Folder Include="src\components\layouts\MapLayout\components\EventMarker\" />
     <Folder Include="src\components\layouts\MapLayout\components\ProfileDropdown\" />
+    <Folder Include="src\components\layouts\MapLayout\hooks\" />
+    <Folder Include="src\components\layouts\MapLayout\services\" />
     <Folder Include="src\components\layouts\TourLayout\" />
     <Folder Include="src\pages\Auth\" />
     <Folder Include="src\pages\Main\Businesses\List\" />
