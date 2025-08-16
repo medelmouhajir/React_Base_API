@@ -1,11 +1,11 @@
-import React, { useMemo } from 'react';
+﻿import React, { useMemo } from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import { mapUtils } from '../../utils/mapUtils';
 import PropTypes from 'prop-types';
 
 const EventMarker = ({
     event,
-    onMarkerClick,
+    onMarkerClick = null,
     isSelected = false,
     size = 'medium',
     showPopup = true,
@@ -73,15 +73,17 @@ const EventMarker = ({
         >
             {showPopup && (
                 <Popup
+                    maxWidth={320}
+                    minWidth={280}
                     closeButton={true}
-                    closeOnClick={false}
                     autoClose={false}
-                    autoPan={true}
+                    closeOnEscapeKey={true}
                     className="event-marker-popup"
                 >
                     <EventPopupContent
                         event={event}
                         formatDate={formatDate}
+                        primaryCategory={primaryCategory}
                         apiBaseUrl={apiBaseUrl}
                     />
                 </Popup>
@@ -90,107 +92,145 @@ const EventMarker = ({
     );
 };
 
-// Separate component for popup content
-const EventPopupContent = ({ event, formatDate, apiBaseUrl }) => {
-    const startDate = formatDate(event.startDate);
-    const endDate = formatDate(event.endDate);
-
+// Event popup content component
+const EventPopupContent = ({ event, formatDate, primaryCategory, apiBaseUrl }) => {
     return (
         <div className="event-popup">
+            {/* Header */}
             <div className="popup-header">
                 <h3 className="popup-title">{event.name}</h3>
-                {event.eventCategory && (
+
+                {/* Category badge */}
+                {primaryCategory && (
                     <div className="popup-category">
                         <span className="popup-category-tag">
-                            {event.eventCategory.name}
+                            {primaryCategory.name}
                         </span>
                     </div>
                 )}
             </div>
 
+            {/* Description */}
             {event.description && (
                 <div className="popup-description">
-                    {event.description}
+                    <p>{event.description}</p>
                 </div>
             )}
 
+            {/* Event Details */}
             <div className="popup-details">
-                <div className="popup-detail">
-                    <strong>Start:</strong> {startDate}
-                </div>
-                {endDate && endDate !== startDate && (
-                    <div className="popup-detail">
-                        <strong>End:</strong> {endDate}
+                {/* Event dates */}
+                {(event.startDate || event.endDate) && (
+                    <div className="popup-detail-section">
+                        <h4 className="popup-detail-title">📅 Event Schedule</h4>
+                        {event.startDate && (
+                            <div className="popup-detail-item">
+                                <span className="popup-detail-label">Start:</span>
+                                <span className="popup-detail-value">{formatDate(event.startDate)}</span>
+                            </div>
+                        )}
+                        {event.endDate && (
+                            <div className="popup-detail-item">
+                                <span className="popup-detail-label">End:</span>
+                                <span className="popup-detail-value">{formatDate(event.endDate)}</span>
+                            </div>
+                        )}
                     </div>
                 )}
+
+                {/* Location */}
                 {event.address && (
-                    <div className="popup-detail">
-                        <strong>Location:</strong> {event.address}
+                    <div className="popup-detail-item">
+                        <span className="popup-detail-label">📍 Location:</span>
+                        <span className="popup-detail-value">{event.address}</span>
                     </div>
                 )}
-                {event.maxCapacity && (
-                    <div className="popup-detail">
-                        <strong>Capacity:</strong> {event.maxCapacity} people
+
+                {/* Capacity and Price */}
+                {(event.maxCapacity || event.price !== undefined) && (
+                    <div className="popup-detail-section">
+                        {event.maxCapacity && (
+                            <div className="popup-detail-item">
+                                <span className="popup-detail-label">👥 Capacity:</span>
+                                <span className="popup-detail-value">{event.maxCapacity} people</span>
+                            </div>
+                        )}
+                        {event.price !== undefined && (
+                            <div className="popup-detail-item">
+                                <span className="popup-detail-label">💰 Price:</span>
+                                <span className="popup-detail-value">
+                                    {event.price === 0 ? 'Free' : `$${event.price}`}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 )}
-                {event.price && event.price > 0 && (
-                    <div className="popup-detail">
-                        <strong>Price:</strong> ${event.price}
+
+                {/* Contact Information */}
+                {(event.contactEmail || event.contactPhone) && (
+                    <div className="popup-detail-section">
+                        <h4 className="popup-detail-title">📞 Contact</h4>
+                        {event.contactEmail && (
+                            <div className="popup-detail-item">
+                                <span className="popup-detail-label">Email:</span>
+                                <a
+                                    href={`mailto:${event.contactEmail}`}
+                                    className="popup-detail-link"
+                                >
+                                    {event.contactEmail}
+                                </a>
+                            </div>
+                        )}
+                        {event.contactPhone && (
+                            <div className="popup-detail-item">
+                                <span className="popup-detail-label">Phone:</span>
+                                <a
+                                    href={`tel:${event.contactPhone}`}
+                                    className="popup-detail-link"
+                                >
+                                    {event.contactPhone}
+                                </a>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Links */}
+                {(event.website || event.registrationUrl) && (
+                    <div className="popup-detail-section">
+                        {event.website && (
+                            <div className="popup-detail-item">
+                                <a
+                                    href={event.website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="popup-detail-link popup-detail-link--primary"
+                                >
+                                    🌐 Visit Website
+                                </a>
+                            </div>
+                        )}
+                        {event.registrationUrl && (
+                            <div className="popup-detail-item">
+                                <a
+                                    href={event.registrationUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="popup-detail-link popup-detail-link--cta"
+                                >
+                                    🎟️ Register Now
+                                </a>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
 
-            {(event.contactEmail || event.contactPhone || event.registrationUrl) && (
-                <div className="popup-contact">
-                    {event.contactEmail && (
-                        <div className="popup-contact-item">
-                            <strong>Email:</strong>
-                            <a href={`mailto:${event.contactEmail}`}>
-                                {event.contactEmail}
-                            </a>
-                        </div>
-                    )}
-                    {event.contactPhone && (
-                        <div className="popup-contact-item">
-                            <strong>Phone:</strong>
-                            <a href={`tel:${event.contactPhone}`}>
-                                {event.contactPhone}
-                            </a>
-                        </div>
-                    )}
-                    {event.registrationUrl && (
-                        <div className="popup-contact-item">
-                            <a href={event.registrationUrl} target="_blank" rel="noopener noreferrer">
-                                Register for Event
-                            </a>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            <div className="popup-actions">
-                <button
-                    onClick={() => window.open(
-                        `https://maps.google.com/?q=${event.latitude},${event.longitude}`,
-                        '_blank'
-                    )}
-                    className="popup-button"
-                >
-                    Get Directions
-                </button>
-                {event.website && (
-                    <button
-                        onClick={() => window.open(event.website, '_blank')}
-                        className="popup-button popup-button--secondary"
-                    >
-                        Visit Website
-                    </button>
-                )}
-            </div>
-
+            {/* Status */}
             {event.status !== undefined && (
                 <div className="popup-status">
-                    <span className={`popup-status-badge ${event.status === 1 ? 'popup-status-badge--active' : 'popup-status-badge--inactive'
+                    <span className={`popup-status-badge ${event.status === 1 ?
+                            'popup-status-badge--active' : 'popup-status-badge--inactive'
                         }`}>
                         {event.status === 1 ? 'Active' : 'Inactive'}
                     </span>
@@ -230,12 +270,6 @@ EventMarker.propTypes = {
     apiBaseUrl: PropTypes.string
 };
 
-EventMarker.defaultProps = {
-    onMarkerClick: null,
-    isSelected: false,
-    size: 'medium',
-    showPopup: true,
-    apiBaseUrl: ''
-};
+// REMOVED defaultProps - using default parameters instead
 
 export default EventMarker;

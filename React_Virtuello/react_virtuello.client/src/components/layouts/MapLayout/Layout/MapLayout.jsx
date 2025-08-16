@@ -38,24 +38,22 @@ const MapLayout = ({
 
     // Map filters hook
     const {
-        // Data
-        businesses,
-        events,
-        tags,
-        categories,
+        // Data - using correct property names from the hook
+        businesses: filteredBusinesses = [],
+        events: filteredEvents = [],
+        allBusinesses: businesses = [],
+        allEvents: events = [],
+        tags: availableTags = [],
+        categories: availableCategories = [],
+        allTags: tags = [],
+        allCategories: categories = [],
         loading,
         error,
 
-        // Filtered data
-        filteredBusinesses,
-        filteredEvents,
-        availableTags,
-        availableCategories,
-
         // Filter states
-        selectedTags,
-        selectedCategories,
-        searchQuery,
+        selectedTags = [],
+        selectedCategories = [],
+        searchQuery = '',
         mapBounds,
         centerLocation,
         radiusKm,
@@ -69,10 +67,10 @@ const MapLayout = ({
         deselectCategory,
         toggleCategory,
         clearSelectedCategories,
-        setSearchQuery,
-        setMapBounds,
-        setCenterLocation,
-        setRadiusKm,
+        updateSearchQuery, // Correct function name
+        updateMapBounds, // Use updateMapBounds instead of setMapBounds
+        updateCenterLocation, // Correct function name
+        updateRadius, // Correct function name
         refreshData
     } = useMapFilters();
 
@@ -113,10 +111,12 @@ const MapLayout = ({
         }
     }, [onBusinessSelect, onEventSelect]);
 
-    // Handle map bounds change
+    // Handle map bounds change - FIXED: Use the correct function name from useMapFilters
     const handleBoundsChange = useCallback((bounds) => {
-        setMapBounds(bounds);
-    }, [setMapBounds]);
+        if (updateMapBounds) {
+            updateMapBounds(bounds);
+        }
+    }, [updateMapBounds]);
 
     // Handle sidebar toggle
     const toggleSidebar = useCallback(() => {
@@ -134,8 +134,10 @@ const MapLayout = ({
 
     // Handle search
     const handleSearch = useCallback((query) => {
-        setSearchQuery(query);
-    }, [setSearchQuery]);
+        if (updateSearchQuery) {
+            updateSearchQuery(query);
+        }
+    }, [updateSearchQuery]);
 
     // Handle filter actions
     const handleTagSelect = useCallback((tagId) => {
@@ -148,35 +150,37 @@ const MapLayout = ({
 
     // Clear all filters
     const clearAllFilters = useCallback(() => {
-        clearSelectedTags();
-        clearSelectedCategories();
-        setSearchQuery('');
-        setCenterLocation(null);
-        setRadiusKm(10);
-    }, [clearSelectedTags, clearSelectedCategories, setSearchQuery, setCenterLocation, setRadiusKm]);
+        if (clearSelectedTags) clearSelectedTags();
+        if (clearSelectedCategories) clearSelectedCategories();
+        if (updateSearchQuery) updateSearchQuery('');
+        if (updateCenterLocation) updateCenterLocation(null);
+        if (updateRadius) updateRadius(10);
+    }, [clearSelectedTags, clearSelectedCategories, updateSearchQuery, updateCenterLocation, updateRadius]);
 
     // Calculate active filter count
     const activeFilterCount = useMemo(() => {
-        return selectedTags.length +
-            selectedCategories.length +
-            (searchQuery.trim() ? 1 : 0) +
+        return (selectedTags?.length || 0) +
+            (selectedCategories?.length || 0) +
+            (searchQuery?.trim() ? 1 : 0) +
             (centerLocation ? 1 : 0);
-    }, [selectedTags.length, selectedCategories.length, searchQuery, centerLocation]);
+    }, [selectedTags?.length, selectedCategories?.length, searchQuery, centerLocation]);
 
     // Auto-fit map when filters change
     const fitMapToResults = useCallback(() => {
         const allItems = [
-            ...(showBusinessesLocal ? filteredBusinesses : []),
-            ...(showEventsLocal ? filteredEvents : [])
+            ...(showBusinessesLocal && filteredBusinesses ? filteredBusinesses : []),
+            ...(showEventsLocal && filteredEvents ? filteredEvents : [])
         ];
 
-        if (allItems.length > 0) {
+        if (allItems.length > 0 && mapUtils?.calculateBounds) {
             const bounds = mapUtils.calculateBounds(allItems);
-            if (bounds) {
+            if (bounds && mapUtils?.getCenterPoint) {
                 const center = mapUtils.getCenterPoint(allItems);
                 if (center) {
                     setMapCenter([center.lat, center.lng]);
-                    setMapZoom(mapUtils.getOptimalZoom(bounds));
+                    if (mapUtils?.getOptimalZoom) {
+                        setMapZoom(mapUtils.getOptimalZoom(bounds));
+                    }
                 }
             }
         }
@@ -191,7 +195,7 @@ const MapLayout = ({
     }, [error]);
 
     // Render loading state
-    if (loading && businesses.length === 0 && events.length === 0) {
+    if (loading && (!businesses || businesses.length === 0) && (!events || events.length === 0)) {
         return (
             <div className="map-layout map-layout--loading">
                 <div className="map-layout__loading">
@@ -238,8 +242,7 @@ const MapLayout = ({
                                 onClick={toggleBusinessLayer}
                                 title={t('map.toggleBusinesses', 'Toggle businesses')}
                             >
-                                <span className="layer-icon">🏢</span>
-                                <span className="layer-count">{0}</span>
+                                🏪 {filteredBusinesses?.length || 0}
                             </button>
 
                             <button
@@ -247,34 +250,20 @@ const MapLayout = ({
                                 onClick={toggleEventLayer}
                                 title={t('map.toggleEvents', 'Toggle events')}
                             >
-                                <span className="layer-icon">📅</span>
-                                <span className="layer-count">{0}</span>
+                                📅 {filteredEvents?.length || 0}
                             </button>
                         </div>
 
                         {/* Sidebar toggle */}
                         {showSidebar && (
                             <button
-                                className={`sidebar-toggle ${sidebarOpen ? 'active' : ''}`}
+                                className="sidebar-toggle"
                                 onClick={toggleSidebar}
                                 title={t('map.toggleSidebar', 'Toggle sidebar')}
                             >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-                                </svg>
+                                {sidebarOpen ? '◀' : '▶'}
                             </button>
                         )}
-
-                        {/* Fit to results button */}
-                        <button
-                            className="fit-results-btn"
-                            onClick={fitMapToResults}
-                            title={t('map.fitToResults', 'Fit map to results')}
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M9,3V5H5V9H3V5A2,2 0 0,1 5,3M15,3H19A2,2 0 0,1 21,5V9H19V5H15M15,19H19V15H21V19A2,2 0 0,1 19,21H15M9,19V21H5A2,2 0 0,1 3,19V15H5V19" />
-                            </svg>
-                        </button>
                     </div>
                 </div>
             )}
@@ -282,46 +271,60 @@ const MapLayout = ({
             {/* Main content area */}
             <div className="map-layout__content">
                 {/* Sidebar */}
-                {showSidebar && (
-                    <MapSidebar
-                        isOpen={sidebarOpen}
-                        onClose={() => setSidebarOpen(false)}
+                {showSidebar && sidebarOpen && (
+                    <div className="map-layout__sidebar">
+                        <MapSidebar
+                            // Data
+                            businesses={businesses}
+                            events={events}
+                            filteredBusinesses={filteredBusinesses}
+                            filteredEvents={filteredEvents}
+                            tags={availableTags}
+                            categories={availableCategories}
 
-                        // Data
-                        businesses={filteredBusinesses}
-                        events={filteredEvents}
-                        tags={availableTags}
-                        categories={availableCategories}
+                            // Selected states
+                            selectedTags={selectedTags}
+                            selectedCategories={selectedCategories}
+                            selectedBusiness={selectedBusiness}
+                            selectedEvent={selectedEvent}
 
-                        // Selected items
-                        selectedBusiness={selectedBusiness}
-                        selectedEvent={selectedEvent}
+                            // Filter states
+                            searchQuery={searchQuery}
+                            centerLocation={centerLocation}
+                            radiusKm={radiusKm}
 
-                        // Filter state
-                        selectedTags={selectedTags}
-                        selectedCategories={selectedCategories}
-                        centerLocation={centerLocation}
-                        radiusKm={radiusKm}
+                            // Event handlers
+                            onTagSelect={handleTagSelect}
+                            onCategorySelect={handleCategorySelect}
+                            onBusinessSelect={(business) => {
+                                setSelectedBusiness(business);
+                                setSelectedEvent(null);
+                                if (onBusinessSelect) {
+                                    onBusinessSelect(business);
+                                }
+                            }}
+                            onEventSelect={(event) => {
+                                setSelectedEvent(event);
+                                setSelectedBusiness(null);
+                                if (onEventSelect) {
+                                    onEventSelect(event);
+                                }
+                            }}
+                            onClearFilters={clearAllFilters}
+                            onFitToResults={fitMapToResults}
 
-                        // Actions
-                        onTagSelect={handleTagSelect}
-                        onCategorySelect={handleCategorySelect}
-                        onBusinessSelect={setSelectedBusiness}
-                        onEventSelect={setSelectedEvent}
-                        onLocationSelect={setCenterLocation}
-                        onRadiusChange={setRadiusKm}
-                        onClearFilters={clearAllFilters}
+                            // Loading state
+                            loading={loading}
+                            error={error}
 
-                        // Configuration
-                        showBusinesses={showBusinessesLocal}
-                        showEvents={showEventsLocal}
-                        loading={loading}
-                        apiBaseUrl={apiBaseUrl}
-                    />
+                            // Configuration
+                            apiBaseUrl={apiBaseUrl}
+                        />
+                    </div>
                 )}
 
-                {/* Map */}
-                <div className={`map-layout__map ${sidebarOpen ? 'with-sidebar' : 'full-width'}`}>
+                {/* Map container */}
+                <div className={`map-layout__map ${sidebarOpen && showSidebar ? 'with-sidebar' : 'full-width'}`}>
                     <MapContainer
                         // Map configuration
                         center={mapCenter}
