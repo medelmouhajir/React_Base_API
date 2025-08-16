@@ -111,7 +111,7 @@ const Sidebar = ({
                     {
                         id: 'event-categories',
                         label: t('sidebar.categories'),
-                        path: '/events/categories',
+                        path: '/myspace/events/categories',
                         roles: ['Admin', 'Manager']
                     }
                 ]

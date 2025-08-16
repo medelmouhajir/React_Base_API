@@ -13,7 +13,9 @@ import ToursList from '../pages/Main/Tours/List/ToursList';
 import ToursAdd from '../pages/Main/Tours/Add/ToursAdd';
 
 
+import EventsList from '../pages/Main/Events/List/EventsList';
 import EventsAdd from '../pages/Main/Events/Add/EventsAdd';
+import EventsCategories from '../pages/Main/Events/Categories/EventsCategories';
 
 // Simple HomePage component
 const HomePage = () => (
@@ -193,10 +195,26 @@ const AppRoutes = () => {
 
             {/* events management */}
             <Route
+                path="/myspace/events"
+                element={
+                    <MainLayout>
+                        <EventsList />
+                    </MainLayout>
+                }
+            />
+            <Route
                 path="/myspace/events/add"
                 element={
                     <MainLayout>
                         <EventsAdd />
+                    </MainLayout>
+                }
+            />
+            <Route
+                path="/myspace/events/categories"
+                element={
+                    <MainLayout>
+                        <EventsCategories />
                     </MainLayout>
                 }
             />

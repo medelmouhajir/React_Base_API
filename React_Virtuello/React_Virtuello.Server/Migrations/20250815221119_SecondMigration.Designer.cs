@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using React_Virtuello.Server.Data;
@@ -11,9 +12,11 @@ using React_Virtuello.Server.Data;
 namespace React_Virtuello.Server.Migrations
 {
     [DbContext(typeof(DbContext_Virtuello))]
-    partial class DbContext_VirtuelloModelSnapshot : ModelSnapshot
+    [Migration("20250815221119_SecondMigration")]
+    partial class SecondMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -175,8 +175,8 @@ namespace React_Virtuello.Server.Controllers.Events
         {
             Name = dto.Name,
             Description = dto.Description,
-            Start = dto.Start,
-            End = dto.End,
+            Start = dto.Start.ToUniversalTime(),
+            End = dto.End == null ? null : dto.End.Value.ToUniversalTime(),
             Status = dto.Status,
             Type = dto.Type,
             OrganizerId = dto.OrganizerId,

@@ -24,6 +24,8 @@
     <Folder Include="src\pages\Main\Businesses\Details\" />
     <Folder Include="src\pages\Main\Businesses\Tags\" />
     <Folder Include="src\pages\Main\Events\Add\" />
+    <Folder Include="src\pages\Main\Events\Categories\" />
+    <Folder Include="src\pages\Main\Events\List\" />
     <Folder Include="src\pages\Main\Tours\Add\" />
     <Folder Include="src\pages\Main\Tours\List\" />
   </ItemGroup>
