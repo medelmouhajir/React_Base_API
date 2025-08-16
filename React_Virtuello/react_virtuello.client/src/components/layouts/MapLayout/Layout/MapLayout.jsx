@@ -239,7 +239,7 @@ const MapLayout = ({
                                 title={t('map.toggleBusinesses', 'Toggle businesses')}
                             >
                                 <span className="layer-icon">🏢</span>
-                                <span className="layer-count">{filteredBusinesses.length}</span>
+                                <span className="layer-count">{0}</span>
                             </button>
 
                             <button
@@ -248,7 +248,7 @@ const MapLayout = ({
                                 title={t('map.toggleEvents', 'Toggle events')}
                             >
                                 <span className="layer-icon">📅</span>
-                                <span className="layer-count">{filteredEvents.length}</span>
+                                <span className="layer-count">{0}</span>
                             </button>
                         </div>
 
