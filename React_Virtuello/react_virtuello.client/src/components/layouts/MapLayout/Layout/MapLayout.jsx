@@ -182,7 +182,12 @@ const MapLayout = ({
                 setLoadingProgress(10);
                 setError(null);
 
-                // Skip geolocation (as you already fixed)
+                // Check geolocation permissions and get initial location
+                if (enableLocationTracking && !userLocation) {
+                    setLoadingProgress(30);
+                    await getCurrentPosition();
+                }
+
                 setLoadingProgress(50);
 
                 // Initialize map cache
@@ -192,7 +197,7 @@ const MapLayout = ({
 
                 setLoadingProgress(70);
 
-                // SKIP data loading during initialization
+                // Load initial map data based on location or default area
                 const initialCenter2 = userLocation || initialCenter;
                 await handleInitialDataLoad(initialCenter2);
 
@@ -206,19 +211,23 @@ const MapLayout = ({
                 setLoadingProgress(100);
                 setIsInitializing(false);
 
-                // Load data AFTER map is initialized and visible
+                // QUICK FIX: Force map ready after a delay if it's still not ready
                 setTimeout(() => {
-                    const radius = MAP_CONFIG.INITIAL_RADIUS_KM;
-                    const bounds = geoUtils.createBoundsFromCenter(initialCenter2, radius);
-                    loadDataForBounds(bounds, true).catch(err => {
-                        console.warn('Background data loading failed:', err);
-                    });
-                }, 100);
+                    if (!mapReady) {
+                        console.log('Force setting map ready - fallback');
+                        setMapReady(true);
+                    }
+                }, 3000);
 
             } catch (err) {
                 console.error('Map initialization error:', err);
                 setError(err.message);
                 setIsInitializing(false);
+
+                // Even on error, set map ready to show the interface
+                setTimeout(() => {
+                    setMapReady(true);
+                }, 1000);
             }
         };
 
@@ -228,21 +237,15 @@ const MapLayout = ({
     // Handle initial data loading
     const handleInitialDataLoad = useCallback(async (center) => {
         try {
-            // SKIP API calls during initialization - just update center
-            updateCenterLocation(center);
-
-            // Log what we're skipping
-            console.log('Skipping initial data load for faster map initialization. Data will load after map is ready.');
-
-            // Optional: You can still create bounds for later use
             const radius = MAP_CONFIG.INITIAL_RADIUS_KM;
             const bounds = geoUtils.createBoundsFromCenter(center, radius);
-            updateMapBounds(bounds);
 
+            await loadDataForBounds(bounds, true);
+            updateCenterLocation(center);
         } catch (err) {
             console.error('Initial data load error:', err);
         }
-    }, [updateCenterLocation, updateMapBounds]);
+    }, [updateCenterLocation]);
 
     // =============================================================================
     // DATA MANAGEMENT

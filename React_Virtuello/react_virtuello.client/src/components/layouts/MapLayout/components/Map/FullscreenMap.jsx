@@ -1,8 +1,8 @@
 ﻿// =============================================================================
-// FULLSCREEN MAP COMPONENT - Core map container with fullscreen layout
+// FULLSCREEN MAP COMPONENT - Fixed version
 // =============================================================================
-import React, { useRef, useEffect, useState, useCallback , forwardRef  } from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import React, { useRef, useEffect, useState, useCallback, forwardRef } from 'react';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useTranslation } from 'react-i18next';
 import { useGeolocation } from '../../hooks/useGeolocation';
@@ -21,6 +21,111 @@ L.Icon.Default.mergeOptions({
     iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
+
+// Map initialization component
+const MapInitializer = ({ onMapReady, onLoadingProgress }) => {
+    const map = useMap();
+    const [hasInitialized, setHasInitialized] = useState(false);
+
+    useEffect(() => {
+        if (!map || hasInitialized) return;
+
+        console.log('🗺️ Map initializer started');
+
+        let tilesLoaded = 0;
+        let tilesToLoad = 0;
+        let loadingTimer = null;
+        let safetyTimer = null;
+
+        const updateProgress = () => {
+            const progress = tilesToLoad > 0 ? Math.min((tilesLoaded / tilesToLoad) * 100, 95) : 0;
+            onLoadingProgress(progress);
+            console.log(`🔄 Loading progress: ${progress.toFixed(1)}% (${tilesLoaded}/${tilesToLoad})`);
+        };
+
+        const completeInitialization = () => {
+            if (hasInitialized) return;
+
+            console.log('✅ Map initialization complete');
+            setHasInitialized(true);
+            onLoadingProgress(100);
+            onMapReady(map);
+
+            // Clear timers
+            if (loadingTimer) clearTimeout(loadingTimer);
+            if (safetyTimer) clearTimeout(safetyTimer);
+        };
+
+        // Set up event listeners
+        const handleTileLoadStart = () => {
+            tilesToLoad++;
+            updateProgress();
+        };
+
+        const handleTileLoad = () => {
+            tilesLoaded++;
+            updateProgress();
+
+            // If all tiles loaded, complete initialization
+            if (tilesLoaded >= tilesToLoad && tilesToLoad > 0) {
+                setTimeout(completeInitialization, 100);
+            }
+        };
+
+        const handleTileError = (e) => {
+            console.warn('⚠️ Tile load error:', e);
+            tilesLoaded++; // Count errors as loaded to not block progress
+            updateProgress();
+        };
+
+        const handleMapLoad = () => {
+            console.log('🎯 Map load event fired');
+            setTimeout(completeInitialization, 100);
+        };
+
+        // Add event listeners
+        map.on('tileloadstart', handleTileLoadStart);
+        map.on('tileload', handleTileLoad);
+        map.on('tileerror', handleTileError);
+        map.on('load', handleMapLoad);
+
+        // Safety timeout - force completion after 8 seconds
+        safetyTimer = setTimeout(() => {
+            console.log('⏰ Safety timeout - forcing map completion');
+            completeInitialization();
+        }, 8000);
+
+        // Initial load timeout - if no tiles start loading within 2 seconds
+        loadingTimer = setTimeout(() => {
+            if (tilesToLoad === 0) {
+                console.log('🚀 No tiles detected - completing initialization');
+                completeInitialization();
+            }
+        }, 2000);
+
+        // Try to trigger initial load
+        setTimeout(() => {
+            if (map.isLoaded && map.isLoaded()) {
+                console.log('🎯 Map already loaded - completing initialization');
+                completeInitialization();
+            } else {
+                console.log('🔄 Map not yet loaded, waiting for events...');
+            }
+        }, 100);
+
+        return () => {
+            map.off('tileloadstart', handleTileLoadStart);
+            map.off('tileload', handleTileLoad);
+            map.off('tileerror', handleTileError);
+            map.off('load', handleMapLoad);
+
+            if (loadingTimer) clearTimeout(loadingTimer);
+            if (safetyTimer) clearTimeout(safetyTimer);
+        };
+    }, [map, onMapReady, onLoadingProgress, hasInitialized]);
+
+    return null;
+};
 
 const FullscreenMap = forwardRef(({
     businesses = [],
@@ -107,102 +212,16 @@ const FullscreenMap = forwardRef(({
         ? [userLocation.lat, userLocation.lng]
         : Array.isArray(center) ? center : [center.lat, center.lng];
 
-    // Handle map creation
-    const handleMapCreated = useCallback((map) => {
-        console.log('🗺️ Map created, setting up event listeners...');
+    // Handle map ready
+    const handleMapReadyCallback = useCallback((map) => {
+        console.log('🗺️ Map ready callback triggered');
         setMapInstance(map);
         mapRef.current = map;
+        setIsMapLoaded(true);
+        handleMapReady(true);
+        onMapReady(map);
 
-        // Set up progress tracking
-        let tilesLoaded = 0;
-        let tilesToLoad = 0;
-        let hasTriggeredLoad = false;
-
-        // Add safety timeout to ensure map loads even if events don't fire
-        const safetyTimeout = setTimeout(() => {
-            if (!hasTriggeredLoad) {
-                console.log('⚠️ Safety timeout triggered - forcing map load completion');
-                setIsMapLoaded(true);
-                setLoadingProgress(100);
-                handleMapReady(true);
-                onMapReady(map);
-                hasTriggeredLoad = true;
-            }
-        }, 5000); // 5 second timeout
-
-        map.on('loading', () => {
-            console.log('🔄 Map loading started');
-            setLoadingProgress(0);
-            tilesLoaded = 0;
-            tilesToLoad = 0;
-        });
-
-        map.on('tileloadstart', () => {
-            tilesToLoad++;
-            console.log(`📍 Tile load started. Total tiles: ${tilesToLoad}`);
-        });
-
-        map.on('tileload', () => {
-            tilesLoaded++;
-            const progress = tilesToLoad > 0 ? (tilesLoaded / tilesToLoad) * 100 : 0;
-            setLoadingProgress(progress);
-            console.log(`✅ Tile loaded: ${tilesLoaded}/${tilesToLoad} (${progress.toFixed(1)}%)`);
-        });
-
-        map.on('tileerror', (e) => {
-            console.warn('⚠️ Tile load error:', e);
-            // Don't block loading for tile errors
-            tilesLoaded++;
-            if (tilesToLoad > 0) {
-                setLoadingProgress((tilesLoaded / tilesToLoad) * 100);
-            }
-        });
-
-        // Primary load event
-        map.on('load', () => {
-            if (!hasTriggeredLoad) {
-                console.log('✅ Map load event fired - map is ready!');
-                clearTimeout(safetyTimeout);
-                setIsMapLoaded(true);
-                setLoadingProgress(100);
-                handleMapReady(true);
-                onMapReady(map);
-                hasTriggeredLoad = true;
-
-                // Set initial bounds after map is fully loaded
-                const initialBounds = map.getBounds();
-                const initialMapCenter = map.getCenter();
-                const initialZoom = map.getZoom();
-
-                if (initialBounds && initialMapCenter) {
-                    handleBoundsChange(
-                        {
-                            north: initialBounds.getNorth(),
-                            south: initialBounds.getSouth(),
-                            east: initialBounds.getEast(),
-                            west: initialBounds.getWest()
-                        },
-                        { lat: initialMapCenter.lat, lng: initialMapCenter.lng },
-                        initialZoom
-                    );
-                }
-            }
-        });
-
-        // Alternative event that might fire when 'load' doesn't
-        map.whenReady(() => {
-            if (!hasTriggeredLoad) {
-                console.log('✅ Map whenReady fired - using as fallback');
-                clearTimeout(safetyTimeout);
-                setIsMapLoaded(true);
-                setLoadingProgress(100);
-                handleMapReady(true);
-                onMapReady(map);
-                hasTriggeredLoad = true;
-            }
-        });
-
-        // Set up other map event handlers
+        // Set up additional map event handlers
         map.on('movestart', handleMoveStart);
         map.on('moveend', () => {
             const newBounds = map.getBounds();
@@ -222,56 +241,30 @@ const FullscreenMap = forwardRef(({
         });
 
         map.on('click', handleMapClick);
+    }, [onMapReady, handleMapReady, handleMoveStart, handleBoundsChange, handleMapClick]);
 
-    }, [handleBoundsChange, handleMoveStart, handleMapClick, handleMapReady, onMapReady]);
-
-    // Set up bounds change callback for data fetching
-    useEffect(() => {
-        onBoundsChange((boundsData) => {
-            if (boundsData.shouldFetch) {
-                onDataRequest({
-                    bounds: boundsData.bounds,
-                    center: boundsData.center,
-                    zoom: boundsData.zoom,
-                    forceRefresh: boundsData.forceRefresh
-                });
-            }
-        });
-    }, [onBoundsChange, onDataRequest]);
-
-    // Get user location on mount
-    useEffect(() => {
-        if (showUserLocation && !userLocation && !locationLoading) {
-            getCurrentPosition();
-        }
-    }, [showUserLocation, userLocation, locationLoading, getCurrentPosition]);
-
-    // Watch user position if enabled
-    useEffect(() => {
-        if (showUserLocation && mapReady) {
-            watchPosition();
-        }
-
-        return () => {
-            stopWatching();
-        };
-    }, [showUserLocation, mapReady, watchPosition, stopWatching]);
-
-    // Mark data as fetched when new data arrives
-    useEffect(() => {
-        if (businesses.length > 0 || events.length > 0) {
-            markDataFetched();
-        }
-    }, [businesses.length, events.length, markDataFetched]);
+    // Handle loading progress
+    const handleLoadingProgressCallback = useCallback((progress) => {
+        setLoadingProgress(progress);
+    }, []);
 
     // Handle marker interactions
-    const handleMarkerSelect = useCallback((markerId, markerData, markerType) => {
+    const handleMarkerSelectChange = useCallback((markerId, markerData, markerType) => {
         onMarkerSelect(markerId, markerData, markerType);
     }, [onMarkerSelect]);
 
     const handleMarkerHoverChange = useCallback((markerId, markerData, markerType) => {
         onMarkerHover(markerId, markerData, markerType);
     }, [onMarkerHover]);
+
+    // Set loading progress based on geolocation
+    useEffect(() => {
+        if (locationLoading) {
+            setLoadingProgress(30);
+        } else if (userLocation || locationError) {
+            setLoadingProgress(50);
+        }
+    }, [locationLoading, userLocation, locationError]);
 
     return (
         <div ref={ref} className={`fullscreen-map ${className}`} style={style}>
@@ -320,15 +313,19 @@ const FullscreenMap = forwardRef(({
 
             {/* Map Container */}
             <MapContainer
-                ref={mapRef}
                 center={initialCenter}
                 zoom={zoom}
                 zoomControl={false}
                 attributionControl={false}
-                whenCreated={handleMapCreated}
                 className="fullscreen-map__container"
                 style={{ height: '100%', width: '100%' }}
             >
+                {/* Map Initializer */}
+                <MapInitializer
+                    onMapReady={handleMapReadyCallback}
+                    onLoadingProgress={handleLoadingProgressCallback}
+                />
+
                 {/* Tile Layer */}
                 <TileLayer
                     url={currentTileLayer.url}
@@ -338,14 +335,16 @@ const FullscreenMap = forwardRef(({
                 />
 
                 {/* Map Controller */}
-                <MapController
-                    mapInstance={mapInstance}
-                    center={mapCenter}
-                    zoom={mapZoom}
-                    bounds={bounds}
-                    userLocation={userLocation}
-                    isMoving={isMoving}
-                />
+                {mapInstance && (
+                    <MapController
+                        mapInstance={mapInstance}
+                        center={mapCenter}
+                        zoom={mapZoom}
+                        bounds={bounds}
+                        userLocation={userLocation}
+                        isMoving={isMoving}
+                    />
+                )}
 
                 {/* Marker Manager */}
                 {mapReady && showMarkers && (
@@ -359,7 +358,7 @@ const FullscreenMap = forwardRef(({
                         onBusinessHover={handleBusinessHover}
                         onEventClick={handleEventClick}
                         onEventHover={handleEventHover}
-                        onMarkerSelect={handleMarkerSelect}
+                        onMarkerSelect={handleMarkerSelectChange}
                         onMarkerHover={handleMarkerHoverChange}
                         clustering={clustering}
                         zoom={mapZoom}
@@ -385,6 +384,7 @@ const FullscreenMap = forwardRef(({
         </div>
     );
 });
+
 FullscreenMap.displayName = 'FullscreenMap';
 
 export default FullscreenMap;
