@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useCallback } from 'react';
 import { useMap } from 'react-leaflet';
 import { useTranslation } from 'react-i18next';
 import L from 'leaflet';
-import { geoUtils } from '../../utils/geoUtils';
+import * as geoUtils from '../../utils/geoUtils';
 import { MAP_CONFIG } from '../../utils/mapConstants';
 
 const MapController = ({

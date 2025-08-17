@@ -213,7 +213,7 @@ export const useMapInteractions = (options = {}) => {
     }, [isMarkerSelected, isMarkerHovered, isMarkerLoading, userInteracting]);
 
     // Handle map ready state
-    const setMapReady = useCallback((ready = true) => {
+    const handleMapReady = useCallback((ready = true) => {
         setMapReady(ready);
         if (ready) {
             // Show markers with animation after map is ready
@@ -269,7 +269,7 @@ export const useMapInteractions = (options = {}) => {
         toggleMarkers,
 
         // Map State
-        setMapReady,
+        handleMapReady,
         handleInteractionStart,
 
         // Status

@@ -81,7 +81,7 @@ const FullscreenMap = ({
         handleEventClick,
         handleEventHover,
         handleMapClick,
-        setMapReady
+        handleMapReady
     } = useMapInteractions();
 
     // Map tiles configuration
@@ -136,7 +136,7 @@ const FullscreenMap = ({
         map.on('load', () => {
             setIsMapLoaded(true);
             setLoadingProgress(100);
-            setMapReady(true);
+            handleMapReady(true);
             onMapReady(map);
         });
 
@@ -178,7 +178,7 @@ const FullscreenMap = ({
                 initialZoom
             );
         }, 100);
-    }, [handleBoundsChange, handleMoveStart, handleMapClick, setMapReady, onMapReady]);
+    }, [handleBoundsChange, handleMoveStart, handleMapClick, handleMapReady, onMapReady]);
 
     // Set up bounds change callback for data fetching
     useEffect(() => {

@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 import BusinessMarker from '../Markers/BusinessMarker';
 import EventMarker from '../Markers/EventMarker';
 import MarkerCluster from '../Markers/MarkerCluster';
-import { markerUtils } from '../../utils/markerUtils';
-import { geoUtils } from '../../utils/geoUtils';
+import * as markerUtils from '../../utils/markerUtils';
+import * as geoUtils from '../../utils/geoUtils';
 import { MAP_CONFIG } from '../../utils/mapConstants';
 
 const MapMarkerManager = ({
