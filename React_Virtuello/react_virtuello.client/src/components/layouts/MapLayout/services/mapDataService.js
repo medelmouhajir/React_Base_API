@@ -4,6 +4,7 @@
 import apiClient from './../../../../services/apiClient';
 import { businessService } from './../../../../services/businessService';
 import { eventService } from './../../../../services/eventService';
+import { mapService } from './../../../../services/mapService';
 import { tagService } from './../../../../services/tagService';
 import { eventCategoriesService } from './../../../../services/eventCategoriesService';
 
@@ -158,20 +159,32 @@ export const mapDataService = {
     // Get businesses within viewport
     async getBusinessesInBounds(bounds, filters = {}) {
         try {
-            const params = new URLSearchParams({
-                north: bounds.north.toString(),
-                south: bounds.south.toString(),
-                east: bounds.east.toString(),
-                west: bounds.west.toString(),
-                ...filters
-            });
+            const params = new URLSearchParams();
 
-            const response = await apiClient.get(`/businesses/bounds?${params.toString()}`);
+            // Add bounds parameters
+            params.append('north', bounds.north.toString());
+            params.append('south', bounds.south.toString());
+            params.append('east', bounds.east.toString());
+            params.append('west', bounds.west.toString());
+
+            // Add filter parameters
+            if (filters.tags && Array.isArray(filters.tags)) {
+                filters.tags.forEach(tagId => params.append('tags', tagId));
+            }
+            if (filters.search) {
+                params.append('search', filters.search);
+            }
+            if (filters.status !== undefined) {
+                params.append('status', filters.status);
+            }
+
+            const response = await apiClient.get(`/map/businesses/bounds?${params.toString()}`);
             return {
                 success: true,
-                data: response.data
+                data: response.data?.data || response.data || []
             };
         } catch (error) {
+            console.error('Error fetching businesses in bounds:', error);
             return {
                 success: false,
                 error: error.message,
@@ -183,20 +196,43 @@ export const mapDataService = {
     // Get events within viewport
     async getEventsInBounds(bounds, filters = {}) {
         try {
-            const params = new URLSearchParams({
-                north: bounds.north.toString(),
-                south: bounds.south.toString(),
-                east: bounds.east.toString(),
-                west: bounds.west.toString(),
-                ...filters
-            });
+            const params = new URLSearchParams();
 
-            const response = await apiClient.get(`/events/bounds?${params.toString()}`);
+            // Add bounds parameters
+            params.append('north', bounds.north.toString());
+            params.append('south', bounds.south.toString());
+            params.append('east', bounds.east.toString());
+            params.append('west', bounds.west.toString());
+
+            // Add filter parameters
+            if (filters.categories && Array.isArray(filters.categories)) {
+                filters.categories.forEach(categoryId => params.append('categories', categoryId));
+            }
+            if (filters.search) {
+                params.append('search', filters.search);
+            }
+            if (filters.status !== undefined) {
+                params.append('status', filters.status);
+            }
+            if (filters.type !== undefined) {
+                params.append('type', filters.type);
+            }
+            if (filters.startDate) {
+                params.append('startDate', filters.startDate instanceof Date ?
+                    filters.startDate.toISOString() : filters.startDate);
+            }
+            if (filters.endDate) {
+                params.append('endDate', filters.endDate instanceof Date ?
+                    filters.endDate.toISOString() : filters.endDate);
+            }
+
+            const response = await apiClient.get(`/map/events/bounds?${params.toString()}`);
             return {
                 success: true,
-                data: response.data
+                data: response.data?.data || response.data || []
             };
         } catch (error) {
+            console.error('Error fetching events in bounds:', error);
             return {
                 success: false,
                 error: error.message,
@@ -208,19 +244,34 @@ export const mapDataService = {
     // Get businesses near location
     async getBusinessesNearLocation(lat, lng, radius = 10, filters = {}) {
         try {
-            const params = new URLSearchParams({
-                lat: lat.toString(),
-                lng: lng.toString(),
-                radius: radius.toString(),
-                ...filters
-            });
+            const params = new URLSearchParams();
 
-            const response = await apiClient.get(`/businesses/nearby?${params.toString()}`);
+            // Add location parameters (matching our controller parameter names)
+            params.append('latitude', lat.toString());
+            params.append('longitude', lng.toString());
+            params.append('radiusKm', radius.toString());
+
+            // Add limit parameter
+            params.append('limit', filters.limit || '50');
+
+            // Add filter parameters
+            if (filters.tags && Array.isArray(filters.tags)) {
+                filters.tags.forEach(tagId => params.append('tags', tagId));
+            }
+            if (filters.search) {
+                params.append('search', filters.search);
+            }
+            if (filters.status !== undefined) {
+                params.append('status', filters.status);
+            }
+
+            const response = await apiClient.get(`/map/businesses/near?${params.toString()}`);
             return {
                 success: true,
-                data: response.data
+                data: response.data?.data || response.data || []
             };
         } catch (error) {
+            console.error('Error fetching businesses near location:', error);
             return {
                 success: false,
                 error: error.message,
@@ -232,19 +283,45 @@ export const mapDataService = {
     // Get events near location
     async getEventsNearLocation(lat, lng, radius = 10, filters = {}) {
         try {
-            const params = new URLSearchParams({
-                lat: lat.toString(),
-                lng: lng.toString(),
-                radius: radius.toString(),
-                ...filters
-            });
+            const params = new URLSearchParams();
 
-            const response = await apiClient.get(`/events/nearby?${params.toString()}`);
+            // Add location parameters (matching our controller parameter names)
+            params.append('latitude', lat.toString());
+            params.append('longitude', lng.toString());
+            params.append('radiusKm', radius.toString());
+
+            // Add limit parameter
+            params.append('limit', filters.limit || '50');
+
+            // Add filter parameters
+            if (filters.categories && Array.isArray(filters.categories)) {
+                filters.categories.forEach(categoryId => params.append('categories', categoryId));
+            }
+            if (filters.search) {
+                params.append('search', filters.search);
+            }
+            if (filters.status !== undefined) {
+                params.append('status', filters.status);
+            }
+            if (filters.type !== undefined) {
+                params.append('type', filters.type);
+            }
+            if (filters.startDate) {
+                params.append('startDate', filters.startDate instanceof Date ?
+                    filters.startDate.toISOString() : filters.startDate);
+            }
+            if (filters.endDate) {
+                params.append('endDate', filters.endDate instanceof Date ?
+                    filters.endDate.toISOString() : filters.endDate);
+            }
+
+            const response = await apiClient.get(`/map/events/near?${params.toString()}`);
             return {
                 success: true,
-                data: response.data
+                data: response.data?.data || response.data || []
             };
         } catch (error) {
+            console.error('Error fetching events near location:', error);
             return {
                 success: false,
                 error: error.message,
