@@ -63,6 +63,24 @@ const FloatingControls = ({
             description: t('layers.terrainDesc', 'Topographic terrain view')
         }
     };
+    // First try with high accuracy, then fallback
+    const getCurrentLocationWithFallback = async () => {
+        try {
+            // First attempt with high accuracy
+            return await locationService.getCurrentLocation({
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 300000
+            });
+        } catch (error) {
+            // Fallback with lower accuracy but faster response
+            return await locationService.getCurrentLocation({
+                enableHighAccuracy: false,
+                timeout: 10000,
+                maximumAge: 600000 // Accept older cached location
+            });
+        }
+    };
 
     // Handle current location
     const handleCurrentLocation = useCallback(async () => {
@@ -72,11 +90,7 @@ const FloatingControls = ({
             setGettingLocation(true);
             setLocationError(null);
 
-            const result = await locationService.getCurrentLocation({
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 300000
-            });
+            const result = await getCurrentLocationWithFallback();
 
             if (result.success) {
                 onCurrentLocation({
@@ -85,12 +99,33 @@ const FloatingControls = ({
                     accuracy: result.location.accuracy,
                     fromCache: result.fromCache
                 });
+
+                // Clear error on success
+                setLocationError(null);
             } else {
-                setLocationError(result.error);
+                let errorMessage = 'Location unavailable';
+
+                if (result.error.includes('timeout') || result.error.includes('Timeout')) {
+                    errorMessage = 'Location request timed out. Try again or check GPS settings.';
+                } else if (result.error.includes('denied')) {
+                    errorMessage = 'Location access denied. Please enable location permissions.';
+                }
+
+                setLocationError(errorMessage);
                 console.error('Location error:', result.error);
+
+                // If fallback location is available, use it
+                if (result.fallbackUsed && result.location) {
+                    onCurrentLocation({
+                        lat: result.location.lat,
+                        lng: result.location.lng,
+                        accuracy: null,
+                        isApproximate: true
+                    });
+                }
             }
         } catch (error) {
-            setLocationError(error.message);
+            setLocationError('Failed to get location');
             console.error('Location error:', error);
         } finally {
             setGettingLocation(false);
