@@ -424,6 +424,10 @@ const MapLayout = ({
         try {
             const result = await getCurrentPosition();
 
+            console.warn(mapRef.current);
+
+            console.warn(mapRef.current?.flyTo);
+
             console.warn('hreeeb1');
 
             if (result.success && mapRef.current?.flyTo) {
@@ -434,6 +438,7 @@ const MapLayout = ({
                     lat: newCenter.lat,
                     lng: newCenter.lng
                 };
+                console.warn(centerCoords);
                 console.warn('hreeeb');
 
                 mapRef.current.flyTo(centerCoords, MAP_CONFIG.LOCATION_ZOOM);
