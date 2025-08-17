@@ -19,7 +19,7 @@ const FloatingProfile = ({
     theme = 'light' // 'light', 'dark'
 }) => {
     const { t } = useTranslation();
-    const { user, logout, isAuthenticated } = useAuth();
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
@@ -143,12 +143,12 @@ const FloatingProfile = ({
 
     // Get user initials
     const getUserInitials = useCallback(() => {
-        if (!user?.name) return '?';
-        return user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    }, [user?.name]);
+        if (!user?.fullName) return '?';
+        return user.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }, [user?.fullName]);
 
     // If not authenticated, show login button
-    if (!isAuthenticated) {
+    if (!user) {
         return (
             <div className={`floating-profile ${className} floating-profile--${position}`}>
                 <button
@@ -186,7 +186,7 @@ const FloatingProfile = ({
                     {user?.avatar ? (
                         <img
                             src={user.avatar}
-                            alt={user.name || t('profile.user', 'User')}
+                            alt={user.fullName || t('profile.user', 'User')}
                             className="floating-profile__avatar-image"
                         />
                     ) : (
@@ -226,7 +226,7 @@ const FloatingProfile = ({
                             {user?.avatar ? (
                                 <img
                                     src={user.avatar}
-                                    alt={user.name || t('profile.user', 'User')}
+                                    alt={user.fullName || t('profile.user', 'User')}
                                     className="floating-profile__user-avatar-image"
                                 />
                             ) : (
@@ -237,7 +237,7 @@ const FloatingProfile = ({
                         </div>
                         <div className="floating-profile__user-details">
                             <div className="floating-profile__user-name">
-                                {user?.name || t('profile.user', 'User')}
+                                {user?.fullName || t('profile.user', 'User')}
                             </div>
                             <div className="floating-profile__user-email">
                                 {user?.email}

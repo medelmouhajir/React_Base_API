@@ -41,7 +41,7 @@ const MapLayout = ({
     showSearch = true,
     showProfile = true,
     showControls = true,
-    showFilters = true,
+    showFilters = false,
     showBusinesses = true,
     showEvents = true,
     clustering = true,
@@ -211,10 +211,23 @@ const MapLayout = ({
                 setLoadingProgress(100);
                 setIsInitializing(false);
 
+                // QUICK FIX: Force map ready after a delay if it's still not ready
+                setTimeout(() => {
+                    if (!mapReady) {
+                        console.log('Force setting map ready - fallback');
+                        setMapReady(true);
+                    }
+                }, 3000);
+
             } catch (err) {
                 console.error('Map initialization error:', err);
                 setError(err.message);
                 setIsInitializing(false);
+
+                // Even on error, set map ready to show the interface
+                setTimeout(() => {
+                    setMapReady(true);
+                }, 1000);
             }
         };
 
