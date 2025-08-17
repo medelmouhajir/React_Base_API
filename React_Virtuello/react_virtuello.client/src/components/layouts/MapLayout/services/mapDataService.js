@@ -8,6 +8,35 @@ import { mapService } from './../../../../services/mapService';
 import { tagService } from './../../../../services/tagService';
 import { eventCategoriesService } from './../../../../services/eventCategoriesService';
 
+const validateBounds = (bounds) => {
+    if (!bounds) {
+        return { isValid: false, error: 'Bounds is null or undefined' };
+    }
+
+    const requiredProps = ['north', 'south', 'east', 'west'];
+    const missingProps = requiredProps.filter(prop =>
+        bounds[prop] === undefined || bounds[prop] === null || isNaN(bounds[prop])
+    );
+
+    if (missingProps.length > 0) {
+        return {
+            isValid: false,
+            error: `Missing or invalid bounds properties: ${missingProps.join(', ')}`
+        };
+    }
+
+    // Basic geographic validation
+    if (bounds.north <= bounds.south) {
+        return { isValid: false, error: 'North must be greater than south' };
+    }
+
+    if (bounds.east <= bounds.west) {
+        return { isValid: false, error: 'East must be greater than west' };
+    }
+
+    return { isValid: true };
+};
+
 export const mapDataService = {
     // Get map data based on viewport bounds and filters
     async getMapData({
@@ -156,12 +185,21 @@ export const mapDataService = {
         }
     },
 
-    // Get businesses within viewport
     async getBusinessesInBounds(bounds, filters = {}) {
         try {
+            // Validate bounds before processing
+            if (!bounds || typeof bounds.north === 'undefined' || typeof bounds.south === 'undefined' ||
+                typeof bounds.east === 'undefined' || typeof bounds.west === 'undefined') {
+                console.warn('Invalid bounds provided to getBusinessesInBounds:', bounds);
+                return {
+                    success: true,
+                    data: []
+                };
+            }
+
             const params = new URLSearchParams();
 
-            // Add bounds parameters
+            // Add bounds parameters - now safe to access
             params.append('north', bounds.north.toString());
             params.append('south', bounds.south.toString());
             params.append('east', bounds.east.toString());
@@ -193,12 +231,23 @@ export const mapDataService = {
         }
     },
 
-    // Get events within viewport
+    // UPDATE: getEventsInBounds method (around line 202)
     async getEventsInBounds(bounds, filters = {}) {
         try {
+            // CRITICAL: Validate bounds before proceeding
+            // Validate bounds before processing
+            if (!bounds || typeof bounds.north === 'undefined' || typeof bounds.south === 'undefined' ||
+                typeof bounds.east === 'undefined' || typeof bounds.west === 'undefined') {
+                console.warn('Invalid bounds provided to getEventsInBounds:', bounds);
+                return {
+                    success: true,
+                    data: []
+                };
+            }
+
             const params = new URLSearchParams();
 
-            // Add bounds parameters
+            // Add bounds parameters - now safe to access
             params.append('north', bounds.north.toString());
             params.append('south', bounds.south.toString());
             params.append('east', bounds.east.toString());

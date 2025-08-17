@@ -138,6 +138,24 @@ const FullscreenMap = forwardRef(({
             setLoadingProgress(100);
             handleMapReady(true);
             onMapReady(map);
+
+            // Only set initial bounds after map is fully loaded
+            const initialBounds = map.getBounds();
+            const initialMapCenter = map.getCenter();
+            const initialZoom = map.getZoom();
+
+            if (initialBounds && initialMapCenter) {
+                handleBoundsChange(
+                    {
+                        north: initialBounds.getNorth(),
+                        south: initialBounds.getSouth(),
+                        east: initialBounds.getEast(),
+                        west: initialBounds.getWest()
+                    },
+                    { lat: initialMapCenter.lat, lng: initialMapCenter.lng },
+                    initialZoom
+                );
+            }
         });
 
         // Set up map event handlers
@@ -162,22 +180,22 @@ const FullscreenMap = forwardRef(({
         map.on('click', handleMapClick);
 
         // Initial bounds setup
-        setTimeout(() => {
-            const initialBounds = map.getBounds();
-            const initialMapCenter = map.getCenter();
-            const initialZoom = map.getZoom();
+        //setTimeout(() => {
+        //    const initialBounds = map.getBounds();
+        //    const initialMapCenter = map.getCenter();
+        //    const initialZoom = map.getZoom();
 
-            handleBoundsChange(
-                {
-                    north: initialBounds.getNorth(),
-                    south: initialBounds.getSouth(),
-                    east: initialBounds.getEast(),
-                    west: initialBounds.getWest()
-                },
-                { lat: initialMapCenter.lat, lng: initialMapCenter.lng },
-                initialZoom
-            );
-        }, 100);
+        //    handleBoundsChange(
+        //        {
+        //            north: initialBounds.getNorth(),
+        //            south: initialBounds.getSouth(),
+        //            east: initialBounds.getEast(),
+        //            west: initialBounds.getWest()
+        //        },
+        //        { lat: initialMapCenter.lat, lng: initialMapCenter.lng },
+        //        initialZoom
+        //    );
+        //}, 100);
     }, [handleBoundsChange, handleMoveStart, handleMapClick, handleMapReady, onMapReady]);
 
     // Set up bounds change callback for data fetching

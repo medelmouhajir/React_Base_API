@@ -241,6 +241,11 @@ const MapLayout = ({
     // Load data for specific bounds
     const loadDataForBounds = useCallback(async (bounds, forceRefresh = false) => {
         try {
+            // Validate bounds before making API calls
+            if (!bounds || !bounds.north || !bounds.south || !bounds.east || !bounds.west) {
+                console.warn('Invalid bounds provided to loadDataForBounds:', bounds);
+                return;
+            }
             const cached = await mapCacheService.getCachedData(bounds);
 
             if (cached && !forceRefresh) {
@@ -271,6 +276,8 @@ const MapLayout = ({
             }
 
             const results = await Promise.all(dataPromises);
+
+            console.log(results);
 
             // Cache the results
             if (enableOfflineMode) {
