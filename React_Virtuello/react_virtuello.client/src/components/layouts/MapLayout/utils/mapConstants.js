@@ -13,6 +13,7 @@ export const MAP_CONFIG = {
     MIN_ZOOM: 3,
     MAX_ZOOM: 19,
     MIN_ZOOM_FOR_DATA: 10,
+    INITIAL_RADIUS_KM: 5,
 
     // Zoom levels for different scenarios
     ZOOM_LEVELS: {

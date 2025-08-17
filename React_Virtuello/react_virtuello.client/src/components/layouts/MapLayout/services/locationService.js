@@ -16,7 +16,7 @@ export const locationService = {
     async getCurrentLocation(options = {}) {
         const defaultOptions = {
             enableHighAccuracy: true,
-            timeout: 10000,
+            timeout: 30000,
             maximumAge: 300000, // 5 minutes
             useCache: true,
             fallback: {

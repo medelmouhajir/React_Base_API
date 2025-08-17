@@ -69,14 +69,14 @@ const FloatingControls = ({
             // First attempt with high accuracy
             return await locationService.getCurrentLocation({
                 enableHighAccuracy: true,
-                timeout: 15000,
+                timeout: 30000,
                 maximumAge: 300000
             });
         } catch (error) {
             // Fallback with lower accuracy but faster response
             return await locationService.getCurrentLocation({
                 enableHighAccuracy: false,
-                timeout: 10000,
+                timeout: 30000,
                 maximumAge: 600000 // Accept older cached location
             });
         }

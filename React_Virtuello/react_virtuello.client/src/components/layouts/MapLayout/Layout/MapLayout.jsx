@@ -237,8 +237,13 @@ const MapLayout = ({
     // Handle initial data loading
     const handleInitialDataLoad = useCallback(async (center) => {
         try {
+
+            console.warn(center);
+
             const radius = MAP_CONFIG.INITIAL_RADIUS_KM;
             const bounds = geoUtils.createBoundsFromCenter(center, radius);
+
+            console.warn(bounds);
 
             await loadDataForBounds(bounds, true);
             updateCenterLocation(center);
