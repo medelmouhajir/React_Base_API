@@ -1,14 +1,14 @@
 // =============================================================================
 // MAP CONTROLLER COMPONENT - Handles map events, bounds, zoom and navigation
 // =============================================================================
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, forwardRef } from 'react';
 import { useMap } from 'react-leaflet';
 import { useTranslation } from 'react-i18next';
 import L from 'leaflet';
 import * as geoUtils from '../../utils/geoUtils';
 import { MAP_CONFIG } from '../../utils/mapConstants';
 
-const MapController = ({
+const MapController = forwardRef(({
     center,
     zoom,
     bounds,
@@ -20,7 +20,7 @@ const MapController = ({
     enableGestureHandling = true,
     restrictBounds = true,
     animationDuration = 500
-}) => {
+}, ref) => {
     const { t } = useTranslation();
     const map = useMap();
     const previousCenter = useRef(center);
@@ -301,7 +301,7 @@ const MapController = ({
     }, [map, userLocation, flyTo]);
 
     // Expose methods to parent components via ref
-    React.useImperativeHandle(ref => ({
+    React.useImperativeHandle(ref, () => ({
         flyTo,
         fitBounds,
         panTo,
@@ -351,6 +351,6 @@ const MapController = ({
     }, [map, t]);
 
     return null; // This component only manages map behavior
-};
+});
 
 export default MapController;
