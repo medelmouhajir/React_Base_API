@@ -136,7 +136,7 @@ const MapLayout = ({
         location: userLocation,
         loading: locationLoading,
         error: locationError,
-        getCurrentLocation,
+        getCurrentPosition,
         watchPosition,
         stopWatching
     } = useGeolocation({
@@ -185,7 +185,7 @@ const MapLayout = ({
                 // Check geolocation permissions and get initial location
                 if (enableLocationTracking && !userLocation) {
                     setLoadingProgress(30);
-                    await getCurrentLocation();
+                    await getCurrentPosition();
                 }
 
                 setLoadingProgress(50);
@@ -401,7 +401,7 @@ const MapLayout = ({
 
     const handleCurrentLocation = useCallback(async () => {
         try {
-            const result = await getCurrentLocation();
+            const result = await getCurrentPosition();
 
             if (result.success && mapRef.current?.flyTo) {
                 const newCenter = result.location;
@@ -411,7 +411,7 @@ const MapLayout = ({
         } catch (err) {
             console.error('Current location error:', err);
         }
-    }, [getCurrentLocation, updateCenterLocation]);
+    }, [getCurrentPosition, updateCenterLocation]);
 
     const handleToggleFullscreen = useCallback(() => {
         if (!document.fullscreenElement) {
