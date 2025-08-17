@@ -119,42 +119,12 @@ const FloatingControls = ({
             setGettingLocation(true);
             setLocationError(null);
 
-            const result = await getCurrentLocationWithFallback();
+            // Simply call the parent's onCurrentLocation handler
+            // Let MapLayout handle the location logic
+            await onCurrentLocation();
 
-            console.warn(result);
-
-            if (result.success) {
-                onCurrentLocation({
-                    lat: result.location.lat,
-                    lng: result.location.lng,
-                    accuracy: result.location.accuracy,
-                    fromCache: result.fromCache
-                });
-
-                // Clear error on success
-                setLocationError(null);
-            } else {
-                let errorMessage = 'Location unavailable';
-
-                if (result.error.includes('timeout') || result.error.includes('Timeout')) {
-                    errorMessage = 'Location request timed out. Try again or check GPS settings.';
-                } else if (result.error.includes('denied')) {
-                    errorMessage = 'Location access denied. Please enable location permissions.';
-                }
-
-                setLocationError(errorMessage);
-                console.error('Location error:', result.error);
-
-                // If fallback location is available, use it
-                if (result.fallbackUsed && result.location) {
-                    onCurrentLocation({
-                        lat: result.location.lat,
-                        lng: result.location.lng,
-                        accuracy: null,
-                        isApproximate: true
-                    });
-                }
-            }
+            // Clear error on success
+            setLocationError(null);
         } catch (error) {
             setLocationError('Failed to get location');
             console.error('Location error:', error);

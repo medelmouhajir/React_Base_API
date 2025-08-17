@@ -237,13 +237,9 @@ const MapLayout = ({
     // Handle initial data loading
     const handleInitialDataLoad = useCallback(async (center) => {
         try {
-
-            console.warn(center);
-
             const radius = MAP_CONFIG.INITIAL_RADIUS_KM;
             const bounds = geoUtils.createBoundsFromCenter(center, radius);
 
-            console.warn(bounds);
 
             await loadDataForBounds(bounds, true);
             updateCenterLocation(center);
@@ -424,22 +420,24 @@ const MapLayout = ({
         }
     }, []);
 
-    const handleCurrentLocation = useCallback(async (locationData) => {
+    const handleCurrentLocation = useCallback(async () => {
         try {
-            let result;
+            const result = await getCurrentPosition();
 
-            // If location data is provided (from FloatingControls), use it
-            if (locationData) {
-                result = { success: true, location: locationData };
-            } else {
-                // Otherwise get it ourselves
-                result = await getCurrentPosition();
-            }
+            console.warn('hreeeb1');
 
             if (result.success && mapRef.current?.flyTo) {
                 const newCenter = result.location;
-                mapRef.current.flyTo(newCenter, MAP_CONFIG.LOCATION_ZOOM);
-                updateCenterLocation(newCenter);
+
+                // Ensure we're passing coordinates in the correct format
+                const centerCoords = {
+                    lat: newCenter.lat,
+                    lng: newCenter.lng
+                };
+                console.warn('hreeeb');
+
+                mapRef.current.flyTo(centerCoords, MAP_CONFIG.LOCATION_ZOOM);
+                updateCenterLocation(centerCoords);
             }
         } catch (err) {
             console.error('Current location error:', err);
