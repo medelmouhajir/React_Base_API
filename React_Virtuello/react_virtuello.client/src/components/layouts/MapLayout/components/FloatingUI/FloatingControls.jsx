@@ -66,19 +66,48 @@ const FloatingControls = ({
     // First try with high accuracy, then fallback
     const getCurrentLocationWithFallback = async () => {
         try {
-            // First attempt with high accuracy
+            // First attempt with high accuracy but shorter timeout
             return await locationService.getCurrentLocation({
                 enableHighAccuracy: true,
-                timeout: 30000,
+                timeout: 30000, // Reduced from 30000 to 10000
                 maximumAge: 300000
             });
         } catch (error) {
-            // Fallback with lower accuracy but faster response
-            return await locationService.getCurrentLocation({
-                enableHighAccuracy: false,
-                timeout: 30000,
-                maximumAge: 600000 // Accept older cached location
-            });
+            console.warn('High accuracy location failed, trying fallback:', error.message);
+            try {
+                // Fallback with lower accuracy but faster response
+                return await locationService.getCurrentLocation({
+                    enableHighAccuracy: false,
+                    timeout: 30000, // Reduced timeout
+                    maximumAge: 600000 // Accept older cached location
+                });
+            } catch (fallbackError) {
+                console.warn('Fallback location failed, trying browser default:', fallbackError.message);
+                // Last resort - basic browser geolocation
+                return new Promise((resolve) => {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            resolve({
+                                success: true,
+                                location: {
+                                    lat: position.coords.latitude,
+                                    lng: position.coords.longitude,
+                                    accuracy: position.coords.accuracy
+                                },
+                                fromCache: false
+                            });
+                        },
+                        (error) => {
+                            resolve({
+                                success: false,
+                                error: error.message,
+                                fallbackUsed: false
+                            });
+                        },
+                        { enableHighAccuracy: false, timeout: 5000, maximumAge: 0 }
+                    );
+                });
+            }
         }
     };
 
@@ -91,6 +120,8 @@ const FloatingControls = ({
             setLocationError(null);
 
             const result = await getCurrentLocationWithFallback();
+
+            console.warn(result);
 
             if (result.success) {
                 onCurrentLocation({
