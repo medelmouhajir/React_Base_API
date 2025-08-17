@@ -1,11 +1,11 @@
 // =============================================================================
 // MAP DATA SERVICE - Viewport-based API calls for businesses and events
 // =============================================================================
-import apiClient from './apiClient';
-import { businessService } from './businessService';
-import { eventService } from './eventService';
-import { tagService } from './tagService';
-import { eventCategoriesService } from './eventCategoriesService';
+import apiClient from './../../../../services/apiClient';
+import { businessService } from './../../../../services/businessService';
+import { eventService } from './../../../../services/eventService';
+import { tagService } from './../../../../services/tagService';
+import { eventCategoriesService } from './../../../../services/eventCategoriesService';
 
 export const mapDataService = {
     // Get map data based on viewport bounds and filters

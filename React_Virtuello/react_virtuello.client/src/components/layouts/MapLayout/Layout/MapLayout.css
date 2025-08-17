@@ -1,0 +1,632 @@
+/* =============================================================================
+   MAP LAYOUT STYLES - Modern fullscreen map with floating UI
+   ============================================================================= */
+
+/* ===== BASE LAYOUT ===== */
+.map-layout {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #f8fafc;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Fullscreen mode */
+.map-layout--fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+}
+
+/* ===== MAP CONTAINER ===== */
+.map-layout__map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+    /* Map states */
+    .map-layout__map .leaflet-container {
+        font-family: inherit;
+        background: #f8fafc;
+    }
+
+        .map-layout__map .leaflet-container.map-moving {
+            cursor: grabbing !important;
+        }
+
+        .map-layout__map .leaflet-container.map-animating {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+/* ===== FLOATING UI LAYER ===== */
+.map-layout__floating-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+    .map-layout__floating-ui > * {
+        pointer-events: auto;
+    }
+
+/* Individual floating components */
+.map-layout__search {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 110;
+}
+
+.map-layout__profile {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 110;
+}
+
+.map-layout__controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 110;
+}
+
+.map-layout__filters {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 110;
+}
+
+/* ===== PANELS LAYER ===== */
+.map-layout__panels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 200;
+}
+
+    .map-layout__panels > * {
+        pointer-events: auto;
+    }
+
+/* Panel positioning */
+.map-layout__results-panel {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    width: 400px;
+    max-height: calc(100vh - 100px);
+    z-index: 210;
+}
+
+.map-layout__details-panel {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    width: 400px;
+    max-height: calc(100vh - 100px);
+    z-index: 210;
+}
+
+.map-layout__filters-panel {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    width: 350px;
+    max-height: calc(100vh - 100px);
+    z-index: 210;
+}
+
+/* ===== LOADING STATES ===== */
+.map-layout--initializing {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.map-layout__loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.map-layout__loading-container {
+    text-align: center;
+    max-width: 400px;
+    padding: 40px;
+}
+
+.map-layout__loading-logo {
+    margin-bottom: 32px;
+    position: relative;
+}
+
+.map-layout__loading-spinner {
+    width: 80px;
+    height: 80px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left: 4px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: mapLoadingSpin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes mapLoadingSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.map-layout__loading-text h3 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: white;
+}
+
+.map-layout__loading-text p {
+    font-size: 16px;
+    margin: 0 0 32px 0;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+}
+
+.map-layout__loading-progress {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.map-layout__loading-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #60a5fa, #34d399);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.map-layout__loading-percentage {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== ERROR STATES ===== */
+.map-layout--error {
+    background: #fee2e2;
+}
+
+.map-layout__error {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    padding: 40px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+}
+
+.map-layout__error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.map-layout__error h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #dc2626;
+    margin: 0 0 8px 0;
+}
+
+.map-layout__error p {
+    font-size: 16px;
+    color: #6b7280;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+.map-layout__error-retry {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .map-layout__error-retry:hover {
+        background: #b91c1c;
+        transform: translateY(-1px);
+    }
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet adjustments */
+@media (max-width: 1024px) {
+    .map-layout__results-panel,
+    .map-layout__details-panel {
+        width: 350px;
+    }
+
+    .map-layout__filters-panel {
+        width: 300px;
+    }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .map-layout__search {
+        top: 10px;
+        left: 10px;
+        right: 70px;
+    }
+
+    .map-layout__profile {
+        top: 10px;
+        right: 10px;
+    }
+
+    .map-layout__controls {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .map-layout__filters {
+        bottom: 10px;
+        left: 10px;
+        right: 70px;
+    }
+
+    /* Mobile panels - full width */
+    .map-layout__results-panel,
+    .map-layout__details-panel,
+    .map-layout__filters-panel {
+        top: 70px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-height: calc(100vh - 80px);
+    }
+
+    .map-layout__loading-container {
+        padding: 20px;
+    }
+
+    .map-layout__loading-text h3 {
+        font-size: 20px;
+    }
+
+    .map-layout__loading-text p {
+        font-size: 14px;
+    }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+    .map-layout__search {
+        right: 60px;
+    }
+
+    .map-layout__filters {
+        right: 60px;
+    }
+
+    .map-layout__loading-spinner {
+        width: 60px;
+        height: 60px;
+    }
+
+    .map-layout__loading-text h3 {
+        font-size: 18px;
+    }
+
+    .map-layout__loading-text p {
+        font-size: 13px;
+    }
+
+    .map-layout__error {
+        padding: 20px;
+        max-width: 320px;
+    }
+
+        .map-layout__error h3 {
+            font-size: 18px;
+        }
+
+        .map-layout__error p {
+            font-size: 14px;
+        }
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+/* Screen reader only content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus management */
+.map-layout:focus-within .map-layout__floating-ui,
+.map-layout:focus-within .map-layout__panels {
+    outline: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .map-layout {
+        background: white;
+    }
+
+    .map-layout__loading {
+        background: black;
+        color: white;
+    }
+
+    .map-layout__loading-spinner {
+        border-color: rgba(255, 255, 255, 0.3);
+        border-left-color: white;
+    }
+
+    .map-layout__error {
+        border: 2px solid #000;
+        background: white;
+    }
+
+        .map-layout__error h3 {
+            color: #000;
+        }
+
+        .map-layout__error p {
+            color: #333;
+        }
+
+    .map-layout__error-retry {
+        background: #000;
+        color: white;
+        border: 2px solid #000;
+    }
+
+        .map-layout__error-retry:hover {
+            background: #333;
+        }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .map-layout {
+        background: #0f172a;
+    }
+
+    .map-layout__map .leaflet-container {
+        background: #0f172a;
+    }
+
+    .map-layout--error {
+        background: #1e1b23;
+    }
+
+    .map-layout__error {
+        background: #1e293b;
+        color: #e2e8f0;
+    }
+
+        .map-layout__error h3 {
+            color: #ef4444;
+        }
+
+        .map-layout__error p {
+            color: #94a3b8;
+        }
+
+    .map-layout__loading-text h3 {
+        color: #f1f5f9;
+    }
+
+    .map-layout__loading-text p {
+        color: rgba(241, 245, 249, 0.8);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .map-layout__loading-spinner {
+        animation: none;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .map-layout__loading-progress-bar {
+        transition: none;
+    }
+
+    .map-layout__error-retry {
+        transition: none;
+    }
+
+        .map-layout__error-retry:hover {
+            transform: none;
+        }
+
+    .map-layout__map .leaflet-container.map-animating {
+        transition: none;
+    }
+
+    /* Disable all animations for components */
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    .map-layout__floating-ui,
+    .map-layout__panels {
+        display: none;
+    }
+
+    .map-layout {
+        background: white;
+    }
+
+    .map-layout__map {
+        position: static;
+        width: 100%;
+        height: 400px;
+    }
+}
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+
+/* GPU acceleration for animations */
+.map-layout__loading-spinner,
+.map-layout__floating-ui > *,
+.map-layout__panels > * {
+    will-change: transform;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+
+/* Contain layout shifts */
+.map-layout {
+    contain: layout style paint;
+}
+
+.map-layout__floating-ui,
+.map-layout__panels {
+    contain: layout style;
+}
+
+/* ===== Z-INDEX MANAGEMENT ===== */
+/* 
+   Z-index hierarchy:
+   1-10: Map and base layers
+   100-199: Floating UI components
+   200-299: Panels and overlays
+   1000+: Loading states and modals
+*/
+
+.map-layout__map {
+    z-index: 1;
+}
+
+.map-layout__floating-ui {
+    z-index: 100;
+}
+
+.map-layout__search {
+    z-index: 110;
+}
+
+.map-layout__profile {
+    z-index: 110;
+}
+
+.map-layout__controls {
+    z-index: 110;
+}
+
+.map-layout__filters {
+    z-index: 110;
+}
+
+.map-layout__panels {
+    z-index: 200;
+}
+
+.map-layout__results-panel {
+    z-index: 210;
+}
+
+.map-layout__details-panel {
+    z-index: 210;
+}
+
+.map-layout__filters-panel {
+    z-index: 210;
+}
+
+.map-layout__loading {
+    z-index: 1000;
+}
+
+.map-layout--fullscreen {
+    z-index: 9999;
+}
+
+/* ===== CUSTOM SCROLLBARS ===== */
+.map-layout__panels *::-webkit-scrollbar {
+    width: 8px;
+}
+
+.map-layout__panels *::-webkit-scrollbar-track {
+    background: rgba(243, 244, 246, 0.5);
+    border-radius: 4px;
+}
+
+.map-layout__panels *::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+    .map-layout__panels *::-webkit-scrollbar-thumb:hover {
+        background: rgba(107, 114, 128, 0.7);
+    }
+
+/* Dark mode scrollbars */
+@media (prefers-color-scheme: dark) {
+    .map-layout__panels *::-webkit-scrollbar-track {
+        background: rgba(55, 65, 81, 0.5);
+    }
+
+    .map-layout__panels *::-webkit-scrollbar-thumb {
+        background: rgba(75, 85, 99, 0.7);
+    }
+
+        .map-layout__panels *::-webkit-scrollbar-thumb:hover {
+            background: rgba(107, 114, 128, 0.9);
+        }
+}

@@ -1,7 +1,7 @@
 // =============================================================================
 // LOCATION SERVICE - Geolocation, geocoding, and location utilities
 // =============================================================================
-import apiClient from './apiClient';
+import apiClient from './../../../../services/apiClient';
 
 export const locationService = {
     // Current location cache

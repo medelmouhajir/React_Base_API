@@ -5,12 +5,12 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
 import { useTranslation } from 'react-i18next';
-import { useGeolocation } from '../hooks/useGeolocation';
-import { useMapBounds } from '../hooks/useMapBounds';
-import { useMapInteractions } from '../hooks/useMapInteractions';
+import { useGeolocation } from '../../hooks/useGeolocation';
+import { useMapBounds } from '../../hooks/useMapBounds';
+import { useMapInteractions } from '../../hooks/useMapInteractions';
 import MapController from './MapController';
 import MapMarkerManager from './MapMarkerManager';
-import { MAP_CONFIG } from '../utils/mapConstants';
+import { MAP_CONFIG } from '../../utils/mapConstants';
 import 'leaflet/dist/leaflet.css';
 import './FullscreenMap.css';
 
