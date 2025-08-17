@@ -26,6 +26,7 @@ const MapController = forwardRef(({
     const previousCenter = useRef(center);
     const previousZoom = useRef(zoom);
     const isAnimating = useRef(false);
+    const mapControllerRef = useRef(null);
 
     // Keyboard navigation setup
     useEffect(() => {

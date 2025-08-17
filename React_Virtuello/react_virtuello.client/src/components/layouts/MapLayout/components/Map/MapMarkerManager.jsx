@@ -360,7 +360,7 @@ const MapMarkerManager = ({
             {renderMarkers}
 
             {/* Debug Info (Development only) */}
-            {process.env.NODE_ENV === 'development' && (
+            {process.env.NODE_ENV === 'development' && false && (
                 <div
                     style={{
                         position: 'absolute',

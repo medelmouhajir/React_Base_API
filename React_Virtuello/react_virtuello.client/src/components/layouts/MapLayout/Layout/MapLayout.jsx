@@ -91,6 +91,7 @@ const MapLayout = ({
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [currentLayer, setCurrentLayer] = useState(tileLayer);
 
+
     // Map data and filters
     const {
         // Data

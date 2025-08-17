@@ -205,6 +205,17 @@ const FullscreenMap = forwardRef(({
         }
     };
 
+    React.useImperativeHandle(ref, () => ({
+        getMap: () => mapInstance,
+        flyTo: (center, zoom) => {
+            if (mapInstance) {
+                const target = Array.isArray(center) ? center : [center.lat, center.lng];
+                mapInstance.flyTo(target, zoom);
+            }
+        },
+        // Add other methods you need
+    }), [mapInstance]);
+
     const currentTileLayer = tileLayerConfig[tileLayer] || tileLayerConfig.openStreetMap;
 
     // Initialize map center based on user location
