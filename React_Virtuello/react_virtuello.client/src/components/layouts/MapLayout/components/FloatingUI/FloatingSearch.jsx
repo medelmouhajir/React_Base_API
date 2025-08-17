@@ -1,7 +1,7 @@
 ﻿// =============================================================================
 // FLOATING SEARCH COMPONENT - Modern floating search with autocomplete
 // =============================================================================
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { debounce } from 'lodash';
 import { mapDataService } from '../../services/mapDataService';
@@ -9,7 +9,7 @@ import { locationService } from '../../services/locationService';
 import { MAP_CONFIG } from '../../utils/mapConstants';
 import './FloatingSearch.css';
 
-const FloatingSearch = ({
+const FloatingSearch = forwardRef(({
     value = '',
     onChange = () => { },
     onLocationSelect = () => { },
@@ -26,7 +26,7 @@ const FloatingSearch = ({
     maxSuggestions = 8,
     includeRecentSearches = true,
     disabled = false
-}) => {
+}, ref) => {
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
@@ -390,7 +390,7 @@ const FloatingSearch = ({
     }, []);
 
     return (
-        <div className={`floating-search ${className} floating-search--${position} ${isFocused ? 'floating-search--focused' : ''}`}>
+        <div ref={ref} className={`floating-search ${className} floating-search--${position} ${isFocused ? 'floating-search--focused' : ''}`}>
             <div className="floating-search__container">
                 {/* Main search input */}
                 <div className="floating-search__input-wrapper">
@@ -530,6 +530,8 @@ const FloatingSearch = ({
             </div>
         </div>
     );
-};
+});
+
+FloatingSearch.displayName = 'FloatingSearch';
 
 export default FloatingSearch;

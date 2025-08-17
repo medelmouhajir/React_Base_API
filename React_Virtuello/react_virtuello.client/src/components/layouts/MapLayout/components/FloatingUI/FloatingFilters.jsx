@@ -301,13 +301,13 @@ const FloatingFilters = ({
                             <div className="floating-filters__result-item">
                                 <span className="floating-filters__result-icon">🏪</span>
                                 <span className="floating-filters__result-text">
-                                    {filteredBusinesses.length} {t('filters.businesses', 'businesses')}
+                                    {filteredBusinesses?.length || 0} {t('filters.businesses', 'businesses')}
                                 </span>
                             </div>
                             <div className="floating-filters__result-item">
                                 <span className="floating-filters__result-icon">📅</span>
                                 <span className="floating-filters__result-text">
-                                    {filteredEvents.length} {t('filters.events', 'events')}
+                                    {filteredEvents?.length || 0} {t('filters.events', 'events')}
                                 </span>
                             </div>
                         </div>

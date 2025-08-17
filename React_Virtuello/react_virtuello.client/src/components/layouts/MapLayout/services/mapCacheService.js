@@ -259,7 +259,15 @@ export const mapCacheService = {
             return 1000; // Default estimate
         }
     },
+    getCachedData(bounds) {
+        const key = this.generateKey({ bounds });
+        return this.get(key);
+    },
 
+    setCachedData(bounds, data, options = {}) {
+        const key = this.generateKey({ bounds });
+        return this.set(key, data, options);
+    },
     // Prefetch data for nearby areas
     async prefetchNearbyAreas(centerBounds, mapDataService) {
         const { north, south, east, west } = centerBounds;

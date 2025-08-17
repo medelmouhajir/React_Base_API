@@ -1,7 +1,7 @@
 // =============================================================================
 // FULLSCREEN MAP COMPONENT - Core map container with fullscreen layout
 // =============================================================================
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback , forwardRef  } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +22,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-const FullscreenMap = ({
+const FullscreenMap = forwardRef(({
     businesses = [],
     events = [],
     center = MAP_CONFIG.DEFAULT_CENTER,
@@ -36,7 +36,7 @@ const FullscreenMap = ({
     tileLayer = 'openStreetMap',
     className = '',
     style = {}
-}) => {
+}, ref) => {
     const { t } = useTranslation();
     const mapRef = useRef(null);
     const [mapInstance, setMapInstance] = useState(null);
@@ -48,7 +48,7 @@ const FullscreenMap = ({
         location: userLocation,
         loading: locationLoading,
         error: locationError,
-        getCurrentLocation,
+        getCurrentPosition,
         watchPosition,
         stopWatching
     } = useGeolocation({
@@ -197,9 +197,9 @@ const FullscreenMap = ({
     // Get user location on mount
     useEffect(() => {
         if (showUserLocation && !userLocation && !locationLoading) {
-            getCurrentLocation();
+            getCurrentPosition();
         }
-    }, [showUserLocation, userLocation, locationLoading, getCurrentLocation]);
+    }, [showUserLocation, userLocation, locationLoading, getCurrentPosition]);
 
     // Watch user position if enabled
     useEffect(() => {
@@ -229,7 +229,7 @@ const FullscreenMap = ({
     }, [onMarkerHover]);
 
     return (
-        <div className={`fullscreen-map ${className}`} style={style}>
+        <div ref={ref} className={`fullscreen-map ${className}`} style={style}>
             {/* Loading Overlay */}
             {!isMapLoaded && (
                 <div className="fullscreen-map__loading">
@@ -328,7 +328,7 @@ const FullscreenMap = ({
                 <div className="fullscreen-map__error">
                     <button
                         className="fullscreen-map__error-retry"
-                        onClick={() => getCurrentLocation(true)}
+                        onClick={() => getCurrentPosition(true)}
                         title={t('map.retry_location', 'Retry getting location')}
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -339,6 +339,7 @@ const FullscreenMap = ({
             )}
         </div>
     );
-};
+});
+FullscreenMap.displayName = 'FullscreenMap';
 
 export default FullscreenMap;

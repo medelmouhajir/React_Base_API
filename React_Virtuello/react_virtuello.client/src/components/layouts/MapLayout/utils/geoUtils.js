@@ -333,6 +333,30 @@ export const normalizeLocation = (location) => {
 };
 
 /**
+ * Create bounds from center point and radius
+ * @param {Object} center - Center point {lat, lng}
+ * @param {number} radiusKm - Radius in kilometers
+ * @returns {Object} Bounds {north, south, east, west}
+ */
+export const createBoundsFromCenter = (center, radiusKm) => {
+    if (!center || !radiusKm) return null;
+
+    // Approximate degrees per kilometer
+    const latDegreePerKm = 1 / 111.32;
+    const lngDegreePerKm = 1 / (111.32 * Math.cos(toRadians(center.lat)));
+
+    const latOffset = radiusKm * latDegreePerKm;
+    const lngOffset = radiusKm * lngDegreePerKm;
+
+    return {
+        north: center.lat + latOffset,
+        south: center.lat - latOffset,
+        east: center.lng + lngOffset,
+        west: center.lng - lngOffset
+    };
+};
+
+/**
  * Calculate bearing between two points
  * @param {Object} start - Start point {lat, lng}
  * @param {Object} end - End point {lat, lng}  
@@ -372,5 +396,6 @@ export default {
     createCircle,
     expandBounds,
     normalizeLocation,
-    calculateBearing
+    calculateBearing,
+    createBoundsFromCenter
 };
