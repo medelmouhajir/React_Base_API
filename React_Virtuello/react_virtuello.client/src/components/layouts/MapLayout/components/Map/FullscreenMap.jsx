@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // FULLSCREEN MAP COMPONENT - Core map container with fullscreen layout
 // =============================================================================
 import React, { useRef, useEffect, useState, useCallback , forwardRef  } from 'react';
@@ -109,14 +109,29 @@ const FullscreenMap = forwardRef(({
 
     // Handle map creation
     const handleMapCreated = useCallback((map) => {
+        console.log('🗺️ Map created, setting up event listeners...');
         setMapInstance(map);
         mapRef.current = map;
 
         // Set up progress tracking
         let tilesLoaded = 0;
         let tilesToLoad = 0;
+        let hasTriggeredLoad = false;
+
+        // Add safety timeout to ensure map loads even if events don't fire
+        const safetyTimeout = setTimeout(() => {
+            if (!hasTriggeredLoad) {
+                console.log('⚠️ Safety timeout triggered - forcing map load completion');
+                setIsMapLoaded(true);
+                setLoadingProgress(100);
+                handleMapReady(true);
+                onMapReady(map);
+                hasTriggeredLoad = true;
+            }
+        }, 5000); // 5 second timeout
 
         map.on('loading', () => {
+            console.log('🔄 Map loading started');
             setLoadingProgress(0);
             tilesLoaded = 0;
             tilesToLoad = 0;
@@ -124,41 +139,70 @@ const FullscreenMap = forwardRef(({
 
         map.on('tileloadstart', () => {
             tilesToLoad++;
+            console.log(`📍 Tile load started. Total tiles: ${tilesToLoad}`);
         });
 
         map.on('tileload', () => {
+            tilesLoaded++;
+            const progress = tilesToLoad > 0 ? (tilesLoaded / tilesToLoad) * 100 : 0;
+            setLoadingProgress(progress);
+            console.log(`✅ Tile loaded: ${tilesLoaded}/${tilesToLoad} (${progress.toFixed(1)}%)`);
+        });
+
+        map.on('tileerror', (e) => {
+            console.warn('⚠️ Tile load error:', e);
+            // Don't block loading for tile errors
             tilesLoaded++;
             if (tilesToLoad > 0) {
                 setLoadingProgress((tilesLoaded / tilesToLoad) * 100);
             }
         });
 
+        // Primary load event
         map.on('load', () => {
-            setIsMapLoaded(true);
-            setLoadingProgress(100);
-            handleMapReady(true);
-            onMapReady(map);
+            if (!hasTriggeredLoad) {
+                console.log('✅ Map load event fired - map is ready!');
+                clearTimeout(safetyTimeout);
+                setIsMapLoaded(true);
+                setLoadingProgress(100);
+                handleMapReady(true);
+                onMapReady(map);
+                hasTriggeredLoad = true;
 
-            // Only set initial bounds after map is fully loaded
-            const initialBounds = map.getBounds();
-            const initialMapCenter = map.getCenter();
-            const initialZoom = map.getZoom();
+                // Set initial bounds after map is fully loaded
+                const initialBounds = map.getBounds();
+                const initialMapCenter = map.getCenter();
+                const initialZoom = map.getZoom();
 
-            if (initialBounds && initialMapCenter) {
-                handleBoundsChange(
-                    {
-                        north: initialBounds.getNorth(),
-                        south: initialBounds.getSouth(),
-                        east: initialBounds.getEast(),
-                        west: initialBounds.getWest()
-                    },
-                    { lat: initialMapCenter.lat, lng: initialMapCenter.lng },
-                    initialZoom
-                );
+                if (initialBounds && initialMapCenter) {
+                    handleBoundsChange(
+                        {
+                            north: initialBounds.getNorth(),
+                            south: initialBounds.getSouth(),
+                            east: initialBounds.getEast(),
+                            west: initialBounds.getWest()
+                        },
+                        { lat: initialMapCenter.lat, lng: initialMapCenter.lng },
+                        initialZoom
+                    );
+                }
             }
         });
 
-        // Set up map event handlers
+        // Alternative event that might fire when 'load' doesn't
+        map.whenReady(() => {
+            if (!hasTriggeredLoad) {
+                console.log('✅ Map whenReady fired - using as fallback');
+                clearTimeout(safetyTimeout);
+                setIsMapLoaded(true);
+                setLoadingProgress(100);
+                handleMapReady(true);
+                onMapReady(map);
+                hasTriggeredLoad = true;
+            }
+        });
+
+        // Set up other map event handlers
         map.on('movestart', handleMoveStart);
         map.on('moveend', () => {
             const newBounds = map.getBounds();
@@ -179,23 +223,6 @@ const FullscreenMap = forwardRef(({
 
         map.on('click', handleMapClick);
 
-        // Initial bounds setup
-        //setTimeout(() => {
-        //    const initialBounds = map.getBounds();
-        //    const initialMapCenter = map.getCenter();
-        //    const initialZoom = map.getZoom();
-
-        //    handleBoundsChange(
-        //        {
-        //            north: initialBounds.getNorth(),
-        //            south: initialBounds.getSouth(),
-        //            east: initialBounds.getEast(),
-        //            west: initialBounds.getWest()
-        //        },
-        //        { lat: initialMapCenter.lat, lng: initialMapCenter.lng },
-        //        initialZoom
-        //    );
-        //}, 100);
     }, [handleBoundsChange, handleMoveStart, handleMapClick, handleMapReady, onMapReady]);
 
     // Set up bounds change callback for data fetching
