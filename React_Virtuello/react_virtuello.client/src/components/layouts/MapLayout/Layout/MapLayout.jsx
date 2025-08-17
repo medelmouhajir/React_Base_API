@@ -198,8 +198,8 @@ const MapLayout = ({
                 setLoadingProgress(70);
 
                 // Load initial map data based on location or default area
-                const initialCenter = userLocation || initialCenter;
-                await handleInitialDataLoad(initialCenter);
+                const initialCenter2 = userLocation || initialCenter;
+                await handleInitialDataLoad(initialCenter2);
 
                 setLoadingProgress(90);
 
