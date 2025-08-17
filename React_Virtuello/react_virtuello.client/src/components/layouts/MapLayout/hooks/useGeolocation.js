@@ -14,10 +14,10 @@ export const useGeolocation = (options = {}) => {
     // Default geolocation options
     const defaultOptions = {
         enableHighAccuracy: true,
-        timeout: 10000,
+        timeout: 5000, // Reduced from 10000 to 5000 (5 seconds)
         maximumAge: 300000, // 5 minutes
-        retryAttempts: 3,
-        retryDelay: 2000,
+        retryAttempts: 2, // Reduced from 3 to 2
+        retryDelay: 1000, // Reduced from 2000 to 1000
         fallbackLocation: {
             lat: 33.5731, // Casablanca default
             lng: -7.5898,
