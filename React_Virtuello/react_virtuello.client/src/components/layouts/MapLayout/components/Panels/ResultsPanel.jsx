@@ -3,7 +3,7 @@
 // =============================================================================
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useVirtualizer } from '@tanstack/react-virtual';
+//import { useVirtualizer } from '@tanstack/react-virtual';
 import { FixedSizeList as List } from 'react-window';
 import { debounce } from 'lodash';
 import './ResultsPanel.css';

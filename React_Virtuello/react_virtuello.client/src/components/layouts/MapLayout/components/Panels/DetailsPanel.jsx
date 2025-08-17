@@ -3,9 +3,9 @@
 // =============================================================================
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../../../contexts/AuthContext';
-import { businessService } from '../../../../services/businessService';
-import { eventService } from '../../../../services/eventService';
+import { useAuth } from '../../../../../contexts/AuthContext';
+import { businessService } from '../../../../../services/businessService';
+import { eventService } from '../../../../../services/eventService';
 import './DetailsPanel.css';
 
 const DetailsPanel = ({

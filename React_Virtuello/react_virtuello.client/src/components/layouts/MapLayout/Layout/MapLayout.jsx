@@ -32,7 +32,7 @@ import { mapCacheService } from '../services/mapCacheService';
 
 // Utils
 import { MAP_CONFIG } from '../utils/mapConstants';
-import { geoUtils } from '../utils/geoUtils';
+import * as geoUtils from '../utils/geoUtils';
 
 import './MapLayout.css';
 
