@@ -424,9 +424,17 @@ const MapLayout = ({
         }
     }, []);
 
-    const handleCurrentLocation = useCallback(async () => {
+    const handleCurrentLocation = useCallback(async (locationData) => {
         try {
-            const result = await getCurrentPosition();
+            let result;
+
+            // If location data is provided (from FloatingControls), use it
+            if (locationData) {
+                result = { success: true, location: locationData };
+            } else {
+                // Otherwise get it ourselves
+                result = await getCurrentPosition();
+            }
 
             if (result.success && mapRef.current?.flyTo) {
                 const newCenter = result.location;
