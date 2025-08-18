@@ -12,8 +12,6 @@
     <Folder Include="src\components\layouts\MainLayout\Layout\" />
     <Folder Include="src\components\layouts\MainLayout\Navbar\" />
     <Folder Include="src\components\layouts\MainLayout\Sidebar\" />
-    <Folder Include="src\components\layouts\MapLayout\components\MapControls\" />
-    <Folder Include="src\components\layouts\MapLayout\utils\" />
     <Folder Include="src\components\layouts\TourLayout\" />
     <Folder Include="src\pages\Auth\" />
     <Folder Include="src\pages\Main\Businesses\List\" />
