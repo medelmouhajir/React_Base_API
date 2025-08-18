@@ -109,7 +109,7 @@ const EventMarker = ({
                     <!-- Date indicator -->
                     <text x="0" y="2" text-anchor="middle" 
                           font-size="6" font-weight="bold" fill="${color}">
-                        ${startDate ? new Date(event.startDate).getDate() : '?'}
+                        ${event.startDate ? new Date(event.startDate).getDate() : '?'}
                     </text>
                 </g>
                 

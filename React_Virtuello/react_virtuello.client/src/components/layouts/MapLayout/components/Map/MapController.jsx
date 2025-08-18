@@ -208,7 +208,7 @@ const MapController = forwardRef(({
             const newZoom = map.getZoom();
             const newBounds = map.getBounds();
 
-            const boundsData = {
+            onViewportChange({
                 center: { lat: newCenter.lat, lng: newCenter.lng },
                 zoom: newZoom,
                 bounds: {
@@ -217,35 +217,15 @@ const MapController = forwardRef(({
                     east: newBounds.getEast(),
                     west: newBounds.getWest()
                 }
-            };
-
-            // Call onViewportChange which should trigger bounds change
-            onViewportChange(boundsData);
+            });
         };
 
-        // Add move start handler to prevent unnecessary calls during movement
-        const handleMoveStart = () => {
-            isAnimating.current = true;
-        };
-
-        const handleMoveEnd = () => {
-            isAnimating.current = false;
-            handleViewportChange();
-        };
-
-        // Set up event listeners
-        map.on('movestart', handleMoveStart);
-        map.on('moveend', handleMoveEnd);
+        map.on('moveend', handleViewportChange);
         map.on('zoomend', handleViewportChange);
 
-        // Also trigger on drag end for better responsiveness
-        map.on('dragend', handleViewportChange);
-
         return () => {
-            map.off('movestart', handleMoveStart);
-            map.off('moveend', handleMoveEnd);
+            map.off('moveend', handleViewportChange);
             map.off('zoomend', handleViewportChange);
-            map.off('dragend', handleViewportChange);
         };
     }, [map, onViewportChange]);
 
