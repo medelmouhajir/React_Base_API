@@ -41,7 +41,7 @@ const MapLayout = ({
     showSearch = true,
     showProfile = true,
     showControls = true,
-    showFilters = false,
+    showFilters = true,
     showBusinesses = true,
     showEvents = true,
     clustering = true,
@@ -171,6 +171,8 @@ const MapLayout = ({
         handleMapClick,
         resetSelection
     } = useMapInteractions();
+
+
 
     // =============================================================================
     // INITIALIZATION & LIFECYCLE
