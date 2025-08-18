@@ -12,10 +12,7 @@
     <Folder Include="src\components\layouts\MainLayout\Layout\" />
     <Folder Include="src\components\layouts\MainLayout\Navbar\" />
     <Folder Include="src\components\layouts\MainLayout\Sidebar\" />
-    <Folder Include="src\components\layouts\MapLayout\components\Map\" />
-    <Folder Include="src\components\layouts\MapLayout\components\FloatingUI\" />
-    <Folder Include="src\components\layouts\MapLayout\components\Markers\" />
-    <Folder Include="src\components\layouts\MapLayout\components\Panels\" />
+    <Folder Include="src\components\layouts\MapLayout\components\" />
     <Folder Include="src\components\layouts\MapLayout\hooks\" />
     <Folder Include="src\components\layouts\MapLayout\services\" />
     <Folder Include="src\components\layouts\MapLayout\utils\" />
