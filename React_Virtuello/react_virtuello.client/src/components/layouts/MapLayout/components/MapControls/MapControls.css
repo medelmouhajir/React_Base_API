@@ -1,0 +1,196 @@
+/* MapControls.css */
+.map-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+}
+
+    .control-group:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        transform: translateY(-1px);
+    }
+
+.control-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #333;
+    position: relative;
+}
+
+    .control-button:hover {
+        background: #f8f9fa;
+        color: #0066cc;
+    }
+
+    .control-button:active {
+        background: #e9ecef;
+        transform: scale(0.95);
+    }
+
+    .control-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .control-button.active {
+        background: #0066cc;
+        color: white;
+    }
+
+        .control-button.active:hover {
+            background: #0052a3;
+            color: white;
+        }
+
+/* Separate buttons in a group with borders */
+.control-group .control-button:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Animations */
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .map-controls {
+        top: 16px;
+        right: 16px;
+        gap: 10px;
+    }
+
+    .control-button {
+        width: 40px;
+        height: 40px;
+    }
+
+    .control-group {
+        border-radius: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .map-controls {
+        top: 12px;
+        right: 12px;
+        gap: 8px;
+    }
+
+    .control-button {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .control-button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+        .control-button:hover {
+            background: white;
+            color: #333;
+        }
+
+        .control-button:active {
+            background: #f8f9fa;
+            color: #0066cc;
+        }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .control-group {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: white;
+    }
+
+    .control-button {
+        background: #2d3748;
+        color: #e2e8f0;
+    }
+
+        .control-button:hover {
+            background: #4a5568;
+            color: #63b3ed;
+        }
+
+        .control-button:active {
+            background: #1a202c;
+        }
+
+        .control-button.active {
+            background: #3182ce;
+            color: white;
+        }
+
+            .control-button.active:hover {
+                background: #2c5aa0;
+            }
+
+    .control-group .control-button:not(:last-child) {
+        border-bottom-color: #4a5568;
+    }
+}
+
+/* Focus styles for accessibility */
+.control-button:focus-visible {
+    outline: 2px solid #3182ce;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .control-group {
+        border-width: 2px;
+        border-color: #000;
+    }
+
+    .control-button {
+        border: 1px solid #000;
+    }
+
+        .control-button:hover {
+            background: #000;
+            color: #fff;
+        }
+}
