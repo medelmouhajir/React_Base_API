@@ -4,6 +4,8 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { debounce } from 'lodash';
 
+// Complete fix for useMapBounds.js - replace the entire hook implementation
+
 export const useMapBounds = (options = {}) => {
     const [bounds, setBounds] = useState(null);
     const [center, setCenter] = useState(null);
@@ -18,46 +20,10 @@ export const useMapBounds = (options = {}) => {
     const defaultOptions = {
         debounceMs: 500,
         minZoomForFetch: 10,
-        expansionFactor: 0.2, // Expand bounds by 20% for prefetching
-        refetchThreshold: 0.3, // Refetch when viewport moves 30% outside cached area
+        expansionFactor: 0.2,
+        refetchThreshold: 0.3,
         ...options
     };
-
-    // Debounced bounds change handler
-    const debouncedBoundsChange = useMemo(
-        () => debounce((newBounds, newCenter, newZoom) => {
-            setBounds(newBounds);
-            setCenter(newCenter);
-            setZoom(newZoom);
-            setIsMoving(false);
-
-            if (boundsChangeCallbackRef.current) {
-                boundsChangeCallbackRef.current({
-                    bounds: newBounds,
-                    center: newCenter,
-                    zoom: newZoom,
-                    shouldFetch: shouldFetchData(newBounds, newZoom)
-                });
-            }
-        }, defaultOptions.debounceMs),
-        [defaultOptions.debounceMs]
-    );
-
-    // Calculate expanded bounds for prefetching
-    const getExpandedBounds = useCallback((bounds) => {
-        if (!bounds) return null;
-
-        const { north, south, east, west } = bounds;
-        const latExpansion = (north - south) * defaultOptions.expansionFactor;
-        const lngExpansion = (east - west) * defaultOptions.expansionFactor;
-
-        return {
-            north: north + latExpansion,
-            south: south - latExpansion,
-            east: east + lngExpansion,
-            west: west - lngExpansion
-        };
-    }, [defaultOptions.expansionFactor]);
 
     // Check if we need to fetch new data
     const shouldFetchData = useCallback((newBounds, newZoom) => {
@@ -81,6 +47,42 @@ export const useMapBounds = (options = {}) => {
 
         return coverageRatio < (1 - defaultOptions.refetchThreshold);
     }, [lastFetchBounds, defaultOptions.minZoomForFetch, defaultOptions.refetchThreshold]);
+
+    // Debounced bounds change handler - now defined after shouldFetchData
+    const debouncedBoundsChange = useMemo(
+        () => debounce((newBounds, newCenter, newZoom) => {
+            setBounds(newBounds);
+            setCenter(newCenter);
+            setZoom(newZoom);
+            setIsMoving(false);
+
+            if (boundsChangeCallbackRef.current) {
+                boundsChangeCallbackRef.current({
+                    bounds: newBounds,
+                    center: newCenter,
+                    zoom: newZoom,
+                    shouldFetch: shouldFetchData(newBounds, newZoom)
+                });
+            }
+        }, defaultOptions.debounceMs),
+        [defaultOptions.debounceMs, shouldFetchData]
+    );
+
+    // Calculate expanded bounds for prefetching
+    const getExpandedBounds = useCallback((bounds) => {
+        if (!bounds) return null;
+
+        const { north, south, east, west } = bounds;
+        const latExpansion = (north - south) * defaultOptions.expansionFactor;
+        const lngExpansion = (east - west) * defaultOptions.expansionFactor;
+
+        return {
+            north: north + latExpansion,
+            south: south - latExpansion,
+            east: east + lngExpansion,
+            west: west - lngExpansion
+        };
+    }, [defaultOptions.expansionFactor]);
 
     // Handle map move start
     const handleMoveStart = useCallback(() => {

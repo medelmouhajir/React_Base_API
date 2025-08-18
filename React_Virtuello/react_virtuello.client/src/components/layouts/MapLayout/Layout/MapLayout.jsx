@@ -425,6 +425,8 @@ const MapLayout = ({
         try {
             const result = await getCurrentPosition();
 
+            console.warn(result);
+
             console.warn(mapRef.current);
 
             console.warn(mapRef.current?.flyTo);

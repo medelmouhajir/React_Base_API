@@ -14,7 +14,7 @@ export const useGeolocation = (options = {}) => {
     // Default geolocation options
     const defaultOptions = {
         enableHighAccuracy: true,
-        timeout: 5000, // Reduced from 10000 to 5000 (5 seconds)
+        timeout: 30000, // Reduced from 10000 to 5000 (5 seconds)
         maximumAge: 300000, // 5 minutes
         retryAttempts: 2, // Reduced from 3 to 2
         retryDelay: 1000, // Reduced from 2000 to 1000
