@@ -256,6 +256,20 @@ const MapLayout = ({
         debounceDelay: 500
     });
 
+
+    // Marker event handlers must be defined before useMarkers
+    const handleMarkerClick = useCallback((marker, event) => {
+        if (onMarkerClick) {
+            onMarkerClick(marker, event);
+        }
+    }, [onMarkerClick]);
+
+    const handleMarkerHover = useCallback((marker, event) => {
+        if (onMarkerHover) {
+            onMarkerHover(marker, event);
+        }
+    }, [onMarkerHover]);
+
     // Markers management
     const {
         filteredMarkers,
@@ -281,7 +295,7 @@ const MapLayout = ({
     /**
      * Fetch map data based on current bounds
      */
-    const handleDataFetch = useCallback(async (boundsData) => {
+    async function handleDataFetch(boundsData) {
         if (!boundsData?.bounds || !mapInstance) return;
 
         setIsLoading(true);
@@ -325,7 +339,7 @@ const MapLayout = ({
         } finally {
             setIsLoading(false);
         }
-    }, [mapInstance, filters, getBoundsForAPI, updateBusinessMarkers, updateEventMarkers]);
+    }
 
     // =============================================================================
     // EVENT HANDLERS
@@ -375,23 +389,6 @@ const MapLayout = ({
         }));
     }, []);
 
-    /**
-     * Handle marker click
-     */
-    const handleMarkerClick = useCallback((marker, event) => {
-        if (onMarkerClick) {
-            onMarkerClick(marker, event);
-        }
-    }, [onMarkerClick]);
-
-    /**
-     * Handle marker hover
-     */
-    const handleMarkerHover = useCallback((marker, event) => {
-        if (onMarkerHover) {
-            onMarkerHover(marker, event);
-        }
-    }, [onMarkerHover]);
 
     /**
      * Handle search result
@@ -440,7 +437,7 @@ const MapLayout = ({
      * Get tile layer configuration
      */
     const tileLayerConfig = useMemo(() => {
-        return TILE_LAYERS[mapStyle] || TILE_LAYERS.default;
+        return TILE_LAYERS[mapStyle] || TILE_LAYERS.openStreetMap;
     }, [mapStyle]);
 
     /**
