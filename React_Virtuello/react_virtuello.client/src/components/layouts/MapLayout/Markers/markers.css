@@ -1,0 +1,576 @@
+/* =============================================================================
+   MARKERS.CSS - Map Markers and Tooltips Styling
+   Business, Event, and Custom marker components styling
+   @author WAN SOLUTIONS
+   @version 1.0.0
+============================================================================= */
+
+/* =============================================================================
+   CSS CUSTOM PROPERTIES
+============================================================================= */
+:root {
+    /* Marker colors */
+    --marker-business-active: #10b981;
+    --marker-business-pending: #f59e0b;
+    --marker-business-suspended: #ef4444;
+    --marker-event-upcoming: #3b82f6;
+    --marker-event-ongoing: #ef4444;
+    --marker-event-completed: #6b7280;
+    --marker-location-default: #6366f1;
+    --marker-location-user: #059669;
+    /* Tooltip colors */
+    --tooltip-bg: #1f2937;
+    --tooltip-text: #f9fafb;
+    --tooltip-border: #374151;
+    --tooltip-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    /* Status colors */
+    --status-open: #10b981;
+    --status-closed: #ef4444;
+    --status-active: #10b981;
+    --status-pending: #f59e0b;
+    --status-suspended: #ef4444;
+    --status-live: #ef4444;
+    --status-upcoming: #3b82f6;
+    --status-ended: #6b7280;
+    /* Animation durations */
+    --marker-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --tooltip-transition: 0.15s ease-out;
+    --popup-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --tooltip-bg: #374151;
+    --tooltip-text: #f9fafb;
+    --tooltip-border: #4b5563;
+    --tooltip-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* =============================================================================
+   BASE MARKER STYLES
+============================================================================= */
+.leaflet-marker-icon {
+    transition: var(--marker-transition);
+}
+
+    .leaflet-marker-icon:hover {
+        transform: scale(1.1);
+        z-index: 1000 !important;
+    }
+
+    .leaflet-marker-icon.selected {
+        transform: scale(1.2);
+        z-index: 1500 !important;
+    }
+
+/* Custom marker base */
+.custom-marker {
+    cursor: pointer;
+    transition: var(--marker-transition);
+}
+
+    .custom-marker.selected {
+        animation: markerPulse 2s infinite;
+    }
+
+    .custom-marker.hovered {
+        transform: scale(1.05);
+    }
+
+/* =============================================================================
+   BUSINESS MARKERS
+============================================================================= */
+.business-marker {
+    position: relative;
+}
+
+    .business-marker.selected::after {
+        content: '';
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        border: 2px solid var(--marker-business-active);
+        border-radius: 50%;
+        animation: markerRing 1.5s infinite;
+    }
+
+    /* Business marker status variants */
+    .business-marker[data-business-status="Active"] {
+        --marker-color: var(--marker-business-active);
+    }
+
+    .business-marker[data-business-status="Pending"] {
+        --marker-color: var(--marker-business-pending);
+    }
+
+    .business-marker[data-business-status="Suspended"] {
+        --marker-color: var(--marker-business-suspended);
+    }
+
+/* =============================================================================
+   EVENT MARKERS
+============================================================================= */
+.event-marker {
+    position: relative;
+}
+
+    .event-marker.timing-upcoming {
+        --marker-color: var(--marker-event-upcoming);
+    }
+
+    .event-marker.timing-ongoing {
+        --marker-color: var(--marker-event-ongoing);
+        animation: eventLive 2s infinite;
+    }
+
+    .event-marker.timing-completed {
+        --marker-color: var(--marker-event-completed);
+        opacity: 0.7;
+    }
+
+/* =============================================================================
+   CUSTOM LOCATION MARKERS
+============================================================================= */
+.custom-marker.marker-user {
+    --marker-color: var(--marker-location-user);
+}
+
+.custom-marker.marker-location {
+    --marker-color: var(--marker-location-default);
+}
+
+.custom-marker.marker-route {
+    --marker-color: var(--marker-event-upcoming);
+}
+
+.custom-marker.active::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background: var(--marker-color);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: markerPulse 2s infinite;
+    z-index: -1;
+}
+
+/* =============================================================================
+   MARKER TOOLTIPS
+============================================================================= */
+.leaflet-tooltip {
+    background: var(--tooltip-bg) !important;
+    border: 1px solid var(--tooltip-border) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--tooltip-shadow) !important;
+    color: var(--tooltip-text) !important;
+    font-family: inherit !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    padding: 0 !important;
+    max-width: 280px !important;
+}
+
+.leaflet-tooltip-top:before {
+    border-top-color: var(--tooltip-border) !important;
+}
+
+.leaflet-tooltip-bottom:before {
+    border-bottom-color: var(--tooltip-border) !important;
+}
+
+.leaflet-tooltip-left:before {
+    border-left-color: var(--tooltip-border) !important;
+}
+
+.leaflet-tooltip-right:before {
+    border-right-color: var(--tooltip-border) !important;
+}
+
+/* Business marker tooltip */
+.business-marker-tooltip {
+    padding: 12px;
+}
+
+    .business-marker-tooltip .tooltip-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .business-marker-tooltip .tooltip-name {
+        font-weight: 600;
+        color: var(--tooltip-text);
+        margin: 0;
+    }
+
+    .business-marker-tooltip .tooltip-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: #fbbf24;
+    }
+
+    .business-marker-tooltip .tooltip-reviews {
+        color: var(--tooltip-text);
+        opacity: 0.7;
+    }
+
+    .business-marker-tooltip .tooltip-description {
+        font-size: 12px;
+        color: var(--tooltip-text);
+        opacity: 0.8;
+        margin-bottom: 6px;
+        line-height: 1.3;
+    }
+
+    .business-marker-tooltip .tooltip-address {
+        font-size: 12px;
+        color: var(--tooltip-text);
+        opacity: 0.7;
+        margin-bottom: 6px;
+    }
+
+    .business-marker-tooltip .tooltip-status {
+        margin-top: 6px;
+    }
+
+    .business-marker-tooltip .status-badge {
+        background: var(--status-active);
+        border-radius: 4px;
+        color: white;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 6px;
+        text-transform: uppercase;
+    }
+
+        .business-marker-tooltip .status-badge.status-pending {
+            background: var(--status-pending);
+        }
+
+        .business-marker-tooltip .status-badge.status-suspended {
+            background: var(--status-suspended);
+        }
+
+/* Event marker tooltip */
+.event-marker-tooltip {
+    padding: 12px;
+}
+
+    .event-marker-tooltip .tooltip-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        gap: 8px;
+    }
+
+    .event-marker-tooltip .tooltip-name {
+        font-weight: 600;
+        color: var(--tooltip-text);
+        margin: 0;
+        flex: 1;
+    }
+
+    .event-marker-tooltip .tooltip-timing {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+        white-space: nowrap;
+    }
+
+        .event-marker-tooltip .tooltip-timing.timing-upcoming {
+            background: var(--status-upcoming);
+            color: white;
+        }
+
+        .event-marker-tooltip .tooltip-timing.timing-ongoing {
+            background: var(--status-live);
+            color: white;
+            animation: eventLiveBadge 2s infinite;
+        }
+
+        .event-marker-tooltip .tooltip-timing.timing-completed {
+            background: var(--status-ended);
+            color: white;
+        }
+
+    .event-marker-tooltip .tooltip-date {
+        font-size: 12px;
+        color: var(--tooltip-text);
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    .event-marker-tooltip .tooltip-description {
+        font-size: 12px;
+        color: var(--tooltip-text);
+        opacity: 0.8;
+        margin-bottom: 6px;
+        line-height: 1.3;
+    }
+
+    .event-marker-tooltip .tooltip-address {
+        font-size: 12px;
+        color: var(--tooltip-text);
+        opacity: 0.7;
+        margin-bottom: 6px;
+    }
+
+    .event-marker-tooltip .tooltip-meta {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+    }
+
+    .event-marker-tooltip .type-badge,
+    .event-marker-tooltip .category-badge {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        color: var(--tooltip-text);
+        font-size: 10px;
+        font-weight: 500;
+        padding: 2px 6px;
+    }
+
+        .event-marker-tooltip .type-badge.type-public {
+            background: var(--status-upcoming);
+            color: white;
+        }
+
+        .event-marker-tooltip .type-badge.type-private {
+            background: var(--status-pending);
+            color: white;
+        }
+
+/* Custom marker tooltip */
+.custom-marker-tooltip {
+    padding: 12px;
+}
+
+    .custom-marker-tooltip .tooltip-title {
+        font-weight: 600;
+        color: var(--tooltip-text);
+        margin-bottom: 6px;
+    }
+
+    .custom-marker-tooltip .tooltip-description {
+        font-size: 12px;
+        color: var(--tooltip-text);
+        opacity: 0.8;
+        margin-bottom: 6px;
+        line-height: 1.3;
+    }
+
+    .custom-marker-tooltip .tooltip-address {
+        font-size: 12px;
+        color: var(--tooltip-text);
+        opacity: 0.7;
+        margin-bottom: 4px;
+    }
+
+    .custom-marker-tooltip .tooltip-route-info {
+        font-size: 12px;
+        color: var(--tooltip-text);
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .custom-marker-tooltip .tooltip-accuracy {
+        font-size: 11px;
+        color: var(--tooltip-text);
+        opacity: 0.6;
+    }
+
+/* =============================================================================
+   MARKER ANIMATIONS
+============================================================================= */
+@keyframes markerPulse {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes markerRing {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes eventLive {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes eventLiveBadge {
+    0%, 100% {
+        background: var(--status-live);
+    }
+
+    50% {
+        background: #dc2626;
+    }
+}
+
+/* =============================================================================
+   CLUSTER MARKERS
+============================================================================= */
+.marker-cluster {
+    background: rgba(59, 130, 246, 0.8) !important;
+    border: 2px solid rgba(59, 130, 246, 1) !important;
+    border-radius: 50% !important;
+    color: white !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    transition: var(--marker-transition) !important;
+}
+
+    .marker-cluster:hover {
+        background: rgba(59, 130, 246, 1) !important;
+        transform: scale(1.1) !important;
+    }
+
+.marker-cluster-small {
+    background: rgba(16, 185, 129, 0.8) !important;
+    border-color: rgba(16, 185, 129, 1) !important;
+}
+
+.marker-cluster-medium {
+    background: rgba(245, 158, 11, 0.8) !important;
+    border-color: rgba(245, 158, 11, 1) !important;
+}
+
+.marker-cluster-large {
+    background: rgba(239, 68, 68, 0.8) !important;
+    border-color: rgba(239, 68, 68, 1) !important;
+}
+
+/* Business clusters */
+.cluster-business {
+    background: rgba(16, 185, 129, 0.8) !important;
+    border-color: rgba(16, 185, 129, 1) !important;
+}
+
+/* Event clusters */
+.cluster-event {
+    background: rgba(59, 130, 246, 0.8) !important;
+    border-color: rgba(59, 130, 246, 1) !important;
+}
+
+/* Mixed clusters */
+.cluster-mixed {
+    background: rgba(99, 102, 241, 0.8) !important;
+    border-color: rgba(99, 102, 241, 1) !important;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+============================================================================= */
+@media (max-width: 768px) {
+    .leaflet-tooltip {
+        max-width: 220px !important;
+        font-size: 12px !important;
+    }
+
+    .business-marker-tooltip,
+    .event-marker-tooltip,
+    .custom-marker-tooltip {
+        padding: 10px;
+    }
+
+        .business-marker-tooltip .tooltip-header,
+        .event-marker-tooltip .tooltip-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .business-marker-tooltip .tooltip-rating {
+            align-self: flex-end;
+        }
+
+        .event-marker-tooltip .tooltip-timing {
+            align-self: flex-end;
+        }
+}
+
+/* =============================================================================
+   ACCESSIBILITY
+============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+    .leaflet-marker-icon,
+    .custom-marker,
+    .marker-cluster {
+        transition: none !important;
+        animation: none !important;
+    }
+
+        .custom-marker.selected,
+        .business-marker.selected,
+        .event-marker.timing-ongoing {
+            animation: none !important;
+        }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .leaflet-tooltip {
+        border-width: 2px !important;
+        box-shadow: none !important;
+    }
+
+    .business-marker-tooltip .status-badge,
+    .event-marker-tooltip .tooltip-timing,
+    .event-marker-tooltip .type-badge {
+        border: 1px solid var(--tooltip-text);
+    }
+}
+
+/* =============================================================================
+   PRINT STYLES
+============================================================================= */
+@media print {
+    .leaflet-tooltip {
+        display: none !important;
+    }
+
+    .leaflet-marker-icon {
+        filter: grayscale(100%);
+    }
+}

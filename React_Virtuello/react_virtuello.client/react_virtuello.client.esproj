@@ -16,6 +16,7 @@
     <Folder Include="src\components\layouts\MapLayout\Models\" />
     <Folder Include="src\components\layouts\MapLayout\Config\" />
     <Folder Include="src\components\layouts\MapLayout\Hooks\" />
+    <Folder Include="src\components\layouts\MapLayout\Markers\" />
     <Folder Include="src\components\layouts\MapLayout\Utils\" />
     <Folder Include="src\components\layouts\MapLayout\Services\" />
     <Folder Include="src\components\layouts\TourLayout\" />
