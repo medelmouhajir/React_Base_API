@@ -8,7 +8,7 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useGeolocation } from '../Hooks/useGeolocation';
-import { mapService } from '../Services/MapService';
+import mapService from '../Services/MapService';
 import './searchbox.css';
 
 const SearchBox = ({

@@ -18,7 +18,7 @@ import LocationButton from '../UI/LocationButton';
 
 // Services
 import geolocationService from '../Services/GeolocationService';
-import mapService from '../../../../services/mapService';
+import mapService from '../Services/MapService';
 
 // Styles
 import './MapControls.css';

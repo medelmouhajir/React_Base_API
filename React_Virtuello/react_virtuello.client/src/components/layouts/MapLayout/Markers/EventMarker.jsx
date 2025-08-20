@@ -9,7 +9,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Marker, Tooltip } from 'react-leaflet';
 import { createEventIcon } from '../Utils/markerIcons';
-import EventPopup from '../Popups/EventPopup';
+import EventPopup from './EventPopup';
 import PropTypes from 'prop-types';
 
 const EventMarker = ({

@@ -19,12 +19,12 @@ import CustomMarker from '../Markers/CustomMarker';
 
 // Services and Hooks
 import geolocationService from '../Services/GeolocationService';
-import mapService from '../../../../services/mapService';
+import mapService from '../Services/MapService';
 import { useMapBounds } from '../Hooks/useMapBounds';
 import { useMarkers } from '../Hooks/useMarkers';
 
 // Utils and Config
-import { MAP_CONFIG, TILE_LAYERS } from '../Config/mapConfig';
+import { DEFAULT_MAP_CONFIG, TILE_LAYERS } from '../Config/mapConfig';
 import { createBoundsFromRadius } from '../Utils/mapUtils';
 
 // Styles

@@ -9,7 +9,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { Marker, Tooltip } from 'react-leaflet';
 import { createBusinessIcon } from '../Utils/markerIcons';
-import BusinessPopup from '../Popups/BusinessPopup';
+import BusinessPopup from './BusinessPopup';
 import PropTypes from 'prop-types';
 
 const BusinessMarker = ({
