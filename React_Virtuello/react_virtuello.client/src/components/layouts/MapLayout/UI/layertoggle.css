@@ -1,0 +1,592 @@
+/* =============================================================================
+   LAYERTOGGLE.CSS - Map Layer Toggle Component Styling
+   Layer visibility controls with opacity sliders
+   @author WAN SOLUTIONS
+   @version 1.0.0
+============================================================================= */
+
+/* =============================================================================
+   CSS CUSTOM PROPERTIES
+============================================================================= */
+:root {
+    /* Layer toggle colors */
+    --layer-bg: #ffffff;
+    --layer-bg-hover: #f8fafc;
+    --layer-border: #e5e7eb;
+    --layer-border-active: #6366f1;
+    --layer-text: #374151;
+    --layer-text-muted: #6b7280;
+    --layer-text-active: #6366f1;
+    --layer-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Toggle switches */
+    --toggle-bg: #e5e7eb;
+    --toggle-bg-active: #6366f1;
+    --toggle-thumb: #ffffff;
+    --toggle-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Layer indicators */
+    --layer-icon-business: #10b981;
+    --layer-icon-event: #8b5cf6;
+    --layer-icon-route: #3b82f6;
+    --layer-icon-heatmap: #ef4444;
+    --layer-icon-custom: #f59e0b;
+    /* Opacity slider */
+    --slider-track: #e5e7eb;
+    --slider-thumb: #6366f1;
+    --slider-fill: #6366f1;
+    /* Dimensions */
+    --layer-padding: 16px;
+    --layer-gap: 12px;
+    --layer-radius: 8px;
+    --toggle-width: 44px;
+    --toggle-height: 24px;
+    --slider-height: 4px;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --layer-bg: #1f2937;
+    --layer-bg-hover: #374151;
+    --layer-border: #4b5563;
+    --layer-border-active: #8b5cf6;
+    --layer-text: #f9fafb;
+    --layer-text-muted: #d1d5db;
+    --layer-text-active: #8b5cf6;
+    --layer-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --toggle-bg: #4b5563;
+    --toggle-bg-active: #8b5cf6;
+    --toggle-thumb: #ffffff;
+    --slider-track: #4b5563;
+    --slider-thumb: #8b5cf6;
+    --slider-fill: #8b5cf6;
+}
+
+/* =============================================================================
+   LAYER TOGGLE CONTAINER
+============================================================================= */
+.layer-toggle {
+    background: var(--layer-bg);
+    border: 1px solid var(--layer-border);
+    border-radius: var(--layer-radius);
+    box-shadow: var(--layer-shadow);
+    color: var(--layer-text);
+    font-family: inherit;
+    min-width: 240px;
+    max-width: 320px;
+    overflow: hidden;
+    z-index: 1000;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.layer-toggle--compact {
+    min-width: 180px;
+}
+
+.layer-toggle--collapsed {
+    max-height: 48px;
+    overflow: hidden;
+}
+
+/* =============================================================================
+   LAYER TOGGLE HEADER
+============================================================================= */
+.layer-toggle__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--layer-padding);
+    border-bottom: 1px solid var(--layer-border);
+    background: var(--layer-bg);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+    .layer-toggle__header:hover {
+        background: var(--layer-bg-hover);
+    }
+
+.layer-toggle--collapsed .layer-toggle__header {
+    border-bottom: none;
+}
+
+.layer-toggle__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--layer-text);
+    margin: 0;
+}
+
+.layer-toggle__title-icon {
+    font-size: 16px;
+    color: var(--layer-text-muted);
+}
+
+.layer-toggle__collapse-button {
+    background: none;
+    border: none;
+    color: var(--layer-text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+    .layer-toggle__collapse-button:hover {
+        background: var(--layer-bg-hover);
+        color: var(--layer-text);
+    }
+
+.layer-toggle__collapse-button--collapsed {
+    transform: rotate(180deg);
+}
+
+/* =============================================================================
+   LAYER LIST
+============================================================================= */
+.layer-toggle__list {
+    padding: 8px 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.layer-toggle--compact .layer-toggle__list {
+    padding: 4px 0;
+}
+
+/* =============================================================================
+   LAYER ITEM
+============================================================================= */
+.layer-toggle__item {
+    padding: 12px var(--layer-padding);
+    border-bottom: 1px solid transparent;
+    transition: all 0.15s ease;
+}
+
+    .layer-toggle__item:hover {
+        background: var(--layer-bg-hover);
+    }
+
+.layer-toggle__item--expanded {
+    border-bottom-color: var(--layer-border);
+}
+
+.layer-toggle--compact .layer-toggle__item {
+    padding: 8px 12px;
+}
+
+/* =============================================================================
+   LAYER ITEM HEADER
+============================================================================= */
+.layer-toggle__item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--layer-gap);
+    cursor: pointer;
+}
+
+.layer-toggle__item-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.layer-toggle__item-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.layer-toggle__item--businesses .layer-toggle__item-icon {
+    color: var(--layer-icon-business);
+    background: color-mix(in srgb, var(--layer-icon-business) 10%, transparent);
+}
+
+.layer-toggle__item--events .layer-toggle__item-icon {
+    color: var(--layer-icon-event);
+    background: color-mix(in srgb, var(--layer-icon-event) 10%, transparent);
+}
+
+.layer-toggle__item--routes .layer-toggle__item-icon {
+    color: var(--layer-icon-route);
+    background: color-mix(in srgb, var(--layer-icon-route) 10%, transparent);
+}
+
+.layer-toggle__item--heatmap .layer-toggle__item-icon {
+    color: var(--layer-icon-heatmap);
+    background: color-mix(in srgb, var(--layer-icon-heatmap) 10%, transparent);
+}
+
+.layer-toggle__item--custom .layer-toggle__item-icon {
+    color: var(--layer-icon-custom);
+    background: color-mix(in srgb, var(--layer-icon-custom) 10%, transparent);
+}
+
+.layer-toggle__item-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.layer-toggle__item-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--layer-text);
+    margin: 0 0 2px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.layer-toggle__item-count {
+    font-size: 12px;
+    color: var(--layer-text-muted);
+    margin: 0;
+}
+
+.layer-toggle__item-description {
+    font-size: 11px;
+    color: var(--layer-text-muted);
+    margin: 2px 0 0 0;
+    line-height: 1.3;
+}
+
+/* =============================================================================
+   TOGGLE SWITCH
+============================================================================= */
+.layer-toggle__switch {
+    position: relative;
+    flex-shrink: 0;
+    width: var(--toggle-width);
+    height: var(--toggle-height);
+    background: var(--toggle-bg);
+    border-radius: calc(var(--toggle-height) / 2);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    outline: none;
+}
+
+    .layer-toggle__switch:focus-visible {
+        outline: 2px solid var(--layer-border-active);
+        outline-offset: 2px;
+    }
+
+.layer-toggle__switch--active {
+    background: var(--toggle-bg-active);
+}
+
+.layer-toggle__switch-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(var(--toggle-height) - 4px);
+    height: calc(var(--toggle-height) - 4px);
+    background: var(--toggle-thumb);
+    border-radius: 50%;
+    box-shadow: var(--toggle-shadow);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.layer-toggle__switch--active .layer-toggle__switch-thumb {
+    transform: translateX(calc(var(--toggle-width) - var(--toggle-height)));
+}
+
+/* =============================================================================
+   LAYER CONTROLS (EXPANDED STATE)
+============================================================================= */
+.layer-toggle__item-controls {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--layer-border);
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.layer-toggle__item--expanded .layer-toggle__item-controls {
+    opacity: 1;
+    max-height: 100px;
+}
+
+.layer-toggle--compact .layer-toggle__item-controls {
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+/* =============================================================================
+   OPACITY SLIDER
+============================================================================= */
+.layer-toggle__opacity-control {
+    margin-bottom: 12px;
+}
+
+.layer-toggle__opacity-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.layer-toggle__opacity-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--layer-text);
+}
+
+.layer-toggle__opacity-value {
+    font-size: 11px;
+    color: var(--layer-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.layer-toggle__opacity-slider {
+    position: relative;
+    width: 100%;
+    height: var(--slider-height);
+    background: var(--slider-track);
+    border-radius: calc(var(--slider-height) / 2);
+    cursor: pointer;
+    outline: none;
+}
+
+    .layer-toggle__opacity-slider:focus-visible {
+        outline: 2px solid var(--layer-border-active);
+        outline-offset: 2px;
+    }
+
+.layer-toggle__opacity-fill {
+    height: 100%;
+    background: var(--slider-fill);
+    border-radius: calc(var(--slider-height) / 2);
+    transition: width 0.15s ease;
+}
+
+.layer-toggle__opacity-thumb {
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    background: var(--slider-thumb);
+    border: 2px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.15s ease;
+}
+
+    .layer-toggle__opacity-thumb:hover,
+    .layer-toggle__opacity-thumb:active {
+        transform: translate(-50%, -50%) scale(1.2);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .layer-toggle__opacity-thumb:active {
+        cursor: grabbing;
+    }
+
+/* =============================================================================
+   LAYER ACTIONS
+============================================================================= */
+.layer-toggle__actions {
+    display: flex;
+    gap: 8px;
+}
+
+.layer-toggle__action-button {
+    background: none;
+    border: 1px solid var(--layer-border);
+    border-radius: 4px;
+    color: var(--layer-text-muted);
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 8px;
+    transition: all 0.15s ease;
+}
+
+    .layer-toggle__action-button:hover {
+        background: var(--layer-bg-hover);
+        border-color: var(--layer-border-active);
+        color: var(--layer-text);
+    }
+
+    .layer-toggle__action-button:focus-visible {
+        outline: 2px solid var(--layer-border-active);
+        outline-offset: 1px;
+    }
+
+/* =============================================================================
+   EXPAND BUTTON
+============================================================================= */
+.layer-toggle__expand-button {
+    background: none;
+    border: none;
+    color: var(--layer-text-muted);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px;
+    margin-left: 8px;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+}
+
+    .layer-toggle__expand-button:hover {
+        background: var(--layer-bg-hover);
+        color: var(--layer-text);
+    }
+
+.layer-toggle__expand-button--expanded {
+    transform: rotate(180deg);
+}
+
+/* =============================================================================
+   EMPTY STATE
+============================================================================= */
+.layer-toggle__empty {
+    padding: 24px var(--layer-padding);
+    text-align: center;
+    color: var(--layer-text-muted);
+}
+
+.layer-toggle__empty-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+
+.layer-toggle__empty-text {
+    font-size: 14px;
+    margin: 0;
+}
+
+/* =============================================================================
+   ANIMATIONS
+============================================================================= */
+@keyframes layer-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.layer-toggle__item {
+    animation: layer-fade-in 0.2s ease-out;
+}
+
+/* =============================================================================
+   ACCESSIBILITY
+============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+    .layer-toggle,
+    .layer-toggle__item,
+    .layer-toggle__switch,
+    .layer-toggle__switch-thumb,
+    .layer-toggle__item-controls,
+    .layer-toggle__opacity-fill,
+    .layer-toggle__opacity-thumb {
+        transition: none;
+        animation: none;
+    }
+}
+
+.layer-toggle__switch[role="switch"][aria-checked="true"] {
+    background: var(--toggle-bg-active);
+}
+
+.layer-toggle__switch[role="switch"]:focus-visible {
+    outline: 2px solid var(--layer-border-active);
+    outline-offset: 2px;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+============================================================================= */
+@media (max-width: 768px) {
+    .layer-toggle {
+        min-width: 200px;
+        max-width: 280px;
+    }
+
+    .layer-toggle__item {
+        padding: 16px 12px;
+    }
+
+    .layer-toggle__item-header {
+        gap: 8px;
+    }
+
+    .layer-toggle__item-description {
+        display: none;
+    }
+
+    .layer-toggle__actions {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .layer-toggle__action-button {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .layer-toggle {
+        min-width: 160px;
+        max-width: 200px;
+    }
+
+    .layer-toggle--compact .layer-toggle__item {
+        padding: 12px 8px;
+    }
+
+    .layer-toggle__item-count {
+        display: none;
+    }
+
+    .layer-toggle__opacity-control {
+        margin-bottom: 8px;
+    }
+
+    .layer-toggle__actions {
+        display: none;
+    }
+}
+
+/* =============================================================================
+   HIGH CONTRAST MODE
+============================================================================= */
+@media (prefers-contrast: high) {
+    .layer-toggle {
+        border-width: 2px;
+    }
+
+    .layer-toggle__switch {
+        border: 2px solid currentColor;
+    }
+
+    .layer-toggle__switch--active {
+        background: var(--layer-text);
+    }
+
+    .layer-toggle__opacity-slider {
+        border: 1px solid currentColor;
+    }
+}

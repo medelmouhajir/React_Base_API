@@ -8,7 +8,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import geolocationService from '../../Services/GeolocationService';
-import './controls.css';
+import './locationButton.css';
 
 const LocationButton = ({
     onLocationFound,

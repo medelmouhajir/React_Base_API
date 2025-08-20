@@ -1,0 +1,676 @@
+/* =============================================================================
+   ZOOMCONTROLS.CSS - Map Zoom Controls Component Styling
+   Zoom in/out, reset, and fit bounds controls
+   @author WAN SOLUTIONS
+   @version 1.0.0
+============================================================================= */
+
+/* =============================================================================
+   CSS CUSTOM PROPERTIES
+============================================================================= */
+:root {
+    /* Zoom control colors */
+    --zoom-bg: #ffffff;
+    --zoom-bg-hover: #f8fafc;
+    --zoom-bg-active: #e2e8f0;
+    --zoom-bg-disabled: #f1f5f9;
+    --zoom-border: #d1d5db;
+    --zoom-border-hover: #9ca3af;
+    --zoom-border-active: #6366f1;
+    --zoom-text: #374151;
+    --zoom-text-muted: #6b7280;
+    --zoom-text-disabled: #9ca3af;
+    --zoom-text-active: #6366f1;
+    --zoom-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --zoom-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+    /* Zoom level indicator */
+    --zoom-indicator-bg: #f3f4f6;
+    --zoom-indicator-text: #6b7280;
+    --zoom-progress-bg: #e5e7eb;
+    --zoom-progress-fill: #6366f1;
+    /* Dimensions */
+    --zoom-size: 44px;
+    --zoom-size-small: 36px;
+    --zoom-size-large: 52px;
+    --zoom-gap: 2px;
+    --zoom-radius: 8px;
+    --zoom-border-width: 1px;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --zoom-bg: #1f2937;
+    --zoom-bg-hover: #374151;
+    --zoom-bg-active: #4b5563;
+    --zoom-bg-disabled: #111827;
+    --zoom-border: #4b5563;
+    --zoom-border-hover: #6b7280;
+    --zoom-border-active: #8b5cf6;
+    --zoom-text: #f9fafb;
+    --zoom-text-muted: #d1d5db;
+    --zoom-text-disabled: #6b7280;
+    --zoom-text-active: #8b5cf6;
+    --zoom-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --zoom-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --zoom-indicator-bg: #374151;
+    --zoom-indicator-text: #d1d5db;
+    --zoom-progress-bg: #4b5563;
+    --zoom-progress-fill: #8b5cf6;
+}
+
+/* =============================================================================
+   ZOOM CONTROLS CONTAINER
+============================================================================= */
+.zoom-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--zoom-gap);
+    z-index: 1000;
+    user-select: none;
+}
+
+.zoom-controls--horizontal {
+    flex-direction: row;
+}
+
+.zoom-controls--disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* =============================================================================
+   ZOOM CONTROL BUTTON
+============================================================================= */
+.zoom-controls__button {
+    background: var(--zoom-bg);
+    border: var(--zoom-border-width) solid var(--zoom-border);
+    border-radius: var(--zoom-radius);
+    box-shadow: var(--zoom-shadow);
+    color: var(--zoom-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 600;
+    height: var(--zoom-size);
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    width: var(--zoom-size);
+    outline: none;
+}
+
+    .zoom-controls__button:hover:not(:disabled) {
+        background: var(--zoom-bg-hover);
+        border-color: var(--zoom-border-hover);
+        box-shadow: var(--zoom-shadow-hover);
+        transform: translateY(-1px);
+    }
+
+    .zoom-controls__button:active:not(:disabled) {
+        background: var(--zoom-bg-active);
+        border-color: var(--zoom-border-active);
+        transform: translateY(0);
+    }
+
+    .zoom-controls__button:disabled {
+        background: var(--zoom-bg-disabled);
+        border-color: var(--zoom-border);
+        color: var(--zoom-text-disabled);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .zoom-controls__button:focus-visible {
+        outline: 2px solid var(--zoom-border-active);
+        outline-offset: 2px;
+    }
+
+.zoom-controls__button--active {
+    background: var(--zoom-bg-active);
+    border-color: var(--zoom-border-active);
+    color: var(--zoom-text-active);
+}
+
+/* =============================================================================
+   ZOOM BUTTON VARIANTS
+============================================================================= */
+.zoom-controls__button--zoom-in {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-width: 0;
+}
+
+.zoom-controls__button--zoom-out {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-top-width: 0;
+}
+
+.zoom-controls--horizontal .zoom-controls__button--zoom-in {
+    border-bottom-left-radius: var(--zoom-radius);
+    border-bottom-right-radius: 0;
+    border-bottom-width: var(--zoom-border-width);
+    border-right-width: 0;
+    border-top-right-radius: 0;
+}
+
+.zoom-controls--horizontal .zoom-controls__button--zoom-out {
+    border-left-width: 0;
+    border-right-width: var(--zoom-border-width);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: var(--zoom-radius);
+    border-bottom-right-radius: var(--zoom-radius);
+}
+
+/* =============================================================================
+   ZOOM LEVEL INDICATOR
+============================================================================= */
+.zoom-controls__level {
+    background: var(--zoom-indicator-bg);
+    border: var(--zoom-border-width) solid var(--zoom-border);
+    border-radius: var(--zoom-radius);
+    box-shadow: var(--zoom-shadow);
+    color: var(--zoom-indicator-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    height: 28px;
+    margin: 4px 0;
+    min-width: var(--zoom-size);
+    padding: 0 8px;
+    position: relative;
+    font-variant-numeric: tabular-nums;
+}
+
+.zoom-controls--horizontal .zoom-controls__level {
+    margin: 0 4px;
+    min-width: 60px;
+}
+
+.zoom-controls__level-text {
+    position: relative;
+    z-index: 2;
+}
+
+/* =============================================================================
+   ZOOM PROGRESS BAR
+============================================================================= */
+.zoom-controls__progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--zoom-progress-bg);
+    border-radius: 0 0 var(--zoom-radius) var(--zoom-radius);
+    overflow: hidden;
+}
+
+.zoom-controls__progress-fill {
+    height: 100%;
+    background: var(--zoom-progress-fill);
+    border-radius: inherit;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: left center;
+}
+
+/* =============================================================================
+   ADDITIONAL CONTROLS
+============================================================================= */
+.zoom-controls__secondary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--zoom-gap);
+    margin-top: 8px;
+}
+
+.zoom-controls--horizontal .zoom-controls__secondary {
+    flex-direction: row;
+    margin-top: 0;
+    margin-left: 8px;
+}
+
+.zoom-controls__secondary-button {
+    background: var(--zoom-bg);
+    border: var(--zoom-border-width) solid var(--zoom-border);
+    border-radius: var(--zoom-radius);
+    box-shadow: var(--zoom-shadow);
+    color: var(--zoom-text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    height: 32px;
+    line-height: 1;
+    padding: 0 8px;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    outline: none;
+}
+
+    .zoom-controls__secondary-button:hover:not(:disabled) {
+        background: var(--zoom-bg-hover);
+        border-color: var(--zoom-border-hover);
+        color: var(--zoom-text);
+        transform: translateY(-1px);
+    }
+
+    .zoom-controls__secondary-button:active:not(:disabled) {
+        background: var(--zoom-bg-active);
+        transform: translateY(0);
+    }
+
+    .zoom-controls__secondary-button:disabled {
+        background: var(--zoom-bg-disabled);
+        color: var(--zoom-text-disabled);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .zoom-controls__secondary-button:focus-visible {
+        outline: 2px solid var(--zoom-border-active);
+        outline-offset: 2px;
+    }
+
+/* =============================================================================
+   BUTTON ICONS AND LABELS
+============================================================================= */
+.zoom-controls__button-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: inherit;
+    line-height: 1;
+}
+
+.zoom-controls__button-text {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.zoom-controls__secondary-button .zoom-controls__button-icon {
+    margin-right: 4px;
+    font-size: 12px;
+}
+
+/* =============================================================================
+   SIZE VARIANTS
+============================================================================= */
+.zoom-controls--small {
+    --zoom-size: var(--zoom-size-small);
+}
+
+    .zoom-controls--small .zoom-controls__button {
+        font-size: 14px;
+    }
+
+    .zoom-controls--small .zoom-controls__level {
+        height: 24px;
+        font-size: 10px;
+        min-width: var(--zoom-size-small);
+    }
+
+    .zoom-controls--small .zoom-controls__secondary-button {
+        height: 28px;
+        font-size: 12px;
+        padding: 0 6px;
+    }
+
+.zoom-controls--large {
+    --zoom-size: var(--zoom-size-large);
+}
+
+    .zoom-controls--large .zoom-controls__button {
+        font-size: 22px;
+    }
+
+    .zoom-controls--large .zoom-controls__level {
+        height: 32px;
+        font-size: 12px;
+        min-width: var(--zoom-size-large);
+    }
+
+    .zoom-controls--large .zoom-controls__secondary-button {
+        height: 36px;
+        font-size: 15px;
+        padding: 0 12px;
+    }
+
+/* =============================================================================
+   POSITION CLASSES
+============================================================================= */
+.zoom-controls--topright {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.zoom-controls--topleft {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.zoom-controls--bottomright {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.zoom-controls--bottomleft {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+/* =============================================================================
+   LOADING AND ANIMATION STATES
+============================================================================= */
+.zoom-controls__button--loading {
+    pointer-events: none;
+}
+
+    .zoom-controls__button--loading .zoom-controls__button-icon {
+        animation: zoom-spin 1s linear infinite;
+    }
+
+.zoom-controls__button--zooming {
+    transform: scale(0.95);
+}
+
+.zoom-controls--zooming .zoom-controls__level {
+    animation: zoom-pulse 0.3s ease-out;
+}
+
+/* =============================================================================
+   TOOLTIPS
+============================================================================= */
+.zoom-controls__button[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 1001;
+    margin-bottom: 4px;
+    pointer-events: none;
+}
+
+.zoom-controls--horizontal .zoom-controls__button[title]:hover::after {
+    bottom: auto;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-bottom: 0;
+    margin-left: 4px;
+}
+
+/* =============================================================================
+   CONTINUOUS ZOOM INDICATORS
+============================================================================= */
+.zoom-controls__continuous-indicator {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid var(--zoom-border-active);
+    border-radius: calc(var(--zoom-radius) + 2px);
+    opacity: 0;
+    animation: zoom-continuous-pulse 1.5s ease-in-out infinite;
+}
+
+.zoom-controls__button--continuous .zoom-controls__continuous-indicator {
+    opacity: 1;
+}
+
+/* =============================================================================
+   GESTURE HINTS
+============================================================================= */
+.zoom-controls__gesture-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 8px;
+    color: var(--zoom-text-muted);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.zoom-controls__button:hover .zoom-controls__gesture-hint {
+    opacity: 1;
+}
+
+/* =============================================================================
+   COMPACT MODE
+============================================================================= */
+.zoom-controls--compact .zoom-controls__level {
+    display: none;
+}
+
+.zoom-controls--compact .zoom-controls__secondary {
+    display: none;
+}
+
+.zoom-controls--compact .zoom-controls__button {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+}
+
+/* =============================================================================
+   ANIMATIONS
+============================================================================= */
+@keyframes zoom-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes zoom-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes zoom-continuous-pulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.02);
+    }
+}
+
+@keyframes zoom-level-update {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.zoom-controls__level--updating {
+    animation: zoom-level-update 0.3s ease-out;
+}
+
+/* =============================================================================
+   ACCESSIBILITY
+============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+    .zoom-controls__button,
+    .zoom-controls__secondary-button,
+    .zoom-controls__progress-fill,
+    .zoom-controls__continuous-indicator,
+    .zoom-controls__gesture-hint {
+        transition: none;
+        animation: none;
+    }
+}
+
+.zoom-controls__button[aria-pressed="true"] {
+    background: var(--zoom-bg-active);
+    border-color: var(--zoom-border-active);
+    color: var(--zoom-text-active);
+}
+
+/* Screen reader only text */
+.zoom-controls__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+============================================================================= */
+@media (max-width: 768px) {
+    .zoom-controls {
+        --zoom-size: 48px;
+    }
+
+    .zoom-controls__button {
+        font-size: 20px;
+    }
+
+    .zoom-controls__level {
+        height: 32px;
+        font-size: 12px;
+        min-width: 48px;
+    }
+
+    .zoom-controls__secondary-button {
+        height: 36px;
+        font-size: 13px;
+        padding: 0 10px;
+    }
+
+    .zoom-controls--topright,
+    .zoom-controls--topleft,
+    .zoom-controls--bottomright,
+    .zoom-controls--bottomleft {
+        top: 16px;
+        right: 16px;
+        bottom: 16px;
+        left: 16px;
+    }
+
+    /* Hide tooltips on touch devices */
+    .zoom-controls__button[title]:hover::after {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .zoom-controls--small {
+        --zoom-size: 40px;
+    }
+
+    .zoom-controls__secondary {
+        display: none;
+    }
+
+    .zoom-controls__gesture-hint {
+        display: none;
+    }
+}
+
+/* =============================================================================
+   TOUCH DEVICE OPTIMIZATIONS
+============================================================================= */
+@media (hover: none) and (pointer: coarse) {
+    .zoom-controls__button {
+        min-height: 48px;
+        min-width: 48px;
+    }
+
+        .zoom-controls__button:hover {
+            transform: none;
+        }
+
+        .zoom-controls__button:active {
+            transform: scale(0.95);
+        }
+
+    .zoom-controls__gesture-hint {
+        display: none;
+    }
+}
+
+/* =============================================================================
+   HIGH CONTRAST MODE
+============================================================================= */
+@media (prefers-contrast: high) {
+    .zoom-controls__button {
+        border-width: 2px;
+        border-color: currentColor;
+    }
+
+    .zoom-controls__level {
+        border-width: 2px;
+        border-color: currentColor;
+    }
+
+    .zoom-controls__progress {
+        border: 1px solid currentColor;
+    }
+
+    .zoom-controls__continuous-indicator {
+        border-width: 3px;
+    }
+}
+
+/* =============================================================================
+   PRINT STYLES
+============================================================================= */
+@media print {
+    .zoom-controls {
+        display: none;
+    }
+}

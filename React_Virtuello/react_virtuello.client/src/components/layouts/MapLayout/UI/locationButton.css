@@ -1,0 +1,384 @@
+/* =============================================================================
+   CONTROLS.CSS - General Map Controls Styling
+   LocationButton and shared control styles
+   @author WAN SOLUTIONS
+   @version 1.0.0
+============================================================================= */
+
+/* =============================================================================
+   CSS CUSTOM PROPERTIES
+============================================================================= */
+:root {
+    /* Control colors */
+    --control-bg: #ffffff;
+    --control-bg-hover: #f8fafc;
+    --control-bg-active: #e2e8f0;
+    --control-bg-disabled: #f1f5f9;
+    --control-border: #d1d5db;
+    --control-border-hover: #9ca3af;
+    --control-border-active: #6366f1;
+    --control-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --control-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+    /* Text colors */
+    --control-text: #374151;
+    --control-text-muted: #6b7280;
+    --control-text-disabled: #9ca3af;
+    --control-text-active: #6366f1;
+    /* Status colors */
+    --status-success: #10b981;
+    --status-warning: #f59e0b;
+    --status-error: #ef4444;
+    --status-info: #3b82f6;
+    /* Transitions */
+    --control-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --control-transition-fast: all 0.15s ease-out;
+    /* Spacing */
+    --control-padding: 12px;
+    --control-gap: 8px;
+    --control-radius: 8px;
+    --control-border-width: 1px;
+    /* Z-index */
+    --control-z-index: 1000;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --control-bg: #1f2937;
+    --control-bg-hover: #374151;
+    --control-bg-active: #4b5563;
+    --control-bg-disabled: #111827;
+    --control-border: #4b5563;
+    --control-border-hover: #6b7280;
+    --control-border-active: #8b5cf6;
+    --control-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --control-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --control-text: #f9fafb;
+    --control-text-muted: #d1d5db;
+    --control-text-disabled: #6b7280;
+    --control-text-active: #8b5cf6;
+}
+
+/* =============================================================================
+   BASE CONTROL STYLES
+============================================================================= */
+.map-control {
+    background: var(--control-bg);
+    border: var(--control-border-width) solid var(--control-border);
+    border-radius: var(--control-radius);
+    box-shadow: var(--control-shadow);
+    color: var(--control-text);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    padding: var(--control-padding);
+    position: relative;
+    transition: var(--control-transition);
+    user-select: none;
+    z-index: var(--control-z-index);
+}
+
+    .map-control:hover:not(:disabled) {
+        background: var(--control-bg-hover);
+        border-color: var(--control-border-hover);
+        box-shadow: var(--control-shadow-hover);
+        transform: translateY(-1px);
+    }
+
+    .map-control:active:not(:disabled) {
+        background: var(--control-bg-active);
+        border-color: var(--control-border-active);
+        transform: translateY(0);
+    }
+
+    .map-control:disabled {
+        background: var(--control-bg-disabled);
+        border-color: var(--control-border);
+        color: var(--control-text-disabled);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+.map-control--active {
+    background: var(--control-bg-active);
+    border-color: var(--control-border-active);
+    color: var(--control-text-active);
+}
+
+/* =============================================================================
+   LOCATION BUTTON COMPONENT
+============================================================================= */
+.location-button {
+    position: relative;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.location-button__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: var(--control-transition-fast);
+}
+
+.location-button__icon--loading {
+    animation: location-spin 1s linear infinite;
+}
+
+.location-button__accuracy {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--status-info);
+    color: white;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    white-space: nowrap;
+}
+
+.location-button__status {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--control-bg);
+}
+
+.location-button__status--granted {
+    background: var(--status-success);
+}
+
+.location-button__status--denied {
+    background: var(--status-error);
+}
+
+.location-button__status--unknown {
+    background: var(--status-warning);
+}
+
+.location-button__status--tracking {
+    background: var(--status-info);
+    animation: location-pulse 2s infinite;
+}
+
+/* =============================================================================
+   SIZE VARIANTS
+============================================================================= */
+.map-control--small {
+    padding: 8px;
+    font-size: 12px;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+.map-control--medium {
+    padding: var(--control-padding);
+    font-size: 14px;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.map-control--large {
+    padding: 16px;
+    font-size: 16px;
+    min-width: 56px;
+    min-height: 56px;
+}
+
+/* =============================================================================
+   CONTROL GROUPS
+============================================================================= */
+.control-group {
+    display: flex;
+    gap: var(--control-gap);
+}
+
+.control-group--vertical {
+    flex-direction: column;
+}
+
+.control-group--horizontal {
+    flex-direction: row;
+}
+
+.control-group .map-control:not(:last-child) {
+    margin-bottom: 0;
+}
+
+.control-group--connected .map-control {
+    border-radius: 0;
+}
+
+    .control-group--connected .map-control:first-child {
+        border-top-left-radius: var(--control-radius);
+        border-bottom-left-radius: var(--control-radius);
+    }
+
+    .control-group--connected .map-control:last-child {
+        border-top-right-radius: var(--control-radius);
+        border-bottom-right-radius: var(--control-radius);
+    }
+
+.control-group--connected.control-group--vertical .map-control:first-child {
+    border-radius: var(--control-radius) var(--control-radius) 0 0;
+}
+
+.control-group--connected.control-group--vertical .map-control:last-child {
+    border-radius: 0 0 var(--control-radius) var(--control-radius);
+}
+
+/* =============================================================================
+   LOADING STATES
+============================================================================= */
+.map-control--loading {
+    pointer-events: none;
+}
+
+    .map-control--loading .control-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--control-text-muted);
+        border-top-color: var(--control-text);
+        border-radius: 50%;
+        animation: control-spin 0.8s linear infinite;
+    }
+
+/* =============================================================================
+   POSITIONING CLASSES
+============================================================================= */
+.control-position-topleft {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.control-position-topright {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.control-position-bottomleft {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+.control-position-bottomright {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+/* =============================================================================
+   ANIMATIONS
+============================================================================= */
+@keyframes location-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes location-pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes control-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =============================================================================
+   ACCESSIBILITY
+============================================================================= */
+.map-control:focus-visible {
+    outline: 2px solid var(--control-border-active);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .map-control,
+    .location-button__icon,
+    .control-spinner {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+============================================================================= */
+@media (max-width: 768px) {
+    .map-control {
+        min-width: 48px;
+        min-height: 48px;
+        padding: 14px;
+    }
+
+    .map-control--small {
+        min-width: 40px;
+        min-height: 40px;
+        padding: 10px;
+    }
+
+    .control-group {
+        gap: 12px;
+    }
+
+    .control-position-topleft,
+    .control-position-topright,
+    .control-position-bottomleft,
+    .control-position-bottomright {
+        top: 16px;
+        right: 16px;
+        bottom: 16px;
+        left: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .location-button__accuracy {
+        display: none; /* Hide accuracy badge on very small screens */
+    }
+}
+
+/* =============================================================================
+   HIGH CONTRAST MODE
+============================================================================= */
+@media (prefers-contrast: high) {
+    .map-control {
+        border-width: 2px;
+        border-color: currentColor;
+    }
+
+    .location-button__status {
+        border-width: 3px;
+    }
+}
