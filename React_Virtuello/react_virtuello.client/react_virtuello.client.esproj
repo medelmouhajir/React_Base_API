@@ -12,7 +12,7 @@
     <Folder Include="src\components\layouts\MainLayout\Layout\" />
     <Folder Include="src\components\layouts\MainLayout\Navbar\" />
     <Folder Include="src\components\layouts\MainLayout\Sidebar\" />
-    <Folder Include="src\components\layouts\MapLayout\Components\" />
+    <Folder Include="src\components\layouts\MapLayout\Controls\" />
     <Folder Include="src\components\layouts\MapLayout\Models\" />
     <Folder Include="src\components\layouts\MapLayout\Config\" />
     <Folder Include="src\components\layouts\MapLayout\Hooks\" />

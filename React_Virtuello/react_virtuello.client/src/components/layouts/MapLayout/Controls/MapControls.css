@@ -1,0 +1,49 @@
+/* =============================================================================
+   MAPCONTROLS.CSS - Master Map Controls Interface Styling
+   Orchestrates all control components with responsive layout
+   @author WAN SOLUTIONS
+   @version 1.0.0
+============================================================================= */
+
+/* =============================================================================
+   CSS CUSTOM PROPERTIES
+============================================================================= */
+:root {
+    /* Control colors */
+    --controls-bg: rgba(255, 255, 255, 0.95);
+    --controls-bg-mobile: rgba(255, 255, 255, 0.98);
+    --controls-border: #e5e7eb;
+    --controls-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    --controls-shadow-mobile: 0 2px 12px rgba(0, 0, 0, 0.15);
+    /* Button colors */
+    --button-bg: #ffffff;
+    --button-bg-hover: #f8fafc;
+    --button-bg-active: #6366f1;
+    --button-border: #d1d5db;
+    --button-border-active: #6366f1;
+    --button-text: #374151;
+    --button-text-active: #ffffff;
+    --button-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* Panel colors */
+    --panel-bg: #ffffff;
+    --panel-border: #e5e7eb;
+    --panel-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    --panel-header-bg: #f9fafb;
+    /* Status and badge colors */
+    --badge-bg: #ef4444;
+    --badge-text: #ffffff;
+    --stat-bg: #f3f4f6;
+    --stat-text: #6b7280;
+    --stat-value: #111827;
+    /* Dimensions */
+    --controls-width: 350px;
+    --controls-width-mobile: 100%;
+    --controls-max-height: calc(100vh - 120px);
+    --button-size: 44px;
+    --button-size-mobile: 48px;
+    --panel-max-height: 400px;
+    --control-radius: 8px;
+    --control-gap: 8px;
+    /* Animation */
+    --controls-transition: all 0.3s cubic-
+}

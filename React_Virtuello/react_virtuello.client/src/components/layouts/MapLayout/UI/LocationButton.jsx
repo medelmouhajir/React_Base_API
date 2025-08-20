@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
-import geolocationService from '../../Services/GeolocationService';
+import geolocationService from '../Services/GeolocationService';
 import './locationButton.css';
 
 const LocationButton = ({

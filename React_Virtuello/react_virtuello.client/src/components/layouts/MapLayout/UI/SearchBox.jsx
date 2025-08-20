@@ -7,8 +7,8 @@
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useGeolocation } from '../../../hooks/useGeolocation';
-import { mapService } from '../../../../services/mapService';
+import { useGeolocation } from '../Hooks/useGeolocation';
+import { mapService } from '../Services/MapService';
 import './searchbox.css';
 
 const SearchBox = ({
