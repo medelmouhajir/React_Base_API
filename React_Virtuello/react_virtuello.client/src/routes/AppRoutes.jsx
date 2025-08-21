@@ -12,7 +12,6 @@ import BusinessesTags from '../pages/Main/Businesses/Tags/BusinessesTags';
 import ToursList from '../pages/Main/Tours/List/ToursList';
 import ToursAdd from '../pages/Main/Tours/Add/ToursAdd';
 
-
 import EventsList from '../pages/Main/Events/List/EventsList';
 import EventsAdd from '../pages/Main/Events/Add/EventsAdd';
 import EventsCategories from '../pages/Main/Events/Categories/EventsCategories';
@@ -83,16 +82,19 @@ const AppRoutes = () => {
         }
     ];
 
-    // Mock marker for tour starting point
+    // FIXED: Mock markers with unique IDs and proper coordinate structure
     const mockMarkers = [
         {
-            id: 'tour-start',
-            lat: 34.0622,
-            lng: -6.7636,
+            id: 'tour-start-1', // Fixed: Unique ID matching your mention of "tour-start-1"
+            latitude: 34.0622,  // Fixed: Use 'latitude' instead of 'lat' to match DTO structure
+            longitude: -6.7636, // Fixed: Use 'longitude' instead of 'lng' to match DTO structure
             name: 'Medina Tour Starting Point',
             type: 'tour',
             color: '#f97316',
-            popup: 'Start your virtual tour of Fes medina here'
+            popup: 'Start your virtual tour of Fes medina here',
+            // Additional properties to match EventDto structure if needed
+            description: 'Starting point for the virtual medina tour experience',
+            address: 'Medina, Fes, Morocco'
         }
     ];
 
@@ -177,14 +179,6 @@ const AppRoutes = () => {
 
             {/* Tours management */}
             <Route
-                path="/myspace/tours/add"
-                element={
-                    <MainLayout>
-                        <ToursAdd />
-                    </MainLayout>
-                }
-            />
-            <Route
                 path="/myspace/tours"
                 element={
                     <MainLayout>
@@ -192,8 +186,16 @@ const AppRoutes = () => {
                     </MainLayout>
                 }
             />
+            <Route
+                path="/myspace/tours/add"
+                element={
+                    <MainLayout>
+                        <ToursAdd />
+                    </MainLayout>
+                }
+            />
 
-            {/* events management */}
+            {/* Events management */}
             <Route
                 path="/myspace/events"
                 element={
@@ -218,8 +220,6 @@ const AppRoutes = () => {
                     </MainLayout>
                 }
             />
-            {/* Catch all route - redirect to home */}
-            <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
     );
 };

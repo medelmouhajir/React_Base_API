@@ -1,183 +1,151 @@
 ﻿/**
- * CustomMarker Component - Generic Custom Marker for Map
- * Flexible marker component for user locations, waypoints, and custom markers
+ * CustomMarker Component - Enhanced Leaflet Marker with Validation
+ * Handles custom markers with coordinate validation and proper error handling
  * 
  * @author WAN SOLUTIONS
- * @version 1.0.0
+ * @version 1.0.1 - Added coordinate validation
  */
 
-import React, { useCallback, useMemo } from 'react';
-import { Marker, Tooltip, Popup } from 'react-leaflet';
-import { createLocationIcon, createRouteIcon, createCustomImageIcon, createCustomSVGIcon } from '../Utils/markerIcons';
+import React, { useMemo, useCallback, useRef, useEffect } from 'react';
+import { Marker, Tooltip, Popup, useMap } from 'react-leaflet';
 import PropTypes from 'prop-types';
 
 const CustomMarker = ({
-    // Core properties
-    position,
-    markerType = 'location', // 'location', 'route', 'custom', 'user'
-
-    // Marker data
-    data = {},
-    title = '',
-    description = '',
-
-    // Appearance
-    icon = null,
-    iconType = 'default', // For location: 'default', 'user', 'search', 'target'
-    color = null,
-    size = 'medium',
-    number = null, // For route markers
-    letter = null, // For route markers
-
-    // States
+    marker,
     isSelected = false,
     isHovered = false,
-    isActive = false,
     isDraggable = false,
-
-    // Content
     showTooltip = true,
     showPopup = false,
     tooltipContent = null,
     popupContent = null,
-
-    // Events
     onClick = null,
-    onMouseOver = null,
-    onMouseOut = null,
+    onHover = null,
     onDragEnd = null,
-
-    // Styling
-    zIndexOffset = 0,
     className = '',
-    markerRef = null
+    zIndexOffset = 0
 }) => {
+    const map = useMap();
+    const markerRef = useRef(null);
+
+    // Extract marker data with proper validation
+    const {
+        id,
+        latitude,
+        longitude,
+        lat, // fallback for old format
+        lng, // fallback for old format
+        name: title,
+        description,
+        type: markerType = 'custom',
+        data = {},
+        number,
+        letter,
+        icon,
+        color = '#6366f1'
+    } = marker || {};
+
     // =============================================================================
-    // MARKER ICON CREATION
+    // COORDINATE VALIDATION
     // =============================================================================
 
     /**
-     * Create marker icon based on type and configuration
+     * Validate and extract coordinates from marker data
      */
-    const markerIcon = useMemo(() => {
-        // Use custom icon if provided
-        if (icon) {
-            if (typeof icon === 'string') {
-                // URL or SVG string
-                if (icon.startsWith('<svg') || icon.includes('svg')) {
-                    return createCustomSVGIcon(icon, { size, color });
-                } else {
-                    return createCustomImageIcon(icon, { size });
-                }
-            } else {
-                // Leaflet icon object
-                return icon;
-            }
+    const position = useMemo(() => {
+        // Priority: latitude/longitude -> lat/lng -> null
+        let lat_val = latitude || lat;
+        let lng_val = longitude || lng;
+
+        // Validate coordinates
+        if (lat_val === undefined || lng_val === undefined) {
+            console.error(`[CustomMarker] Invalid coordinates for marker ${id}:`, {
+                latitude: lat_val,
+                longitude: lng_val,
+                marker
+            });
+            return null;
         }
 
-        // Create icon based on marker type
-        switch (markerType) {
-            case 'location':
-            case 'user':
-                return createLocationIcon({
-                    locationType: iconType,
-                    size: isSelected ? 'large' : size,
-                    isActive: isSelected || isHovered || isActive,
-                    color
-                });
+        // Convert to numbers and validate range
+        lat_val = Number(lat_val);
+        lng_val = Number(lng_val);
 
-            case 'route':
-            case 'waypoint':
-                return createRouteIcon({
-                    routeType: iconType,
-                    size: isSelected ? 'large' : size,
-                    number,
-                    letter,
-                    color
-                });
-
-            case 'custom':
-            default:
-                return createLocationIcon({
-                    locationType: 'custom',
-                    size: isSelected ? 'large' : size,
-                    isActive: isSelected || isHovered || isActive,
-                    color: color || '#6366f1'
-                });
+        if (isNaN(lat_val) || isNaN(lng_val)) {
+            console.error(`[CustomMarker] NaN coordinates for marker ${id}:`, {
+                latitude: lat_val,
+                longitude: lng_val
+            });
+            return null;
         }
-    }, [
-        icon, markerType, iconType, size, isSelected, isHovered, isActive,
-        color, number, letter
-    ]);
 
-    /**
-     * Calculate z-index based on marker importance
-     */
-    const zIndex = useMemo(() => {
-        let baseZIndex = 300 + zIndexOffset;
+        // Validate coordinate ranges
+        if (lat_val < -90 || lat_val > 90 || lng_val < -180 || lng_val > 180) {
+            console.error(`[CustomMarker] Coordinates out of range for marker ${id}:`, {
+                latitude: lat_val,
+                longitude: lng_val
+            });
+            return null;
+        }
 
-        // Higher z-index for selected/hovered markers
-        if (isSelected) baseZIndex += 1000;
-        else if (isHovered) baseZIndex += 500;
-        else if (isActive) baseZIndex += 200;
+        return [lat_val, lng_val];
+    }, [latitude, longitude, lat, lng, id, marker]);
 
-        // Higher z-index for user location
-        if (markerType === 'user') baseZIndex += 100;
-        else if (markerType === 'route') baseZIndex += 50;
-
-        return baseZIndex;
-    }, [markerType, isSelected, isHovered, isActive, zIndexOffset]);
+    // Don't render if coordinates are invalid
+    if (!position) {
+        return null;
+    }
 
     // =============================================================================
     // EVENT HANDLERS
     // =============================================================================
 
     /**
-     * Handle marker click
+     * Handle marker click events
      */
     const handleClick = useCallback((event) => {
-        event.originalEvent.stopPropagation();
-
         if (onClick) {
             onClick({
-                type: markerType,
+                marker,
                 position,
                 data,
-                title
+                title,
+                type: markerType
             }, event);
         }
-    }, [markerType, position, data, title, onClick]);
+    }, [marker, position, data, title, markerType, onClick]);
 
     /**
-     * Handle marker mouse over
+     * Handle marker hover events
      */
     const handleMouseOver = useCallback((event) => {
-        if (onMouseOver) {
-            onMouseOver({
-                type: markerType,
+        if (onHover) {
+            onHover({
+                marker,
                 position,
                 data,
-                title
+                title,
+                type: markerType,
+                hovered: true
             }, event);
         }
-    }, [markerType, position, data, title, onMouseOver]);
+    }, [marker, position, data, title, markerType, onHover]);
 
-    /**
-     * Handle marker mouse out
-     */
     const handleMouseOut = useCallback((event) => {
-        if (onMouseOut) {
-            onMouseOut({
-                type: markerType,
+        if (onHover) {
+            onHover({
+                marker,
                 position,
                 data,
-                title
+                title,
+                type: markerType,
+                hovered: false
             }, event);
         }
-    }, [markerType, position, data, title, onMouseOut]);
+    }, [marker, position, data, title, markerType, onHover]);
 
     /**
-     * Handle marker drag end
+     * Handle marker drag end events
      */
     const handleDragEnd = useCallback((event) => {
         const newPosition = event.target.getLatLng();
@@ -253,47 +221,99 @@ const CustomMarker = ({
         return (
             <div className="custom-marker-popup">
                 <div className="popup-header">
-                    {title && <h3 className="popup-title">{title}</h3>}
-                    <span className={`popup-type type-${markerType}`}>
-                        {markerType.charAt(0).toUpperCase() + markerType.slice(1)}
-                    </span>
+                    <h3>{title || 'Custom Location'}</h3>
+                    {markerType && (
+                        <span className={`marker-type type-${markerType}`}>
+                            {markerType.charAt(0).toUpperCase() + markerType.slice(1)}
+                        </span>
+                    )}
                 </div>
 
                 {description && (
                     <div className="popup-description">
-                        {description}
+                        <p>{description}</p>
                     </div>
                 )}
 
                 <div className="popup-details">
-                    <div className="popup-coordinates">
-                        <strong>Coordinates:</strong><br />
-                        {position[0].toFixed(6)}, {position[1].toFixed(6)}
+                    <div className="coordinates">
+                        📍 {position[0].toFixed(6)}, {position[1].toFixed(6)}
                     </div>
 
                     {data.address && (
-                        <div className="popup-address">
-                            <strong>Address:</strong><br />
-                            {data.address}
-                        </div>
-                    )}
-
-                    {data.accuracy && markerType === 'user' && (
-                        <div className="popup-accuracy">
-                            <strong>GPS Accuracy:</strong> ±{Math.round(data.accuracy)}m
+                        <div className="address">
+                            🏠 {data.address}
                         </div>
                     )}
 
                     {data.timestamp && (
-                        <div className="popup-timestamp">
-                            <strong>Created:</strong><br />
-                            {new Date(data.timestamp).toLocaleString()}
+                        <div className="timestamp">
+                            🕒 {new Date(data.timestamp).toLocaleString()}
                         </div>
                     )}
                 </div>
+
+                {markerType === 'user' && data.accuracy && (
+                    <div className="accuracy-info">
+                        <small>GPS Accuracy: ±{Math.round(data.accuracy)}m</small>
+                    </div>
+                )}
             </div>
         );
-    }, [popupContent, showPopup, title, description, position, data, markerType]);
+    }, [popupContent, showPopup, title, markerType, description, position, data]);
+
+    // =============================================================================
+    // MARKER STYLING
+    // =============================================================================
+
+    /**
+     * Generate marker styling classes
+     */
+    const markerClasses = useMemo(() => {
+        const classes = ['custom-marker'];
+
+        if (className) classes.push(className);
+        if (markerType) classes.push(`marker-${markerType}`);
+        if (isSelected) classes.push('selected');
+        if (isHovered) classes.push('hovered');
+        if (isDraggable) classes.push('draggable');
+
+        return classes.join(' ');
+    }, [className, markerType, isSelected, isHovered, isDraggable]);
+
+    /**
+     * Calculate z-index based on state and priority
+     */
+    const calculatedZIndexOffset = useMemo(() => {
+        let offset = zIndexOffset;
+
+        if (isSelected) offset += 1000;
+        if (isHovered) offset += 500;
+        if (markerType === 'user') offset += 100;
+
+        return offset;
+    }, [zIndexOffset, isSelected, isHovered, markerType]);
+
+    // =============================================================================
+    // EFFECTS
+    // =============================================================================
+
+    /**
+     * Update marker reference for external access
+     */
+    useEffect(() => {
+        if (markerRef.current && map) {
+            // Store marker reference for potential external access
+            const leafletMarker = markerRef.current;
+
+            // Add custom properties for debugging
+            leafletMarker._customData = {
+                id,
+                type: markerType,
+                data
+            };
+        }
+    }, [map, id, markerType, data]);
 
     // =============================================================================
     // RENDER
@@ -303,42 +323,33 @@ const CustomMarker = ({
         <Marker
             ref={markerRef}
             position={position}
-            icon={markerIcon}
-            zIndexOffset={zIndex}
+            icon={icon}
             draggable={isDraggable}
+            zIndexOffset={calculatedZIndexOffset}
             eventHandlers={{
                 click: handleClick,
                 mouseover: handleMouseOver,
                 mouseout: handleMouseOut,
-                ...(isDraggable && { dragend: handleDragEnd })
+                dragend: handleDragEnd
             }}
-            className={`custom-marker ${className} marker-${markerType} ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''} ${isActive ? 'active' : ''}`}
-            data-marker-type={markerType}
-            data-marker-id={data.id}
-            title={title}
+            className={markerClasses}
         >
             {/* Tooltip */}
-            {showTooltip && defaultTooltipContent && (
+            {defaultTooltipContent && (
                 <Tooltip
-                    direction="top"
-                    offset={[0, -10]}
-                    opacity={0.95}
-                    className="custom-marker-tooltip-container"
                     permanent={false}
-                    sticky={true}
+                    direction="top"
+                    className="custom-tooltip"
                 >
                     {defaultTooltipContent}
                 </Tooltip>
             )}
 
             {/* Popup */}
-            {showPopup && defaultPopupContent && (
+            {defaultPopupContent && (
                 <Popup
-                    closeButton={true}
-                    closeOnClick={false}
-                    className="custom-marker-popup-container"
                     maxWidth={300}
-                    minWidth={200}
+                    className="custom-popup"
                 >
                     {defaultPopupContent}
                 </Popup>
@@ -352,45 +363,33 @@ const CustomMarker = ({
 // =============================================================================
 
 CustomMarker.propTypes = {
-    // Core properties
-    position: PropTypes.arrayOf(PropTypes.number).isRequired,
-    markerType: PropTypes.oneOf(['location', 'route', 'custom', 'user']),
-
-    // Marker data
-    data: PropTypes.object,
-    title: PropTypes.string,
-    description: PropTypes.string,
-
-    // Appearance
-    icon: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    iconType: PropTypes.string,
-    color: PropTypes.string,
-    size: PropTypes.oneOf(['small', 'medium', 'large']),
-    number: PropTypes.number,
-    letter: PropTypes.string,
-
-    // States
+    marker: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        latitude: PropTypes.number,
+        longitude: PropTypes.number,
+        lat: PropTypes.number, // fallback
+        lng: PropTypes.number, // fallback
+        name: PropTypes.string,
+        description: PropTypes.string,
+        type: PropTypes.string,
+        data: PropTypes.object,
+        number: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        letter: PropTypes.string,
+        icon: PropTypes.object,
+        color: PropTypes.string
+    }).isRequired,
     isSelected: PropTypes.bool,
     isHovered: PropTypes.bool,
-    isActive: PropTypes.bool,
     isDraggable: PropTypes.bool,
-
-    // Content
     showTooltip: PropTypes.bool,
     showPopup: PropTypes.bool,
     tooltipContent: PropTypes.node,
     popupContent: PropTypes.node,
-
-    // Events
     onClick: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    onMouseOut: PropTypes.func,
+    onHover: PropTypes.func,
     onDragEnd: PropTypes.func,
-
-    // Styling
-    zIndexOffset: PropTypes.number,
     className: PropTypes.string,
-    markerRef: PropTypes.object
+    zIndexOffset: PropTypes.number
 };
 
 export default CustomMarker;

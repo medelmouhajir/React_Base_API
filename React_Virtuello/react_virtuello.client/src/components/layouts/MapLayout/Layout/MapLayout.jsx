@@ -280,7 +280,7 @@ const MapLayout = ({
         clearMarkers,
         getMarkerById,
         getMarkersInBounds,
-        setFilters
+        setActiveFilters
     } = useMarkers(mapInstance, {
         enableClustering,
         onMarkerClick: handleMarkerClick,
@@ -426,8 +426,8 @@ const MapLayout = ({
      * Handle filter changes
      */
     const handleFilterChange = useCallback((newFilters) => {
-        setFilters(newFilters);
-    }, [setFilters]);
+        setActiveFilters(newFilters);
+    }, [setActiveFilters]);
 
     // =============================================================================
     // COMPUTED VALUES
@@ -467,8 +467,8 @@ const MapLayout = ({
 
     // Update filters when props change
     useEffect(() => {
-        setFilters(filters);
-    }, [filters, setFilters]);
+        setActiveFilters(filters);
+    }, [filters, setActiveFilters]);
 
     // Handle prop-based data updates
     useEffect(() => {
@@ -583,7 +583,7 @@ const MapLayout = ({
                     {filteredMarkers.businesses?.map(marker => (
                         <BusinessMarker
                             key={marker.id}
-                            marker={marker}
+                            business={marker.data}  // ✅ Pass the business data from marker.data
                             isSelected={selectedMarkerId === marker.id}
                             isHovered={hoveredMarkerId === marker.id}
                             onClick={handleMarkerClick}
@@ -591,11 +591,12 @@ const MapLayout = ({
                         />
                     ))}
 
+
                     {/* Event Markers */}
                     {filteredMarkers.events?.map(marker => (
                         <EventMarker
                             key={marker.id}
-                            marker={marker}
+                            marker={marker.data}
                             isSelected={selectedMarkerId === marker.id}
                             isHovered={hoveredMarkerId === marker.id}
                             onClick={handleMarkerClick}
@@ -607,11 +608,31 @@ const MapLayout = ({
                     {filteredMarkers.custom?.map(marker => (
                         <CustomMarker
                             key={marker.id}
-                            marker={marker}
+                            position={marker.position}  // ✅ Pass position directly
+                            markerType={marker.markerType || 'custom'}
+                            data={marker.data || {}}
+                            title={marker.title || ''}
+                            description={marker.description || ''}
+                            icon={marker.icon}
+                            iconType={marker.iconType}
+                            color={marker.color}
+                            size={marker.size}
+                            number={marker.number}
+                            letter={marker.letter}
                             isSelected={selectedMarkerId === marker.id}
                             isHovered={hoveredMarkerId === marker.id}
+                            isActive={marker.isActive}
+                            isDraggable={marker.isDraggable}
+                            showTooltip={marker.showTooltip}
+                            showPopup={marker.showPopup}
+                            tooltipContent={marker.tooltipContent}
+                            popupContent={marker.popupContent}
                             onClick={handleMarkerClick}
-                            onHover={handleMarkerHover}
+                            onMouseOver={handleMarkerHover}
+                            onMouseOut={handleMarkerHover}
+                            onDragEnd={marker.onDragEnd}
+                            zIndexOffset={marker.zIndexOffset}
+                            className={marker.className}
                         />
                     ))}
                 </MapContainer>
