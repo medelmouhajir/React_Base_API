@@ -608,6 +608,7 @@ const MapLayout = ({
                     {filteredMarkers.custom?.map(marker => (
                         <CustomMarker
                             key={`custom-${marker.id}`} // Unique key prefix
+                            marker={marker} 
                             position={marker.position || [marker.latitude, marker.longitude]} // Ensure position format
                             data={marker.data || marker}
                             markerType={marker.type || 'custom'}

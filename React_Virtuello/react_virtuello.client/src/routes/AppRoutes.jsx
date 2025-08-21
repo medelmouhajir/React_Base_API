@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import MapLayout from '../components/layouts/MapLayout/Layout/MapLayout';
 import MainLayout from '../components/layouts/MainLayout/Layout/MainLayout';
@@ -85,16 +85,21 @@ const AppRoutes = () => {
     // FIXED: Mock markers with unique IDs and proper coordinate structure
     const mockMarkers = [
         {
-            id: 'tour-start-1', // Fixed: Unique ID matching your mention of "tour-start-1"
-            latitude: 34.0622,  // Fixed: Use 'latitude' instead of 'lat' to match DTO structure
-            longitude: -6.7636, // Fixed: Use 'longitude' instead of 'lng' to match DTO structure
+            id: 'tour-start-1',
+            latitude: 34.0622,
+            longitude: -6.7636,
             name: 'Medina Tour Starting Point',
-            type: 'tour',
-            color: '#f97316',
-            popup: 'Start your virtual tour of Fes medina here',
-            // Additional properties to match EventDto structure if needed
             description: 'Starting point for the virtual medina tour experience',
-            address: 'Medina, Fes, Morocco'
+            type: 'tour',
+            address: 'Medina, Fes, Morocco',
+            color: '#f97316',
+            // ✅ FIXED: Add missing properties that CustomMarker expects
+            data: {
+                name: 'Medina Tour Starting Point',
+                description: 'Starting point for the virtual medina tour experience',
+                address: 'Medina, Fes, Morocco',
+                timestamp: new Date().toISOString()
+            }
         }
     ];
 

@@ -229,65 +229,67 @@ export const useMarkers = (map, options = {}) => {
      * @param {Object} filters - Filter configuration
      * @returns {Array} Filtered markers
      */
-    const applyFilters = useCallback((markersToFilter, filters) => {
-        if (!filters || Object.keys(filters).length === 0) {
-            return markersToFilter;
-        }
-
-        return markersToFilter.filter(marker => {
-            const { data } = marker;
-
-            // Text search filter
-            if (filters.search) {
-                const searchTerm = filters.search.toLowerCase();
-                const searchableText = [
-                    data.name,
-                    data.title,
-                    data.address,
-                    data.description
-                ].filter(Boolean).join(' ').toLowerCase();
-
-                if (!searchableText.includes(searchTerm)) {
-                    return false;
-                }
+    const applyFilters = useMemo(() => {
+        return (markersToFilter, filters) => {
+            if (!filters || Object.keys(filters).length === 0) {
+                return markersToFilter;
             }
 
-            // Status filter
-            if (filters.status && filters.status.length > 0) {
-                if (!filters.status.includes(data.status)) {
-                    return false;
-                }
-            }
+            return markersToFilter.filter(marker => {
+                const { data } = marker;
 
-            // Rating filter (for businesses)
-            if (filters.minRating && marker.type === 'business') {
-                if (!data.rating || data.rating < filters.minRating) {
-                    return false;
-                }
-            }
+                // Text search filter
+                if (filters.search) {
+                    const searchTerm = filters.search.toLowerCase();
+                    const searchableText = [
+                        data.name,
+                        data.title,
+                        data.address,
+                        data.description
+                    ].filter(Boolean).join(' ').toLowerCase();
 
-            // Date range filter (for events)
-            if (marker.type === 'event') {
-                if (filters.startDate || filters.endDate) {
-                    const eventDate = new Date(data.startDate);
-                    if (filters.startDate && eventDate < new Date(filters.startDate)) {
-                        return false;
-                    }
-                    if (filters.endDate && eventDate > new Date(filters.endDate)) {
+                    if (!searchableText.includes(searchTerm)) {
                         return false;
                     }
                 }
 
-                // Categories filter
-                if (filters.categories && filters.categories.length > 0) {
-                    if (!data.categories || !data.categories.some(cat => filters.categories.includes(cat))) {
+                // Status filter
+                if (filters.status && filters.status.length > 0) {
+                    if (!filters.status.includes(data.status)) {
                         return false;
                     }
                 }
-            }
 
-            return true;
-        });
+                // Rating filter (for businesses)
+                if (filters.minRating && marker.type === 'business') {
+                    if (!data.rating || data.rating < filters.minRating) {
+                        return false;
+                    }
+                }
+
+                // Date range filter (for events)
+                if (marker.type === 'event') {
+                    if (filters.startDate || filters.endDate) {
+                        const eventDate = new Date(data.startDate);
+                        if (filters.startDate && eventDate < new Date(filters.startDate)) {
+                            return false;
+                        }
+                        if (filters.endDate && eventDate > new Date(filters.endDate)) {
+                            return false;
+                        }
+                    }
+
+                    // Categories filter
+                    if (filters.categories && filters.categories.length > 0) {
+                        if (!data.categories || !data.categories.some(cat => filters.categories.includes(cat))) {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            });
+        };
     }, []);
 
     /**
@@ -557,7 +559,7 @@ export const useMarkers = (map, options = {}) => {
         });
 
         setFilteredMarkers(filtered);
-    }, [markers, activeFilters, applyFilters]);
+    }, [markers, activeFilters]);
 
     // Update map when filtered markers change
     useEffect(() => {
@@ -568,7 +570,7 @@ export const useMarkers = (map, options = {}) => {
                 removeMarkersFromMap(layerType);
             }
         });
-    }, [filteredMarkers, addMarkersToMap, removeMarkersFromMap]);
+    }, [filteredMarkers]);
 
     // =============================================================================
     // UTILITY METHODS
