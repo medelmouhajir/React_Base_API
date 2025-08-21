@@ -582,8 +582,8 @@ const MapLayout = ({
                     {/* Business Markers */}
                     {filteredMarkers.businesses?.map(marker => (
                         <BusinessMarker
-                            key={marker.id}
-                            business={marker.data}  // ✅ Pass the business data from marker.data
+                            key={`business-${marker.id}`} // Unique key prefix
+                            business={marker.data || marker} // Pass business data correctly
                             isSelected={selectedMarkerId === marker.id}
                             isHovered={hoveredMarkerId === marker.id}
                             onClick={handleMarkerClick}
@@ -595,8 +595,8 @@ const MapLayout = ({
                     {/* Event Markers */}
                     {filteredMarkers.events?.map(marker => (
                         <EventMarker
-                            key={marker.id}
-                            marker={marker.data}
+                            key={`event-${marker.id}`} // Unique key prefix
+                            event={marker.data || marker} // Pass event data correctly
                             isSelected={selectedMarkerId === marker.id}
                             isHovered={hoveredMarkerId === marker.id}
                             onClick={handleMarkerClick}
@@ -607,32 +607,15 @@ const MapLayout = ({
                     {/* Custom Markers */}
                     {filteredMarkers.custom?.map(marker => (
                         <CustomMarker
-                            key={marker.id}
-                            position={marker.position}  // ✅ Pass position directly
-                            markerType={marker.markerType || 'custom'}
-                            data={marker.data || {}}
-                            title={marker.title || ''}
-                            description={marker.description || ''}
-                            icon={marker.icon}
-                            iconType={marker.iconType}
-                            color={marker.color}
-                            size={marker.size}
-                            number={marker.number}
-                            letter={marker.letter}
+                            key={`custom-${marker.id}`} // Unique key prefix
+                            position={marker.position || [marker.latitude, marker.longitude]} // Ensure position format
+                            data={marker.data || marker}
+                            markerType={marker.type || 'custom'}
+                            title={marker.title || marker.name}
                             isSelected={selectedMarkerId === marker.id}
                             isHovered={hoveredMarkerId === marker.id}
-                            isActive={marker.isActive}
-                            isDraggable={marker.isDraggable}
-                            showTooltip={marker.showTooltip}
-                            showPopup={marker.showPopup}
-                            tooltipContent={marker.tooltipContent}
-                            popupContent={marker.popupContent}
                             onClick={handleMarkerClick}
-                            onMouseOver={handleMarkerHover}
-                            onMouseOut={handleMarkerHover}
-                            onDragEnd={marker.onDragEnd}
-                            zIndexOffset={marker.zIndexOffset}
-                            className={marker.className}
+                            onHover={handleMarkerHover}
                         />
                     ))}
                 </MapContainer>
