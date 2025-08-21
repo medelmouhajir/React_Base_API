@@ -7,6 +7,10 @@
  */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import L from 'leaflet';
+import 'leaflet.markercluster'; // Add this import for clustering
+import 'leaflet.markercluster/dist/MarkerCluster.css'; // Add CSS
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'; // Add default styles
 import { CLUSTER_CONFIG, LAYER_CONFIG, PERFORMANCE_CONFIG } from '../Config/mapConfig';
 import { createMarkerIcon, createClusterIcon } from '../Utils/markerIcons';
 
@@ -83,21 +87,25 @@ export const useMarkers = (map, options = {}) => {
                 content: `
                     <div class="marker-popup business-popup">
                         <div class="popup-header">
-                            ${business.logoImage ? `<img src="${business.logoImage}" alt="${business.name}" class="popup-logo" />` : ''}
-                            <h3>${business.name}</h3>
-                            ${business.rating ? `<div class="rating">${'★'.repeat(Math.floor(business.rating))}</div>` : ''}
-                        </div>
-                        <div class="popup-content">
-                            <p>${business.description || ''}</p>
-                            <div class="popup-details">
-                                <span class="address">${business.address || ''}</span>
-                                ${business.phone ? `<span class="phone">${business.phone}</span>` : ''}
+                            ${business.logoImage ?
+                        `<img src="${business.logoImage}" alt="${business.name}" class="business-logo" />` :
+                        '<div class="business-logo-placeholder"></div>'
+                    }
+                            <div class="business-info">
+                                <h3>${business.name}</h3>
+                                <div class="business-rating">
+                                    ${business.rating ? `⭐ ${business.rating.toFixed(1)}` : ''}
+                                </div>
                             </div>
                         </div>
-                        <div class="popup-actions">
-                            <button onclick="window.openBusinessDetails('${business.id}')" class="btn-primary">
-                                View Details
-                            </button>
+                        <div class="popup-content">
+                            <p class="business-address">${business.address}</p>
+                            ${business.phone ? `<p class="business-phone">📞 ${business.phone}</p>` : ''}
+                            <div class="popup-actions">
+                                <button class="btn-view-details" onclick="window.viewBusinessDetails('${business.id}')">
+                                    View Details
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `,
@@ -107,11 +115,10 @@ export const useMarkers = (map, options = {}) => {
                 }
             },
             tooltip: {
-                content: `<strong>${business.name}</strong><br/>${business.address || ''}`,
+                content: business.name,
                 options: {
                     permanent: false,
-                    direction: 'top',
-                    className: 'custom-tooltip'
+                    direction: 'top'
                 }
             }
         };
@@ -126,10 +133,8 @@ export const useMarkers = (map, options = {}) => {
         const icon = createMarkerIcon('event', {
             status: event.status,
             type: event.type,
-            isUpcoming: new Date(event.startDate) > new Date()
+            startDate: event.startDate
         });
-
-        const startDate = new Date(event.startDate).toLocaleDateString();
 
         return {
             id: event.id,
@@ -141,22 +146,18 @@ export const useMarkers = (map, options = {}) => {
                 content: `
                     <div class="marker-popup event-popup">
                         <div class="popup-header">
-                            ${event.coverImage ? `<img src="${event.coverImage}" alt="${event.name}" class="popup-cover" />` : ''}
-                            <h3>${event.name}</h3>
-                            <span class="event-type ${event.type.toLowerCase()}">${event.type}</span>
+                            <h3>${event.title}</h3>
+                            <span class="event-status event-${event.status}">${event.status}</span>
                         </div>
                         <div class="popup-content">
-                            <p>${event.description || ''}</p>
-                            <div class="popup-details">
-                                <span class="date">📅 ${startDate}</span>
-                                <span class="address">📍 ${event.address || ''}</span>
-                                <span class="status status-${event.status.toLowerCase()}">${event.status}</span>
+                            <p class="event-date">📅 ${new Date(event.startDate).toLocaleDateString()}</p>
+                            <p class="event-location">📍 ${event.address}</p>
+                            ${event.description ? `<p class="event-description">${event.description}</p>` : ''}
+                            <div class="popup-actions">
+                                <button class="btn-view-details" onclick="window.viewEventDetails('${event.id}')">
+                                    View Details
+                                </button>
                             </div>
-                        </div>
-                        <div class="popup-actions">
-                            <button onclick="window.openEventDetails('${event.id}')" class="btn-primary">
-                                View Details
-                            </button>
                         </div>
                     </div>
                 `,
@@ -166,11 +167,10 @@ export const useMarkers = (map, options = {}) => {
                 }
             },
             tooltip: {
-                content: `<strong>${event.name}</strong><br/>${startDate}`,
+                content: event.title,
                 options: {
                     permanent: false,
-                    direction: 'top',
-                    className: 'custom-tooltip'
+                    direction: 'top'
                 }
             }
         };
@@ -178,89 +178,96 @@ export const useMarkers = (map, options = {}) => {
 
     /**
      * Create custom marker
-     * @param {Object} markerData - Custom marker data
+     * @param {Object} customData - Custom marker data
      * @returns {Object} Marker configuration
      */
-    const createCustomMarker = useCallback((markerData) => {
-        const icon = createMarkerIcon('custom', markerData.iconOptions || {});
+    const createCustomMarker = useCallback((customData) => {
+        const icon = createMarkerIcon(customData.markerType || 'location', {
+            ...customData.iconOptions
+        });
 
         return {
-            id: markerData.id,
+            id: customData.id,
             type: 'custom',
-            position: [markerData.latitude, markerData.longitude],
+            position: [customData.latitude, customData.longitude],
             icon,
-            data: markerData,
-            popup: markerData.popup,
-            tooltip: markerData.tooltip
+            data: customData,
+            popup: customData.popup,
+            tooltip: customData.tooltip
         };
     }, []);
 
     // =============================================================================
-    // FILTERING UTILITIES
+    // CLUSTER MANAGEMENT
+    // =============================================================================
+
+    /**
+     * Create cluster group for marker type
+     * @param {string} type - Marker type
+     * @returns {Object} Cluster group configuration
+     */
+    const createClusterGroup = useCallback((type) => {
+        if (!enableClustering) return null;
+
+        const options = {
+            ...clusterOptions,
+            iconCreateFunction: (cluster) => createClusterIcon(cluster, type),
+            maxClusterRadius: clusterOptions.maxClusterRadius || 50,
+            disableClusteringAtZoom: clusterOptions.disableClusteringAtZoom || 16
+        };
+
+        return options;
+    }, [enableClustering, clusterOptions]);
+
+    // =============================================================================
+    // FILTERING
     // =============================================================================
 
     /**
      * Apply filters to markers
-     * @param {Array} markersArray - Array of markers to filter
+     * @param {Array} markersToFilter - Markers to filter
      * @param {Object} filters - Filter configuration
-     * @param {string} type - Marker type ('business' | 'event')
      * @returns {Array} Filtered markers
      */
-    const applyFilters = useCallback((markersArray, filters, type) => {
+    const applyFilters = useCallback((markersToFilter, filters) => {
         if (!filters || Object.keys(filters).length === 0) {
-            return markersArray;
+            return markersToFilter;
         }
 
-        return markersArray.filter(marker => {
-            const data = marker.data;
+        return markersToFilter.filter(marker => {
+            const { data } = marker;
+
+            // Text search filter
+            if (filters.search) {
+                const searchTerm = filters.search.toLowerCase();
+                const searchableText = [
+                    data.name,
+                    data.title,
+                    data.address,
+                    data.description
+                ].filter(Boolean).join(' ').toLowerCase();
+
+                if (!searchableText.includes(searchTerm)) {
+                    return false;
+                }
+            }
 
             // Status filter
-            if (filters.status && !filters.status.includes(data.status)) {
-                return false;
-            }
-
-            // Search text filter
-            if (filters.search) {
-                const searchText = filters.search.toLowerCase();
-                const searchableText = `${data.name} ${data.description || ''} ${data.address || ''}`.toLowerCase();
-                if (!searchableText.includes(searchText)) {
+            if (filters.status && filters.status.length > 0) {
+                if (!filters.status.includes(data.status)) {
                     return false;
                 }
             }
 
-            // Distance filter
-            if (filters.center && filters.distance) {
-                const distance = calculateDistance(
-                    filters.center.lat, filters.center.lng,
-                    data.latitude, data.longitude
-                );
-                if (distance > filters.distance) {
+            // Rating filter (for businesses)
+            if (filters.minRating && marker.type === 'business') {
+                if (!data.rating || data.rating < filters.minRating) {
                     return false;
                 }
             }
 
-            // Type-specific filters
-            if (type === 'business') {
-                // Tags filter
-                if (filters.tags && filters.tags.length > 0) {
-                    if (!data.tags || !data.tags.some(tag => filters.tags.includes(tag))) {
-                        return false;
-                    }
-                }
-
-                // Rating filter
-                if (filters.minRating && data.rating < filters.minRating) {
-                    return false;
-                }
-            }
-
-            if (type === 'event') {
-                // Event type filter
-                if (filters.eventType && !filters.eventType.includes(data.type)) {
-                    return false;
-                }
-
-                // Date range filter
+            // Date range filter (for events)
+            if (marker.type === 'event') {
                 if (filters.startDate || filters.endDate) {
                     const eventDate = new Date(data.startDate);
                     if (filters.startDate && eventDate < new Date(filters.startDate)) {
@@ -303,28 +310,6 @@ export const useMarkers = (map, options = {}) => {
     }, []);
 
     // =============================================================================
-    // CLUSTER MANAGEMENT
-    // =============================================================================
-
-    /**
-     * Create cluster group for marker type
-     * @param {string} type - Marker type
-     * @returns {Object} Cluster group configuration
-     */
-    const createClusterGroup = useCallback((type) => {
-        if (!enableClustering) return null;
-
-        const options = {
-            ...clusterOptions,
-            iconCreateFunction: (cluster) => createClusterIcon(cluster, type),
-            maxClusterRadius: clusterOptions.maxClusterRadius || 50,
-            disableClusteringAtZoom: clusterOptions.disableClusteringAtZoom || 16
-        };
-
-        return options;
-    }, [enableClustering, clusterOptions]);
-
-    // =============================================================================
     // MARKER LAYER MANAGEMENT
     // =============================================================================
 
@@ -342,7 +327,7 @@ export const useMarkers = (map, options = {}) => {
 
             if (!layerGroup) {
                 if (enableClustering && layerConfig[layerType]?.enabled) {
-                    // Create cluster group
+                    // Create cluster group - this should now work with the import
                     const clusterOptions = createClusterGroup(layerType);
                     layerGroup = L.markerClusterGroup(clusterOptions);
                 } else {
@@ -357,8 +342,8 @@ export const useMarkers = (map, options = {}) => {
                 layerGroup.clearLayers();
             }
 
-            // Add markers to layer
-            markersToAdd.forEach(markerConfig => {
+            // Add markers to layer with unique keys
+            markersToAdd.forEach((markerConfig, index) => {
                 const marker = L.marker(markerConfig.position, {
                     icon: markerConfig.icon,
                     title: markerConfig.data.name
@@ -393,11 +378,12 @@ export const useMarkers = (map, options = {}) => {
                     setHoveredMarker(null);
                 });
 
-                // Store marker reference
+                // Store marker reference with unique key
                 if (!markerRefsRef.current[layerType]) {
                     markerRefsRef.current[layerType] = {};
                 }
-                markerRefsRef.current[layerType][markerConfig.id] = marker;
+                const uniqueKey = `${markerConfig.id}-${index}`;
+                markerRefsRef.current[layerType][uniqueKey] = marker;
 
                 // Add to layer group
                 layerGroup.addLayer(marker);
@@ -463,11 +449,8 @@ export const useMarkers = (map, options = {}) => {
      */
     const updateBusinessMarkers = useCallback((businesses) => {
         setIsLoading(true);
-
         try {
-            const businessMarkers = businesses
-                .slice(0, maxMarkers)
-                .map(createBusinessMarker);
+            const businessMarkers = businesses.slice(0, maxMarkers).map(createBusinessMarker);
 
             setMarkers(prev => ({
                 ...prev,
@@ -478,7 +461,7 @@ export const useMarkers = (map, options = {}) => {
         } finally {
             setIsLoading(false);
         }
-    }, [createBusinessMarker, maxMarkers]);
+    }, [maxMarkers, createBusinessMarker]);
 
     /**
      * Update event markers
@@ -486,11 +469,8 @@ export const useMarkers = (map, options = {}) => {
      */
     const updateEventMarkers = useCallback((events) => {
         setIsLoading(true);
-
         try {
-            const eventMarkers = events
-                .slice(0, maxMarkers)
-                .map(createEventMarker);
+            const eventMarkers = events.slice(0, maxMarkers).map(createEventMarker);
 
             setMarkers(prev => ({
                 ...prev,
@@ -501,27 +481,35 @@ export const useMarkers = (map, options = {}) => {
         } finally {
             setIsLoading(false);
         }
-    }, [createEventMarker, maxMarkers]);
+    }, [maxMarkers, createEventMarker]);
 
     /**
      * Add custom markers
      * @param {Array} customMarkers - Custom marker data array
+     * @param {string} layerKey - Custom layer key
      */
-    const addCustomMarkers = useCallback((customMarkers) => {
+    const addCustomMarkers = useCallback((customMarkers, layerKey = 'custom') => {
+        setIsLoading(true);
         try {
-            const customMarkerConfigs = customMarkers.map(createCustomMarker);
+            const customMarkerConfigs = customMarkers.map((customData, index) => ({
+                ...createCustomMarker(customData),
+                // Ensure unique IDs to prevent duplicate keys
+                id: `${layerKey}-${customData.id || index}`
+            }));
 
             setMarkers(prev => ({
                 ...prev,
-                custom: [...prev.custom, ...customMarkerConfigs]
+                [layerKey]: customMarkerConfigs
             }));
         } catch (error) {
             console.error('[useMarkers] Error adding custom markers:', error);
+        } finally {
+            setIsLoading(false);
         }
     }, [createCustomMarker]);
 
     /**
-     * Remove specific marker
+     * Remove marker by ID
      * @param {string} markerId - Marker ID to remove
      * @param {string} layerType - Layer type
      */
@@ -531,67 +519,56 @@ export const useMarkers = (map, options = {}) => {
             [layerType]: prev[layerType].filter(marker => marker.id !== markerId)
         }));
 
-        // Remove from map
-        const markerRef = markerRefsRef.current[layerType]?.[markerId];
-        const layerGroup = layerGroupsRef.current[layerType];
-
-        if (markerRef && layerGroup) {
-            layerGroup.removeLayer(markerRef);
+        // Remove from map reference
+        if (markerRefsRef.current[layerType] && markerRefsRef.current[layerType][markerId]) {
+            const marker = markerRefsRef.current[layerType][markerId];
+            const layerGroup = layerGroupsRef.current[layerType];
+            if (layerGroup && marker) {
+                layerGroup.removeLayer(marker);
+            }
             delete markerRefsRef.current[layerType][markerId];
         }
     }, []);
 
     /**
-     * Clear all markers
-     * @param {string} layerType - Optional layer type to clear (clears all if not specified)
+     * Clear all markers from layer
+     * @param {string} layerType - Layer type to clear
      */
-    const clearMarkers = useCallback((layerType = null) => {
-        if (layerType) {
-            setMarkers(prev => ({
-                ...prev,
-                [layerType]: []
-            }));
-            removeMarkersFromMap(layerType);
-        } else {
-            setMarkers({
-                businesses: [],
-                events: [],
-                routes: [],
-                custom: []
-            });
+    const clearMarkers = useCallback((layerType) => {
+        setMarkers(prev => ({
+            ...prev,
+            [layerType]: []
+        }));
 
-            Object.keys(layerGroupsRef.current).forEach(removeMarkersFromMap);
-        }
+        removeMarkersFromMap(layerType);
     }, [removeMarkersFromMap]);
 
     // =============================================================================
-    // FILTER EFFECTS
+    // EFFECTS
     // =============================================================================
 
-    /**
-     * Apply filters to all marker types
-     */
+    // Apply filters when markers or activeFilters change
     useEffect(() => {
-        const newFilteredMarkers = {
-            businesses: applyFilters(markers.businesses, activeFilters.businesses, 'business'),
-            events: applyFilters(markers.events, activeFilters.events, 'event'),
-            routes: markers.routes, // Routes typically don't need filtering
-            custom: applyFilters(markers.custom, activeFilters.custom, 'custom')
-        };
+        const filtered = {};
 
-        setFilteredMarkers(newFilteredMarkers);
+        Object.entries(markers).forEach(([layerType, markersArray]) => {
+            const layerFilters = activeFilters[layerType] || activeFilters.global || {};
+            filtered[layerType] = applyFilters(markersArray, layerFilters);
+        });
+
+        setFilteredMarkers(filtered);
     }, [markers, activeFilters, applyFilters]);
 
-    /**
-     * Update map layers when filtered markers change
-     */
+    // Update map when filtered markers change
     useEffect(() => {
         Object.entries(filteredMarkers).forEach(([layerType, markersArray]) => {
-            if (layerConfig[layerType]?.enabled && markersArray.length > 0) {
+            if (markersArray.length > 0) {
                 addMarkersToMap(markersArray, layerType);
+            } else {
+                removeMarkersFromMap(layerType);
             }
         });
-    }, [filteredMarkers, layerConfig, addMarkersToMap]);
+    }, [filteredMarkers, addMarkersToMap, removeMarkersFromMap]);
 
     // =============================================================================
     // UTILITY METHODS
@@ -604,13 +581,14 @@ export const useMarkers = (map, options = {}) => {
      * @returns {Object|null} Marker configuration
      */
     const getMarkerById = useCallback((markerId, layerType) => {
-        return markers[layerType]?.find(marker => marker.id === markerId) || null;
+        const layerMarkers = markers[layerType] || [];
+        return layerMarkers.find(marker => marker.id === markerId) || null;
     }, [markers]);
 
     /**
      * Get markers within bounds
-     * @param {Object} bounds - Geographic bounds
-     * @param {string} layerType - Layer type
+     * @param {Object} bounds - Map bounds
+     * @param {string} layerType - Layer type (optional)
      * @returns {Array} Markers within bounds
      */
     const getMarkersInBounds = useCallback((bounds, layerType = null) => {
@@ -621,11 +599,15 @@ export const useMarkers = (map, options = {}) => {
         };
 
         if (layerType) {
-            return filteredMarkers[layerType]?.filter(checkBounds) || [];
+            return (filteredMarkers[layerType] || []).filter(checkBounds);
         }
 
-        // Return all markers within bounds
-        return Object.values(filteredMarkers).flat().filter(checkBounds);
+        const allMarkers = [];
+        Object.values(filteredMarkers).forEach(layerMarkers => {
+            allMarkers.push(...layerMarkers.filter(checkBounds));
+        });
+
+        return allMarkers;
     }, [filteredMarkers]);
 
     /**
@@ -641,10 +623,12 @@ export const useMarkers = (map, options = {}) => {
         };
 
         Object.entries(markers).forEach(([type, markersArray]) => {
+            const filteredCount = filteredMarkers[type]?.length || 0;
+
             const typeStats = {
                 total: markersArray.length,
-                visible: filteredMarkers[type]?.length || 0,
-                filtered: markersArray.length - (filteredMarkers[type]?.length || 0)
+                visible: filteredCount,
+                filtered: markersArray.length - filteredCount
             };
 
             stats.byType[type] = typeStats;
