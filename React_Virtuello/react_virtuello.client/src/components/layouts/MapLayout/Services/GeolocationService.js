@@ -1,48 +1,163 @@
 ﻿/**
- * GeolocationService - Location handling and geolocation operations
- * Manages user location, address geocoding, and location-based features
+ * Enhanced Geolocation Service for Virtuello Project
+ * Handles user location, geolocation operations, and location-based features
  * 
  * @author WAN SOLUTIONS
- * @version 1.0.0
+ * @version 2.0.0
  */
+
+import { LocationModel, GeocodingResultModel } from '../Models/MapModels';
+
+// =============================================================================
+// CONFIGURATION
+// =============================================================================
+
+const CONFIG = {
+    // Geolocation options
+    geolocation: {
+        enableHighAccuracy: true,
+        timeout: 30000,
+        maximumAge: 300000, // 5 minutes
+        retryAttempts: 3,
+        retryDelay: 1000,
+        distanceThreshold: 10 // meters
+    },
+
+    // Default locations for fallback
+    defaultLocations: {
+        fes: {
+            lat: 34.0622,
+            lng: -6.7636,
+            name: 'Fes, Morocco',
+            city: 'Fes',
+            country: 'Morocco'
+        },
+        morocco: {
+            lat: 31.7917,
+            lng: -7.0926,
+            name: 'Morocco',
+            country: 'Morocco'
+        }
+    },
+
+    // Cache settings
+    cache: {
+        maxSize: 100,
+        defaultTtl: 3600000, // 1 hour
+        locationTtl: 300000,  // 5 minutes for location data
+        geocodeTtl: 86400000  // 24 hours for geocoding
+    },
+
+    // Performance settings
+    performance: {
+        maxQueueSize: 10,
+        batchDelay: 100,
+        debounceDelay: 300
+    }
+};
+
+// =============================================================================
+// GEOLOCATION SERVICE CLASS
+// =============================================================================
 
 class GeolocationService {
     constructor() {
+        // Core state
         this.currentPosition = null;
         this.watchId = null;
         this.isWatching = false;
+        this.lastKnownPosition = null;
+
+        // Event handling
         this.eventHandlers = new Map();
-        this.geocoder = null;
-        this.config = {
-            enableHighAccuracy: true,
-            timeout: 30000,
-            maximumAge: 300000, // 5 minutes
-            retryAttempts: 3,
-            retryDelay: 1000,
-            distanceThreshold: 10, // meters
-            defaultLocation: {
-                lat: 34.0522,
-                lng: -6.7736,
-                city: 'Fes',
-                country: 'Morocco'
-            }
-        };
-        this.cache = new Map();
+        this.eventQueue = [];
+
+        // Caching
+        this.geocodeCache = new Map();
+        this.locationCache = new Map();
+
+        // Request management
         this.requestQueue = [];
         this.isProcessingQueue = false;
+        this.pendingRequests = new Map();
+
+        // Performance optimization
+        this.debounceTimers = new Map();
+        this.lastLocationUpdate = null;
+
+        // Service state
+        this.isInitialized = false;
+        this.permissionStatus = 'unknown';
+        this.capabilities = this._detectCapabilities();
+
+        // Initialize service
+        this._initialize();
+    }
+
+    // =========================================================================
+    // INITIALIZATION AND SETUP
+    // =========================================================================
+
+    /**
+     * Initialize the geolocation service
+     * @private
+     */
+    async _initialize() {
+        try {
+            // Check initial permission status
+            this.permissionStatus = await this.checkPermission();
+
+            // Set up cleanup on page unload
+            if (typeof window !== 'undefined') {
+                window.addEventListener('beforeunload', () => this.destroy());
+                window.addEventListener('online', () => this._handleOnline());
+                window.addEventListener('offline', () => this._handleOffline());
+            }
+
+            // Load cached position if available
+            this._loadCachedPosition();
+
+            this.isInitialized = true;
+            this._emit('service:initialized', {
+                permissionStatus: this.permissionStatus,
+                capabilities: this.capabilities
+            });
+
+            console.log('[GeolocationService] Service initialized successfully');
+        } catch (error) {
+            console.error('[GeolocationService] Initialization failed:', error);
+            this._emit('service:error', { error, phase: 'initialization' });
+        }
     }
 
     /**
+     * Detect browser capabilities
+     * @private
+     */
+    _detectCapabilities() {
+        return {
+            geolocation: 'geolocation' in navigator,
+            permissions: 'permissions' in navigator,
+            online: navigator.onLine,
+            https: location.protocol === 'https:',
+            serviceWorker: 'serviceWorker' in navigator,
+            webWorker: typeof Worker !== 'undefined'
+        };
+    }
+
+    // =========================================================================
+    // PERMISSION MANAGEMENT
+    // =========================================================================
+
+    /**
      * Check if geolocation is supported
-     * @returns {boolean} Support status
      */
     isSupported() {
-        return 'geolocation' in navigator;
+        return this.capabilities.geolocation;
     }
 
     /**
      * Check current permission status
-     * @returns {Promise<string>} Permission status
      */
     async checkPermission() {
         if (!this.isSupported()) {
@@ -50,9 +165,17 @@ class GeolocationService {
         }
 
         try {
-            if ('permissions' in navigator) {
+            if (this.capabilities.permissions) {
                 const permission = await navigator.permissions.query({ name: 'geolocation' });
-                return permission.state; // 'granted', 'denied', or 'prompt'
+                this.permissionStatus = permission.state;
+
+                // Listen for permission changes
+                permission.onchange = () => {
+                    this.permissionStatus = permission.state;
+                    this._emit('permission:changed', permission.state);
+                };
+
+                return permission.state;
             }
             return 'unknown';
         } catch (error) {
@@ -62,16 +185,52 @@ class GeolocationService {
     }
 
     /**
-     * Get current position
-     * @param {Object} options - Geolocation options
-     * @returns {Promise<Object>} Position data
+     * Request geolocation permission
+     */
+    async requestPermission() {
+        if (!this.isSupported()) {
+            throw new Error('Geolocation is not supported');
+        }
+
+        try {
+            // Attempt to get position to trigger permission prompt
+            const position = await this.getCurrentPosition({ timeout: 10000 });
+            this.permissionStatus = 'granted';
+            this._emit('permission:granted', position);
+            return 'granted';
+        } catch (error) {
+            if (error.code === 1) { // PERMISSION_DENIED
+                this.permissionStatus = 'denied';
+                this._emit('permission:denied', error);
+                return 'denied';
+            }
+            throw error;
+        }
+    }
+
+    // =========================================================================
+    // POSITION METHODS
+    // =========================================================================
+
+    /**
+     * Get current position with enhanced error handling and retry logic
      */
     async getCurrentPosition(options = {}) {
         if (!this.isSupported()) {
             throw new Error('Geolocation is not supported');
         }
 
-        const geoOptions = { ...this.config, ...options };
+        const geoOptions = { ...CONFIG.geolocation, ...options };
+        const requestId = `position-${Date.now()}-${Math.random()}`;
+
+        // Check if we have a recent cached position
+        if (this.currentPosition && !options.forceUpdate) {
+            const age = Date.now() - this.currentPosition.timestamp.getTime();
+            if (age < geoOptions.maximumAge) {
+                this._emit('location:cached', this.currentPosition);
+                return this.currentPosition;
+            }
+        }
 
         return new Promise((resolve, reject) => {
             let attempts = 0;
@@ -81,19 +240,43 @@ class GeolocationService {
 
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        const locationData = this._processPosition(position);
-                        this.currentPosition = locationData;
-                        this._emit('location:success', locationData);
-                        resolve(locationData);
+                        try {
+                            const locationData = this._processPosition(position);
+                            this.currentPosition = locationData;
+                            this.lastKnownPosition = locationData;
+                            this.lastLocationUpdate = Date.now();
+
+                            // Cache the position
+                            this._cachePosition(locationData);
+
+                            this._emit('location:success', locationData);
+                            resolve(locationData);
+                        } catch (error) {
+                            console.error('[GeolocationService] Position processing failed:', error);
+                            reject(new Error('Failed to process location data'));
+                        }
                     },
                     (error) => {
                         console.warn(`[GeolocationService] Attempt ${attempts} failed:`, error.message);
 
-                        if (attempts < geoOptions.retryAttempts) {
-                            setTimeout(attemptLocation, geoOptions.retryDelay);
+                        if (attempts < geoOptions.retryAttempts && error.code !== 1) {
+                            // Don't retry on permission denied
+                            setTimeout(attemptLocation, geoOptions.retryDelay * attempts);
                         } else {
-                            this._emit('location:error', error);
-                            reject(this._createLocationError(error));
+                            const locationError = this._createLocationError(error);
+                            this._emit('location:error', locationError);
+
+                            // Try to fall back to last known position
+                            if (this.lastKnownPosition && error.code !== 1) {
+                                console.log('[GeolocationService] Using last known position as fallback');
+                                resolve({
+                                    ...this.lastKnownPosition,
+                                    isStale: true,
+                                    fallbackReason: 'location_error'
+                                });
+                            } else {
+                                reject(locationError);
+                            }
                         }
                     },
                     {
@@ -104,14 +287,13 @@ class GeolocationService {
                 );
             };
 
+            this.pendingRequests.set(requestId, { resolve, reject, cancel: () => { } });
             attemptLocation();
         });
     }
 
     /**
-     * Start watching position changes
-     * @param {Object} options - Watch options
-     * @returns {Promise<number>} Watch ID
+     * Start watching position changes with intelligent filtering
      */
     async startWatching(options = {}) {
         if (!this.isSupported()) {
@@ -122,22 +304,37 @@ class GeolocationService {
             this.stopWatching();
         }
 
-        const geoOptions = { ...this.config, ...options };
+        const geoOptions = { ...CONFIG.geolocation, ...options };
 
         return new Promise((resolve, reject) => {
             this.watchId = navigator.geolocation.watchPosition(
                 (position) => {
-                    const locationData = this._processPosition(position);
+                    try {
+                        const locationData = this._processPosition(position);
 
-                    // Check if location has changed significantly
-                    if (this._hasLocationChanged(locationData)) {
-                        this.currentPosition = locationData;
-                        this._emit('location:change', locationData);
+                        // Intelligent position filtering
+                        if (this._shouldUpdatePosition(locationData)) {
+                            this.currentPosition = locationData;
+                            this.lastKnownPosition = locationData;
+                            this.lastLocationUpdate = Date.now();
+
+                            this._cachePosition(locationData);
+                            this._emit('location:change', locationData);
+                        }
+                    } catch (error) {
+                        console.error('[GeolocationService] Position processing failed:', error);
+                        this._emit('location:error', error);
                     }
                 },
                 (error) => {
                     console.error('[GeolocationService] Watch position error:', error);
-                    this._emit('location:error', error);
+                    const locationError = this._createLocationError(error);
+                    this._emit('location:error', locationError);
+
+                    // Don't stop watching on temporary errors
+                    if (error.code !== 1) { // Not permission denied
+                        console.log('[GeolocationService] Continuing to watch despite error');
+                    }
                 },
                 {
                     enableHighAccuracy: geoOptions.enableHighAccuracy,
@@ -146,13 +343,9 @@ class GeolocationService {
                 }
             );
 
-            if (this.watchId) {
-                this.isWatching = true;
-                this._emit('location:watch:start', { watchId: this.watchId });
-                resolve(this.watchId);
-            } else {
-                reject(new Error('Failed to start watching position'));
-            }
+            this.isWatching = true;
+            this._emit('watching:started', { watchId: this.watchId });
+            resolve(this.watchId);
         });
     }
 
@@ -160,380 +353,222 @@ class GeolocationService {
      * Stop watching position changes
      */
     stopWatching() {
-        if (this.watchId !== null) {
+        if (this.watchId && this.isWatching) {
             navigator.geolocation.clearWatch(this.watchId);
-            this.watchId = null;
             this.isWatching = false;
-            this._emit('location:watch:stop');
+            this._emit('watching:stopped', { watchId: this.watchId });
+            this.watchId = null;
         }
     }
 
     /**
-     * Process raw position data
-     * @private
-     * @param {GeolocationPosition} position - Raw position
-     * @returns {Object} Processed location data
+     * Get last known position (from cache or memory)
      */
-    _processPosition(position) {
-        const { coords, timestamp } = position;
+    getLastKnownPosition() {
+        if (this.lastKnownPosition) {
+            return {
+                ...this.lastKnownPosition,
+                isStale: Date.now() - this.lastKnownPosition.timestamp.getTime() > CONFIG.cache.locationTtl
+            };
+        }
 
-        return {
-            lat: coords.latitude,
-            lng: coords.longitude,
-            accuracy: coords.accuracy,
-            altitude: coords.altitude,
-            altitudeAccuracy: coords.altitudeAccuracy,
-            heading: coords.heading,
-            speed: coords.speed,
-            timestamp: new Date(timestamp),
-            coordinates: [coords.latitude, coords.longitude]
-        };
+        // Try to load from cache
+        const cached = this._loadCachedPosition();
+        if (cached) {
+            return {
+                ...cached,
+                isStale: true,
+                fallbackReason: 'cache'
+            };
+        }
+
+        return null;
     }
 
-    /**
-     * Check if location has changed significantly
-     * @private
-     * @param {Object} newLocation - New location data
-     * @returns {boolean} Has changed status
-     */
-    _hasLocationChanged(newLocation) {
-        if (!this.currentPosition) return true;
-
-        const distance = this._calculateDistance(
-            this.currentPosition.lat,
-            this.currentPosition.lng,
-            newLocation.lat,
-            newLocation.lng
-        );
-
-        return distance > this.config.distanceThreshold;
-    }
+    // =========================================================================
+    // GEOCODING METHODS
+    // =========================================================================
 
     /**
-     * Calculate distance between two points in meters
-     * @private
-     * @param {number} lat1 - Latitude 1
-     * @param {number} lng1 - Longitude 1
-     * @param {number} lat2 - Latitude 2
-     * @param {number} lng2 - Longitude 2
-     * @returns {number} Distance in meters
-     */
-    _calculateDistance(lat1, lng1, lat2, lng2) {
-        const R = 6371e3; // Earth's radius in meters
-        const φ1 = lat1 * Math.PI / 180;
-        const φ2 = lat2 * Math.PI / 180;
-        const Δφ = (lat2 - lat1) * Math.PI / 180;
-        const Δλ = (lng2 - lng1) * Math.PI / 180;
-
-        const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c;
-    }
-
-    /**
-     * Create standardized location error
-     * @private
-     * @param {GeolocationPositionError} error - Geolocation error
-     * @returns {Object} Formatted error
-     */
-    _createLocationError(error) {
-        const errorMessages = {
-            1: 'Permission denied - Location access was denied by user',
-            2: 'Position unavailable - Location information is unavailable',
-            3: 'Timeout - Location request timed out'
-        };
-
-        return {
-            code: error.code,
-            message: errorMessages[error.code] || error.message,
-            timestamp: new Date(),
-            fallbackLocation: this.config.defaultLocation
-        };
-    }
-
-    /**
-     * Geocode address to coordinates
-     * @param {string} address - Address to geocode
-     * @param {Object} options - Geocoding options
-     * @returns {Promise<Array>} Array of location results
+     * Geocode address to coordinates with caching and batching
      */
     async geocodeAddress(address, options = {}) {
         if (!address || typeof address !== 'string') {
             throw new Error('Invalid address provided');
         }
 
-        const cacheKey = `geocode:${address.toLowerCase().trim()}`;
+        const normalizedAddress = address.toLowerCase().trim();
+        const {
+            skipCache = false,
+            bias = null,
+            region = 'MA', // Morocco
+            language = 'en'
+        } = options;
 
         // Check cache first
-        if (this.cache.has(cacheKey) && !options.skipCache) {
-            return this.cache.get(cacheKey);
+        const cacheKey = this._createGeocodeKey(normalizedAddress, { bias, region, language });
+        if (!skipCache && this.geocodeCache.has(cacheKey)) {
+            const cached = this.geocodeCache.get(cacheKey);
+            if (Date.now() - cached.timestamp < CONFIG.cache.geocodeTtl) {
+                this._emit('geocode:cached', { address, results: cached.results });
+                return cached.results;
+            }
         }
 
         try {
             // Add to request queue to prevent rate limiting
-            const result = await this._queueRequest(() => this._performGeocode(address, options));
+            const results = await this._queueGeocodingRequest(async () => {
+                return await this._performGeocode(normalizedAddress, { bias, region, language });
+            });
 
             // Cache successful results
-            if (result && result.length > 0) {
-                this.cache.set(cacheKey, result);
+            if (results && results.length > 0) {
+                this.geocodeCache.set(cacheKey, {
+                    results,
+                    timestamp: Date.now(),
+                    hits: 0
+                });
 
                 // Clean cache if it gets too large
-                if (this.cache.size > 100) {
-                    const firstKey = this.cache.keys().next().value;
-                    this.cache.delete(firstKey);
-                }
+                this._cleanGeocodeCache();
             }
 
-            return result;
+            this._emit('geocode:success', { address, results });
+            return results;
+
         } catch (error) {
             console.error('[GeolocationService] Geocoding failed:', error);
+            this._emit('geocode:error', { address, error });
             throw new Error(`Geocoding failed: ${error.message}`);
         }
     }
 
     /**
      * Reverse geocode coordinates to address
-     * @param {number} lat - Latitude
-     * @param {number} lng - Longitude
-     * @param {Object} options - Reverse geocoding options
-     * @returns {Promise<Object>} Address information
      */
     async reverseGeocode(lat, lng, options = {}) {
-        if (typeof lat !== 'number' || typeof lng !== 'number') {
+        if (!this._isValidCoordinates(lat, lng)) {
             throw new Error('Invalid coordinates provided');
         }
 
-        const cacheKey = `reverse:${lat.toFixed(4)},${lng.toFixed(4)}`;
+        const {
+            skipCache = false,
+            language = 'en',
+            resultTypes = ['street_address', 'route', 'locality']
+        } = options;
 
-        // Check cache first
-        if (this.cache.has(cacheKey) && !options.skipCache) {
-            return this.cache.get(cacheKey);
+        // Create cache key with rounded coordinates
+        const roundedLat = Math.round(lat * 100000) / 100000;
+        const roundedLng = Math.round(lng * 100000) / 100000;
+        const cacheKey = `reverse:${roundedLat},${roundedLng}:${language}`;
+
+        // Check cache
+        if (!skipCache && this.geocodeCache.has(cacheKey)) {
+            const cached = this.geocodeCache.get(cacheKey);
+            if (Date.now() - cached.timestamp < CONFIG.cache.geocodeTtl) {
+                cached.hits++;
+                this._emit('reverse-geocode:cached', { lat, lng, result: cached.result });
+                return cached.result;
+            }
         }
 
         try {
-            const result = await this._queueRequest(() => this._performReverseGeocode(lat, lng, options));
+            const result = await this._queueGeocodingRequest(async () => {
+                return await this._performReverseGeocode(lat, lng, { language, resultTypes });
+            });
 
-            // Cache successful results
+            // Cache result
             if (result) {
-                this.cache.set(cacheKey, result);
+                this.geocodeCache.set(cacheKey, {
+                    result,
+                    timestamp: Date.now(),
+                    hits: 0
+                });
+
+                this._cleanGeocodeCache();
             }
 
+            this._emit('reverse-geocode:success', { lat, lng, result });
             return result;
+
         } catch (error) {
             console.error('[GeolocationService] Reverse geocoding failed:', error);
+            this._emit('reverse-geocode:error', { lat, lng, error });
             throw new Error(`Reverse geocoding failed: ${error.message}`);
         }
     }
 
+    // =========================================================================
+    // UTILITY METHODS
+    // =========================================================================
+
     /**
-     * Perform actual geocoding using Nominatim API
-     * @private
-     * @param {string} address - Address to geocode
-     * @param {Object} options - Options
-     * @returns {Promise<Array>} Results
+     * Calculate distance between two points using Haversine formula
      */
-    async _performGeocode(address, options = {}) {
-        const params = new URLSearchParams({
-            q: address,
-            format: 'json',
-            limit: options.limit || 5,
-            countrycodes: options.countryCode || '',
-            'accept-language': options.language || 'en',
-            addressdetails: 1,
-            extratags: 1
-        });
-
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
-            headers: {
-                'User-Agent': 'Virtuello-Map-App/1.0'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    calculateDistance(lat1, lng1, lat2, lng2, unit = 'km') {
+        if (!this._isValidCoordinates(lat1, lng1) || !this._isValidCoordinates(lat2, lng2)) {
+            throw new Error('Invalid coordinates provided');
         }
 
-        const data = await response.json();
+        const R = unit === 'miles' ? 3959 : 6371; // Earth's radius
+        const dLat = this._toRadians(lat2 - lat1);
+        const dLng = this._toRadians(lng2 - lng1);
 
-        return data.map(item => ({
-            lat: parseFloat(item.lat),
-            lng: parseFloat(item.lon),
-            displayName: item.display_name,
-            address: {
-                house_number: item.address?.house_number,
-                road: item.address?.road,
-                suburb: item.address?.suburb,
-                city: item.address?.city || item.address?.town || item.address?.village,
-                county: item.address?.county,
-                state: item.address?.state,
-                country: item.address?.country,
-                postcode: item.address?.postcode
-            },
-            boundingBox: item.boundingbox?.map(coord => parseFloat(coord)),
-            importance: item.importance,
-            placeId: item.place_id,
-            type: item.type,
-            osm: {
-                id: item.osm_id,
-                type: item.osm_type
-            }
-        }));
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(this._toRadians(lat1)) * Math.cos(this._toRadians(lat2)) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c;
+
+        return Math.round(distance * 1000) / 1000; // Round to 3 decimal places
     }
 
     /**
-     * Perform reverse geocoding using Nominatim API
-     * @private
-     * @param {number} lat - Latitude
-     * @param {number} lng - Longitude
-     * @param {Object} options - Options
-     * @returns {Promise<Object>} Address data
+     * Check if point is within radius of center point
      */
-    async _performReverseGeocode(lat, lng, options = {}) {
-        const params = new URLSearchParams({
-            lat: lat.toString(),
-            lon: lng.toString(),
-            format: 'json',
-            'accept-language': options.language || 'en',
-            addressdetails: 1,
-            zoom: options.zoom || 18
-        });
-
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?${params}`, {
-            headers: {
-                'User-Agent': 'Virtuello-Map-App/1.0'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        if (!data || data.error) {
-            throw new Error(data?.error || 'No results found');
-        }
-
-        return {
-            lat: parseFloat(data.lat),
-            lng: parseFloat(data.lon),
-            displayName: data.display_name,
-            address: {
-                house_number: data.address?.house_number,
-                road: data.address?.road,
-                suburb: data.address?.suburb,
-                city: data.address?.city || data.address?.town || data.address?.village,
-                county: data.address?.county,
-                state: data.address?.state,
-                country: data.address?.country,
-                postcode: data.address?.postcode
-            },
-            placeId: data.place_id,
-            type: data.type,
-            osm: {
-                id: data.osm_id,
-                type: data.osm_type
-            }
-        };
+    isWithinRadius(centerLat, centerLng, pointLat, pointLng, radiusKm) {
+        const distance = this.calculateDistance(centerLat, centerLng, pointLat, pointLng);
+        return distance <= radiusKm;
     }
 
     /**
-     * Queue request to prevent rate limiting
-     * @private
-     * @param {Function} requestFn - Request function
-     * @returns {Promise<*>} Request result
+     * Check if point is within bounds
      */
-    async _queueRequest(requestFn) {
-        return new Promise((resolve, reject) => {
-            this.requestQueue.push({ requestFn, resolve, reject });
-            this._processQueue();
-        });
+    isWithinBounds(lat, lng, bounds) {
+        const { north, south, east, west } = bounds;
+        return lat >= south && lat <= north && lng >= west && lng <= east;
     }
 
     /**
-     * Process request queue
-     * @private
+     * Get compass bearing between two points
      */
-    async _processQueue() {
-        if (this.isProcessingQueue || this.requestQueue.length === 0) {
-            return;
-        }
+    getBearing(lat1, lng1, lat2, lng2) {
+        const φ1 = this._toRadians(lat1);
+        const φ2 = this._toRadians(lat2);
+        const Δλ = this._toRadians(lng2 - lng1);
 
-        this.isProcessingQueue = true;
+        const x = Math.sin(Δλ) * Math.cos(φ2);
+        const y = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
 
-        while (this.requestQueue.length > 0) {
-            const { requestFn, resolve, reject } = this.requestQueue.shift();
-
-            try {
-                const result = await requestFn();
-                resolve(result);
-            } catch (error) {
-                reject(error);
-            }
-
-            // Rate limiting delay (1 request per second for Nominatim)
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-        this.isProcessingQueue = false;
+        const θ = Math.atan2(x, y);
+        return (this._toDegrees(θ) + 360) % 360;
     }
 
     /**
-     * Get current position data
-     * @returns {Object|null} Current position
+     * Get compass direction from bearing
      */
-    getCurrentPositionData() {
-        return this.currentPosition;
-    }
-
-    /**
-     * Get default location
-     * @returns {Object} Default location
-     */
-    getDefaultLocation() {
-        return { ...this.config.defaultLocation };
-    }
-
-    /**
-     * Calculate distance between current position and target
-     * @param {number} targetLat - Target latitude
-     * @param {number} targetLng - Target longitude
-     * @returns {number|null} Distance in meters or null if no current position
-     */
-    getDistanceToTarget(targetLat, targetLng) {
-        if (!this.currentPosition) {
-            return null;
-        }
-
-        return this._calculateDistance(
-            this.currentPosition.lat,
-            this.currentPosition.lng,
-            targetLat,
-            targetLng
-        );
-    }
-
-    /**
-     * Check if target is within radius of current position
-     * @param {number} targetLat - Target latitude
-     * @param {number} targetLng - Target longitude
-     * @param {number} radiusMeters - Radius in meters
-     * @returns {boolean|null} Within radius status or null if no current position
-     */
-    isWithinRadius(targetLat, targetLng, radiusMeters) {
-        const distance = this.getDistanceToTarget(targetLat, targetLng);
-        return distance !== null ? distance <= radiusMeters : null;
+    getCompassDirection(bearing) {
+        const directions = [
+            'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+            'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'
+        ];
+        const index = Math.round(bearing / 22.5) % 16;
+        return directions[index];
     }
 
     /**
      * Format coordinates for display
-     * @param {number} lat - Latitude
-     * @param {number} lng - Longitude
-     * @param {Object} options - Format options
-     * @returns {string} Formatted coordinates
      */
     formatCoordinates(lat, lng, options = {}) {
         const {
@@ -550,163 +585,24 @@ class GeolocationService {
     }
 
     /**
-     * Convert decimal degrees to DMS format
-     * @private
-     * @param {number} lat - Latitude
-     * @param {number} lng - Longitude
-     * @param {number} precision - Decimal precision for seconds
-     * @returns {string} DMS formatted coordinates
+     * Get default location for region
      */
-    _toDMS(lat, lng, precision = 2) {
-        const formatDMS = (coord, isLat) => {
-            const absolute = Math.abs(coord);
-            const degrees = Math.floor(absolute);
-            const minutes = Math.floor((absolute - degrees) * 60);
-            const seconds = ((absolute - degrees - minutes / 60) * 3600).toFixed(precision);
-
-            const direction = coord >= 0
-                ? (isLat ? 'N' : 'E')
-                : (isLat ? 'S' : 'W');
-
-            return `${degrees}°${minutes}'${seconds}"${direction}`;
-        };
-
-        return `${formatDMS(lat, true)}, ${formatDMS(lng, false)}`;
-    }
-
-    /**
-     * Get location accuracy description
-     * @param {number} accuracy - Accuracy in meters
-     * @returns {string} Accuracy description
-     */
-    getAccuracyDescription(accuracy) {
-        if (accuracy <= 5) return 'Very High';
-        if (accuracy <= 10) return 'High';
-        if (accuracy <= 50) return 'Medium';
-        if (accuracy <= 100) return 'Low';
-        return 'Very Low';
-    }
-
-    /**
-     * Validate coordinates
-     * @param {number} lat - Latitude
-     * @param {number} lng - Longitude
-     * @returns {boolean} Valid coordinates
-     */
-    validateCoordinates(lat, lng) {
-        return typeof lat === 'number' &&
-            typeof lng === 'number' &&
-            lat >= -90 && lat <= 90 &&
-            lng >= -180 && lng <= 180 &&
-            !isNaN(lat) && !isNaN(lng);
-    }
-
-    /**
-     * Get bounds for a location with radius
-     * @param {number} lat - Center latitude
-     * @param {number} lng - Center longitude
-     * @param {number} radiusKm - Radius in kilometers
-     * @returns {Object} Bounds object with north, south, east, west
-     */
-    getBoundsFromRadius(lat, lng, radiusKm) {
-        if (!this.validateCoordinates(lat, lng)) {
-            throw new Error('Invalid coordinates');
-        }
-
-        const earthRadius = 6371; // Earth's radius in km
-        const latDelta = (radiusKm / earthRadius) * (180 / Math.PI);
-        const lngDelta = latDelta / Math.cos(lat * Math.PI / 180);
-
+    getDefaultLocation(region = 'fes') {
+        const location = CONFIG.defaultLocations[region] || CONFIG.defaultLocations.fes;
         return {
-            north: lat + latDelta,
-            south: lat - latDelta,
-            east: lng + lngDelta,
-            west: lng - lngDelta
+            ...LocationModel,
+            ...location,
+            type: 'default',
+            timestamp: new Date()
         };
     }
 
-    /**
-     * Check if point is within bounds
-     * @param {number} lat - Point latitude
-     * @param {number} lng - Point longitude
-     * @param {Object} bounds - Bounds object
-     * @returns {boolean} Within bounds status
-     */
-    isWithinBounds(lat, lng, bounds) {
-        const { north, south, east, west } = bounds;
-
-        return lat >= south &&
-            lat <= north &&
-            lng >= west &&
-            lng <= east;
-    }
-
-    /**
-     * Get compass bearing between two points
-     * @param {number} lat1 - Start latitude
-     * @param {number} lng1 - Start longitude
-     * @param {number} lat2 - End latitude
-     * @param {number} lng2 - End longitude
-     * @returns {number} Bearing in degrees (0-360)
-     */
-    getBearing(lat1, lng1, lat2, lng2) {
-        const φ1 = lat1 * Math.PI / 180;
-        const φ2 = lat2 * Math.PI / 180;
-        const Δλ = (lng2 - lng1) * Math.PI / 180;
-
-        const x = Math.sin(Δλ) * Math.cos(φ2);
-        const y = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
-
-        const θ = Math.atan2(x, y);
-
-        return (θ * 180 / Math.PI + 360) % 360;
-    }
-
-    /**
-     * Get compass direction from bearing
-     * @param {number} bearing - Bearing in degrees
-     * @returns {string} Compass direction
-     */
-    getCompassDirection(bearing) {
-        const directions = [
-            'N', 'NNE', 'NE', 'ENE',
-            'E', 'ESE', 'SE', 'SSE',
-            'S', 'SSW', 'SW', 'WSW',
-            'W', 'WNW', 'NW', 'NNW'
-        ];
-
-        const index = Math.round(bearing / 22.5) % 16;
-        return directions[index];
-    }
-
-    /**
-     * Clear location cache
-     */
-    clearCache() {
-        this.cache.clear();
-        console.log('[GeolocationService] Cache cleared');
-    }
-
-    /**
-     * Update service configuration
-     * @param {Object} newConfig - New configuration
-     */
-    updateConfig(newConfig) {
-        this.config = { ...this.config, ...newConfig };
-    }
-
-    /**
-     * Get service configuration
-     * @returns {Object} Current configuration
-     */
-    getConfig() {
-        return { ...this.config };
-    }
+    // =========================================================================
+    // EVENT MANAGEMENT
+    // =========================================================================
 
     /**
      * Add event listener
-     * @param {string} event - Event name
-     * @param {Function} handler - Event handler
      */
     on(event, handler) {
         if (!this.eventHandlers.has(event)) {
@@ -717,8 +613,6 @@ class GeolocationService {
 
     /**
      * Remove event listener
-     * @param {string} event - Event name
-     * @param {Function} handler - Event handler
      */
     off(event, handler) {
         if (!this.eventHandlers.has(event)) return;
@@ -731,10 +625,390 @@ class GeolocationService {
     }
 
     /**
-     * Emit event
+     * Remove all event listeners for an event
+     */
+    removeAllListeners(event = null) {
+        if (event) {
+            this.eventHandlers.delete(event);
+        } else {
+            this.eventHandlers.clear();
+        }
+    }
+
+    // =========================================================================
+    // SERVICE MANAGEMENT
+    // =========================================================================
+
+    /**
+     * Get service status and statistics
+     */
+    getStatus() {
+        return {
+            isSupported: this.isSupported(),
+            isInitialized: this.isInitialized,
+            isWatching: this.isWatching,
+            permissionStatus: this.permissionStatus,
+            hasCurrentPosition: !!this.currentPosition,
+            hasLastKnownPosition: !!this.lastKnownPosition,
+            capabilities: this.capabilities,
+            cache: {
+                geocodeSize: this.geocodeCache.size,
+                locationSize: this.locationCache.size
+            },
+            queue: {
+                size: this.requestQueue.length,
+                isProcessing: this.isProcessingQueue
+            },
+            performance: {
+                lastUpdate: this.lastLocationUpdate,
+                pendingRequests: this.pendingRequests.size
+            }
+        };
+    }
+
+    /**
+     * Clear all caches
+     */
+    clearCache() {
+        this.geocodeCache.clear();
+        this.locationCache.clear();
+        this._clearLocalStorage();
+        console.log('[GeolocationService] All caches cleared');
+    }
+
+    /**
+     * Update service configuration
+     */
+    updateConfig(newConfig) {
+        Object.assign(CONFIG, newConfig);
+        this._emit('config:updated', CONFIG);
+    }
+
+    /**
+     * Get current configuration
+     */
+    getConfig() {
+        return { ...CONFIG };
+    }
+
+    /**
+     * Destroy service and cleanup
+     */
+    destroy() {
+        this.stopWatching();
+        this.clearCache();
+
+        // Cancel pending requests
+        for (const [id, request] of this.pendingRequests.entries()) {
+            if (request.cancel) request.cancel();
+        }
+        this.pendingRequests.clear();
+
+        // Clear timers
+        for (const timer of this.debounceTimers.values()) {
+            clearTimeout(timer);
+        }
+        this.debounceTimers.clear();
+
+        // Clear event handlers
+        this.eventHandlers.clear();
+
+        // Reset state
+        this.currentPosition = null;
+        this.lastKnownPosition = null;
+        this.isInitialized = false;
+
+        console.log('[GeolocationService] Service destroyed');
+    }
+
+    // =========================================================================
+    // PRIVATE METHODS
+    // =========================================================================
+
+    /**
+     * Process raw position data from browser API
      * @private
-     * @param {string} event - Event name
-     * @param {*} data - Event data
+     */
+    _processPosition(position) {
+        const { coords, timestamp } = position;
+
+        return {
+            ...LocationModel,
+            lat: coords.latitude,
+            lng: coords.longitude,
+            accuracy: coords.accuracy,
+            altitude: coords.altitude,
+            altitudeAccuracy: coords.altitudeAccuracy,
+            heading: coords.heading,
+            speed: coords.speed,
+            timestamp: new Date(timestamp),
+            type: 'user',
+            isCurrentUserLocation: true
+        };
+    }
+
+    /**
+     * Determine if position should trigger an update
+     * @private
+     */
+    _shouldUpdatePosition(newPosition) {
+        if (!this.currentPosition) return true;
+
+        // Check time threshold
+        const timeDiff = newPosition.timestamp - this.currentPosition.timestamp;
+        if (timeDiff < 1000) return false; // Less than 1 second
+
+        // Check distance threshold
+        const distance = this.calculateDistance(
+            this.currentPosition.lat,
+            this.currentPosition.lng,
+            newPosition.lat,
+            newPosition.lng
+        ) * 1000; // Convert to meters
+
+        if (distance < CONFIG.geolocation.distanceThreshold) return false;
+
+        // Check accuracy improvement
+        if (newPosition.accuracy > this.currentPosition.accuracy * 2) return false;
+
+        return true;
+    }
+
+    /**
+     * Create standardized location error
+     * @private
+     */
+    _createLocationError(error) {
+        const errorMessages = {
+            1: 'Permission denied - Location access was denied by user',
+            2: 'Position unavailable - Location information is unavailable',
+            3: 'Timeout - Location request timed out'
+        };
+
+        return {
+            code: error.code,
+            message: errorMessages[error.code] || error.message,
+            timestamp: new Date(),
+            fallbackLocation: this.getDefaultLocation()
+        };
+    }
+
+    /**
+     * Validate coordinates
+     * @private
+     */
+    _isValidCoordinates(lat, lng) {
+        return typeof lat === 'number' && typeof lng === 'number' &&
+            lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180 &&
+            !isNaN(lat) && !isNaN(lng);
+    }
+
+    /**
+     * Convert degrees to radians
+     * @private
+     */
+    _toRadians(degrees) {
+        return degrees * (Math.PI / 180);
+    }
+
+    /**
+     * Convert radians to degrees
+     * @private
+     */
+    _toDegrees(radians) {
+        return radians * (180 / Math.PI);
+    }
+
+    /**
+     * Convert decimal degrees to DMS format
+     * @private
+     */
+    _toDMS(lat, lng, precision = 2) {
+        const formatDMS = (coord, isLat) => {
+            const absolute = Math.abs(coord);
+            const degrees = Math.floor(absolute);
+            const minutes = Math.floor((absolute - degrees) * 60);
+            const seconds = ((absolute - degrees - minutes / 60) * 3600).toFixed(precision);
+
+            const direction = coord >= 0 ? (isLat ? 'N' : 'E') : (isLat ? 'S' : 'W');
+            return `${degrees}°${minutes}'${seconds}"${direction}`;
+        };
+
+        return `${formatDMS(lat, true)}, ${formatDMS(lng, false)}`;
+    }
+
+    /**
+     * Cache position data
+     * @private
+     */
+    _cachePosition(position) {
+        const cacheData = {
+            position,
+            timestamp: Date.now()
+        };
+
+        this.locationCache.set('current', cacheData);
+
+        // Store in localStorage for persistence
+        try {
+            localStorage.setItem('virtuello_location', JSON.stringify(cacheData));
+        } catch (error) {
+            console.warn('[GeolocationService] Failed to cache position:', error);
+        }
+    }
+
+    /**
+     * Load cached position from storage
+     * @private
+     */
+    _loadCachedPosition() {
+        try {
+            // Try memory cache first
+            if (this.locationCache.has('current')) {
+                const cached = this.locationCache.get('current');
+                if (Date.now() - cached.timestamp < CONFIG.cache.locationTtl) {
+                    return cached.position;
+                }
+            }
+
+            // Try localStorage
+            const stored = localStorage.getItem('virtuello_location');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (Date.now() - parsed.timestamp < CONFIG.cache.locationTtl) {
+                    return {
+                        ...parsed.position,
+                        timestamp: new Date(parsed.position.timestamp)
+                    };
+                }
+            }
+        } catch (error) {
+            console.warn('[GeolocationService] Failed to load cached position:', error);
+        }
+
+        return null;
+    }
+
+    /**
+     * Create geocoding cache key
+     * @private
+     */
+    _createGeocodeKey(address, options) {
+        const optionsStr = Object.keys(options)
+            .sort()
+            .map(key => `${key}:${options[key]}`)
+            .join('|');
+        return `${address}:${optionsStr}`;
+    }
+
+    /**
+     * Clean geocoding cache when it gets too large
+     * @private
+     */
+    _cleanGeocodeCache() {
+        if (this.geocodeCache.size > CONFIG.cache.maxSize) {
+            // Remove least recently used items
+            const entries = Array.from(this.geocodeCache.entries())
+                .sort((a, b) => a[1].hits - b[1].hits)
+                .slice(0, Math.floor(CONFIG.cache.maxSize * 0.3));
+
+            entries.forEach(([key]) => this.geocodeCache.delete(key));
+        }
+    }
+
+    /**
+     * Queue geocoding request to prevent rate limiting
+     * @private
+     */
+    async _queueGeocodingRequest(requestFn) {
+        return new Promise((resolve, reject) => {
+            this.requestQueue.push({ requestFn, resolve, reject });
+            this._processGeocodeQueue();
+        });
+    }
+
+    /**
+     * Process geocoding request queue
+     * @private
+     */
+    async _processGeocodeQueue() {
+        if (this.isProcessingQueue || this.requestQueue.length === 0) {
+            return;
+        }
+
+        this.isProcessingQueue = true;
+
+        while (this.requestQueue.length > 0) {
+            const { requestFn, resolve, reject } = this.requestQueue.shift();
+
+            try {
+                const result = await requestFn();
+                resolve(result);
+            } catch (error) {
+                reject(error);
+            }
+
+            // Small delay to prevent rate limiting
+            await new Promise(resolve => setTimeout(resolve, CONFIG.performance.batchDelay));
+        }
+
+        this.isProcessingQueue = false;
+    }
+
+    /**
+     * Perform actual geocoding (placeholder - implement with your geocoding service)
+     * @private
+     */
+    async _performGeocode(address, options) {
+        // This would integrate with your actual geocoding service
+        // For now, return a mock result
+        console.log('[GeolocationService] Geocoding:', address, options);
+        throw new Error('Geocoding service not implemented');
+    }
+
+    /**
+     * Perform actual reverse geocoding (placeholder)
+     * @private
+     */
+    async _performReverseGeocode(lat, lng, options) {
+        // This would integrate with your actual reverse geocoding service
+        console.log('[GeolocationService] Reverse geocoding:', lat, lng, options);
+        throw new Error('Reverse geocoding service not implemented');
+    }
+
+    /**
+     * Handle online event
+     * @private
+     */
+    _handleOnline() {
+        this.capabilities.online = true;
+        this._emit('connectivity:online');
+    }
+
+    /**
+     * Handle offline event
+     * @private
+     */
+    _handleOffline() {
+        this.capabilities.online = false;
+        this._emit('connectivity:offline');
+    }
+
+    /**
+     * Clear localStorage data
+     * @private
+     */
+    _clearLocalStorage() {
+        try {
+            localStorage.removeItem('virtuello_location');
+        } catch (error) {
+            console.warn('[GeolocationService] Failed to clear localStorage:', error);
+        }
+    }
+
+    /**
+     * Emit event to all listeners
+     * @private
      */
     _emit(event, data = null) {
         if (!this.eventHandlers.has(event)) return;
@@ -748,40 +1022,18 @@ class GeolocationService {
             }
         });
     }
-
-    /**
-     * Get service status
-     * @returns {Object} Service status information
-     */
-    getStatus() {
-        return {
-            isSupported: this.isSupported(),
-            isWatching: this.isWatching,
-            hasCurrentPosition: !!this.currentPosition,
-            cacheSize: this.cache.size,
-            queueLength: this.requestQueue.length,
-            isProcessingQueue: this.isProcessingQueue,
-            currentPosition: this.currentPosition,
-            watchId: this.watchId
-        };
-    }
-
-    /**
-     * Destroy service and cleanup
-     */
-    destroy() {
-        this.stopWatching();
-        this.clearCache();
-        this.requestQueue = [];
-        this.eventHandlers.clear();
-        this.currentPosition = null;
-        this.isProcessingQueue = false;
-
-        console.log('[GeolocationService] Service destroyed');
-    }
 }
 
-// Create singleton instance
+// =============================================================================
+// CREATE AND EXPORT SINGLETON INSTANCE
+// =============================================================================
+
 const geolocationService = new GeolocationService();
 
 export default geolocationService;
+
+// Named exports
+export {
+    geolocationService,
+    CONFIG as GeolocationConfig
+};
