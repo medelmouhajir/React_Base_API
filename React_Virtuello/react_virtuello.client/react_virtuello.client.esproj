@@ -15,8 +15,6 @@
     <Folder Include="src\components\layouts\MapLayout\Controls\" />
     <Folder Include="src\components\layouts\MapLayout\Models\" />
     <Folder Include="src\components\layouts\MapLayout\Config\" />
-    <Folder Include="src\components\layouts\MapLayout\Hooks\" />
-    <Folder Include="src\components\layouts\MapLayout\Utils\" />
     <Folder Include="src\components\layouts\MapLayout\Services\" />
     <Folder Include="src\components\layouts\TourLayout\" />
     <Folder Include="src\pages\Auth\" />
