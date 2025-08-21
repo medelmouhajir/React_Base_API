@@ -35,196 +35,53 @@ const HomePage = () => (
 );
 
 const AppRoutes = () => {
-    // Mock data for businesses in Fes, Morocco
-    const mockBusinesses = [
-        {
-            id: '1',
-            name: 'Restaurant Al Fassia',
-            description: 'Traditional Moroccan cuisine in the heart of Fes medina',
-            latitude: 34.0622,
-            longitude: -6.7636,
-            phone: '+212 535 123 456',
-            email: 'contact@alfassia.ma'
-        },
-        {
-            id: '2',
-            name: 'Riad Fes Heritage',
-            description: 'Luxury accommodation with authentic Moroccan architecture',
-            latitude: 34.0722,
-            longitude: -6.7736,
-            phone: '+212 535 789 012',
-            email: 'info@riadfeheritage.com'
-        },
-        {
-            id: '3',
-            name: 'Artisan Carpet Workshop',
-            description: 'Traditional carpet weaving and handcrafted textiles',
-            latitude: 34.0422,
-            longitude: -6.7836,
-            phone: '+212 535 345 678',
-            email: 'workshop@carpets-fes.ma'
-        }
-    ];
-
-    // Mock route for medina tour
-    const mockRoutes = [
-        {
-            id: 'medina-tour',
-            coordinates: [
-                [34.0622, -6.7636],
-                [34.0722, -6.7736],
-                [34.0422, -6.7836],
-                [34.0522, -6.7636]
-            ],
-            color: '#0ea5e9',
-            weight: 4,
-            opacity: 0.8
-        }
-    ];
-
-    // FIXED: Mock markers with unique IDs and proper coordinate structure
-    const mockMarkers = [
-        {
-            id: 'tour-start-1',
-            latitude: 34.0622,
-            longitude: -6.7636,
-            name: 'Medina Tour Starting Point',
-            description: 'Starting point for the virtual medina tour experience',
-            type: 'tour',
-            address: 'Medina, Fes, Morocco',
-            color: '#f97316',
-            // ✅ FIXED: Add missing properties that CustomMarker expects
-            data: {
-                name: 'Medina Tour Starting Point',
-                description: 'Starting point for the virtual medina tour experience',
-                address: 'Medina, Fes, Morocco',
-                timestamp: new Date().toISOString()
-            }
-        }
-    ];
-
-    const handleLocationSelect = (location) => {
-        console.log('Location selected:', location);
-        // You can add more logic here later
-    };
-
-    const handleSearchResult = (results) => {
-        console.log('Search results:', results);
-        // You can add more logic here later
-    };
-
     return (
         <Routes>
-            {/* Default route redirects to home */}
-            <Route path="/" element={<Navigate to="/home" replace />} />
+            {/* Authentication Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/* Home page with map layout */}
+            {/* Map Route - Clean without any data injection */}
             <Route
-                path="/home"
+                path="/map"
                 element={
                     <MapLayout
-                        businesses={mockBusinesses}
-                        routes={mockRoutes}
-                        markers={mockMarkers}
-                        onLocationSelect={handleLocationSelect}
-                        onSearchResult={handleSearchResult}
-                        defaultCenter={[34.0522, -6.7736]} // Fes, Morocco coordinates
+                        defaultCenter={[34.0622, -6.7636]} // Fes, Morocco coordinates
                         defaultZoom={13}
-                    >
-                        <HomePage />
-                    </MapLayout>
+                        showControls={true}
+                        enableGeolocation={true}
+                    />
                 }
             />
 
-            {/* Main layout */}
-            <Route
-                path="/myspace"
-                element={
-                    <MainLayout>
-                        <HomePage />
-                    </MainLayout>
-                }
-            />
+            {/* Main Layout Routes */}
+            <Route path="/" element={<MainLayout />}>
+                <Route index element={<HomePage />} />
 
-            {/* Businesses management */}
-            <Route
-                path="/myspace/businesses"
-                element={
-                    <MainLayout>
-                        <BusinessesList />
-                    </MainLayout>
-                }
-            />
-            <Route
-                path="/myspace/businesses/add"
-                element={
-                    <MainLayout>
-                        <BusinessesAdd />
-                    </MainLayout>
-                }
-            />
-            <Route
-                path="/myspace/businesses/:id"
-                element={
-                    <MainLayout>
-                        <BusinessesDetails />
-                    </MainLayout>
-                }
-            />
-            <Route
-                path="/myspace/businesses/tags"
-                element={
-                    <MainLayout>
-                        <BusinessesTags />
-                    </MainLayout>
-                }
-            />
+                {/* Business Routes */}
+                <Route path="businesses">
+                    <Route index element={<BusinessesList />} />
+                    <Route path="add" element={<BusinessesAdd />} />
+                    <Route path=":id" element={<BusinessesDetails />} />
+                    <Route path="tags" element={<BusinessesTags />} />
+                </Route>
 
-            {/* Tours management */}
-            <Route
-                path="/myspace/tours"
-                element={
-                    <MainLayout>
-                        <ToursList />
-                    </MainLayout>
-                }
-            />
-            <Route
-                path="/myspace/tours/add"
-                element={
-                    <MainLayout>
-                        <ToursAdd />
-                    </MainLayout>
-                }
-            />
+                {/* Tour Routes */}
+                <Route path="tours">
+                    <Route index element={<ToursList />} />
+                    <Route path="add" element={<ToursAdd />} />
+                </Route>
 
-            {/* Events management */}
-            <Route
-                path="/myspace/events"
-                element={
-                    <MainLayout>
-                        <EventsList />
-                    </MainLayout>
-                }
-            />
-            <Route
-                path="/myspace/events/add"
-                element={
-                    <MainLayout>
-                        <EventsAdd />
-                    </MainLayout>
-                }
-            />
-            <Route
-                path="/myspace/events/categories"
-                element={
-                    <MainLayout>
-                        <EventsCategories />
-                    </MainLayout>
-                }
-            />
+                {/* Event Routes */}
+                <Route path="events">
+                    <Route index element={<EventsList />} />
+                    <Route path="add" element={<EventsAdd />} />
+                    <Route path="categories" element={<EventsCategories />} />
+                </Route>
+            </Route>
+
+            {/* Default redirect */}
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
 };

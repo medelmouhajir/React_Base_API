@@ -1,31 +1,18 @@
 ﻿/**
- * MapLayout - Main map container component with Leaflet integration
- * Provides the foundation for displaying businesses, events, and interactive map features
+ * MapLayout - Clean map container component with Leaflet integration
+ * Displays map and controls without data fetching logic
  * 
  * @author WAN SOLUTIONS
- * @version 1.0.0
+ * @version 2.0.0 - Clean implementation
  */
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { MapContainer, TileLayer, useMapEvents, useMap } from 'react-leaflet';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import PropTypes from 'prop-types';
 
 // Components
 import MapControls from '../Controls/MapControls';
-import BusinessMarker from '../Markers/BusinessMarker';
-import EventMarker from '../Markers/EventMarker';
-import CustomMarker from '../Markers/CustomMarker';
-
-// Services and Hooks
-import geolocationService from '../Services/GeolocationService';
-import mapService from '../Services/MapService';
-import { useMapBounds } from '../Hooks/useMapBounds';
-import { useMarkers } from '../Hooks/useMarkers';
-
-// Utils and Config
-import { DEFAULT_MAP_CONFIG, TILE_LAYERS } from '../Config/mapConfig';
-import { createBoundsFromRadius } from '../Utils/mapUtils';
 
 // Styles
 import './MapLayout.css';
@@ -49,188 +36,82 @@ const MapEventsHandler = ({
     onBoundsChange,
     onLocationFound,
     onMapClick,
-    onZoomChange,
-    isTrackingLocation
+    onZoomChange
 }) => {
-    const map = useMapEvents({
+    const mapEvents = useMapEvents({
         moveend: () => {
-            const bounds = map.getBounds();
-            const center = map.getCenter();
-            const zoom = map.getZoom();
+            const bounds = mapEvents.getBounds();
+            const center = mapEvents.getCenter();
+            const zoom = mapEvents.getZoom();
 
-            onBoundsChange({
-                bounds: {
-                    north: bounds.getNorth(),
-                    south: bounds.getSouth(),
-                    east: bounds.getEast(),
-                    west: bounds.getWest()
-                },
-                center: { lat: center.lat, lng: center.lng },
-                zoom
-            });
+            if (onBoundsChange) {
+                onBoundsChange({
+                    bounds: {
+                        north: bounds.getNorth(),
+                        south: bounds.getSouth(),
+                        east: bounds.getEast(),
+                        west: bounds.getWest()
+                    },
+                    center: { lat: center.lat, lng: center.lng },
+                    zoom
+                });
+            }
         },
 
         zoomend: () => {
-            const zoom = map.getZoom();
-            onZoomChange(zoom);
+            const zoom = mapEvents.getZoom();
+            if (onZoomChange) {
+                onZoomChange(zoom);
+            }
         },
 
         click: (e) => {
-            onMapClick({
-                lat: e.latlng.lat,
-                lng: e.latlng.lng,
-                originalEvent: e.originalEvent
-            });
+            if (onMapClick) {
+                onMapClick({
+                    latlng: e.latlng,
+                    layerPoint: e.layerPoint,
+                    containerPoint: e.containerPoint
+                });
+            }
         },
 
         locationfound: (e) => {
-            onLocationFound({
-                lat: e.latlng.lat,
-                lng: e.latlng.lng,
-                accuracy: e.accuracy,
-                timestamp: e.timestamp
-            });
-        },
-
-        locationerror: (e) => {
-            console.error('[MapLayout] Location error:', e.message);
+            if (onLocationFound) {
+                onLocationFound({
+                    latlng: e.latlng,
+                    bounds: e.bounds,
+                    accuracy: e.accuracy
+                });
+            }
         }
     });
-
-    // Auto-request location if tracking is enabled
-    useEffect(() => {
-        if (isTrackingLocation && map) {
-            map.locate({
-                watch: true,
-                enableHighAccuracy: true,
-                maximumAge: 60000,
-                timeout: 10000
-            });
-        } else if (map) {
-            map.stopLocate();
-        }
-
-        return () => {
-            if (map) {
-                map.stopLocate();
-            }
-        };
-    }, [isTrackingLocation, map]);
-
-    return null;
-};
-
-/**
- * Map Controller - Handles programmatic map updates
- */
-const MapController = ({ center, zoom, fitToBounds, userLocation }) => {
-    const map = useMap();
-
-    // Update map center and zoom
-    useEffect(() => {
-        if (map && center && zoom) {
-            const currentCenter = map.getCenter();
-            const currentZoom = map.getZoom();
-
-            const centerChanged = Math.abs(currentCenter.lat - center.lat) > 0.001 ||
-                Math.abs(currentCenter.lng - center.lng) > 0.001;
-            const zoomChanged = currentZoom !== zoom;
-
-            if (centerChanged || zoomChanged) {
-                map.setView([center.lat, center.lng], zoom);
-            }
-        }
-    }, [map, center, zoom]);
-
-    // Fit to bounds when specified
-    useEffect(() => {
-        if (map && fitToBounds && Array.isArray(fitToBounds) && fitToBounds.length > 0) {
-            const bounds = L.latLngBounds(fitToBounds);
-            map.fitBounds(bounds, { padding: [20, 20] });
-        }
-    }, [map, fitToBounds]);
-
-    // Update user location marker
-    useEffect(() => {
-        if (map && userLocation) {
-            // Remove existing user location marker
-            map.eachLayer((layer) => {
-                if (layer.options && layer.options.isUserLocation) {
-                    map.removeLayer(layer);
-                }
-            });
-
-            // Add new user location marker
-            const userMarker = L.circleMarker([userLocation.lat, userLocation.lng], {
-                radius: 8,
-                fillColor: '#007bff',
-                color: '#ffffff',
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.8,
-                isUserLocation: true
-            }).addTo(map);
-
-            // Add accuracy circle if available
-            if (userLocation.accuracy) {
-                const accuracyCircle = L.circle([userLocation.lat, userLocation.lng], {
-                    radius: userLocation.accuracy,
-                    fillColor: '#007bff',
-                    color: '#007bff',
-                    weight: 1,
-                    opacity: 0.3,
-                    fillOpacity: 0.1,
-                    isUserLocation: true
-                }).addTo(map);
-            }
-        }
-    }, [map, userLocation]);
 
     return null;
 };
 
 // =============================================================================
-// MAIN MAP LAYOUT COMPONENT
+// MAIN COMPONENT
 // =============================================================================
 
 const MapLayout = ({
     children,
-    defaultCenter = [34.0522, -6.7736], // Fes, Morocco
+    defaultCenter = [34.0622, -6.7636], // Fes, Morocco
     defaultZoom = 13,
     className = '',
     showControls = true,
     enableGeolocation = true,
-    onLocationSelect = null,
-    onSearchResult = null,
-    onMapReady = null,
-    onMapClick = null,
-    // Data props
-    businesses = [],
-    events = [],
-    routes = [],
-    markers = [],
-    // Map configuration
+    onLocationSelect,
+    onSearchResult,
+    onMapReady,
+    onMapClick,
     mapStyle = 'default',
     theme = 'light',
-    enableClustering = true,
-    maxZoom = 19,
-    minZoom = 3,
-    // Filter and interaction props
-    filters = {},
-    selectedMarkerId = null,
-    hoveredMarkerId = null,
-    onMarkerClick = null,
-    onMarkerHover = null
+    maxZoom = 18,
+    minZoom = 3
 }) => {
     // =============================================================================
     // STATE MANAGEMENT
     // =============================================================================
-
-    const [mapInstance, setMapInstance] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [userLocation, setUserLocation] = useState(null);
-    const [isTrackingLocation, setIsTrackingLocation] = useState(false);
 
     const [mapState, setMapState] = useState({
         center: { lat: defaultCenter[0], lng: defaultCenter[1] },
@@ -238,108 +119,53 @@ const MapLayout = ({
         bounds: null
     });
 
+    const [userLocation, setUserLocation] = useState(null);
+    const [isTrackingLocation, setIsTrackingLocation] = useState(false);
+    const [mapInstance, setMapInstance] = useState(null);
+
+    const mapRef = useRef(null);
+
     // =============================================================================
-    // HOOKS
+    // COMPUTED VALUES
     // =============================================================================
 
-    // Map bounds management
-    const {
-        bounds,
-        center,
-        zoom,
-        updateBounds,
-        getBoundsForAPI,
-        isInBounds
-    } = useMapBounds(mapInstance, {
-        onBoundsChange: handleDataFetch,
-        autoFetch: true,
-        debounceDelay: 500
-    });
-
-
-    // Marker event handlers must be defined before useMarkers
-    const handleMarkerClick = useCallback((marker, event) => {
-        if (onMarkerClick) {
-            onMarkerClick(marker, event);
+    const tileLayerUrl = (() => {
+        switch (mapStyle) {
+            case 'satellite':
+                return 'https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}';
+            case 'terrain':
+                return 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
+            case 'dark':
+                return 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+            default:
+                return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
         }
-    }, [onMarkerClick]);
+    })();
 
-    const handleMarkerHover = useCallback((marker, event) => {
-        if (onMarkerHover) {
-            onMarkerHover(marker, event);
+    const tileLayerAttribution = (() => {
+        switch (mapStyle) {
+            case 'satellite':
+            case 'terrain':
+                return '&copy; Google';
+            case 'dark':
+                return '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+            default:
+                return '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
         }
-    }, [onMarkerHover]);
-
-    // Markers management
-    const {
-        filteredMarkers,
-        markerStats,
-        updateBusinessMarkers,
-        updateEventMarkers,
-        addCustomMarkers,
-        clearMarkers,
-        getMarkerById,
-        getMarkersInBounds,
-        setActiveFilters
-    } = useMarkers(mapInstance, {
-        enableClustering,
-        onMarkerClick: handleMarkerClick,
-        onMarkerHover: handleMarkerHover,
-        filterConfig: filters
-    });
+    })();
 
     // =============================================================================
-    // DATA FETCHING
+    // LIFECYCLE METHODS
     // =============================================================================
 
-    /**
-     * Fetch map data based on current bounds
-     */
-    async function handleDataFetch(boundsData) {
-        if (!boundsData?.bounds || !mapInstance) return;
-
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const apiBounds = getBoundsForAPI(boundsData.bounds);
-
-            // Fetch businesses and events in parallel
-            const [businessesData, eventsData] = await Promise.allSettled([
-                mapService.getBusinessesInBounds({ bounds: apiBounds, filters }),
-                mapService.getEventsInBounds({ bounds: apiBounds, filters })
-            ]);
-
-            // Update businesses
-            if (businessesData.status === 'fulfilled' && businessesData.value?.success) {
-                updateBusinessMarkers(businessesData.value.data || []);
+    useEffect(() => {
+        if (mapRef.current && !mapInstance) {
+            setMapInstance(mapRef.current);
+            if (onMapReady) {
+                onMapReady(mapRef.current);
             }
-
-            // Update events
-            if (eventsData.status === 'fulfilled' && eventsData.value?.success) {
-                updateEventMarkers(eventsData.value.data || []);
-            }
-
-            // Handle errors
-            const errors = [];
-            if (businessesData.status === 'rejected') {
-                errors.push(`Businesses: ${businessesData.reason.message}`);
-            }
-            if (eventsData.status === 'rejected') {
-                errors.push(`Events: ${eventsData.reason.message}`);
-            }
-
-            if (errors.length > 0) {
-                setError(errors.join(', '));
-            }
-
-        } catch (error) {
-            console.error('[MapLayout] Data fetch error:', error);
-            setError(error.message || 'Failed to load map data');
-        } finally {
-            setIsLoading(false);
         }
-    }
+    }, [mapInstance, onMapReady]);
 
     // =============================================================================
     // EVENT HANDLERS
@@ -355,9 +181,7 @@ const MapLayout = ({
             zoom: boundsData.zoom,
             bounds: boundsData.bounds
         }));
-
-        updateBounds(boundsData);
-    }, [updateBounds]);
+    }, []);
 
     /**
      * Handle user location found
@@ -389,7 +213,6 @@ const MapLayout = ({
         }));
     }, []);
 
-
     /**
      * Handle search result
      */
@@ -412,213 +235,112 @@ const MapLayout = ({
      */
     const handleLocationToggle = useCallback(() => {
         setIsTrackingLocation(prev => !prev);
-    }, []);
+
+        if (mapInstance && !isTrackingLocation) {
+            mapInstance.locate({ setView: true, maxZoom: 16 });
+        }
+    }, [mapInstance, isTrackingLocation]);
 
     /**
      * Handle layer toggle
      */
     const handleLayerToggle = useCallback((layerType, enabled) => {
-        // Update layer visibility logic here
         console.log(`[MapLayout] Toggle layer ${layerType}:`, enabled);
+        // Layer toggle logic will be implemented later
     }, []);
 
     /**
      * Handle filter changes
      */
     const handleFilterChange = useCallback((newFilters) => {
-        setActiveFilters(newFilters);
-    }, [setActiveFilters]);
-
-    // =============================================================================
-    // COMPUTED VALUES
-    // =============================================================================
+        console.log(`[MapLayout] Filter change:`, newFilters);
+        // Filter logic will be implemented later
+    }, []);
 
     /**
-     * Get tile layer configuration
+     * Handle reset view
      */
-    const tileLayerConfig = useMemo(() => {
-        return TILE_LAYERS[mapStyle] || TILE_LAYERS.openStreetMap;
-    }, [mapStyle]);
+    const handleResetView = useCallback(() => {
+        setMapState({
+            center: { lat: defaultCenter[0], lng: defaultCenter[1] },
+            zoom: defaultZoom,
+            bounds: null
+        });
 
-    /**
-     * Get tile layer attribution
-     */
-    const getTileLayerAttribution = useCallback(() => {
-        return tileLayerConfig.attribution;
-    }, [tileLayerConfig]);
-
-    /**
-     * Get component classes
-     */
-    const componentClasses = useMemo(() => {
-        return [
-            'map-layout',
-            `map-layout--${theme}`,
-            mapStyle !== 'default' && `map-layout--${mapStyle}`,
-            isLoading && 'map-layout--loading',
-            error && 'map-layout--error',
-            className
-        ].filter(Boolean).join(' ');
-    }, [theme, mapStyle, isLoading, error, className]);
-
-    // =============================================================================
-    // EFFECTS
-    // =============================================================================
-
-    // Update filters when props change
-    useEffect(() => {
-        setActiveFilters(filters);
-    }, [filters, setActiveFilters]);
-
-    // Handle prop-based data updates
-    useEffect(() => {
-        if (businesses.length > 0) {
-            updateBusinessMarkers(businesses);
+        if (mapInstance) {
+            mapInstance.setView(defaultCenter, defaultZoom);
         }
-    }, [businesses, updateBusinessMarkers]);
-
-    useEffect(() => {
-        if (events.length > 0) {
-            updateEventMarkers(events);
-        }
-    }, [events, updateEventMarkers]);
-
-    useEffect(() => {
-        if (markers.length > 0) {
-            addCustomMarkers(markers);
-        }
-    }, [markers, addCustomMarkers]);
-
-    // Call onMapReady when map is initialized
-    useEffect(() => {
-        if (mapInstance && onMapReady) {
-            onMapReady(mapInstance);
-        }
-    }, [mapInstance, onMapReady]);
+    }, [defaultCenter, defaultZoom, mapInstance]);
 
     // =============================================================================
     // RENDER
     // =============================================================================
 
     return (
-        <div className={componentClasses}>
+        <div className={`map-layout ${className} map-layout--${theme}`}>
             {/* Map Controls */}
             {showControls && (
                 <MapControls
-                    onSearch={handleSearchResult}
-                    onLocationToggle={handleLocationToggle}
-                    onLayerToggle={handleLayerToggle}
-                    onFilterChange={handleFilterChange}
-                    isLocationTracking={isTrackingLocation}
-                    userLocation={userLocation}
+                    mapInstance={mapInstance}
                     mapBounds={mapState.bounds}
-                    markerStats={markerStats}
-                    className="map-layout__controls"
+                    currentZoom={mapState.zoom}
+                    minZoom={minZoom}
+                    maxZoom={maxZoom}
+                    userLocation={userLocation}
+                    isLocationTracking={isTrackingLocation}
+                    onSearchResult={handleSearchResult}
+                    onFilterChange={handleFilterChange}
+                    onLayerToggle={handleLayerToggle}
+                    onZoomChange={handleZoomChange}
+                    onLocationToggle={handleLocationToggle}
+                    onLocationFound={handleLocationFound}
+                    onResetView={handleResetView}
                     theme={theme}
+                    layout="responsive"
+                    showSearch={true}
+                    showFilters={true}
+                    showLayers={true}
+                    showZoom={true}
+                    showLocation={enableGeolocation}
+                    showMarkerCount={true}
                 />
             )}
 
-            {/* Loading Overlay */}
-            {isLoading && (
-                <div className="map-layout__loading">
-                    <div className="map-layout__spinner"></div>
-                    <span>Loading map data...</span>
-                </div>
-            )}
-
-            {/* Error Overlay */}
-            {error && (
-                <div className="map-layout__error">
-                    <div className="map-layout__error-content">
-                        <h3>Unable to load map data</h3>
-                        <p>{error}</p>
-                        <button
-                            onClick={() => handleDataFetch({ bounds: mapState.bounds })}
-                            className="map-layout__retry-button"
-                        >
-                            Retry
-                        </button>
-                    </div>
-                </div>
-            )}
-
             {/* Map Container */}
-            <div className="map-layout__map">
+            <div className="map-layout__container">
                 <MapContainer
+                    ref={mapRef}
                     center={[mapState.center.lat, mapState.center.lng]}
                     zoom={mapState.zoom}
-                    style={{ height: '100%', width: '100%' }}
                     maxZoom={maxZoom}
                     minZoom={minZoom}
-                    whenReady={(mapEvent) => setMapInstance(mapEvent.target)}
-                    zoomControl={false} // Custom zoom control
+                    className="map-layout__map"
+                    zoomControl={false} // We'll use custom controls
                     attributionControl={true}
+                    scrollWheelZoom={true}
+                    dragging={true}
+                    tap={true}
+                    touchZoom={true}
+                    doubleClickZoom={true}
+                    keyboard={true}
                 >
                     {/* Tile Layer */}
                     <TileLayer
-                        url={tileLayerConfig.url}
-                        attribution={getTileLayerAttribution()}
+                        url={tileLayerUrl}
+                        attribution={tileLayerAttribution}
                         maxZoom={maxZoom}
                         minZoom={minZoom}
                     />
 
-                    {/* Map Event Handlers */}
+                    {/* Map Event Handler */}
                     <MapEventsHandler
                         onBoundsChange={handleBoundsChange}
                         onLocationFound={handleLocationFound}
                         onMapClick={handleMapClickInternal}
                         onZoomChange={handleZoomChange}
-                        isTrackingLocation={isTrackingLocation}
                     />
 
-                    {/* Map Controller */}
-                    <MapController
-                        center={mapState.center}
-                        zoom={mapState.zoom}
-                        userLocation={userLocation}
-                        fitToBounds={null} // TODO: Calculate from markers when needed
-                    />
-
-                    {/* Business Markers */}
-                    {filteredMarkers.businesses?.map(marker => (
-                        <BusinessMarker
-                            key={`business-${marker.id}`} // Unique key prefix
-                            business={marker.data || marker} // Pass business data correctly
-                            isSelected={selectedMarkerId === marker.id}
-                            isHovered={hoveredMarkerId === marker.id}
-                            onClick={handleMarkerClick}
-                            onHover={handleMarkerHover}
-                        />
-                    ))}
-
-
-                    {/* Event Markers */}
-                    {filteredMarkers.events?.map(marker => (
-                        <EventMarker
-                            key={`event-${marker.id}`} // Unique key prefix
-                            event={marker.data || marker} // Pass event data correctly
-                            isSelected={selectedMarkerId === marker.id}
-                            isHovered={hoveredMarkerId === marker.id}
-                            onClick={handleMarkerClick}
-                            onHover={handleMarkerHover}
-                        />
-                    ))}
-
-                    {/* Custom Markers */}
-                    {filteredMarkers.custom?.map(marker => (
-                        <CustomMarker
-                            key={`custom-${marker.id}`} // Unique key prefix
-                            marker={marker} 
-                            position={marker.position || [marker.latitude, marker.longitude]} // Ensure position format
-                            data={marker.data || marker}
-                            markerType={marker.type || 'custom'}
-                            title={marker.title || marker.name}
-                            isSelected={selectedMarkerId === marker.id}
-                            isHovered={hoveredMarkerId === marker.id}
-                            onClick={handleMarkerClick}
-                            onHover={handleMarkerHover}
-                        />
-                    ))}
+                    {/* Future markers will be rendered here */}
                 </MapContainer>
             </div>
 
@@ -635,10 +357,8 @@ const MapLayout = ({
                     <div>Center: {mapState.center.lat.toFixed(4)}, {mapState.center.lng.toFixed(4)}</div>
                     <div>Zoom: {mapState.zoom}</div>
                     <div>Bounds: {mapState.bounds ? 'Set' : 'None'}</div>
-                    <div>Businesses: {filteredMarkers.businesses?.length || 0}</div>
-                    <div>Events: {filteredMarkers.events?.length || 0}</div>
-                    <div>Loading: {isLoading ? 'Yes' : 'No'}</div>
-                    <div>Error: {error ? 'Yes' : 'No'}</div>
+                    <div>User Location: {userLocation ? 'Found' : 'None'}</div>
+                    <div>Tracking: {isTrackingLocation ? 'Yes' : 'No'}</div>
                 </div>
             )}
         </div>
@@ -660,38 +380,17 @@ MapLayout.propTypes = {
     onSearchResult: PropTypes.func,
     onMapReady: PropTypes.func,
     onMapClick: PropTypes.func,
-    // Data props
-    businesses: PropTypes.array,
-    events: PropTypes.array,
-    routes: PropTypes.array,
-    markers: PropTypes.array,
-    // Styling props
     mapStyle: PropTypes.oneOf(['default', 'satellite', 'terrain', 'dark']),
     theme: PropTypes.oneOf(['light', 'dark']),
-    enableClustering: PropTypes.bool,
     maxZoom: PropTypes.number,
-    minZoom: PropTypes.number,
-    // Filter and interaction props
-    filters: PropTypes.object,
-    selectedMarkerId: PropTypes.string,
-    hoveredMarkerId: PropTypes.string,
-    onMarkerClick: PropTypes.func,
-    onMarkerHover: PropTypes.func
+    minZoom: PropTypes.number
 };
 
 MapEventsHandler.propTypes = {
-    onBoundsChange: PropTypes.func.isRequired,
-    onLocationFound: PropTypes.func.isRequired,
+    onBoundsChange: PropTypes.func,
+    onLocationFound: PropTypes.func,
     onMapClick: PropTypes.func,
-    onZoomChange: PropTypes.func,
-    isTrackingLocation: PropTypes.bool.isRequired
-};
-
-MapController.propTypes = {
-    center: PropTypes.object,
-    zoom: PropTypes.number,
-    fitToBounds: PropTypes.array,
-    userLocation: PropTypes.object
+    onZoomChange: PropTypes.func
 };
 
 export default MapLayout;
