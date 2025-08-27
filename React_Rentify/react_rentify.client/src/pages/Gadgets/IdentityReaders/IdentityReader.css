@@ -5,10 +5,6 @@
 ---------------------------------------------*/
 :root {
     /* Colors */
-    --primary-color: #3b82f6;
-    --primary-hover: #2563eb;
-    --success-color: #10b981;
-    --success-hover: #059669;
     --danger-color: #ef4444;
     --danger-hover: #dc2626;
     --warning-color: #f59e0b;
@@ -27,8 +23,6 @@
     --warning-text: #d97706;
     --warning-text-dark: #fbbf24;
     /* Card and surface colors */
-    --card-bg-light: #ffffff;
-    --card-bg-dark: #1f2937;
     --input-bg-light: #ffffff;
     --input-bg-dark: #374151;
     /* Text colors */
@@ -58,7 +52,7 @@
   Main Container
 ---------------------------------------------*/
 .identity-reader-container {
-    max-width: 1200px;
+    max-width: 95%;
     margin: 0 auto;
     padding: 2rem;
     min-height: 100vh;

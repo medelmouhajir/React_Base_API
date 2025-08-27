@@ -5,21 +5,11 @@
   ------------------------------------------------------------*/
 :root {
     /* Base colors */
-    --primary-color: #0ea5e9;
-    --primary-hover: #0284c7;
-    --primary-active: #0369a1;
-    --secondary-color: #6b7280;
-    --secondary-hover: #4b5563;
     --danger-color: #ef4444;
     --danger-hover: #dc2626;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     /* Light theme */
-    --bg-color-light: #ffffff;
-    --card-bg-light: #f9fafb;
-    --card-nested-bg-light: #ffffff;
-    --text-color-light: #111827;
-    --text-secondary-light: #6b7280;
     --border-color-light: #e5e7eb;
     --input-bg-light: #ffffff;
     --input-text-light: #111827;
@@ -32,11 +22,6 @@
     --success-bg-light: #dcfce7;
     --success-text-light: #166534;
     /* Dark theme */
-    --bg-color-dark: #111827;
-    --card-bg-dark: #1e293b;
-    --card-nested-bg-dark: #334155;
-    --text-color-dark: #f9fafb;
-    --text-secondary-dark: #d1d5db;
     --border-color-dark: #475569;
     --input-bg-dark: #374151;
     --input-text-dark: #f9fafb;
@@ -75,14 +60,14 @@
 }
 
     .reservationadd-container.light {
-        background-color: var(--card-bg-light);
+        background-color: transparent;
         color: var(--text-color-light);
         box-shadow: var(--shadow-md);
         border: 1px solid var(--border-color-light);
     }
 
     .reservationadd-container.dark {
-        background-color: var(--card-bg-dark);
+        background-color: transparent;
         color: var(--text-color-dark);
         box-shadow: var(--shadow-dark);
         border: 1px solid var(--border-color-dark);

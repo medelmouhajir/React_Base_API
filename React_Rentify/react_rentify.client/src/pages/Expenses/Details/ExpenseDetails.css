@@ -5,19 +5,11 @@
   ------------------------------------------------------------*/
 :root {
     /* Base colors */
-    --primary-color: #0ea5e9;
-    --primary-hover: #0284c7;
-    --secondary-color: #6b7280;
-    --secondary-hover: #4b5563;
     --danger-color: #ef4444;
     --danger-hover: #dc2626;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     /* Light theme */
-    --bg-color-light: #ffffff;
-    --card-bg-light: #f9fafb;
-    --text-color-light: #111827;
-    --text-secondary-light: #6b7280;
     --border-color-light: #e5e7eb;
     --input-bg-light: #ffffff;
     --input-text-light: #111827;
@@ -26,10 +18,6 @@
     --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
     --shadow-hover-light: 0 4px 12px rgba(0, 0, 0, 0.08);
     /* Dark theme */
-    --bg-color-dark: #111827;
-    --card-bg-dark: #1e293b;
-    --text-color-dark: #f9fafb;
-    --text-secondary-dark: #d1d5db;
     --border-color-dark: #374151;
     --input-bg-dark: #1f2937;
     --input-text-dark: #f9fafb;
@@ -78,7 +66,7 @@
   Container and Layout
 ---------------------------------------------*/
 .expense-details-container {
-    max-width: 1200px;
+    max-width: 95%;
     margin: 0 auto;
     padding: 2rem 1.5rem;
     color: var(--text-color);

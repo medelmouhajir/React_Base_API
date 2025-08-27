@@ -61,10 +61,10 @@
    Main Container & Layout
    ======================================== */
 .customer-details-container {
-    max-width: 1200px;
+    max-width: 95%;
     margin: 0 auto;
     padding: var(--cd-spacing-lg);
-    background-color: var(--cd-bg-primary);
+    background-color: transparent;
     min-height: 100vh;
     color: var(--cd-text-primary);
     transition: background-color var(--cd-transition-normal), color var(--cd-transition-normal);
