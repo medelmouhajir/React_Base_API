@@ -1780,5 +1780,31 @@
     "uploadFailed": "Upload failed. Please try again.",
     "confirmDelete": "Are you sure you want to delete this attachment?",
     "deleteFailed": "Failed to delete attachment. Please try again."
+  },
+  "serviceAlerts": {
+    "title": "Service Alerts",
+    "addAlert": "Add Alert",
+    "fetchError": "Error loading service alerts.",
+    "resolveConfirm": "Mark this alert as resolved?",
+    "resolveError": "Error resolving alert.",
+    "search": {
+      "placeholder": "Search alerts..."
+    },
+    "filter": {
+      "all": "All",
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "resolved": "Resolved"
+    },
+    "noAlerts": "No service alerts found.",
+    "status": {
+      "resolved": "Resolved",
+      "overdue": "Overdue",
+      "pending": "Pending"
+    },
+    "dueDate": "Due Date",
+    "dueMileage": "Due Mileage",
+    "notes": "Notes",
+    "resolve": "Resolve"
   }
 }

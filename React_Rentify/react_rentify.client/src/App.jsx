@@ -73,6 +73,7 @@ const Contract = lazy(() => import('./pages/Reservations/Contract/Contract'));
 const AddMaintenance = lazy(() => import('./pages/Maintenances/Add/AddMaintenance'));
 const MaintenanceDetails = lazy(() => import('./pages/Maintenances/Details/MaintenanceDetails'));
 const EditMaintenance = lazy(() => import('./pages/Maintenances/Edit/EditMaintenance'));
+const ServiceAlertsList = lazy(() => import('./pages/ServiceAlerts/ServiceAlertsList'));
 
 //// Child route for Invoices
 const AddInvoice = lazy(() => import('./pages/Invoices/Add/AddInvoice'));
@@ -195,6 +196,7 @@ function App() {
                                 <Route path="/maintenances/:id" element={<MaintenanceDetails />} />
                                 <Route path="/maintenances/add" element={<AddMaintenance />} />
                                 <Route path="/maintenances/:id/edit" element={<EditMaintenance />} />
+                                <Route path="/service-alerts" element={<ServiceAlertsList />} />
 
                                 {/* Invoices */}
                                 <Route path="/invoices" element={<InvoicesList />} />

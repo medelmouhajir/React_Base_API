@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 using React_Rentify.Server.Data;
+using React_Rentify.Server.Extensions;
 using React_Rentify.Server.Models.Users;
 using React_Rentify.Server.Services;
 using System.Text;
@@ -31,6 +32,11 @@ namespace React_Rentify.Server
 
             builder.Services.AddHttpClient<GeminiIdentityReaderService>();
             builder.Services.AddScoped<IAgencyAuthorizationService, AgencyAuthorizationService>();
+
+
+            builder.Services.AddScoped<IAgencyAuthorizationService, AgencyAuthorizationService>();
+
+            builder.Services.AddRentifyServices();
 
             // Configure database
             builder.Services.AddDbContext<GpsDbContext>(options =>

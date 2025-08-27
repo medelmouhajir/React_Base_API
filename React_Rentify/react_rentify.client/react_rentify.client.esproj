@@ -43,6 +43,7 @@
     <Folder Include="src\pages\Maintenances\List\" />
     <Folder Include="src\pages\Maintenances\Edit\" />
     <Folder Include="src\pages\Maintenances\Details\" />
+    <Folder Include="src\pages\ServiceAlerts\" />
     <Folder Include="src\pages\Profile\" />
     <Folder Include="src\pages\Reports\Home\" />
     <Folder Include="src\pages\Reports\Agency\" />

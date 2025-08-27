@@ -1752,5 +1752,31 @@
     "uploadFailed": "Échec du téléversement. Veuillez réessayer.",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette pièce jointe ?",
     "deleteFailed": "Échec de la suppression de la pièce jointe. Veuillez réessayer."
+  },
+  "serviceAlerts": {
+    "title": "Alertes de service",
+    "addAlert": "Ajouter une alerte",
+    "fetchError": "Erreur lors du chargement des alertes de service.",
+    "resolveConfirm": "Marquer cette alerte comme résolue ?",
+    "resolveError": "Erreur lors de la résolution de l'alerte.",
+    "search": {
+      "placeholder": "Rechercher des alertes..."
+    },
+    "filter": {
+      "all": "Toutes",
+      "pending": "En attente",
+      "overdue": "En retard",
+      "resolved": "Résolues"
+    },
+    "noAlerts": "Aucune alerte de service trouvée.",
+    "status": {
+      "resolved": "Résolue",
+      "overdue": "En retard",
+      "pending": "En attente"
+    },
+    "dueDate": "Date d'échéance",
+    "dueMileage": "Kilométrage prévu",
+    "notes": "Remarques",
+    "resolve": "Résoudre"
   }
 }
