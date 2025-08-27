@@ -17,7 +17,7 @@ namespace Rentify_GPS_Service_Worker
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // 2. Register Worker as a hosted service
-            builder.Services.AddHostedService<Worker>();
+            //builder.Services.AddHostedService<Worker>();
 
             var host = builder.Build();
             host.Run();

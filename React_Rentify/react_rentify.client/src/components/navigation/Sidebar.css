@@ -526,6 +526,9 @@
 /* =========================
    RTL SUPPORT
    ========================= */
+/* =========================
+   RTL SUPPORT
+   ========================= */
 [dir="rtl"] .sidebar {
     left: auto;
     right: 0;
@@ -535,19 +538,15 @@
         transform: translateX(100%);
     }
 
-[dir="rtl"] .sidebar-item {
-    justify-content: flex-end;
+[dir="rtl"] .sidebar-item:hover {
+    transform: translateX(-2px);
 }
 
-    [dir="rtl"] .sidebar-item:hover {
-        transform: translateX(-2px);
-    }
-
-    [dir="rtl"] .sidebar-item.active::before {
-        left: auto;
-        right: 0;
-        border-radius: 3px 0 0 3px;
-    }
+[dir="rtl"] .sidebar-item.active::before {
+    left: auto;
+    right: 0;
+    border-radius: 3px 0 0 3px;
+}
 
 [dir="rtl"] .item-text {
     margin-left: 0;
@@ -564,6 +563,29 @@
 
 [dir="rtl"] .toggle-icon.collapsed {
     transform: rotate(-180deg);
+}
+
+/* Fix for RTL collapsed sidebar - ensure icons are centered */
+[dir="rtl"] .sidebar.collapsed .sidebar-item {
+    justify-content: center;
+    padding: 0.75rem 0.5rem; /* Reduce horizontal padding when collapsed */
+}
+
+[dir="rtl"] .sidebar.expanded .sidebar-item {
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+    padding: 0.75rem 1rem; /* Normal padding when expanded */
+}
+
+/* Ensure icon container is properly centered in collapsed RTL mode */
+[dir="rtl"] .sidebar.collapsed .item-icon {
+    margin: 0;
+    justify-content: center;
+}
+
+/* Override the normal collapsed text behavior for RTL */
+[dir="rtl"] .sidebar.collapsed .item-text {
+    display: none; /* Completely hide text when collapsed in RTL */
 }
 
 /* =========================

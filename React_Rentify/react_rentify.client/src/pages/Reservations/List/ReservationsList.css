@@ -179,7 +179,7 @@
 /* ------------------------------------------------------------
    Filter Card
    ------------------------------------------------------------ */
-.filter-card {
+.filter-reservations-card {
     border-radius: 0.75rem;
     padding: 1.5rem;
     transition: all 0.3s ease;
@@ -199,36 +199,36 @@
     }
 }
 
-.reservationlist-container.light .filter-card {
+.reservationlist-container.light .filter-reservations-card {
     background-color: var(--color-card, #ffffff);
     border: 1px solid var(--color-border, #e2e8f0);
 }
 
-.reservationlist-container.dark .filter-card {
+.reservationlist-container.dark .filter-reservations-card {
     background-color: var(--color-card, #1e293b);
     border: 1px solid var(--color-border, #334155);
 }
 
-.filter-grid {
+.filter-reservations-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1.25rem;
     margin-bottom: 1.5rem;
 }
 
-.filter-group {
+.filter-reservations-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-    .filter-group label {
+    .filter-reservations-group label {
         font-size: 0.875rem;
         font-weight: 500;
     }
 
-    .filter-group input,
-    .filter-group select {
+    .filter-reservations-group input,
+    .filter-reservations-group select {
         padding: 0.75rem;
         border: 1px solid;
         border-radius: 0.5rem;
@@ -238,27 +238,27 @@
         min-height: 44px; /* Better touch target */
     }
 
-.reservationlist-container.light .filter-group input,
-.reservationlist-container.light .filter-group select {
+.reservationlist-container.light .filter-reservations-group input,
+.reservationlist-container.light .filter-reservations-group select {
     border-color: var(--color-border, #e2e8f0);
     color: var(--color-text, #1e293b);
 }
 
-.reservationlist-container.dark .filter-group input,
-.reservationlist-container.dark .filter-group select {
+.reservationlist-container.dark .filter-reservations-group input,
+.reservationlist-container.dark .filter-reservations-group select {
     border-color: var(--color-border, #334155);
     color: var(--color-text, #f1f5f9);
 }
 
-.filter-group input:focus,
-.filter-group select:focus {
+.filter-reservations-group input:focus,
+.filter-reservations-group select:focus {
     outline: none;
     border-color: var(--color-primary-500, #0ea5e9);
     box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.25);
 }
 
 /* Filter Actions */
-.filter-actions {
+.filter-reservations-actions {
     display: flex;
     justify-content: flex-end;
 }
@@ -714,11 +714,11 @@
         display: flex;
     }
 
-    .filter-grid {
+    .filter-reservations-grid {
         grid-template-columns: 1fr;
     }
 
-    .filter-actions {
+    .filter-reservations-actions {
         margin-top: 1rem;
     }
 
@@ -784,7 +784,7 @@
     }
 
     .reservationlist-header,
-    .filter-card,
+    .filter-reservations-card,
     .mobile-cards {
         display: none;
     }

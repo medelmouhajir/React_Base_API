@@ -492,7 +492,9 @@
       "confirmed": "مؤكد",
       "ongoing": "جاري",
       "completed": "مكتمل",
-      "cancelled": "ملغى"
+      "cancelled": "ملغى",
+      "current": "حالي",
+      "upcoming": "قادم"
     },
     "actions": {
       "deliver": "تسليم السيارة",
@@ -555,7 +557,11 @@
     "noCustomersSelected": "لا يوجد عملاء محددين.",
     "customer": "العميل",
     "noCustomer": "لا يوجد عميل",
-    "price": "السعر"
+    "price": "السعر",
+    "current": "الحجز الحالي",
+    "upcoming": "الحجوزات القادمة",
+    "noCurrent": "لا يوجد حجز حالي",
+    "noUpcoming": "لا توجد حجوزات قادمة"
   },
   "customerDetails": {
     "errorAddBlacklist": "حدث خطأ أثناء الإضافة إلى القائمة السوداء. حاول مرة أخرى.",
@@ -763,7 +769,22 @@
       "tryDifferentSearch": "حاول تعديل البحث أو الفلاتر",
       "getStarted": "أضف أول عميل للبدء",
       "addFirstCustomer": "أضف أول عميل",
-      "totalCustomers": "المجموع: {{count}} عميل"
+      "totalCustomers": "المجموع: {{count}} عميل",
+      "showing": "المعروض",
+      "toggleFilters": "تبديل الفلاتر",
+      "filters": "الفلاتر",
+      "toggleView": "تبديل طريقة العرض",
+      "tableView": "عرض جدولي",
+      "cardView": "عرض بطاقات",
+      "filterByStatus": "الحالة",
+      "allCustomers": "كل العملاء",
+      "activeOnly": "النشطون فقط",
+      "blacklistedOnly": "المحظورون فقط",
+      "sortBy": "ترتيب حسب",
+      "sortOrder": "الترتيب",
+      "ascending": "من أ-ي / منخفض-مرتفع",
+      "descending": "من ي-أ / مرتفع-منخفض",
+      "addFirst": "إضافة أول عميل"
     },
     "errorLoading": "فشل في تحميل العملاء",
     "add": {
@@ -988,7 +1009,15 @@
     "details": {
       "error": "حدث خطأ أثناء تحميل تفاصيل السيارة.",
       "notFound": "لم يتم العثور على السيارة.",
-      "noImage": "لا توجد صورة متاحة"
+      "noImage": "لا توجد صورة متاحة",
+      "fetchError": "فشل في تحميل تفاصيل السيارة",
+      "basic": "المعلومات الأساسية",
+      "pricing": "التسعير",
+      "tracking": "التتبع",
+      "info": "معلومات",
+      "maintenance": "الصيانة",
+      "attachments": "المرفقات",
+      "reservations": "الحجوزات"
     },
     "status": {
       "title": "الحالة",
@@ -1259,22 +1288,17 @@
     "createFirstTicket": "إنشاء أول تذكرة"
   },
   "blacklistCheck": {
-    "title": "التحقق من القائمة السوداء",
-    "description": "ابحث عن الأفراد في قاعدة بيانات القائمة السوداء باستخدام معلوماتهم الشخصية. أدخل حقلًا واحدًا على الأقل لإجراء البحث.",
-    "search": "ابحث في القائمة السوداء",
-    "searching": "جاري البحث...",
-    "validation": {
-      "atLeastOne": "يرجى إدخال حقل بحث واحد على الأقل (الاسم الكامل، رقم البطاقة الوطنية، جواز السفر، أو رخصة السياقة)"
-    },
-    "errors": {
-      "searchFailed": "فشل البحث في القائمة السوداء. حاول مرة أخرى."
+    "title": "التحقق من اللائحة السوداء",
+    "description": "ابحث إذا كان العميل مدرجًا في اللائحة السوداء عبر الوكالات.",
+    "steps": {
+      "search": "بحث",
+      "results": "النتائج"
     },
     "fields": {
       "fullName": "الاسم الكامل",
       "cin": "رقم البطاقة الوطنية",
-      "passport": "رقم جواز السفر",
-      "driveLicense": "رقم رخصة السياقة",
-      "reason": "السبب"
+      "passport": "جواز السفر",
+      "driveLicense": "رخصة السياقة"
     },
     "placeholders": {
       "fullName": "أدخل الاسم الكامل",
@@ -1282,24 +1306,35 @@
       "passport": "أدخل رقم جواز السفر",
       "driveLicense": "أدخل رقم رخصة السياقة"
     },
-    "results": {
-      "title": "نتائج البحث",
-      "noMatches": "لم يتم العثور على أي تطابق في القائمة السوداء",
-      "noMatchesDescription": "خبر جيد! لم يتم العثور على أي تطابق في قاعدة بيانات القائمة السوداء للمعلومات المقدمة.",
-      "foundMatches": "{{count}} تطابق في القائمة السوداء",
-      "foundMatches_plural": "{{count}} تطابقات في القائمة السوداء",
-      "foundMatchesDescription": "تم العثور على التطابقات التالية في قاعدة بيانات القائمة السوداء. يرجى الاتصال بالجهات المبلغ عنها لمزيد من المعلومات.",
-      "addedOn": "أضيف في",
-      "reportedBy": "أبلغ عنه"
+    "validation": {
+      "atLeastOne": "الرجاء إدخال حقل واحد على الأقل للبحث."
     },
-    "contactAgency": "الاتصال بالجهة",
-    "contactModal": {
-      "title": "اتصل",
-      "sendEmail": "إرسال بريد إلكتروني",
-      "call": "اتصل",
-      "address": "العنوان",
-      "emailSubject": "استفسار حول سجل في القائمة السوداء"
-    }
+    "errors": {
+      "searchFailed": "فشل البحث. حاول مرة أخرى."
+    },
+    "search": "بحث",
+    "searching": "جاري البحث...",
+    "resultsTitle": "نتائج البحث",
+    "resultsFound": "نتيجة/نتائج",
+    "warningTitle": "تحذير",
+    "warningMessage": "تم العثور على إدخالات في اللائحة السوداء. يرجى المراجعة بعناية.",
+    "noResultsTitle": "لا توجد نتائج",
+    "noResultsMessage": "لم يتم العثور على أي إدخالات في اللائحة السوداء.",
+    "details": {
+      "nationalId": "رقم البطاقة الوطنية",
+      "passportId": "رقم جواز السفر",
+      "licenseNumber": "رقم رخصة السياقة",
+      "reason": "السبب"
+    },
+    "contactAgency": "الاتصال بالوكالة",
+    "contact": {
+      "email": "البريد الإلكتروني",
+      "emailSubject": "استعلام حول اللائحة السوداء",
+      "phone": "الهاتف",
+      "address": "العنوان"
+    },
+    "unknownAgency": "وكالة غير معروفة",
+    "newSearch": "بحث جديد"
   },
   "gadgets": {
     "home": {
@@ -1723,5 +1758,19 @@
     "zoomIn": "تكبير",
     "zoomOut": "تصغير",
     "centerMap": "توسيط الخريطة"
+  },
+  "attachment": {
+    "title": "المرفقات",
+    "add": "إضافة مرفق",
+    "upload": "رفع مرفق",
+    "uploading": "جارٍ الرفع...",
+    "noFiles": "لا توجد مرفقات",
+    "uploadedOn": "تم الرفع في",
+    "download": "تنزيل",
+    "delete": "حذف",
+    "fileTooLarge": "يجب أن يكون حجم الملف أقل من 10 ميجابايت",
+    "uploadFailed": "فشل الرفع. يرجى المحاولة مرة أخرى.",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا المرفق؟",
+    "deleteFailed": "فشل في حذف المرفق. يرجى المحاولة مرة أخرى."
   }
 }

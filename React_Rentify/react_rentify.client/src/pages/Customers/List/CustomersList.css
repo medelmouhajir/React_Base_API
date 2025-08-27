@@ -292,7 +292,7 @@
     font-size: 1rem;
 }
 
-.view-toggle {
+.view-customers-toggle {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -307,13 +307,13 @@
     min-width: 44px;
 }
 
-    .view-toggle:hover {
+    .view-customers-toggle:hover {
         border-color: var(--color-primary-500);
         background: rgba(59, 130, 246, 0.1);
         color: var(--color-primary-600);
     }
 
-.view-icon {
+.view-customers-icon {
     font-size: 1.2rem;
 }
 

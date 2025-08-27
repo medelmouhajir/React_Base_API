@@ -506,7 +506,9 @@
       "confirmed": "Confirmed",
       "ongoing": "Ongoing",
       "completed": "Completed",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "current": "Current",
+      "upcoming": "Upcoming"
     },
     "actions": {
       "deliver": "Deliver Car",
@@ -565,7 +567,11 @@
     "noCustomersSelected": "No customers selected.",
     "customer": "Customer",
     "noCustomer": "No customer",
-    "price": "Price"
+    "price": "Price",
+    "current": "Current Reservation",
+    "upcoming": "Upcoming Reservations",
+    "noCurrent": "No current reservation",
+    "noUpcoming": "No upcoming reservations"
   },
   "customerDetails": {
     "errorAddBlacklist": "Error adding to blacklist. Please try again.",
@@ -811,7 +817,21 @@
       "tryDifferentSearch": "Try adjusting your search or filters",
       "getStarted": "Add your first customer to get started",
       "addFirstCustomer": "Add First Customer",
-      "totalCustomers": "Total: {{count}} customers"
+      "totalCustomers": "Total: {{count}} customers",
+      "toggleFilters": "Toggle Filters",
+      "filters": "Filters",
+      "toggleView": "Toggle View Mode",
+      "tableView": "Table View",
+      "cardView": "Card View",
+      "filterByStatus": "Status",
+      "allCustomers": "All Customers",
+      "activeOnly": "Active Only",
+      "blacklistedOnly": "Blacklisted Only",
+      "sortBy": "Sort By",
+      "sortOrder": "Order",
+      "ascending": "A-Z / Low-High",
+      "descending": "Z-A / High-Low",
+      "addFirst": "Add First Customer"
     },
     "search": {
       "placeholder": "Search customers..."
@@ -997,7 +1017,15 @@
     "details": {
       "error": "Error loading car details.",
       "notFound": "Car not found.",
-      "noImage": "No image available"
+      "noImage": "No image available",
+      "fetchError": "Failed to load car details",
+      "basic": "Basic Information",
+      "pricing": "Pricing",
+      "tracking": "Tracking",
+      "info": "Info",
+      "maintenance": "Maintenance",
+      "attachments": "Attachments",
+      "reservations": "Reservations"
     },
     "status": {
       "title": "Status",
@@ -1269,46 +1297,52 @@
   },
   "blacklistCheck": {
     "title": "Blacklist Check",
-    "description": "Search for individuals in the blacklist database using their personal information. Enter at least one field to perform a search.",
-    "search": "Search Blacklist",
-    "searching": "Searching...",
-    "validation": {
-      "atLeastOne": "Please enter at least one search field (Full Name, CIN, Passport, or Driver License)"
-    },
-    "errors": {
-      "searchFailed": "Failed to search blacklist. Please try again."
+    "description": "Search if a customer is blacklisted across agencies.",
+    "steps": {
+      "search": "Search",
+      "results": "Results"
     },
     "fields": {
       "fullName": "Full Name",
-      "cin": "CIN (National ID)",
-      "passport": "Passport Number",
-      "driveLicense": "Driver License Number",
-      "reason": "Reason"
+      "cin": "CIN",
+      "passport": "Passport",
+      "driveLicense": "Driver License"
     },
     "placeholders": {
       "fullName": "Enter full name",
-      "cin": "Enter CIN number",
+      "cin": "Enter CIN",
       "passport": "Enter passport number",
       "driveLicense": "Enter driver license number"
     },
-    "results": {
-      "title": "Search Results",
-      "noMatches": "No Blacklist Matches Found",
-      "noMatchesDescription": "Great news! No matches were found in the blacklist database for the provided information.",
-      "foundMatches": "{{count}} Blacklist Match Found",
-      "foundMatches_plural": "{{count}} Blacklist Matches Found",
-      "foundMatchesDescription": "The following matches were found in the blacklist database. Please contact the reporting agencies for more information.",
-      "addedOn": "Added on",
-      "reportedBy": "Reported by"
+    "validation": {
+      "atLeastOne": "Please provide at least one search field."
+    },
+    "errors": {
+      "searchFailed": "Search failed. Please try again."
+    },
+    "search": "Search",
+    "searching": "Searching...",
+    "resultsTitle": "Search Results",
+    "resultsFound": "results found",
+    "warningTitle": "Warning",
+    "warningMessage": "One or more blacklist entries were found. Please review carefully.",
+    "noResultsTitle": "No Results Found",
+    "noResultsMessage": "No matching entries were found in the blacklist.",
+    "details": {
+      "nationalId": "National ID",
+      "passportId": "Passport ID",
+      "licenseNumber": "License Number",
+      "reason": "Reason"
     },
     "contactAgency": "Contact Agency",
-    "contactModal": {
-      "title": "Contact",
-      "sendEmail": "Send Email",
-      "call": "Call",
-      "address": "Address",
-      "emailSubject": "Inquiry about Blacklist Entry"
-    }
+    "contact": {
+      "email": "Email",
+      "emailSubject": "Blacklist Inquiry",
+      "phone": "Phone",
+      "address": "Address"
+    },
+    "unknownAgency": "Unknown Agency",
+    "newSearch": "New Search"
   },
   "gadgets": {
     "home": {
@@ -1732,5 +1766,19 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "centerMap": "Center map"
+  },
+  "attachment": {
+    "title": "Attachments",
+    "add": "Add Attachment",
+    "upload": "Upload Attachment",
+    "uploading": "Uploading...",
+    "noFiles": "No attachments found",
+    "uploadedOn": "Uploaded on",
+    "download": "Download",
+    "delete": "Delete",
+    "fileTooLarge": "File size must be less than 10MB",
+    "uploadFailed": "Upload failed. Please try again.",
+    "confirmDelete": "Are you sure you want to delete this attachment?",
+    "deleteFailed": "Failed to delete attachment. Please try again."
   }
 }

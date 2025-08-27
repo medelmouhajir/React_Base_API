@@ -43,8 +43,8 @@ const CarCheck = () => {
         const searchLower = searchTerm.toLowerCase();
         return (
             car.licensePlate?.toLowerCase().includes(searchLower) ||
-            car.car_Model?.name?.toLowerCase().includes(searchLower) ||
-            car.car_Model?.manufacturer?.name?.toLowerCase().includes(searchLower)
+            car.fields?.model?.toLowerCase().includes(searchLower) ||
+            car.fields?.manufacturer?.toLowerCase().includes(searchLower)
         );
     });
 
@@ -133,9 +133,9 @@ const CarCheck = () => {
                                 <div className="car-info">
                                     <div className="car-license">{car.licensePlate}</div>
                                     <div className="car-model">
-                                        {car.car_Model?.manufacturer?.name} {car.car_Model?.name}
+                                        {car.fields?.manufacturer} {car.fields?.model}
                                     </div>
-                                    <div className="car-year">{car.car_Year?.year}</div>
+                                    <div className="car-year">{car.fields?.year}</div>
                                     <div className={`car-status ${car.isAvailable ? 'available' : 'unavailable'}`}>
                                         {car.isAvailable ? t('carCheck.available') : t('carCheck.unavailable')}
                                     </div>
@@ -159,7 +159,7 @@ const CarCheck = () => {
                             <span className="selected-car-label">{t('carCheck.selectedCar')}:</span>
                             <span className="selected-car-details">
                                 {getSelectedCarDetails()?.licensePlate} -
-                                {getSelectedCarDetails()?.car_Model?.manufacturer?.name} {getSelectedCarDetails()?.car_Model?.name}
+                                {getSelectedCarDetails()?.fields?.manufacturer} {getSelectedCarDetails()?.fields?.model}
                             </span>
                         </div>
 

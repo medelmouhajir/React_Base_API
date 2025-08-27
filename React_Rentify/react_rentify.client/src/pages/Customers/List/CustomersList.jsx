@@ -235,22 +235,22 @@ const CustomersList = () => {
 
                     <div className="control-buttons">
                         <button
-                            className={`filter-toggle ${showFilters ? 'active' : ''}`}
+                            className={`filter-customers-toggle ${showFilters ? 'active' : ''}`}
                             onClick={() => setShowFilters(!showFilters)}
                             aria-label={t('customer.list.toggleFilters', 'Toggle Filters')}
                         >
-                            <span className="filter-icon">⚙️</span>
-                            <span className="filter-text">{t('customer.list.filters', 'Filters')}</span>
+                            <span className="filter-customers-icon">⚙️</span>
+                            <span className="filter-customers-text">{t('customer.list.filters', 'Filters')}</span>
                         </button>
 
                         {!isMobile && (
                             <button
-                                className={`view-toggle ${viewMode}`}
+                                className={`view-customers-toggle ${viewMode}`}
                                 onClick={toggleViewMode}
                                 aria-label={t('customer.list.toggleView', 'Toggle View Mode')}
                                 title={viewMode === 'cards' ? t('customer.list.tableView', 'Table View') : t('customer.list.cardView', 'Card View')}
                             >
-                                <span className="view-icon">
+                                <span className="view-customers-icon">
                                     {viewMode === 'cards' ? '☰' : '▦'}
                                 </span>
                             </button>
@@ -261,13 +261,13 @@ const CustomersList = () => {
                 {/* Expandable Filters */}
                 {showFilters && (
                     <div className="filters-section">
-                        <div className="filter-grid">
-                            <div className="filter-group">
-                                <label className="filter-label">
+                        <div className="filter-customers-grid">
+                            <div className="filter-customers-group">
+                                <label className="filter-customers-label">
                                     {t('customer.list.filterByStatus', 'Status')}
                                 </label>
                                 <select
-                                    className="filter-select"
+                                    className="filter-customers-select"
                                     value={statusFilter}
                                     onChange={(e) => setStatusFilter(e.target.value)}
                                 >
@@ -277,12 +277,12 @@ const CustomersList = () => {
                                 </select>
                             </div>
 
-                            <div className="filter-group">
-                                <label className="filter-label">
+                            <div className="filter-customers-group">
+                                <label className="filter-customers-label">
                                     {t('customer.list.sortBy', 'Sort By')}
                                 </label>
                                 <select
-                                    className="filter-select"
+                                    className="filter-customers-select"
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
                                 >
@@ -293,12 +293,12 @@ const CustomersList = () => {
                                 </select>
                             </div>
 
-                            <div className="filter-group">
-                                <label className="filter-label">
+                            <div className="filter-customers-group">
+                                <label className="filter-customers-label">
                                     {t('customer.list.sortOrder', 'Order')}
                                 </label>
                                 <select
-                                    className="filter-select"
+                                    className="filter-customers-select"
                                     value={sortConfig.direction}
                                     onChange={(e) => setSortConfig(prev => ({ ...prev, direction: e.target.value }))}
                                 >
@@ -366,7 +366,7 @@ const CustomersList = () => {
                                                 {t('customer.fields.phoneNumber', 'Phone')}
                                                 <span className="sort-indicator"></span>
                                             </th>
-                                            <th>{t('customer.fields.status', 'Status')}</th>
+                                            <th>{t('car.fields.status', 'Status')}</th>
                                             <th className="actions-header">{t('common.actions', 'Actions')}</th>
                                         </tr>
                                     </thead>

@@ -175,7 +175,7 @@ const ReservationsList = () => {
                         className="toggle-filters-button"
                         onClick={() => setShowFilters(!showFilters)}
                         aria-expanded={showFilters}
-                        aria-controls="filter-card"
+                        aria-controls="filter-reservations-card"
                     >
                         {showFilters
                             ? t('reservation.list.hideFilters', 'Hide Filters')
@@ -185,9 +185,9 @@ const ReservationsList = () => {
             </header>
 
             {showFilters && (
-                <div id="filter-card" className="filter-card">
-                    <div className="filter-grid">
-                        <div className="filter-group">
+                <div id="filter-reservations-card" className="filter-reservations-card">
+                    <div className="filter-reservations-grid">
+                        <div className="filter-reservations-group">
                             <label htmlFor="filterStartDate">
                                 {t('reservation.list.filter.fromDate', 'From Date')}
                             </label>
@@ -199,7 +199,7 @@ const ReservationsList = () => {
                             />
                         </div>
 
-                        <div className="filter-group">
+                        <div className="filter-reservations-group">
                             <label htmlFor="filterEndDate">
                                 {t('reservation.list.filter.toDate', 'To Date')}
                             </label>
@@ -211,7 +211,7 @@ const ReservationsList = () => {
                             />
                         </div>
 
-                        <div className="filter-group">
+                        <div className="filter-reservations-group">
                             <label htmlFor="filterCustomer">
                                 {t('reservation.list.filter.customer', 'Customer')}
                             </label>
@@ -231,7 +231,7 @@ const ReservationsList = () => {
                             </select>
                         </div>
 
-                        <div className="filter-group">
+                        <div className="filter-reservations-group">
                             <label htmlFor="filterCar">
                                 {t('reservation.list.filter.car', 'Car')}
                             </label>
@@ -245,13 +245,13 @@ const ReservationsList = () => {
                                 </option>
                                 {cars.map((c) => (
                                     <option key={c.id} value={c.id}>
-                                        {c.licensePlate} - {c.model}
+                                        {c.licensePlate} - {c.fields.model}
                                     </option>
                                 ))}
                             </select>
                         </div>
 
-                        <div className="filter-group">
+                        <div className="filter-reservations-group">
                             <label htmlFor="filterStatus">
                                 {t('reservation.list.filter.status', 'Status')}
                             </label>
@@ -265,14 +265,14 @@ const ReservationsList = () => {
                                 </option>
                                 {statuses.map((s) => (
                                     <option key={s} value={s}>
-                                        {s}
+                                        {t('reservation.status.') + s.toLowerCase()}
                                     </option>
                                 ))}
                             </select>
                         </div>
                     </div>
 
-                    <div className="filter-actions">
+                    <div className="filter-reservations-actions">
                         <button
                             className="clear-filters-button"
                             onClick={clearFilters}

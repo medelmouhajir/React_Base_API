@@ -8,7 +8,7 @@ const ReturnCarModal = ({ reservation, onClose, onSubmit }) => {
     const { t } = useTranslation();
 
     const [formData, setFormData] = useState({
-        odometerEnd: '',
+        odometerEnd: reservation.odometerStart || 0,
         fuelLevel: 'FULL',
         returnNotes: '',
         returnDate: new Date().toISOString().split('T')[0],

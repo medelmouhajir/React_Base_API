@@ -18,7 +18,7 @@ const MainLayout = () => {
 
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-    const [pageLoading, setPageLoading] = useState(true);
+
 
     // Handle swipe gestures for mobile
     useEffect(() => {
@@ -72,14 +72,6 @@ const MainLayout = () => {
         if (isMobile) {
             setSidebarOpen(false);
         }
-
-        // Simulate page loading effect
-        setPageLoading(true);
-        const timer = setTimeout(() => {
-            setPageLoading(false);
-        }, 500);
-
-        return () => clearTimeout(timer);
     }, [location.pathname, isMobile]);
 
     const toggleSidebar = () => {
@@ -120,15 +112,9 @@ const MainLayout = () => {
                 {/* Page area */}
                 <main className="main-content-area">
                     <div className="content-inner-wrapper">
-                        {pageLoading ? (
-                            <div className="loading-container">
-                                <Loading type="dots" showText={false} />
-                            </div>
-                        ) : (
-                            <div className="page-transition-enter page-transition-enter-active">
-                                <Outlet />
-                            </div>
-                        )}
+                        <div className="page-transition-enter page-transition-enter-active">
+                            <Outlet />
+                        </div>
                     </div>
                 </main>
 

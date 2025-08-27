@@ -5,11 +5,8 @@
   ------------------------------------------------------------*/
 :root {
     /* Base colors */
-    --primary-color: #4a90e2;
     --primary-hover: #3b78c3;
     /* Light theme */
-    --bg-color-light: #ffffff;
-    --card-bg-light: #ffffff;
     --card-hover-light: #f9fafb;
     --text-color-light: #111827;
     --text-secondary-light: #6b7280;
@@ -21,8 +18,6 @@
     --disabled-bg-light: #f3f4f6;
     --disabled-text-light: #9ca3af;
     /* Dark theme */
-    --bg-color-dark: #111827;
-    --card-bg-dark: #1f2937;
     --card-hover-dark: #374151;
     --text-color-dark: #f9fafb;
     --text-secondary-dark: #d1d5db;
@@ -42,7 +37,7 @@
   Container and Layout
 ---------------------------------------------*/
 .gadgets-home-container {
-    max-width: 1200px;
+    max-width: 95%;
     margin: 0 auto;
     padding: 1.5rem;
     color: var(--text-color-light);

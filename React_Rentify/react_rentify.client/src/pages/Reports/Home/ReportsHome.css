@@ -5,16 +5,10 @@
   ------------------------------------------------------------*/
 :root {
     /* Base colors */
-    --primary-color: #0ea5e9;
-    --primary-hover: #0284c7;
-    --secondary-color: #6b7280;
-    --secondary-hover: #4b5563;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --danger-color: #ef4444;
     /* Light theme */
-    --bg-color-light: #ffffff;
-    --card-bg-light: #f9fafb;
     --text-color-light: #111827;
     --text-secondary-light: #6b7280;
     --border-color-light: #e5e7eb;
@@ -26,8 +20,6 @@
     --shadow-hover-light: 0 4px 12px rgba(0, 0, 0, 0.08);
     --gradient-light: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
     /* Dark theme */
-    --bg-color-dark: #111827;
-    --card-bg-dark: #1e293b;
     --text-color-dark: #f9fafb;
     --text-secondary-dark: #d1d5db;
     --border-color-dark: #374151;
@@ -62,8 +54,8 @@
     --shadow: var(--shadow-light);
     --shadow-hover: var(--shadow-hover-light);
     --gradient: var(--gradient-light);
-    width: 100%;
-    max-width: 100%;
+    width: 95%;
+    max-width: 95%;
     margin: 0 auto;
     padding: 1.5rem;
     color: var(--text-color);

@@ -480,7 +480,9 @@
       "confirmed": "Confirmé",
       "ongoing": "En cours",
       "completed": "Terminé",
-      "cancelled": "Annulé"
+      "cancelled": "Annulé",
+      "current": "En cours",
+      "upcoming": "À venir"
     },
     "actions": {
       "deliver": "Remettre le véhicule",
@@ -543,7 +545,11 @@
     "noCustomersSelected": "Aucun client sélectionné.",
     "customer": "Client",
     "noCustomer": "Aucun client",
-    "price": "Prix"
+    "price": "Prix",
+    "current": "Réservation en cours",
+    "upcoming": "Réservations à venir",
+    "noCurrent": "Aucune réservation en cours",
+    "noUpcoming": "Aucune réservation à venir"
   },
   "customerDetails": {
     "errorAddBlacklist": "Erreur lors de l'ajout à la liste noire. Veuillez réessayer.",
@@ -751,7 +757,22 @@
       "tryDifferentSearch": "Essayez d'ajuster votre recherche ou vos filtres",
       "getStarted": "Ajoutez votre premier client pour commencer",
       "addFirstCustomer": "Ajouter un premier client",
-      "totalCustomers": "Total : {{count}} clients"
+      "totalCustomers": "Total : {{count}} clients",
+      "showing": "Affichés",
+      "toggleFilters": "Basculer les filtres",
+      "filters": "Filtres",
+      "toggleView": "Changer le mode d'affichage",
+      "tableView": "Vue tableau",
+      "cardView": "Vue cartes",
+      "filterByStatus": "Statut",
+      "allCustomers": "Tous les clients",
+      "activeOnly": "Actifs uniquement",
+      "blacklistedOnly": "Blacklistés uniquement",
+      "sortBy": "Trier par",
+      "sortOrder": "Ordre",
+      "ascending": "A-Z / Bas-Haut",
+      "descending": "Z-A / Haut-Bas",
+      "addFirst": "Ajouter le premier client"
     },
     "errorLoading": "Échec du chargement des clients",
     "add": {
@@ -975,7 +996,15 @@
     "details": {
       "error": "Une erreur est survenue lors du chargement des détails de la voiture.",
       "notFound": "Voiture non trouvée.",
-      "noImage": "Aucune image disponible"
+      "noImage": "Aucune image disponible",
+      "fetchError": "Échec du chargement des détails du véhicule",
+      "basic": "Informations de base",
+      "pricing": "Tarification",
+      "tracking": "Suivi",
+      "info": "Infos",
+      "maintenance": "Maintenance",
+      "attachments": "Pièces jointes",
+      "reservations": "Réservations"
     },
     "status": {
       "title": "Statut",
@@ -1239,47 +1268,53 @@
     "createFirstTicket": "Créer le premier ticket"
   },
   "blacklistCheck": {
-    "title": "Vérification de la liste noire",
-    "description": "Recherchez des individus dans la base de données de la liste noire à l’aide de leurs informations personnelles. Saisissez au moins un champ pour lancer la recherche.",
-    "search": "Rechercher dans la liste noire",
-    "searching": "Recherche en cours...",
-    "validation": {
-      "atLeastOne": "Veuillez saisir au moins un champ de recherche (Nom complet, CIN, passeport ou permis de conduire)"
-    },
-    "errors": {
-      "searchFailed": "Échec de la recherche dans la liste noire. Veuillez réessayer."
+    "title": "Vérification Liste Noire",
+    "description": "Recherchez si un client est signalé sur la liste noire des agences.",
+    "steps": {
+      "search": "Recherche",
+      "results": "Résultats"
     },
     "fields": {
       "fullName": "Nom complet",
-      "cin": "CIN (Carte d’identité nationale)",
-      "passport": "Numéro de passeport",
-      "driveLicense": "Numéro de permis de conduire",
-      "reason": "Raison"
+      "cin": "CIN",
+      "passport": "Passeport",
+      "driveLicense": "Permis de conduire"
     },
     "placeholders": {
       "fullName": "Entrez le nom complet",
-      "cin": "Entrez le numéro de CIN",
+      "cin": "Entrez le CIN",
       "passport": "Entrez le numéro de passeport",
-      "driveLicense": "Entrez le numéro du permis de conduire"
+      "driveLicense": "Entrez le numéro du permis"
     },
-    "results": {
-      "title": "Résultats de recherche",
-      "noMatches": "Aucun résultat trouvé dans la liste noire",
-      "noMatchesDescription": "Bonne nouvelle ! Aucun résultat n’a été trouvé dans la base de données de la liste noire pour les informations fournies.",
-      "foundMatches": "{{count}} résultat trouvé dans la liste noire",
-      "foundMatches_plural": "{{count}} résultats trouvés dans la liste noire",
-      "foundMatchesDescription": "Les correspondances suivantes ont été trouvées dans la base de données de la liste noire. Veuillez contacter les agences concernées pour plus d’informations.",
-      "addedOn": "Ajouté le",
-      "reportedBy": "Signalé par"
+    "validation": {
+      "atLeastOne": "Veuillez remplir au moins un champ."
     },
-    "contactAgency": "Contacter l’agence",
-    "contactModal": {
-      "title": "Contact",
-      "sendEmail": "Envoyer un e‑mail",
-      "call": "Appeler",
-      "address": "Adresse",
-      "emailSubject": "Demande concernant une entrée dans la liste noire"
-    }
+    "errors": {
+      "searchFailed": "Échec de la recherche. Veuillez réessayer."
+    },
+    "search": "Rechercher",
+    "searching": "Recherche en cours...",
+    "resultsTitle": "Résultats de la recherche",
+    "resultsFound": "résultat(s) trouvé(s)",
+    "warningTitle": "Avertissement",
+    "warningMessage": "Un ou plusieurs signalements ont été trouvés. Veuillez vérifier attentivement.",
+    "noResultsTitle": "Aucun résultat",
+    "noResultsMessage": "Aucune entrée correspondante dans la liste noire.",
+    "details": {
+      "nationalId": "CIN",
+      "passportId": "Passeport",
+      "licenseNumber": "Permis de conduire",
+      "reason": "Raison"
+    },
+    "contactAgency": "Contacter l'agence",
+    "contact": {
+      "email": "E-mail",
+      "emailSubject": "Demande concernant la liste noire",
+      "phone": "Téléphone",
+      "address": "Adresse"
+    },
+    "unknownAgency": "Agence inconnue",
+    "newSearch": "Nouvelle recherche"
   },
   "gadgets": {
     "home": {
@@ -1703,5 +1738,19 @@
     "zoomIn": "Zoomer",
     "zoomOut": "Dézoomer",
     "centerMap": "Centrer la carte"
+  },
+  "attachment": {
+    "title": "Pièces jointes",
+    "add": "Ajouter une pièce jointe",
+    "upload": "Téléverser une pièce jointe",
+    "uploading": "Téléversement...",
+    "noFiles": "Aucune pièce jointe trouvée",
+    "uploadedOn": "Téléversé le",
+    "download": "Télécharger",
+    "delete": "Supprimer",
+    "fileTooLarge": "La taille du fichier doit être inférieure à 10 Mo",
+    "uploadFailed": "Échec du téléversement. Veuillez réessayer.",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette pièce jointe ?",
+    "deleteFailed": "Échec de la suppression de la pièce jointe. Veuillez réessayer."
   }
 }
