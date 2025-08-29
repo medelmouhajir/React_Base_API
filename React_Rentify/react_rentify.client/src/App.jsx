@@ -115,6 +115,9 @@ const IdentityReader = lazy(() => import('./pages/Gadgets/IdentityReaders/Identi
 const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
 const SearchPage = lazy(() => import('./pages/Search/SearchPage'));
 
+//// Other standalone pages
+const SubscriptionsList = lazy(() => import('./pages/Subscriptions/List/SubscriptionsList'));
+
 const ThemedToastContainer = () => {
     const { isDarkMode } = useTheme();
 
@@ -239,6 +242,9 @@ function App() {
 
                                 {/* Search */}
                                 <Route path="/search" element={<SearchPage />} />
+
+                                {/* Subscriptions */}
+                                <Route path="/subscriptions" element={<SubscriptionsList />} />
                             </Route>
 
                             {/* 404 and redirects */}

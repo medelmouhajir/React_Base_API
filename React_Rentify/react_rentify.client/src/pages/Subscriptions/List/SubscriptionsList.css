@@ -1,0 +1,1182 @@
+/* src/pages/Subscriptions/List/SubscriptionsList.css */
+
+/*------------------------------------------------------------
+  Theme Variables - using CSS variables for theming
+  ------------------------------------------------------------*/
+:root {
+    /* Base colors */
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
+    --success-color: #10b981;
+    --success-hover: #059669;
+    --warning-color: #f59e0b;
+    --warning-hover: #d97706;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --info-color: #3b82f6;
+    /* Light theme */
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --text-muted-light: #9ca3af;
+    --card-bg-light: #ffffff;
+    --bg-color-light: #f9fafb;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #60a5fa;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-hover-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --table-header-bg-light: #f3f4f6;
+    --table-row-hover-light: rgba(0, 0, 0, 0.025);
+    /* Dark theme */
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --text-muted-dark: #9ca3af;
+    --card-bg-dark: #1f2937;
+    --bg-color-dark: #111827;
+    --border-color-dark: #374151;
+    --input-bg-dark: #374151;
+    --input-text-dark: #f9fafb;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #3b82f6;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover-dark: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --table-header-bg-dark: #2d3748;
+    --table-row-hover-dark: rgba(255, 255, 255, 0.05);
+    /* Common */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --transition-speed: 0.25s;
+    --transition-fast: 0.15s;
+    --transition-normal: 0.3s;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/*------------------------------------------------------------
+  Container and Layout
+  ------------------------------------------------------------*/
+.subscriptions-list-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    color: var(--text-color-light);
+    background-color: transparent;
+    transition: color var(--transition-speed);
+}
+
+    /* Dark theme support */
+    .subscriptions-list-container.dark {
+        color: var(--text-color-dark);
+    }
+
+/*------------------------------------------------------------
+  Header Section
+  ------------------------------------------------------------*/
+.subscriptions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    gap: 1.5rem;
+}
+
+.header-content {
+    flex: 1;
+}
+
+.subscriptions-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color-light);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.2;
+}
+
+.subscriptions-list-container.dark .subscriptions-title {
+    color: var(--text-color-dark);
+}
+
+.subscriptions-subtitle {
+    color: var(--text-secondary-light);
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.subscriptions-list-container.dark .subscriptions-subtitle {
+    color: var(--text-secondary-dark);
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.refresh-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--radius-md);
+    background-color: var(--card-bg-light);
+    color: var(--text-secondary-light);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.subscriptions-list-container.dark .refresh-button {
+    border-color: var(--border-color-dark);
+    background-color: var(--card-bg-dark);
+    color: var(--text-secondary-dark);
+}
+
+.refresh-button:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.refresh-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.refresh-button.refreshing svg {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/*------------------------------------------------------------
+  Filters Section
+  ------------------------------------------------------------*/
+.subscriptions-filters {
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-light);
+}
+
+.subscriptions-list-container.dark .subscriptions-filters {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.filters-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 1rem;
+    align-items: end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-color-light);
+}
+
+.subscriptions-list-container.dark .filter-label {
+    color: var(--text-color-dark);
+}
+
+.search-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--text-secondary-light);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.subscriptions-list-container.dark .search-icon {
+    color: var(--text-secondary-dark);
+}
+
+.search-input {
+    width: 100%;
+    min-width: 300px;
+    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+    border: 1px solid var(--input-border-light);
+    border-radius: var(--radius-md);
+    background-color: var(--input-bg-light);
+    color: var(--input-text-light);
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+}
+
+.subscriptions-list-container.dark .search-input {
+    border-color: var(--input-border-dark);
+    background-color: var(--input-bg-dark);
+    color: var(--input-text-dark);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--input-focus-border-light);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.subscriptions-list-container.dark .search-input:focus {
+    border-color: var(--input-focus-border-dark);
+}
+
+.clear-search-button {
+    position: absolute;
+    right: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    background-color: transparent;
+    color: var(--text-secondary-light);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.subscriptions-list-container.dark .clear-search-button {
+    color: var(--text-secondary-dark);
+}
+
+.clear-search-button:hover {
+    background-color: var(--border-color-light);
+    color: var(--text-color-light);
+}
+
+.subscriptions-list-container.dark .clear-search-button:hover {
+    background-color: var(--border-color-dark);
+    color: var(--text-color-dark);
+}
+
+.filter-select {
+    padding: 0.75rem;
+    border: 1px solid var(--input-border-light);
+    border-radius: var(--radius-md);
+    background-color: var(--input-bg-light);
+    color: var(--input-text-light);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    min-width: 150px;
+}
+
+.subscriptions-list-container.dark .filter-select {
+    border-color: var(--input-border-dark);
+    background-color: var(--input-bg-dark);
+    color: var(--input-text-dark);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--input-focus-border-light);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.subscriptions-list-container.dark .filter-select:focus {
+    border-color: var(--input-focus-border-dark);
+}
+
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color-light);
+}
+
+.subscriptions-list-container.dark .active-filters {
+    border-color: var(--border-color-dark);
+}
+
+.active-filters-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary-light);
+}
+
+.subscriptions-list-container.dark .active-filters-label {
+    color: var(--text-secondary-dark);
+}
+
+.filter-tag {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.75rem;
+    border-radius: var(--radius-md);
+}
+
+.filter-tag-close {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    margin-left: 0.25rem;
+}
+
+    .filter-tag-close:hover {
+        opacity: 0.8;
+    }
+
+/*------------------------------------------------------------
+  Results Info
+  ------------------------------------------------------------*/
+.results-info {
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary-light);
+}
+
+.subscriptions-list-container.dark .results-info {
+    color: var(--text-secondary-dark);
+}
+
+/*------------------------------------------------------------
+  Loading, Error, and Empty States
+  ------------------------------------------------------------*/
+.subscriptions-loading,
+.subscriptions-error,
+.subscriptions-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+}
+
+.subscriptions-list-container.dark .subscriptions-loading,
+.subscriptions-list-container.dark .subscriptions-error,
+.subscriptions-list-container.dark .subscriptions-empty {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--border-color-light);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.subscriptions-list-container.dark .loading-spinner {
+    border-color: var(--border-color-dark);
+}
+
+.subscriptions-loading p {
+    color: var(--text-secondary-light);
+    margin: 0;
+}
+
+.subscriptions-list-container.dark .subscriptions-loading p {
+    color: var(--text-secondary-dark);
+}
+
+.error-icon,
+.empty-icon {
+    color: var(--text-secondary-light);
+    margin-bottom: 1rem;
+}
+
+.subscriptions-list-container.dark .error-icon,
+.subscriptions-list-container.dark .empty-icon {
+    color: var(--text-secondary-dark);
+}
+
+.subscriptions-error h3,
+.subscriptions-empty h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color-light);
+    margin: 0 0 0.5rem 0;
+}
+
+.subscriptions-list-container.dark .subscriptions-error h3,
+.subscriptions-list-container.dark .subscriptions-empty h3 {
+    color: var(--text-color-dark);
+}
+
+.subscriptions-error p,
+.subscriptions-empty p {
+    color: var(--text-secondary-light);
+    margin: 0 0 1.5rem 0;
+    max-width: 400px;
+}
+
+.subscriptions-list-container.dark .subscriptions-error p,
+.subscriptions-list-container.dark .subscriptions-empty p {
+    color: var(--text-secondary-dark);
+}
+
+.btn-retry {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+    .btn-retry:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+    }
+
+/*------------------------------------------------------------
+  Desktop Table
+  ------------------------------------------------------------*/
+.desktop-table {
+    display: block;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+}
+
+.subscriptions-list-container.dark .table-wrapper {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.subscriptions-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+    .subscriptions-table th,
+    .subscriptions-table td {
+        padding: 1rem 1.25rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color-light);
+    }
+
+.subscriptions-list-container.dark .subscriptions-table th,
+.subscriptions-list-container.dark .subscriptions-table td {
+    border-color: var(--border-color-dark);
+}
+
+.subscriptions-table th {
+    background-color: var(--table-header-bg-light);
+    color: var(--text-color-light);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.subscriptions-list-container.dark .subscriptions-table th {
+    background-color: var(--table-header-bg-dark);
+    color: var(--text-color-dark);
+}
+
+.table-row {
+    transition: background-color var(--transition-fast);
+}
+
+    .table-row:hover {
+        background-color: var(--table-row-hover-light);
+    }
+
+.subscriptions-list-container.dark .table-row:hover {
+    background-color: var(--table-row-hover-dark);
+}
+
+.table-row:last-child td {
+    border-bottom: none;
+}
+
+.agency-cell .agency-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.agency-name {
+    font-weight: 600;
+    color: var(--text-color-light);
+}
+
+.subscriptions-list-container.dark .agency-name {
+    color: var(--text-color-dark);
+}
+
+.subscription-id {
+    font-size: 0.75rem;
+    color: var(--text-secondary-light);
+}
+
+.subscriptions-list-container.dark .subscription-id {
+    color: var(--text-secondary-dark);
+}
+
+.plan-name {
+    font-weight: 500;
+    color: var(--text-color-light);
+}
+
+.subscriptions-list-container.dark .plan-name {
+    color: var(--text-color-dark);
+}
+
+.date-cell,
+.amount-cell {
+    color: var(--text-color-light);
+}
+
+.subscriptions-list-container.dark .date-cell,
+.subscriptions-list-container.dark .amount-cell {
+    color: var(--text-color-dark);
+}
+
+.amount-cell {
+    font-weight: 600;
+}
+
+/*------------------------------------------------------------
+  Status Badges
+  ------------------------------------------------------------*/
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.status-active {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.status-inactive {
+    background-color: rgba(107, 114, 128, 0.1);
+    color: var(--secondary-color);
+}
+
+.status-cancelled {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
+.status-suspended {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+}
+
+.status-trial {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--info-color);
+}
+
+.status-expired {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
+.status-default {
+    background-color: rgba(107, 114, 128, 0.1);
+    color: var(--secondary-color);
+}
+
+/*------------------------------------------------------------
+  Action Buttons
+  ------------------------------------------------------------*/
+.actions-cell {
+    text-align: right;
+    width: 120px;
+}
+
+.actions-header {
+    text-align: right;
+    width: 120px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--radius-sm);
+    background-color: transparent;
+    color: var(--text-secondary-light);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.subscriptions-list-container.dark .action-btn {
+    border-color: var(--border-color-dark);
+    color: var(--text-secondary-dark);
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-view:hover {
+    border-color: var(--info-color);
+    color: var(--info-color);
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.btn-edit:hover {
+    border-color: var(--warning-color);
+    color: var(--warning-color);
+    background-color: rgba(245, 158, 11, 0.1);
+}
+
+/*------------------------------------------------------------
+  Mobile Cards
+  ------------------------------------------------------------*/
+.mobile-cards {
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.subscription-card {
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-light);
+    transition: all var(--transition-fast);
+}
+
+.subscriptions-list-container.dark .subscription-card {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.subscription-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover-light);
+}
+
+.subscriptions-list-container.dark .subscription-card:hover {
+    box-shadow: var(--shadow-hover-dark);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.subscription-info {
+    flex: 1;
+}
+
+    .subscription-info .agency-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-color-light);
+        margin: 0 0 0.25rem 0;
+    }
+
+.subscriptions-list-container.dark .subscription-info .agency-name {
+    color: var(--text-color-dark);
+}
+
+.subscription-info .subscription-id {
+    font-size: 0.75rem;
+    color: var(--text-secondary-light);
+}
+
+.subscriptions-list-container.dark .subscription-info .subscription-id {
+    color: var(--text-secondary-dark);
+}
+
+.card-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.field-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary-light);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.subscriptions-list-container.dark .field-label {
+    color: var(--text-secondary-dark);
+}
+
+.field-value {
+    font-size: 0.875rem;
+    color: var(--text-color-light);
+}
+
+.subscriptions-list-container.dark .field-value {
+    color: var(--text-color-dark);
+}
+
+.field-value.amount {
+    font-weight: 600;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color-light);
+}
+
+.subscriptions-list-container.dark .card-actions {
+    border-color: var(--border-color-dark);
+}
+
+.card-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: center;
+    color: var(--text-color-light);
+}
+
+.subscriptions-list-container.dark .card-btn {
+    border-color: var(--border-color-dark);
+    color: var(--text-color-dark);
+}
+
+.card-btn svg {
+    width: 1rem;
+    height: 1rem;
+    stroke-width: 2;
+    flex-shrink: 0;
+}
+
+.card-btn.btn-view {
+    color: var(--info-color);
+    border-color: var(--info-color);
+}
+
+    .card-btn.btn-view:hover {
+        background-color: rgba(59, 130, 246, 0.1);
+        transform: translateY(-1px);
+    }
+
+.card-btn.btn-edit {
+    color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+    .card-btn.btn-edit:hover {
+        background-color: rgba(245, 158, 11, 0.1);
+        transform: translateY(-1px);
+    }
+
+/*------------------------------------------------------------
+  Pagination
+  ------------------------------------------------------------*/
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: var(--card-bg-light);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+}
+
+.subscriptions-list-container.dark .pagination {
+    background-color: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--text-color-light);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.subscriptions-list-container.dark .pagination-btn {
+    border-color: var(--border-color-dark);
+    color: var(--text-color-dark);
+}
+
+.pagination-btn:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    font-size: 0.875rem;
+    color: var(--text-secondary-light);
+}
+
+.subscriptions-list-container.dark .pagination-info {
+    color: var(--text-secondary-dark);
+}
+
+/*------------------------------------------------------------
+  Screen Reader Only
+  ------------------------------------------------------------*/
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/*------------------------------------------------------------
+  Responsive Design
+  ------------------------------------------------------------*/
+@media (max-width: 1200px) {
+    .subscriptions-list-container {
+        padding: 1.25rem;
+    }
+
+    .search-input {
+        min-width: 250px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .subscriptions-list-container {
+        padding: 1rem;
+    }
+
+    .filters-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .search-input {
+        min-width: 100%;
+    }
+
+    .subscriptions-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .subscriptions-title {
+        font-size: 1.75rem;
+    }
+
+    .header-actions {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .subscriptions-list-container {
+        padding: 0.75rem;
+    }
+
+    .subscriptions-title {
+        font-size: 1.5rem;
+    }
+
+    .subscriptions-subtitle {
+        font-size: 0.875rem;
+    }
+
+    .subscriptions-filters {
+        padding: 1rem;
+    }
+
+    .filter-select {
+        min-width: 100%;
+    }
+
+    /* Hide desktop table, show mobile cards */
+    .desktop-table {
+        display: none;
+    }
+
+    .mobile-cards {
+        display: flex;
+    }
+
+    .card-content {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .card-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .card-btn {
+        width: 100%;
+    }
+
+    .pagination {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .pagination-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .subscriptions-list-container {
+        padding: 0.5rem;
+    }
+
+    .subscriptions-title {
+        font-size: 1.25rem;
+    }
+
+    .subscriptions-filters {
+        padding: 0.75rem;
+    }
+
+    .subscription-card {
+        padding: 1rem;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .card-actions {
+        gap: 0.5rem;
+    }
+
+    .card-btn {
+        padding: 0.625rem;
+        font-size: 0.8rem;
+    }
+}
+
+/*------------------------------------------------------------
+  Touch Device Optimizations
+  ------------------------------------------------------------*/
+@media (hover: none) {
+    .refresh-button:active,
+    .action-btn:active,
+    .card-btn:active,
+    .pagination-btn:active,
+    .btn-retry:active {
+        opacity: 0.8;
+        transform: scale(0.98);
+    }
+
+    .subscription-card:active {
+        transform: scale(0.99);
+    }
+
+    /* Larger touch targets */
+    .action-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .card-btn {
+        padding: 1rem;
+        min-height: 3rem;
+    }
+}
+
+/*------------------------------------------------------------
+  Accessibility
+  ------------------------------------------------------------*/
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus styles for keyboard navigation */
+.refresh-button:focus,
+.search-input:focus,
+.filter-select:focus,
+.action-btn:focus,
+.card-btn:focus,
+.pagination-btn:focus,
+.btn-retry:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .subscription-card,
+    .table-wrapper,
+    .subscriptions-filters {
+        border-width: 2px;
+    }
+
+    .search-input,
+    .filter-select,
+    .action-btn,
+    .card-btn,
+    .pagination-btn {
+        border-width: 2px;
+    }
+}
+
+/*------------------------------------------------------------
+  Print Styles
+  ------------------------------------------------------------*/
+@media print {
+    .subscriptions-list-container {
+        padding: 0;
+        max-width: 100%;
+    }
+
+    .subscriptions-header,
+    .subscriptions-filters,
+    .mobile-cards,
+    .card-actions,
+    .action-buttons,
+    .pagination {
+        display: none;
+    }
+
+    .desktop-table {
+        display: block;
+    }
+
+    .table-wrapper {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+
+    .subscriptions-table {
+        width: 100%;
+    }
+
+        .subscriptions-table th,
+        .subscriptions-table td {
+            border: 1px solid #000;
+            padding: 0.5rem;
+        }
+
+    .status-badge {
+        border: 1px solid currentColor;
+    }
+}

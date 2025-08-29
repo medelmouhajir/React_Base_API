@@ -158,8 +158,8 @@ services:
     ports:
       - "54350:54350"
     volumes:
-      - ./React_Rentify/react_rentify.client:/app/rentify
-      - /app/rentify/node_modules
+      - ./React_Rentify/react_rentify.client:/app
+      - /app/node_modules
     environment:
       - DEV_SERVER_PORT=54350
       - ASPNETCORE_HTTPS_PORT=8081
