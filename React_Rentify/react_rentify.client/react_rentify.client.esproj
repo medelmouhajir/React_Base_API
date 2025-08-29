@@ -53,6 +53,7 @@
     <Folder Include="src\pages\Reservations\List\" />
     <Folder Include="src\pages\Reservations\Contract\" />
     <Folder Include="src\pages\Settings\Agency\" />
+    <Folder Include="src\pages\Subscriptions\List\" />
     <Folder Include="src\pages\Tickets\List\" />
   </ItemGroup>
 </Project>
