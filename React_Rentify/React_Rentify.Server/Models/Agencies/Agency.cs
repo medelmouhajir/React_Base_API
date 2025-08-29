@@ -2,6 +2,7 @@
 using React_Rentify.Server.Models.Customers;
 using React_Rentify.Server.Models.Expenses;
 using React_Rentify.Server.Models.Reservations;
+using React_Rentify.Server.Models.Subscriptions;
 using React_Rentify.Server.Models.Users;
 
 namespace React_Rentify.Server.Models.Agencies
@@ -31,5 +32,9 @@ namespace React_Rentify.Server.Models.Agencies
         /// </summary>
         public virtual ICollection<Agency_Attachment>? Agency_Attachments { get; set; }
         public virtual ICollection<Expense_Category>? Expense_Categories { get; set; }
+
+
+        public virtual AgencySubscription? CurrentSubscription { get; set; }
+        public virtual ICollection<AgencySubscription>? SubscriptionHistory { get; set; }
     }
 }

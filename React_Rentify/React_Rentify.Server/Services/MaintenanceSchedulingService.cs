@@ -22,7 +22,7 @@ namespace React_Rentify.Server.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<MaintenanceSchedulingService> _logger;
-        private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1); // Check every hour
+        private readonly TimeSpan _checkInterval = TimeSpan.FromHours(10); // Check every hour
 
         public MaintenanceSchedulingService(
             IServiceProvider serviceProvider,
@@ -232,13 +232,13 @@ namespace React_Rentify.Server.Services
         {
             return alertType switch
             {
-                Service_Alert_Type.OilChange => "Oil Change and Filter Replacement",
-                Service_Alert_Type.BrakeInspection => "Brake System Inspection and Service",
-                Service_Alert_Type.TireRotation => "Tire Rotation and Pressure Check",
-                Service_Alert_Type.FluidCheck => "Fluid Levels Check and Top-up",
-                Service_Alert_Type.Drain => "Coolant System Drain and Refill",
-                Service_Alert_Type.Other => "General Maintenance Service",
-                _ => "Scheduled Maintenance"
+                Service_Alert_Type.OilChange => "oil_change_and_filter_replacement",
+                Service_Alert_Type.BrakeInspection => "brake_system_inspection_and_service",
+                Service_Alert_Type.TireRotation => "tire_rotation_and_pressure_check",
+                Service_Alert_Type.FluidCheck => "fluid_levels_check_and_top-up",
+                Service_Alert_Type.Drain => "coolant_system_drain_and_refill",
+                Service_Alert_Type.Other => "general_maintenance_ervice",
+                _ => "scheduled_maintenance"
             };
         }
 
@@ -260,12 +260,12 @@ namespace React_Rentify.Server.Services
         {
             return alertType switch
             {
-                Service_Alert_Type.OilChange => "Oil Change",
-                Service_Alert_Type.BrakeInspection => "Brake Inspection",
-                Service_Alert_Type.TireRotation => "Tire Rotation",
-                Service_Alert_Type.FluidCheck => "Fluid Check",
-                Service_Alert_Type.Drain => "Drain Service",
-                Service_Alert_Type.Other => "Other",
+                Service_Alert_Type.OilChange => "oil_change",
+                Service_Alert_Type.BrakeInspection => "brake_inspection",
+                Service_Alert_Type.TireRotation => "tire_rotation",
+                Service_Alert_Type.FluidCheck => "fluid_check",
+                Service_Alert_Type.Drain => "drain_service",
+                Service_Alert_Type.Other => "other",
                 _ => "Unknown"
             };
         }

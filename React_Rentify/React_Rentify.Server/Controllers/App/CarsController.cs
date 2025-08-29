@@ -139,7 +139,9 @@ namespace React_Rentify.Server.Controllers
                     Model = car.Car_Model.Name,
                     Manufacturer = car.Car_Model.Manufacturer.Name,
                     Year = car.Car_Year.YearValue
-                }
+                },
+                CurrentKM = car.CurrentKM,
+                LastKmUpdate = car.LastKmUpdate
             };
 
             _logger.LogInformation("Retrieved car {CarId}", id);
@@ -617,6 +619,9 @@ namespace React_Rentify.Server.Controllers
         public List<CarAttachmentDto>? Attachments { get; set; }
 
         public Car_Fields? Fields { get; set; }
+
+        public int CurrentKM { get; set; }
+        public DateTime? LastKmUpdate { get; set; }
     }
 
     public class Car_Fields

@@ -132,7 +132,9 @@ namespace React_Rentify.Server.Controllers.App
                                     Id = x.Car.Car_Model.ManufacturerId,
                                     Name = x.Car.Car_Model.Manufacturer.Name
                                 }
-                            }
+                            },
+                            CurrentKM = x.Car.CurrentKM,
+                            LastKmUpdate = x.Car.LastKmUpdate
                         }
                     })
                     .FirstOrDefaultAsync();
@@ -821,6 +823,8 @@ namespace React_Rentify.Server.Controllers.App
             reservation.FuelLevelStart = 100;
 
             reservation.Car.Status = "Rented";
+            reservation.Car.CurrentKM = dto.OdometerStart;
+            reservation.Car.LastKmUpdate = DateTime.UtcNow;
 
             _context.Entry(reservation).State = EntityState.Modified;
 
@@ -873,6 +877,8 @@ namespace React_Rentify.Server.Controllers.App
             reservation.FuelLevelEnd = 100;
 
             reservation.Car.Status = "Available";
+            reservation.Car.CurrentKM = dto.OdometerEnd;
+            reservation.Car.LastKmUpdate = DateTime.UtcNow;
 
             _context.Entry(reservation).State = EntityState.Modified;
 

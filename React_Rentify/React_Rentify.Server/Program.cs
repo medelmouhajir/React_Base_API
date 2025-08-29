@@ -34,9 +34,12 @@ namespace React_Rentify.Server
             builder.Services.AddScoped<IAgencyAuthorizationService, AgencyAuthorizationService>();
 
 
-            builder.Services.AddScoped<IAgencyAuthorizationService, AgencyAuthorizationService>();
-
             builder.Services.AddRentifyServices();
+
+
+            builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+            builder.Services.AddScoped<ISubscriptionAuthorizationService, SubscriptionAuthorizationService>();
+            builder.Services.AddHostedService<SubscriptionBillingService>();
 
             // Configure database
             builder.Services.AddDbContext<GpsDbContext>(options =>

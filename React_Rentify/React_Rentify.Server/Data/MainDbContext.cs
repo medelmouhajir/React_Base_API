@@ -10,6 +10,7 @@ using React_Rentify.Server.Models.Filters.Cars;
 using React_Rentify.Server.Models.Invoices;
 using React_Rentify.Server.Models.Maintenances;
 using React_Rentify.Server.Models.Reservations;
+using React_Rentify.Server.Models.Subscriptions;
 using React_Rentify.Server.Models.Tickets;
 using React_Rentify.Server.Models.Users;
 
@@ -22,6 +23,32 @@ namespace React_Rentify.Server.Data
         {
         }
 
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // Configure subscription relationships
+            builder.Entity<AgencySubscription>()
+                .HasOne(s => s.Agency)
+                .WithMany(a => a.SubscriptionHistory)
+                .HasForeignKey(s => s.AgencyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<AgencySubscription>()
+                .HasOne(s => s.SubscriptionPlan)
+                .WithMany(p => p.AgencySubscriptions)
+                .HasForeignKey(s => s.SubscriptionPlanId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes for performance
+            builder.Entity<AgencySubscription>()
+                .HasIndex(s => new { s.AgencyId, s.Status });
+
+            builder.Entity<SubscriptionUsage>()
+                .HasIndex(u => new { u.AgencySubscriptionId, u.Year, u.Month })
+                .IsUnique();
+        }
 
         // ----- Lookup tables -----
         public DbSet<Manufacturer> Manufacturers { get; set; }
@@ -56,5 +83,12 @@ namespace React_Rentify.Server.Data
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<Expense_Attachement> Expense_Attachements { get; set; }
         public DbSet<Expense_Category> Expense_Categories { get; set; }
+
+
+        // Subscription management
+        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+        public DbSet<AgencySubscription> AgencySubscriptions { get; set; }
+        public DbSet<SubscriptionInvoice> SubscriptionInvoices { get; set; }
+        public DbSet<SubscriptionUsage> SubscriptionUsages { get; set; }
     }
 }

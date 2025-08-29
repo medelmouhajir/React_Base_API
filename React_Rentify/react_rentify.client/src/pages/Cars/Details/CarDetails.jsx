@@ -242,6 +242,10 @@ const CarDetails = () => {
                         <span className="value">{car?.licensePlate || 'N/A'}</span>
                     </div>
                     <div className="detail-row">
+                        <span className="label">{t('car.currentKm') || 'Current Km'}</span>
+                        <span className="value">{car?.currentKM || 'N/A'}</span>
+                    </div>
+                    <div className="detail-row">
                         <span className="label">{t('car.color') || 'Color'}</span>
                         <span className="value color-value">
                             <div
@@ -258,14 +262,14 @@ const CarDetails = () => {
                     <div className="detail-row">
                         <span className="label">{t('car.dailyRate') || 'Daily Rate'}</span>
                         <span className="value price">
-                            ${car?.dailyRate?.toFixed(2) || 'N/A'}
+                            {car?.dailyRate?.toFixed(2) || 'N/A'}
                         </span>
                     </div>
                     {car?.hourlyRate && (
                         <div className="detail-row">
                             <span className="label">{t('car.hourlyRate') || 'Hourly Rate'}</span>
                             <span className="value price">
-                                ${car.hourlyRate.toFixed(2)}
+                                {car.hourlyRate.toFixed(2)}
                             </span>
                         </div>
                     )}

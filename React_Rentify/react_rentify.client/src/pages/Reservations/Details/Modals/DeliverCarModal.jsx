@@ -8,7 +8,7 @@ const DeliverCarModal = ({ reservation, onClose, onSubmit }) => {
     const { t } = useTranslation();
 
     const [formData, setFormData] = useState({
-        odometerStart: '',
+        odometerStart: reservation.car.currentKM || 0,
         fuelLevel: 'FULL',
         deliveryNotes: '',
         deliveryDate: new Date().toISOString().split('T')[0],

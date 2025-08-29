@@ -3,6 +3,7 @@ using React_Rentify.Server.Models.Alerts;
 using React_Rentify.Server.Models.Filters.Cars;
 using React_Rentify.Server.Models.Maintenances;
 using React_Rentify.Server.Models.Reservations;
+using System.ComponentModel;
 
 namespace React_Rentify.Server.Models.Cars
 {
@@ -58,6 +59,11 @@ namespace React_Rentify.Server.Models.Cars
         /// Optional hourly rate.
         /// </summary>
         public decimal? HourlyRate { get; set; }
+
+        // === KM‐related fields ===
+        [DefaultValue(0)]
+        public int CurrentKM { get; set; }
+        public DateTime? LastKmUpdate { get; set; }
 
         // === GPS‐related fields ===
 

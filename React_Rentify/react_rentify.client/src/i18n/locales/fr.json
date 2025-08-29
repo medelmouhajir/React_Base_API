@@ -1753,30 +1753,47 @@
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette pièce jointe ?",
     "deleteFailed": "Échec de la suppression de la pièce jointe. Veuillez réessayer."
   },
-  "serviceAlerts": {
-    "title": "Alertes de service",
-    "addAlert": "Ajouter une alerte",
-    "fetchError": "Erreur lors du chargement des alertes de service.",
-    "resolveConfirm": "Marquer cette alerte comme résolue ?",
-    "resolveError": "Erreur lors de la résolution de l'alerte.",
-    "search": {
-      "placeholder": "Rechercher des alertes..."
+  "alerts": {
+    "list": {
+      "title": "Alertes de service",
+      "total": "alertes au total",
+      "addButton": "Ajouter une alerte de service",
+      "error": "Échec du chargement des alertes",
+      "resolved": "Alerte de service résolue avec succès",
+      "resolveError": "Échec de la résolution de l'alerte",
+      "deleted": "Alerte de service supprimée avec succès",
+      "deleteError": "Échec de la suppression de l'alerte",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette alerte ?",
+      "filter": {
+        "show": "Afficher les filtres",
+        "hide": "Masquer les filtres",
+        "status": "Statut",
+        "allStatuses": "Tous les statuts",
+        "unresolved": "Active",
+        "overdue": "En retard",
+        "resolved": "Résolue",
+        "type": "Type d'alerte",
+        "allTypes": "Tous les types",
+        "dateRange": "Plage de dates",
+        "allDates": "Toutes les dates",
+        "thisWeek": "Cette semaine",
+        "thisMonth": "Ce mois-ci",
+        "thisYear": "Cette année"
+      },
+      "search": "Rechercher des alertes...",
+      "empty": {
+        "title": "Aucune alerte trouvée",
+        "filtered": "Aucune alerte ne correspond à vos filtres actuels.",
+        "none": "Aucune alerte de service n’a encore été créée.",
+        "create": "Créer la première alerte"
+      },
+      "mobileHint": "Touchez les cartes pour voir les détails"
     },
-    "filter": {
-      "all": "Toutes",
-      "pending": "En attente",
-      "overdue": "En retard",
-      "resolved": "Résolues"
-    },
-    "noAlerts": "Aucune alerte de service trouvée.",
     "status": {
       "resolved": "Résolue",
       "overdue": "En retard",
-      "pending": "En attente"
-    },
-    "dueDate": "Date d'échéance",
-    "dueMileage": "Kilométrage prévu",
-    "notes": "Remarques",
-    "resolve": "Résoudre"
+      "today": "Échéance aujourd'hui",
+      "tomorrow": "Échéance demain"
+    }
   }
 }
