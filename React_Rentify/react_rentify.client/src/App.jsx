@@ -117,6 +117,7 @@ const SearchPage = lazy(() => import('./pages/Search/SearchPage'));
 
 //// Other standalone pages
 const SubscriptionsList = lazy(() => import('./pages/Subscriptions/List/SubscriptionsList'));
+const SubscriptionAgency = lazy(() => import('./pages/Subscriptions/Agency/SubscriptionAgency'));
 
 const ThemedToastContainer = () => {
     const { isDarkMode } = useTheme();
@@ -245,6 +246,7 @@ function App() {
 
                                 {/* Subscriptions */}
                                 <Route path="/subscriptions" element={<SubscriptionsList />} />
+                                <Route path="/agencies/:id/subscription" element={<SubscriptionAgency />} />
                             </Route>
 
                             {/* 404 and redirects */}

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models;
 using React_Rentify.Server.Models.Agencies;
+using React_Rentify.Server.Models.Subscriptions;
 using React_Rentify.Server.Services;
 using System;
 using System.Collections.Generic;
@@ -114,17 +115,44 @@ namespace React_Rentify.Server.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            var subscription = await _context.SubscriptionPlans.FindAsync(dto.SubscriptionPlanId);
+
+            if( subscription == null )
+                return BadRequest(ModelState);
+
+            var newID = Guid.NewGuid();
+            var EndDate = subscription.BillingCycle == BillingCycle.Monthly ? DateTime.UtcNow.AddMonths(1) : DateTime.UtcNow.AddYears(1);
+
+            var sub = new AgencySubscription
+            {
+                Id = new Guid(),
+                SubscriptionPlanId = dto.SubscriptionPlanId,
+                AgencyId = newID,
+                CreatedAt = DateTime.UtcNow,
+                StartDate = DateTime.UtcNow,
+                CurrentPrice = subscription.Price,
+                EndDate = EndDate,
+                IsTrialPeriod = false,
+                UpdatedAt = DateTime.UtcNow,
+                LastBillingDate = DateTime.UtcNow,
+                NextBillingDate = EndDate,
+                Status = SubscriptionStatus.Active,
+            };
+
             var agency = new Agency
             {
-                Id = Guid.NewGuid(),
+                Id = newID,
                 Name = dto.Name,
                 Address = dto.Address,
                 PhoneOne = dto.PhoneOne,
                 PhoneTwo = dto.PhoneTwo,
                 Email = dto.Email,
                 LogoUrl = "",
-                
+                CurrentSubscription = sub,
             };
+
+
 
             try
             {
@@ -239,6 +267,8 @@ namespace React_Rentify.Server.Controllers
         public string PhoneOne { get; set; }
         public string? PhoneTwo { get; set; }
         public string? Email { get; set; }
+
+        public Guid SubscriptionPlanId { get; set; }
     }
     #endregion
 }
