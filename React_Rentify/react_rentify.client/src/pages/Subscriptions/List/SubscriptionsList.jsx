@@ -1,567 +1,595 @@
 ﻿// src/pages/Subscriptions/List/SubscriptionsList.jsx
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
+import { useRtlDirection } from '../../../hooks/useRtlDirection';
 import subscriptionService from '../../../services/subscriptionService';
+import Loading from '../../../components/Loading/Loading';
 import './SubscriptionsList.css';
 
 const SubscriptionsList = () => {
     const { t } = useTranslation();
+    const { user } = useAuth();
     const { isDarkMode } = useTheme();
+    useRtlDirection();
 
-    // State management
-    const [subscriptions, setSubscriptions] = useState([]);
-    const [filteredSubscriptions, setFilteredSubscriptions] = useState([]);
+    // State
+    const [plans, setPlans] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
-
-    // Filter and search states
     const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
-    const [sortBy, setSortBy] = useState('createdAt');
-    const [sortOrder, setSortOrder] = useState('desc');
+    const [showModal, setShowModal] = useState(false);
+    const [editingPlan, setEditingPlan] = useState(null);
+    const [actionLoading, setActionLoading] = useState({});
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
 
-    // Pagination
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10);
-    const [totalPages, setTotalPages] = useState(0);
+    // Form state
+    const [formData, setFormData] = useState({
+        name: '',
+        description: '',
+        price: '',
+        billingCycle: 1, // Monthly
+        maxCars: '',
+        maxUsers: '',
+        maxCustomers: '',
+        maxReservations: '',
+        hasMaintenanceModule: false,
+        hasExpenseTracking: false,
+        hasAdvancedReporting: false,
+        hasAPIAccess: false,
+        hasGPSTracking: false
+    });
 
-    // Available status options for filtering
-    const statusOptions = [
-        { value: 'all', label: t('subscriptions.filters.allStatuses') },
-        { value: 'active', label: t('subscriptions.status.active') },
-        { value: 'inactive', label: t('subscriptions.status.inactive') },
-        { value: 'cancelled', label: t('subscriptions.status.cancelled') },
-        { value: 'suspended', label: t('subscriptions.status.suspended') },
-        { value: 'trial', label: t('subscriptions.status.trial') },
-        { value: 'expired', label: t('subscriptions.status.expired') }
-    ];
+    const isAdmin = user?.role === 'Admin';
 
-    // Sort options
-    const sortOptions = [
-        { value: 'createdAt', label: t('subscriptions.sort.dateCreated') },
-        { value: 'agencyName', label: t('subscriptions.sort.agencyName') },
-        { value: 'planName', label: t('subscriptions.sort.planName') },
-        { value: 'status', label: t('subscriptions.sort.status') },
-        { value: 'nextBillingDate', label: t('subscriptions.sort.nextBilling') }
-    ];
+    useEffect(() => {
+        fetchPlans();
+    }, []);
 
-    // Fetch subscriptions data
-    const fetchSubscriptions = async (showLoading = true) => {
-        if (showLoading) setIsLoading(true);
-        setError(null);
+    const fetchPlans = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            const data = await subscriptionService.getAvailablePlans();
+            setPlans(data);
+        } catch (err) {
+            console.error('Error fetching subscription plans:', err);
+            setError(t('subscriptions.list.fetchError'));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const filteredPlans = plans.filter((plan) =>
+        plan.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        plan.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const resetForm = () => {
+        setFormData({
+            name: '',
+            description: '',
+            price: '',
+            billingCycle: 1,
+            maxCars: '',
+            maxUsers: '',
+            maxCustomers: '',
+            maxReservations: '',
+            hasMaintenanceModule: false,
+            hasExpenseTracking: false,
+            hasAdvancedReporting: false,
+            hasAPIAccess: false,
+            hasGPSTracking: false
+        });
+        setEditingPlan(null);
+    };
+
+    const handleAddNew = () => {
+        resetForm();
+        setShowModal(true);
+    };
+
+    const handleEdit = (plan) => {
+        setFormData({
+            name: plan.name || '',
+            description: plan.description || '',
+            price: plan.price?.toString() || '',
+            billingCycle: plan.billingCycle || 1,
+            maxCars: plan.maxCars?.toString() || '',
+            maxUsers: plan.maxUsers?.toString() || '',
+            maxCustomers: plan.maxCustomers?.toString() || '',
+            maxReservations: plan.maxReservations?.toString() || '',
+            hasMaintenanceModule: plan.hasMaintenanceModule || false,
+            hasExpenseTracking: plan.hasExpenseTracking || false,
+            hasAdvancedReporting: plan.hasAdvancedReporting || false,
+            hasAPIAccess: plan.hasAPIAccess || false,
+            hasGPSTracking: plan.hasGPSTracking || false
+        });
+        setEditingPlan(plan);
+        setShowModal(true);
+    };
+
+    const handleFormChange = (field, value) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
         try {
-            const params = {
-                page: currentPage,
-                pageSize: itemsPerPage,
-                sortBy,
-                sortOrder,
-                status: statusFilter === 'all' ? undefined : statusFilter,
-                search: searchTerm || undefined
+            setActionLoading({ submit: true });
+
+            const payload = {
+                name: formData.name,
+                description: formData.description || null,
+                price: parseFloat(formData.price),
+                billingCycle: parseInt(formData.billingCycle),
+                maxCars: parseInt(formData.maxCars) || 0,
+                maxUsers: parseInt(formData.maxUsers) || 0,
+                maxCustomers: parseInt(formData.maxCustomers) || 0,
+                maxReservations: parseInt(formData.maxReservations) || 0,
+                hasMaintenanceModule: formData.hasMaintenanceModule,
+                hasExpenseTracking: formData.hasExpenseTracking,
+                hasAdvancedReporting: formData.hasAdvancedReporting,
+                hasAPIAccess: formData.hasAPIAccess,
+                hasGPSTracking: formData.hasGPSTracking
             };
 
-            const data = await subscriptionService.getAllSubscriptions(params);
-            setSubscriptions(data.items || data);
-            setTotalPages(Math.ceil((data.totalCount || data.length) / itemsPerPage));
-        } catch (err) {
-            console.error('❌ Error fetching subscriptions:', err);
-            setError(t('subscriptions.errors.fetchFailed'));
-        } finally {
-            if (showLoading) setIsLoading(false);
-        }
-    };
-
-    // Handle refresh
-    const handleRefresh = async () => {
-        setRefreshing(true);
-        await fetchSubscriptions(false);
-        setRefreshing(false);
-    };
-
-    // Filter subscriptions based on search term and status
-    useEffect(() => {
-        let filtered = [...subscriptions];
-
-        // Apply search filter
-        if (searchTerm.trim()) {
-            const search = searchTerm.toLowerCase();
-            filtered = filtered.filter(sub =>
-                sub.agencyName?.toLowerCase().includes(search) ||
-                sub.planName?.toLowerCase().includes(search) ||
-                sub.id?.toString().includes(search)
-            );
-        }
-
-        // Apply status filter
-        if (statusFilter !== 'all') {
-            filtered = filtered.filter(sub => sub.status?.toLowerCase() === statusFilter);
-        }
-
-        // Apply sorting
-        filtered.sort((a, b) => {
-            let aValue = a[sortBy];
-            let bValue = b[sortBy];
-
-            // Handle date sorting
-            if (sortBy.includes('Date') || sortBy === 'createdAt') {
-                aValue = new Date(aValue);
-                bValue = new Date(bValue);
-            }
-
-            // Handle string sorting
-            if (typeof aValue === 'string') {
-                aValue = aValue.toLowerCase();
-                bValue = bValue.toLowerCase();
-            }
-
-            if (sortOrder === 'asc') {
-                return aValue > bValue ? 1 : -1;
+            if (editingPlan) {
+                await subscriptionService.updatePlan(editingPlan.id, payload);
             } else {
-                return aValue < bValue ? 1 : -1;
+                await subscriptionService.createPlan(payload);
             }
-        });
 
-        setFilteredSubscriptions(filtered);
-        setTotalPages(Math.ceil(filtered.length / itemsPerPage));
-    }, [subscriptions, searchTerm, statusFilter, sortBy, sortOrder, itemsPerPage]);
-
-    // Initial load
-    useEffect(() => {
-        fetchSubscriptions();
-    }, [currentPage, itemsPerPage]);
-
-    // Handle pagination
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+            await fetchPlans();
+            setShowModal(false);
+            resetForm();
+        } catch (err) {
+            console.error('Error saving plan:', err);
+            setError(editingPlan ? t('subscriptions.updateError') : t('subscriptions.createError'));
+        } finally {
+            setActionLoading({ submit: false });
+        }
     };
 
-    // Clear search
-    const clearSearch = () => {
-        setSearchTerm('');
+    const handleDelete = async (planId) => {
+        try {
+            setActionLoading({ [`delete_${planId}`]: true });
+            await subscriptionService.deletePlan(planId);
+            await fetchPlans();
+            setShowDeleteConfirm(null);
+        } catch (err) {
+            console.error('Error deleting plan:', err);
+            setError(t('subscriptions.deleteError'));
+        } finally {
+            setActionLoading({ [`delete_${planId}`]: false });
+        }
     };
 
-    // Get status badge class
-    const getStatusClass = (status) => {
-        const statusMap = {
-            'active': 'status-active',
-            'inactive': 'status-inactive',
-            'cancelled': 'status-cancelled',
-            'suspended': 'status-suspended',
-            'trial': 'status-trial',
-            'expired': 'status-expired'
-        };
-        return statusMap[status?.toLowerCase()] || 'status-default';
+    const formatPrice = (price, billingCycle) => {
+        const currency = t('common.currency');
+        const cycle = billingCycle === 1 ? t('subscriptions.monthly') : t('subscriptions.yearly');
+        return `${currency}${price}/${cycle}`;
     };
 
-    // Format date
-    const formatDate = (dateString) => {
-        if (!dateString) return '—';
-        return new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        }).format(new Date(dateString));
+    const getBillingCycleText = (cycle) => {
+        return cycle === 1 ? t('subscriptions.monthly') : t('subscriptions.yearly');
     };
 
-    // Format currency
-    const formatCurrency = (amount, currency = 'USD') => {
-        if (!amount) return '—';
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency
-        }).format(amount);
+    const getFeaturesList = (plan) => {
+        const features = [];
+        if (plan.hasMaintenanceModule) features.push(t('subscriptions.features.maintenance'));
+        if (plan.hasExpenseTracking) features.push(t('subscriptions.features.expenses'));
+        if (plan.hasAdvancedReporting) features.push(t('subscriptions.features.reporting'));
+        if (plan.hasAPIAccess) features.push(t('subscriptions.features.api'));
+        if (plan.hasGPSTracking) features.push(t('subscriptions.features.gps'));
+        return features;
     };
 
-    // Calculate pagination
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentItems = filteredSubscriptions.slice(startIndex, endIndex);
-
-    // Loading component
-    const LoadingComponent = () => (
-        <div className="subscriptions-loading">
-            <div className="loading-spinner"></div>
-            <p>{t('common.loading')}</p>
-        </div>
-    );
-
-    // Error component
-    const ErrorComponent = () => (
-        <div className="subscriptions-error">
-            <div className="error-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="15" y1="9" x2="9" y2="15" />
-                    <line x1="9" y1="9" x2="15" y2="15" />
-                </svg>
+    if (isLoading) {
+        return (
+            <div className="sl-loading-wrapper">
+                <Loading type="spinner" />
+                <p className="sl-loading-text">{t('common.loading')}</p>
             </div>
-            <h3>{t('subscriptions.errors.title')}</h3>
-            <p>{error}</p>
-            <button onClick={() => fetchSubscriptions()} className="btn-retry">
-                {t('common.tryAgain')}
-            </button>
-        </div>
-    );
+        );
+    }
 
-    // Empty state component
-    const EmptyComponent = () => (
-        <div className="subscriptions-empty">
-            <div className="empty-icon">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                    <path d="M8 14h.01" />
-                    <path d="M12 14h.01" />
-                    <path d="M16 14h.01" />
-                    <path d="M8 18h.01" />
-                    <path d="M12 18h.01" />
-                </svg>
+    if (error) {
+        return (
+            <div className="sl-error-wrapper">
+                <div className="sl-error-message">{error}</div>
+                <button className="sl-retry-btn" onClick={fetchPlans}>
+                    {t('common.retry')}
+                </button>
             </div>
-            <h3>{t('subscriptions.empty.title')}</h3>
-            <p>{t('subscriptions.empty.message')}</p>
-        </div>
-    );
+        );
+    }
 
     return (
         <div className={`subscriptions-list-container ${isDarkMode ? 'dark' : ''}`}>
             {/* Header */}
-            <div className="subscriptions-header">
-                <div className="header-content">
-                    <h1 className="subscriptions-title">{t('subscriptions.title')}</h1>
-                    <p className="subscriptions-subtitle">{t('subscriptions.subtitle')}</p>
-                </div>
-
-                <div className="header-actions">
+            <div className="sl-header">
+                <h1 className="sl-title">{t('subscriptions.list.title')}</h1>
+                {isAdmin && (
                     <button
-                        type="button"
-                        onClick={handleRefresh}
-                        className={`refresh-button ${refreshing ? 'refreshing' : ''}`}
-                        disabled={refreshing}
-                        title={t('common.refresh')}
+                        className="sl-btn-add"
+                        onClick={handleAddNew}
                     >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M23 4v6h-6" />
-                            <path d="M1 20v-6h6" />
-                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10" />
-                            <path d="M3.51 15a9 9 0 0 0 14.85 3.36L23 14" />
+                        <svg className="sl-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        <span className="sr-only">{t('common.refresh')}</span>
+                        {t('subscriptions.add')}
                     </button>
+                )}
+            </div>
+
+            {/* Search */}
+            <div className="sl-search-section">
+                <div className="sl-search-wrapper">
+                    <svg className="sl-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21l-4.35-4.35" />
+                    </svg>
+                    <input
+                        type="text"
+                        placeholder={t('subscriptions.searchPlaceholder')}
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        className="sl-search-input"
+                    />
                 </div>
             </div>
 
-            {/* Filters and Search */}
-            <div className="subscriptions-filters">
-                <div className="filters-row">
-                    <div className="filter-group">
-                        <label htmlFor="search" className="filter-label">
-                            {t('common.search')}
-                        </label>
-                        <div className="search-input-container">
-                            <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <circle cx="11" cy="11" r="8" />
-                                <path d="M21 21l-4.35-4.35" />
-                            </svg>
-                            <input
-                                id="search"
-                                type="text"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                placeholder={t('subscriptions.searchPlaceholder')}
-                                className="search-input"
-                            />
-                            {searchTerm && (
-                                <button
-                                    type="button"
-                                    onClick={clearSearch}
-                                    className="clear-search-button"
-                                    title={t('common.clear')}
-                                >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <line x1="18" y1="6" x2="6" y2="18" />
-                                        <line x1="6" y1="6" x2="18" y2="18" />
-                                    </svg>
-                                </button>
+            {/* Plans Grid */}
+            <div className="sl-plans-grid">
+                {filteredPlans.map((plan) => (
+                    <div key={plan.id} className={`sl-plan-card ${!plan.isActive ? 'inactive' : ''}`}>
+                        <div className="sl-plan-header">
+                            <div className="sl-plan-title-section">
+                                <h3 className="sl-plan-name">{plan.name}</h3>
+                                <div className="sl-plan-price">{formatPrice(plan.price, plan.billingCycle)}</div>
+                            </div>
+                            {isAdmin && (
+                                <div className="sl-plan-actions">
+                                    <button
+                                        className="sl-action-btn sl-btn-edit"
+                                        onClick={() => handleEdit(plan)}
+                                        title={t('common.edit')}
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+                                    <button
+                                        className="sl-action-btn sl-btn-delete"
+                                        onClick={() => setShowDeleteConfirm(plan)}
+                                        title={t('common.delete')}
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
                             )}
                         </div>
-                    </div>
 
-                    <div className="filter-group">
-                        <label htmlFor="status-filter" className="filter-label">
-                            {t('subscriptions.filters.status')}
-                        </label>
-                        <select
-                            id="status-filter"
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="filter-select"
-                        >
-                            {statusOptions.map(option => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="filter-group">
-                        <label htmlFor="sort-by" className="filter-label">
-                            {t('common.sortBy')}
-                        </label>
-                        <select
-                            id="sort-by"
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                            className="filter-select"
-                        >
-                            {sortOptions.map(option => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="filter-group">
-                        <label htmlFor="sort-order" className="filter-label">
-                            {t('common.order')}
-                        </label>
-                        <select
-                            id="sort-order"
-                            value={sortOrder}
-                            onChange={(e) => setSortOrder(e.target.value)}
-                            className="filter-select"
-                        >
-                            <option value="asc">{t('common.ascending')}</option>
-                            <option value="desc">{t('common.descending')}</option>
-                        </select>
-                    </div>
-                </div>
-
-                {(searchTerm || statusFilter !== 'all') && (
-                    <div className="active-filters">
-                        <span className="active-filters-label">{t('common.activeFilters')}:</span>
-                        {searchTerm && (
-                            <span className="filter-tag">
-                                {t('common.search')}: "{searchTerm}"
-                                <button onClick={clearSearch} className="filter-tag-close">×</button>
-                            </span>
+                        {plan.description && (
+                            <p className="sl-plan-description">{plan.description}</p>
                         )}
-                        {statusFilter !== 'all' && (
-                            <span className="filter-tag">
-                                {t('subscriptions.filters.status')}: {statusOptions.find(opt => opt.value === statusFilter)?.label}
-                                <button onClick={() => setStatusFilter('all')} className="filter-tag-close">×</button>
-                            </span>
+
+                        <div className="sl-plan-limits">
+                            <div className="sl-limit-item">
+                                <span className="sl-limit-label">{t('subscriptions.limits.cars')}</span>
+                                <span className="sl-limit-value">{plan.maxCars || t('common.unlimited')}</span>
+                            </div>
+                            <div className="sl-limit-item">
+                                <span className="sl-limit-label">{t('subscriptions.limits.users')}</span>
+                                <span className="sl-limit-value">{plan.maxUsers || t('common.unlimited')}</span>
+                            </div>
+                            <div className="sl-limit-item">
+                                <span className="sl-limit-label">{t('subscriptions.limits.customers')}</span>
+                                <span className="sl-limit-value">{plan.maxCustomers || t('common.unlimited')}</span>
+                            </div>
+                            <div className="sl-limit-item">
+                                <span className="sl-limit-label">{t('subscriptions.limits.reservations')}</span>
+                                <span className="sl-limit-value">{plan.maxReservations || t('common.unlimited')}</span>
+                            </div>
+                        </div>
+
+                        {getFeaturesList(plan).length > 0 && (
+                            <div className="sl-plan-features">
+                                <h4 className="sl-features-title">{t('subscriptions.features.title')}</h4>
+                                <ul className="sl-features-list">
+                                    {getFeaturesList(plan).map((feature, index) => (
+                                        <li key={index} className="sl-feature-item">
+                                            <svg className="sl-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            {feature}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         )}
+
+                        <div className="sl-plan-footer">
+                            <div className="sl-plan-meta">
+                                <span className={`sl-status ${plan.isActive ? 'active' : 'inactive'}`}>
+                                    {plan.isActive ? t('common.active') : t('common.inactive')}
+                                </span>
+                                <span className="sl-billing-cycle">{getBillingCycleText(plan.billingCycle)}</span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
+                {filteredPlans.length === 0 && (
+                    <div className="sl-no-results">
+                        <svg className="sl-no-results-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="M21 21l-4.35-4.35" />
+                        </svg>
+                        <p className="sl-no-results-text">
+                            {searchTerm ? t('subscriptions.noSearchResults') : t('subscriptions.noPlansFound')}
+                        </p>
                     </div>
                 )}
             </div>
 
-            {/* Results Info */}
-            {!isLoading && !error && (
-                <div className="results-info">
-                    {t('subscriptions.resultsCount', {
-                        count: filteredSubscriptions.length,
-                        total: subscriptions.length
-                    })}
+            {/* Modal for Add/Edit */}
+            {showModal && isAdmin && (
+                <div className="sl-modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="sl-modal" onClick={e => e.stopPropagation()}>
+                        <div className="sl-modal-header">
+                            <h2 className="sl-modal-title">
+                                {editingPlan ? t('subscriptions.editPlan') : t('subscriptions.addPlan')}
+                            </h2>
+                            <button
+                                className="sl-modal-close"
+                                onClick={() => setShowModal(false)}
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="sl-form">
+                            <div className="sl-form-grid">
+                                {/* Basic Information */}
+                                <div className="sl-form-section">
+                                    <h3 className="sl-section-title">{t('subscriptions.form.basicInfo')}</h3>
+
+                                    <div className="sl-form-group">
+                                        <label className="sl-form-label">{t('subscriptions.form.name')}</label>
+                                        <input
+                                            type="text"
+                                            value={formData.name}
+                                            onChange={(e) => handleFormChange('name', e.target.value)}
+                                            className="sl-form-input"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="sl-form-group">
+                                        <label className="sl-form-label">{t('subscriptions.form.description')}</label>
+                                        <textarea
+                                            value={formData.description}
+                                            onChange={(e) => handleFormChange('description', e.target.value)}
+                                            className="sl-form-textarea"
+                                            rows={3}
+                                        />
+                                    </div>
+
+                                    <div className="sl-form-row">
+                                        <div className="sl-form-group">
+                                            <label className="sl-form-label">{t('subscriptions.form.price')}</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                min="0"
+                                                value={formData.price}
+                                                onChange={(e) => handleFormChange('price', e.target.value)}
+                                                className="sl-form-input"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="sl-form-group">
+                                            <label className="sl-form-label">{t('subscriptions.form.billingCycle')}</label>
+                                            <select
+                                                value={formData.billingCycle}
+                                                onChange={(e) => handleFormChange('billingCycle', parseInt(e.target.value))}
+                                                className="sl-form-select"
+                                            >
+                                                <option value={1}>{t('subscriptions.monthly')}</option>
+                                                <option value={12}>{t('subscriptions.yearly')}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Limits */}
+                                <div className="sl-form-section">
+                                    <h3 className="sl-section-title">{t('subscriptions.form.limits')}</h3>
+
+                                    <div className="sl-form-row">
+                                        <div className="sl-form-group">
+                                            <label className="sl-form-label">{t('subscriptions.limits.cars')}</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={formData.maxCars}
+                                                onChange={(e) => handleFormChange('maxCars', e.target.value)}
+                                                className="sl-form-input"
+                                            />
+                                        </div>
+
+                                        <div className="sl-form-group">
+                                            <label className="sl-form-label">{t('subscriptions.limits.users')}</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={formData.maxUsers}
+                                                onChange={(e) => handleFormChange('maxUsers', e.target.value)}
+                                                className="sl-form-input"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="sl-form-row">
+                                        <div className="sl-form-group">
+                                            <label className="sl-form-label">{t('subscriptions.limits.customers')}</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={formData.maxCustomers}
+                                                onChange={(e) => handleFormChange('maxCustomers', e.target.value)}
+                                                className="sl-form-input"
+                                            />
+                                        </div>
+
+                                        <div className="sl-form-group">
+                                            <label className="sl-form-label">{t('subscriptions.limits.reservations')}</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={formData.maxReservations}
+                                                onChange={(e) => handleFormChange('maxReservations', e.target.value)}
+                                                className="sl-form-input"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Features */}
+                                <div className="sl-form-section">
+                                    <h3 className="sl-section-title">{t('subscriptions.form.features')}</h3>
+
+                                    <div className="sl-features-grid">
+                                        <div className="sl-form-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                id="maintenance"
+                                                checked={formData.hasMaintenanceModule}
+                                                onChange={(e) => handleFormChange('hasMaintenanceModule', e.target.checked)}
+                                            />
+                                            <label htmlFor="maintenance">{t('subscriptions.features.maintenance')}</label>
+                                        </div>
+
+                                        <div className="sl-form-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                id="expenses"
+                                                checked={formData.hasExpenseTracking}
+                                                onChange={(e) => handleFormChange('hasExpenseTracking', e.target.checked)}
+                                            />
+                                            <label htmlFor="expenses">{t('subscriptions.features.expenses')}</label>
+                                        </div>
+
+                                        <div className="sl-form-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                id="reporting"
+                                                checked={formData.hasAdvancedReporting}
+                                                onChange={(e) => handleFormChange('hasAdvancedReporting', e.target.checked)}
+                                            />
+                                            <label htmlFor="reporting">{t('subscriptions.features.reporting')}</label>
+                                        </div>
+
+                                        <div className="sl-form-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                id="api"
+                                                checked={formData.hasAPIAccess}
+                                                onChange={(e) => handleFormChange('hasAPIAccess', e.target.checked)}
+                                            />
+                                            <label htmlFor="api">{t('subscriptions.features.api')}</label>
+                                        </div>
+
+                                        <div className="sl-form-checkbox">
+                                            <input
+                                                type="checkbox"
+                                                id="gps"
+                                                checked={formData.hasGPSTracking}
+                                                onChange={(e) => handleFormChange('hasGPSTracking', e.target.checked)}
+                                            />
+                                            <label htmlFor="gps">{t('subscriptions.features.gps')}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="sl-modal-actions">
+                                <button
+                                    type="button"
+                                    className="sl-btn-secondary"
+                                    onClick={() => setShowModal(false)}
+                                    disabled={actionLoading.submit}
+                                >
+                                    {t('common.cancel')}
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="sl-btn-primary"
+                                    disabled={actionLoading.submit}
+                                >
+                                    {actionLoading.submit && (
+                                        <div className="sl-btn-spinner" />
+                                    )}
+                                    {editingPlan ? t('common.update') : t('common.create')}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
 
-            {/* Content */}
-            <div className="subscriptions-content">
-                {isLoading ? (
-                    <LoadingComponent />
-                ) : error ? (
-                    <ErrorComponent />
-                ) : currentItems.length === 0 ? (
-                    <EmptyComponent />
-                ) : (
-                    <>
-                        {/* Desktop Table */}
-                        <div className="desktop-table">
-                            <div className="table-wrapper">
-                                <table className="subscriptions-table">
-                                    <thead>
-                                        <tr>
-                                            <th>{t('subscriptions.table.agency')}</th>
-                                            <th>{t('subscriptions.table.plan')}</th>
-                                            <th>{t('subscriptions.table.status')}</th>
-                                            <th>{t('subscriptions.table.startDate')}</th>
-                                            <th>{t('subscriptions.table.nextBilling')}</th>
-                                            <th>{t('subscriptions.table.amount')}</th>
-                                            <th className="actions-header">{t('common.actions')}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {currentItems.map((subscription) => (
-                                            <tr key={subscription.id} className="table-row">
-                                                <td className="agency-cell">
-                                                    <div className="agency-info">
-                                                        <span className="agency-name">{subscription.agencyName}</span>
-                                                        <span className="subscription-id">ID: {subscription.id}</span>
-                                                    </div>
-                                                </td>
-                                                <td className="plan-cell">
-                                                    <span className="plan-name">{subscription.planName}</span>
-                                                </td>
-                                                <td className="status-cell">
-                                                    <span className={`status-badge ${getStatusClass(subscription.status)}`}>
-                                                        {t(`subscriptions.status.${subscription.status?.toLowerCase() || 'unknown'}`)}
-                                                    </span>
-                                                </td>
-                                                <td className="date-cell">
-                                                    {formatDate(subscription.startDate)}
-                                                </td>
-                                                <td className="date-cell">
-                                                    {formatDate(subscription.nextBillingDate)}
-                                                </td>
-                                                <td className="amount-cell">
-                                                    {formatCurrency(subscription.amount, subscription.currency)}
-                                                </td>
-                                                <td className="actions-cell">
-                                                    <div className="action-buttons">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => console.log('View details:', subscription.id)}
-                                                            className="action-btn btn-view"
-                                                            title={t('common.viewDetails')}
-                                                        >
-                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                                <circle cx="12" cy="12" r="3" />
-                                                            </svg>
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => console.log('Edit subscription:', subscription.id)}
-                                                            className="action-btn btn-edit"
-                                                            title={t('common.edit')}
-                                                        >
-                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="sl-modal-overlay" onClick={() => setShowDeleteConfirm(null)}>
+                    <div className="sl-modal sl-confirm-modal" onClick={e => e.stopPropagation()}>
+                        <div className="sl-modal-header">
+                            <h2 className="sl-modal-title">{t('common.confirmDelete')}</h2>
                         </div>
 
-                        {/* Mobile Cards */}
-                        <div className="mobile-cards">
-                            {currentItems.map((subscription) => (
-                                <div key={subscription.id} className="subscription-card">
-                                    <div className="card-header">
-                                        <div className="subscription-info">
-                                            <h3 className="agency-name">{subscription.agencyName}</h3>
-                                            <span className="subscription-id">ID: {subscription.id}</span>
-                                        </div>
-                                        <span className={`status-badge ${getStatusClass(subscription.status)}`}>
-                                            {t(`subscriptions.status.${subscription.status?.toLowerCase() || 'unknown'}`)}
-                                        </span>
-                                    </div>
-
-                                    <div className="card-content">
-                                        <div className="field-group">
-                                            <label className="field-label">{t('subscriptions.table.plan')}:</label>
-                                            <span className="field-value">{subscription.planName}</span>
-                                        </div>
-
-                                        <div className="field-group">
-                                            <label className="field-label">{t('subscriptions.table.amount')}:</label>
-                                            <span className="field-value amount">
-                                                {formatCurrency(subscription.amount, subscription.currency)}
-                                            </span>
-                                        </div>
-
-                                        <div className="field-group">
-                                            <label className="field-label">{t('subscriptions.table.startDate')}:</label>
-                                            <span className="field-value">{formatDate(subscription.startDate)}</span>
-                                        </div>
-
-                                        <div className="field-group">
-                                            <label className="field-label">{t('subscriptions.table.nextBilling')}:</label>
-                                            <span className="field-value">{formatDate(subscription.nextBillingDate)}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="card-actions">
-                                        <button
-                                            type="button"
-                                            onClick={() => console.log('View details:', subscription.id)}
-                                            className="card-btn btn-view"
-                                        >
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                <circle cx="12" cy="12" r="3" />
-                                            </svg>
-                                            <span>{t('common.viewDetails')}</span>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => console.log('Edit subscription:', subscription.id)}
-                                            className="card-btn btn-edit"
-                                        >
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                                            </svg>
-                                            <span>{t('common.edit')}</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="sl-modal-body">
+                            <p>{t('subscriptions.confirmDeletePlan', { name: showDeleteConfirm.name })}</p>
                         </div>
 
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="pagination">
-                                <button
-                                    type="button"
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className="pagination-btn"
-                                >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M15 18l-6-6 6-6" />
-                                    </svg>
-                                    <span>{t('common.previous')}</span>
-                                </button>
-
-                                <div className="pagination-info">
-                                    <span>
-                                        {t('common.pageOf', {
-                                            current: currentPage,
-                                            total: totalPages
-                                        })}
-                                    </span>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                    className="pagination-btn"
-                                >
-                                    <span>{t('common.next')}</span>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M9 18l6-6-6-6" />
-                                    </svg>
-                                </button>
-                            </div>
-                        )}
-                    </>
-                )}
-            </div>
+                        <div className="sl-modal-actions">
+                            <button
+                                type="button"
+                                className="sl-btn-secondary"
+                                onClick={() => setShowDeleteConfirm(null)}
+                                disabled={actionLoading[`delete_${showDeleteConfirm.id}`]}
+                            >
+                                {t('common.cancel')}
+                            </button>
+                            <button
+                                type="button"
+                                className="sl-btn-danger"
+                                onClick={() => handleDelete(showDeleteConfirm.id)}
+                                disabled={actionLoading[`delete_${showDeleteConfirm.id}`]}
+                            >
+                                {actionLoading[`delete_${showDeleteConfirm.id}`] && (
+                                    <div className="sl-btn-spinner" />
+                                )}
+                                {t('common.delete')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

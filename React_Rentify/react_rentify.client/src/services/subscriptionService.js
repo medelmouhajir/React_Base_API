@@ -1,14 +1,11 @@
-﻿import api from './api';
+﻿import apiClient from './apiClient';
 
 class SubscriptionService {
-    constructor() {
-        this.baseUrl = '/api/subscriptions';
-    }
 
     // Plans management
     async getAvailablePlans() {
         try {
-            const response = await api.get(`${this.baseUrl}/plans`);
+            const response = await apiClient.get(`/subscriptions/plans`);
             return response.data;
         } catch (error) {
             console.error('Error fetching available plans:', error);
@@ -18,7 +15,7 @@ class SubscriptionService {
 
     async getPlanById(planId) {
         try {
-            const response = await api.get(`${this.baseUrl}/plans/${planId}`);
+            const response = await apiClient.get(`/subscriptions/plans/${planId}`);
             return response.data;
         } catch (error) {
             console.error(`Error fetching plan ${planId}:`, error);
@@ -28,7 +25,7 @@ class SubscriptionService {
 
     async createPlan(planData) {
         try {
-            const response = await api.post(`${this.baseUrl}/plans`, planData);
+            const response = await apiClient.post(`/subscriptions/plans`, planData);
             return response.data;
         } catch (error) {
             console.error('Error creating plan:', error);
@@ -38,7 +35,7 @@ class SubscriptionService {
 
     async updatePlan(planId, planData) {
         try {
-            const response = await api.put(`${this.baseUrl}/plans/${planId}`, planData);
+            const response = await apiClient.put(`/subscriptions/plans/${planId}`, planData);
             return response.data;
         } catch (error) {
             console.error(`Error updating plan ${planId}:`, error);
@@ -48,7 +45,7 @@ class SubscriptionService {
 
     async deletePlan(planId) {
         try {
-            const response = await api.delete(`${this.baseUrl}/plans/${planId}`);
+            const response = await apiClient.delete(`/subscriptions/plans/${planId}`);
             return response.data;
         } catch (error) {
             console.error(`Error deleting plan ${planId}:`, error);
@@ -59,7 +56,7 @@ class SubscriptionService {
     // Agency subscription management
     async getCurrentSubscription(agencyId) {
         try {
-            const response = await api.get(`${this.baseUrl}/agency/${agencyId}/current`);
+            const response = await apiClient.get(`/subscriptions/agency/${agencyId}/current`);
             return response.data;
         } catch (error) {
             console.error(`Error fetching current subscription for agency ${agencyId}:`, error);
@@ -69,7 +66,7 @@ class SubscriptionService {
 
     async createSubscription(agencyId, subscriptionData) {
         try {
-            const response = await api.post(`${this.baseUrl}/agency/${agencyId}/subscribe`, subscriptionData);
+            const response = await apiClient.post(`/subscriptions/agency/${agencyId}/subscribe`, subscriptionData);
             return response.data;
         } catch (error) {
             console.error(`Error creating subscription for agency ${agencyId}:`, error);
@@ -79,7 +76,7 @@ class SubscriptionService {
 
     async upgradeSubscription(agencyId, upgradeData) {
         try {
-            const response = await api.put(`${this.baseUrl}/agency/${agencyId}/upgrade`, upgradeData);
+            const response = await apiClient.put(`/subscriptions/agency/${agencyId}/upgrade`, upgradeData);
             return response.data;
         } catch (error) {
             console.error(`Error upgrading subscription for agency ${agencyId}:`, error);
@@ -89,7 +86,7 @@ class SubscriptionService {
 
     async cancelSubscription(agencyId) {
         try {
-            const response = await api.delete(`${this.baseUrl}/agency/${agencyId}/cancel`);
+            const response = await apiClient.delete(`/subscriptions/agency/${agencyId}/cancel`);
             return response.data;
         } catch (error) {
             console.error(`Error cancelling subscription for agency ${agencyId}:`, error);
@@ -99,7 +96,7 @@ class SubscriptionService {
 
     async resumeSubscription(agencyId) {
         try {
-            const response = await api.post(`${this.baseUrl}/agency/${agencyId}/resume`);
+            const response = await apiClient.post(`/subscriptions/agency/${agencyId}/resume`);
             return response.data;
         } catch (error) {
             console.error(`Error resuming subscription for agency ${agencyId}:`, error);
@@ -109,7 +106,7 @@ class SubscriptionService {
 
     async suspendSubscription(agencyId, suspendData) {
         try {
-            const response = await api.post(`${this.baseUrl}/agency/${agencyId}/suspend`, suspendData);
+            const response = await apiClient.post(`/subscriptions/agency/${agencyId}/suspend`, suspendData);
             return response.data;
         } catch (error) {
             console.error(`Error suspending subscription for agency ${agencyId}:`, error);
@@ -119,7 +116,7 @@ class SubscriptionService {
 
     async changeBillingCycle(agencyId, billingCycleData) {
         try {
-            const response = await api.post(`${this.baseUrl}/agency/${agencyId}/change-billing-cycle`, billingCycleData);
+            const response = await apiClient.post(`/subscriptions/agency/${agencyId}/change-billing-cycle`, billingCycleData);
             return response.data;
         } catch (error) {
             console.error(`Error changing billing cycle for agency ${agencyId}:`, error);
@@ -130,7 +127,7 @@ class SubscriptionService {
     // Usage and limits
     async getCurrentUsage(agencyId) {
         try {
-            const response = await api.get(`${this.baseUrl}/agency/${agencyId}/usage`);
+            const response = await apiClient.get(`/subscriptions/agency/${agencyId}/usage`);
             return response.data;
         } catch (error) {
             console.error(`Error fetching current usage for agency ${agencyId}:`, error);
@@ -140,7 +137,7 @@ class SubscriptionService {
 
     async checkFeatureAccess(agencyId, featureName) {
         try {
-            const response = await api.get(`${this.baseUrl}/agency/${agencyId}/feature-access/${featureName}`);
+            const response = await apiClient.get(`/subscriptions/agency/${agencyId}/feature-access/${featureName}`);
             return response.data;
         } catch (error) {
             console.error(`Error checking feature access for agency ${agencyId}, feature ${featureName}:`, error);
@@ -150,7 +147,7 @@ class SubscriptionService {
 
     async checkResourceLimits(agencyId, resourceType, currentCount) {
         try {
-            const response = await api.get(`${this.baseUrl}/agency/${agencyId}/limits/${resourceType}`, {
+            const response = await apiClient.get(`/subscriptions/agency/${agencyId}/limits/${resourceType}`, {
                 params: { currentCount }
             });
             return response.data;
@@ -163,7 +160,7 @@ class SubscriptionService {
     // Billing operations (Admin only)
     async processAllBilling() {
         try {
-            const response = await api.post(`${this.baseUrl}/billing/process`);
+            const response = await apiClient.post(`/subscriptions/billing/process`);
             return response.data;
         } catch (error) {
             console.error('Error processing all billing:', error);
@@ -173,7 +170,7 @@ class SubscriptionService {
 
     async processSubscriptionBilling(subscriptionId) {
         try {
-            const response = await api.post(`${this.baseUrl}/billing/process/${subscriptionId}`);
+            const response = await apiClient.post(`/subscriptions/billing/process/${subscriptionId}`);
             return response.data;
         } catch (error) {
             console.error(`Error processing billing for subscription ${subscriptionId}:`, error);

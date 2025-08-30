@@ -107,7 +107,12 @@
     "table": "Tableau",
     "clearSearch": "Effacer la recherche",
     "creating": "Création...",
-    "createInvoice": "Créer une facture"
+    "createInvoice": "Créer une facture",
+    "inactive": "Inactif",
+    "unlimited": "Illimité",
+    "update": "Mettre à jour",
+    "create": "Créer",
+    "confirmDelete": "Confirmer la suppression"
   },
   "landing": {
     "features": "Fonctionnalités",
@@ -1794,6 +1799,47 @@
       "overdue": "En retard",
       "today": "Échéance aujourd'hui",
       "tomorrow": "Échéance demain"
+    }
+  },
+  "subscriptions": {
+    "add": "Ajouter une offre",
+    "monthly": "mois",
+    "yearly": "an",
+    "searchPlaceholder": "Rechercher par nom ou description...",
+    "noSearchResults": "Aucune offre ne correspond à votre recherche",
+    "noPlansFound": "Aucune offre d’abonnement trouvée",
+    "editPlan": "Modifier l’offre",
+    "addPlan": "Ajouter une offre",
+    "updateError": "Échec de la mise à jour de l’offre",
+    "createError": "Échec de la création de l’offre",
+    "deleteError": "Échec de la suppression de l’offre",
+    "confirmDeletePlan": "Voulez-vous vraiment supprimer l’offre « {{name}} » ?",
+    "features": {
+      "title": "Fonctionnalités",
+      "maintenance": "Module de maintenance",
+      "expenses": "Suivi des dépenses",
+      "reporting": "Rapports avancés",
+      "api": "Accès API",
+      "gps": "Suivi GPS"
+    },
+    "limits": {
+      "cars": "Véhicules",
+      "users": "Utilisateurs",
+      "customers": "Clients",
+      "reservations": "Réservations"
+    },
+    "form": {
+      "basicInfo": "Informations de base",
+      "name": "Nom",
+      "description": "Description",
+      "price": "Prix",
+      "billingCycle": "Cycle de facturation",
+      "limits": "Limites",
+      "features": "Fonctionnalités"
+    },
+    "list": {
+      "title": "Offres d’abonnement",
+      "fetchError": "Erreur lors du chargement des offres d’abonnement"
     }
   }
 }

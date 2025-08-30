@@ -107,7 +107,12 @@
     "table": "Table",
     "clearSearch": "Clear Search",
     "creating": "Creating...",
-    "createInvoice": "Create Invoice"
+    "createInvoice": "Create Invoice",
+    "inactive": "Inactive",
+    "unlimited": "Unlimited",
+    "update": "Update",
+    "create": "Create",
+    "confirmDelete": "Confirm deletion"
   },
   "landing": {
     "features": "Features",
@@ -1848,6 +1853,47 @@
       "overdue": "Overdue",
       "today": "Due today",
       "tomorrow": "Due tomorrow"
+    }
+  },
+  "subscriptions": {
+    "add": "Add plan",
+    "monthly": "month",
+    "yearly": "year",
+    "searchPlaceholder": "Search by name or description...",
+    "noSearchResults": "No plans match your search",
+    "noPlansFound": "No subscription plans found",
+    "editPlan": "Edit Plan",
+    "addPlan": "Add Plan",
+    "updateError": "Failed to update the plan",
+    "createError": "Failed to create the plan",
+    "deleteError": "Failed to delete the plan",
+    "confirmDeletePlan": "Are you sure you want to delete the plan \"{{name}}\"?",
+    "features": {
+      "title": "Features",
+      "maintenance": "Maintenance module",
+      "expenses": "Expense tracking",
+      "reporting": "Advanced reporting",
+      "api": "API access",
+      "gps": "GPS tracking"
+    },
+    "limits": {
+      "cars": "Cars",
+      "users": "Users",
+      "customers": "Customers",
+      "reservations": "Reservations"
+    },
+    "form": {
+      "basicInfo": "Basic Information",
+      "name": "Name",
+      "description": "Description",
+      "price": "Price",
+      "billingCycle": "Billing cycle",
+      "limits": "Limits",
+      "features": "Features"
+    },
+    "list": {
+      "title": "Subscription Plans",
+      "fetchError": "Error fetching subscription plans"
     }
   }
 }

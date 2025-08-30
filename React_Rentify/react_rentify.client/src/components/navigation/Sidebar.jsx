@@ -88,6 +88,26 @@ const icons = {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
     ),
+    subscriptions: (
+        <svg className="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" >
+            <rect x="3" y="5" width="18" height="14"
+                rx="2"
+                ry="2"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+            <line
+                x1="3"
+                y1="10"
+                x2="21"
+                y2="10"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
+        </svg>
+    ),
 };
 
 const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
@@ -115,6 +135,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
             { id: 'dashboard', label: t('sidebar.dashboard'), icon: icons.dashboard, path: '/dashboard' },
             { id: 'agencies', label: t('sidebar.agencies'), icon: icons.agencies, path: '/agencies' },
             { id: 'filters', label: t('sidebar.filters'), icon: icons.staff, path: '/filters' },
+            { id: 'subscriptions', label: t('sidebar.subscriptions'), icon: icons.subscriptions, path: '/subscriptions' },
             { id: 'tickets', label: t('sidebar.tickets'), icon: icons.tickets, path: '/tickets' },
         ];
         const managerItems = [

@@ -107,7 +107,12 @@
     "table": "جدول",
     "clearSearch": "مسح البحث",
     "creating": "جارٍ الإنشاء...",
-    "createInvoice": "إنشاء فاتورة"
+    "createInvoice": "إنشاء فاتورة",
+    "inactive": "غير نشط",
+    "unlimited": "غير محدود",
+    "update": "تحديث",
+    "create": "إنشاء",
+    "confirmDelete": "تأكيد الحذف"
   },
   "landing": {
     "features": "الميزات",
@@ -1814,6 +1819,47 @@
       "overdue": "متأخر",
       "today": "مستحق اليوم",
       "tomorrow": "مستحق غداً"
+    }
+  },
+  "subscriptions": {
+    "add": "إضافة خطة",
+    "monthly": "الشهر",
+    "yearly": "السنة",
+    "searchPlaceholder": "ابحث بالاسم أو الوصف...",
+    "noSearchResults": "لا توجد خطط مطابقة لبحثك",
+    "noPlansFound": "لا توجد خطط اشتراك",
+    "editPlan": "تعديل الخطة",
+    "addPlan": "إضافة خطة",
+    "updateError": "فشل تحديث الخطة",
+    "createError": "فشل إنشاء الخطة",
+    "deleteError": "فشل حذف الخطة",
+    "confirmDeletePlan": "هل أنت متأكد أنك تريد حذف الخطة \"{{name}}\"؟",
+    "features": {
+      "title": "الميزات",
+      "maintenance": "وحدة الصيانة",
+      "expenses": "تتبع المصاريف",
+      "reporting": "تقارير متقدمة",
+      "api": "وصول واجهة البرمجة API",
+      "gps": "تتبع GPS"
+    },
+    "limits": {
+      "cars": "السيارات",
+      "users": "المستخدمون",
+      "customers": "العملاء",
+      "reservations": "الحجوزات"
+    },
+    "form": {
+      "basicInfo": "المعلومات الأساسية",
+      "name": "الاسم",
+      "description": "الوصف",
+      "price": "السعر",
+      "billingCycle": "دورة الفوترة",
+      "limits": "الحدود",
+      "features": "الميزات"
+    },
+    "list": {
+      "title": "خطط الاشتراك",
+      "fetchError": "حدث خطأ أثناء جلب خطط الاشتراك"
     }
   }
 }
