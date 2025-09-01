@@ -1860,6 +1860,62 @@
     "list": {
       "title": "خطط الاشتراك",
       "fetchError": "حدث خطأ أثناء جلب خطط الاشتراك"
+    },
+    "status": {
+      "active": "نشِط",
+      "trial": "فترة تجريبية",
+      "cancelled": "ملغاة",
+      "suspended": "معلّقة",
+      "expired": "منتهية",
+      "unknown": "غير معروف"
+    },
+    "billingCycle": {
+      "monthly": "شهريًا",
+      "yearly": "سَنويًا"
+    },
+    "agency": {
+      "title": "اشتراك الوكالة",
+      "subtitle": "إدارة الخطة والاستخدام والفواتير",
+      "loadError": "فشل في تحميل بيانات الاشتراك.",
+      "subscribeError": "فشل الاشتراك في الخطة.",
+      "upgradeError": "فشل ترقية الاشتراك.",
+      "cancelError": "فشل إلغاء الاشتراك.",
+      "resumeError": "فشل استئناف الاشتراك.",
+      "errorTitle": "حدث خطأ ما",
+      "currentPlan": "الخطة الحالية",
+      "planName": "اسم الخطة",
+      "price": "السعر",
+      "nextBilling": "الفوترة القادمة",
+      "trialEnds": "انتهاء الفترة التجريبية",
+      "upgrade": "ترقية",
+      "cancel": "إلغاء",
+      "resume": "استئناف",
+      "noSubscription": "لا يوجد اشتراك فعّال",
+      "noSubscriptionDescription": "اختر خطة للبدء.",
+      "availablePlans": "الخطط المتاحة",
+      "choosePlan": "اختر خطة",
+      "features": "الميزات",
+      "maxCars": "حتى {{count}} سيارة",
+      "maxUsers": "حتى {{count}} مستخدم",
+      "maxCustomers": "حتى {{count}} عميل",
+      "maxReservations": "حتى {{count}} حجز",
+      "maintenanceModule": "وحدة الصيانة",
+      "expenseTracking": "تتبّع المصروفات",
+      "advancedReporting": "تقارير متقدمة",
+      "apiAccess": "وصول API",
+      "gpsTracking": "تتبّع GPS",
+      "startTrial": "بدء التجربة",
+      "subscribe": "اشترك",
+      "switchToPlan": "التبديل إلى هذه الخطة",
+      "currentUsage": "الاستخدام الحالي",
+      "carsUsed": "عدد السيارات المستخدمة",
+      "usersUsed": "عدد المستخدمين المستخدمين",
+      "customersUsed": "عدد العملاء المستخدمين",
+      "recentInvoices": "الفواتير الحديثة",
+      "invoicesComingSoon": "سيتم إتاحة الفواتير قريبًا.",
+      "confirmUpgrade": "تأكيد الترقية",
+      "upgradeConfirmation": "هل أنت متأكد من الترقية إلى الخطة المحددة؟",
+      "confirmCancel": "هل أنت متأكد من إلغاء الاشتراك؟"
     }
   }
 }

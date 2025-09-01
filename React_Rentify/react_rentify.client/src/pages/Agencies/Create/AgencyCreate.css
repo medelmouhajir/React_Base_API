@@ -1,13 +1,14 @@
-/* src/pages/Agencie/Create/AgencyCreate.css */
+/* src/pages/Agencies/Create/AgencyCreate.css */
 
 /* Container */
 .agency-create-container {
-    max-width: 600px;
+    max-width: 95%;
     margin: 0 auto;
-    padding: 1rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    background-color: transparent;
+    gap: 2rem;
 }
 
 .page-title {
@@ -15,14 +16,16 @@
     font-weight: 600;
     text-align: center;
     margin-bottom: 0.5rem;
+    color: var(--text-color, #1f2937);
 }
 
 /* Error Message */
 .error-message {
-    color: #d9534f;
-    background-color: #f8d7da;
+    color: var(--danger-color, #dc2626);
+    background-color: var(--danger-light, #fef2f2);
     padding: 0.75rem 1rem;
-    border-radius: 0.375rem;
+    border-radius: var(--border-radius, 0.375rem);
+    border: 1px solid var(--danger-border, #fca5a5);
     font-size: 0.9rem;
     text-align: center;
 }
@@ -31,41 +34,206 @@
 .agency-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 2rem;
+}
+
+/* Form Sections */
+.form-section {
+    background-color: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: var(--border-radius-lg, 0.75rem);
+    padding: 1.5rem;
+    box-shadow: var(--shadow, 0 1px 3px rgba(0, 0, 0, 0.1));
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-color, #1f2937);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
 }
 
 /* Form Group */
 .form-group {
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
 }
 
     .form-group label {
-        margin-bottom: 0.5rem;
         font-size: 0.95rem;
         font-weight: 500;
-        color: #333;
+        color: var(--text-secondary, #374151);
     }
 
     .form-group input {
         padding: 0.75rem 1rem;
         font-size: 0.95rem;
-        border: 1px solid #ccc;
-        border-radius: 0.375rem;
-        transition: border-color 0.2s;
+        border: 1px solid var(--input-border, #d1d5db);
+        border-radius: var(--border-radius, 0.375rem);
+        background-color: var(--input-bg, #ffffff);
+        color: var(--input-text, #1f2937);
+        transition: all 0.2s ease;
     }
 
         .form-group input:focus {
             outline: none;
-            border-color: #4a90e2;
+            border-color: var(--primary-color, #3b82f6);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
+
+        .form-group input::placeholder {
+            color: var(--text-muted, #9ca3af);
+        }
+
+/* Form Row (for multiple fields in one row) */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* Subscription Plans Grid */
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.plans-loading,
+.plans-error {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted, #6b7280);
+    font-style: italic;
+}
+
+.plans-error {
+    color: var(--danger-color, #dc2626);
+}
+
+/* Plan Cards */
+.plan-card {
+    background-color: var(--card-bg, #ffffff);
+    border: 2px solid var(--border-color, #e5e7eb);
+    border-radius: var(--border-radius-lg, 0.75rem);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+    .plan-card:hover {
+        border-color: var(--primary-light, #bfdbfe);
+        box-shadow: var(--shadow-hover, 0 4px 12px rgba(0, 0, 0, 0.1));
+        transform: translateY(-2px);
+    }
+
+    .plan-card.selected {
+        border-color: var(--primary-color, #3b82f6);
+        background-color: var(--primary-light, #f0f7ff);
+        box-shadow: 0 0 0 1px var(--primary-color, #3b82f6);
+    }
+
+.plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.plan-info {
+    flex: 1;
+}
+
+.plan-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-color, #1f2937);
+}
+
+.plan-price {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--primary-color, #3b82f6);
+}
+
+.plan-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.plan-radio {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: var(--primary-color, #3b82f6);
+}
+
+.plan-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary, #6b7280);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Plan Features */
+.plan-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.features-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color, #1f2937);
+}
+
+.features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary, #374151);
+}
+
+.feature-icon {
+    color: var(--success-color, #10b981);
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+
+.feature-text {
+    line-height: 1.4;
+}
 
 /* Form Actions */
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 0.75rem;
+    gap: 1rem;
     margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color, #e5e7eb);
 }
 
 /* Buttons */
@@ -73,41 +241,129 @@
 .btn-secondary {
     font-size: 0.95rem;
     font-weight: 500;
-    padding: 0.75rem 1.25rem;
-    border-radius: 0.375rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius, 0.375rem);
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
+    transition: all 0.2s ease;
+    border: none;
+    min-width: 120px;
 }
 
 .btn-primary {
-    background-color: #4a90e2;
-    color: #fff;
-    border: none;
+    background-color: var(--primary-color, #3b82f6);
+    color: #ffffff;
 }
 
     .btn-primary:disabled {
-        background-color: #a0c4e5;
+        background-color: var(--primary-disabled, #9ca3af);
         cursor: not-allowed;
+        opacity: 0.6;
     }
 
     .btn-primary:hover:not(:disabled) {
-        background-color: #3b78c3;
+        background-color: var(--primary-hover, #2563eb);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
     }
 
 .btn-secondary {
     background-color: transparent;
-    color: #4a4a4a;
-    border: 1px solid #ccc;
+    color: var(--text-color, #374151);
+    border: 1px solid var(--border-color, #d1d5db);
 }
 
-    .btn-secondary:hover {
-        background-color: #f5f5f5;
+    .btn-secondary:hover:not(:disabled) {
+        background-color: var(--hover-bg, #f9fafb);
+        border-color: var(--text-muted, #9ca3af);
     }
 
-/* Responsive */
+    .btn-secondary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .page-title {
+        color: var(--text-color-dark, #f9fafb);
+    }
+
+    .section-title {
+        color: var(--text-color-dark, #f9fafb);
+        border-color: var(--border-color-dark, #374151);
+    }
+
+    .form-section {
+        background-color: var(--card-bg-dark, #1f2937);
+        border-color: var(--border-color-dark, #374151);
+    }
+
+    .plan-card {
+        background-color: var(--card-bg-dark, #1f2937);
+        border-color: var(--border-color-dark, #374151);
+    }
+
+        .plan-card.selected {
+            background-color: var(--primary-dark, #1e40af);
+        }
+
+    .plan-name,
+    .features-title {
+        color: var(--text-color-dark, #f9fafb);
+    }
+
+    .form-group label {
+        color: var(--text-secondary-dark, #d1d5db);
+    }
+
+    .form-group input {
+        background-color: var(--input-bg-dark, #374151);
+        border-color: var(--input-border-dark, #4b5563);
+        color: var(--input-text-dark, #f9fafb);
+    }
+
+        .form-group input:focus {
+            border-color: var(--primary-color, #3b82f6);
+        }
+
+    .btn-secondary {
+        color: var(--text-color-dark, #d1d5db);
+        border-color: var(--border-color-dark, #4b5563);
+    }
+
+        .btn-secondary:hover {
+            background-color: var(--hover-bg-dark, #374151);
+        }
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .agency-create-container {
-        padding: 0.75rem;
+        padding: 1rem;
+        max-width: 100%;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .plan-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .plan-selector {
+        justify-content: flex-start;
     }
 
     .form-actions {
@@ -119,5 +375,27 @@
     .btn-secondary {
         width: 100%;
         text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .agency-create-container {
+        padding: 0.75rem;
+    }
+
+    .form-section {
+        padding: 1rem;
+    }
+
+    .plan-card {
+        padding: 1rem;
+    }
+
+    .features-list {
+        gap: 0.375rem;
+    }
+
+    .feature-item {
+        font-size: 0.8rem;
     }
 }

@@ -1894,6 +1894,62 @@
     "list": {
       "title": "Subscription Plans",
       "fetchError": "Error fetching subscription plans"
+    },
+    "status": {
+      "active": "Active",
+      "trial": "Trial",
+      "cancelled": "Cancelled",
+      "suspended": "Suspended",
+      "expired": "Expired",
+      "unknown": "Unknown"
+    },
+    "billingCycle": {
+      "monthly": "month",
+      "yearly": "year"
+    },
+    "agency": {
+      "title": "Agency Subscription",
+      "subtitle": "Manage your plan, usage, and invoices",
+      "loadError": "Failed to load subscription data.",
+      "subscribeError": "Failed to subscribe to the plan.",
+      "upgradeError": "Failed to upgrade the subscription.",
+      "cancelError": "Failed to cancel the subscription.",
+      "resumeError": "Failed to resume the subscription.",
+      "errorTitle": "Something went wrong",
+      "currentPlan": "Current Plan",
+      "planName": "Plan name",
+      "price": "Price",
+      "nextBilling": "Next billing",
+      "trialEnds": "Trial ends",
+      "upgrade": "Upgrade",
+      "cancel": "Cancel",
+      "resume": "Resume",
+      "noSubscription": "No active subscription",
+      "noSubscriptionDescription": "Choose a plan below to get started.",
+      "availablePlans": "Available plans",
+      "choosePlan": "Choose a plan",
+      "features": "Features",
+      "maxCars": "Up to {{count}} cars",
+      "maxUsers": "Up to {{count}} users",
+      "maxCustomers": "Up to {{count}} customers",
+      "maxReservations": "Up to {{count}} reservations",
+      "maintenanceModule": "Maintenance module",
+      "expenseTracking": "Expense tracking",
+      "advancedReporting": "Advanced reporting",
+      "apiAccess": "API access",
+      "gpsTracking": "GPS tracking",
+      "startTrial": "Start trial",
+      "subscribe": "Subscribe",
+      "switchToPlan": "Switch to this plan",
+      "currentUsage": "Current usage",
+      "carsUsed": "Cars used",
+      "usersUsed": "Users used",
+      "customersUsed": "Customers used",
+      "recentInvoices": "Recent invoices",
+      "invoicesComingSoon": "Invoices coming soon.",
+      "confirmUpgrade": "Confirm upgrade",
+      "upgradeConfirmation": "Are you sure you want to upgrade to the selected plan?",
+      "confirmCancel": "Are you sure you want to cancel your subscription?"
     }
   }
 }

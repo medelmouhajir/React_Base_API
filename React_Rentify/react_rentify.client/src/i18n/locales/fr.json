@@ -1840,6 +1840,62 @@
     "list": {
       "title": "Offres d’abonnement",
       "fetchError": "Erreur lors du chargement des offres d’abonnement"
+    },
+    "status": {
+      "active": "Actif",
+      "trial": "Essai",
+      "cancelled": "Annulé",
+      "suspended": "Suspendu",
+      "expired": "Expiré",
+      "unknown": "Inconnu"
+    },
+    "billingCycle": {
+      "monthly": "mois",
+      "yearly": "an"
+    },
+    "agency": {
+      "title": "Abonnement de l’agence",
+      "subtitle": "Gérez votre formule, votre consommation et vos factures",
+      "loadError": "Échec du chargement des données d’abonnement.",
+      "subscribeError": "Échec de l’abonnement à la formule.",
+      "upgradeError": "Échec de la mise à niveau de l’abonnement.",
+      "cancelError": "Échec de l’annulation de l’abonnement.",
+      "resumeError": "Échec de la reprise de l’abonnement.",
+      "errorTitle": "Une erreur est survenue",
+      "currentPlan": "Formule actuelle",
+      "planName": "Nom de la formule",
+      "price": "Prix",
+      "nextBilling": "Prochaine facturation",
+      "trialEnds": "Fin de la période d’essai",
+      "upgrade": "Mettre à niveau",
+      "cancel": "Annuler",
+      "resume": "Reprendre",
+      "noSubscription": "Aucun abonnement actif",
+      "noSubscriptionDescription": "Choisissez une formule ci-dessous pour commencer.",
+      "availablePlans": "Formules disponibles",
+      "choosePlan": "Choisir une formule",
+      "features": "Fonctionnalités",
+      "maxCars": "Jusqu’à {{count}} véhicules",
+      "maxUsers": "Jusqu’à {{count}} utilisateurs",
+      "maxCustomers": "Jusqu’à {{count}} clients",
+      "maxReservations": "Jusqu’à {{count}} réservations",
+      "maintenanceModule": "Module maintenance",
+      "expenseTracking": "Suivi des dépenses",
+      "advancedReporting": "Rapports avancés",
+      "apiAccess": "Accès API",
+      "gpsTracking": "Suivi GPS",
+      "startTrial": "Démarrer l’essai",
+      "subscribe": "S’abonner",
+      "switchToPlan": "Basculer vers cette formule",
+      "currentUsage": "Utilisation actuelle",
+      "carsUsed": "Véhicules utilisés",
+      "usersUsed": "Utilisateurs utilisés",
+      "customersUsed": "Clients utilisés",
+      "recentInvoices": "Factures récentes",
+      "invoicesComingSoon": "Les factures arrivent bientôt.",
+      "confirmUpgrade": "Confirmer la mise à niveau",
+      "upgradeConfirmation": "Voulez-vous vraiment mettre à niveau vers la formule sélectionnée ?",
+      "confirmCancel": "Voulez-vous vraiment annuler votre abonnement ?"
     }
   }
 }

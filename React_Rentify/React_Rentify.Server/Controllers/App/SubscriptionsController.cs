@@ -38,7 +38,31 @@ namespace React_Rentify.Server.Controllers.App
                 return Unauthorized();
 
             var subscription = await _subscriptionService.GetActiveSubscriptionAsync(agencyId);
-            return Ok(subscription);
+
+            var output = new
+            {
+                Id = subscription.Id,
+                AgencyId = agencyId,
+                CreatedAt = subscription.CreatedAt,
+                CurrentPrice = subscription.CurrentPrice,
+                EndDate = subscription.EndDate,
+                IsTrialPeriod = subscription.IsTrialPeriod,
+                LastBillingDate = subscription.LastBillingDate,
+                NextBillingDate = subscription.NextBillingDate,
+                Status = subscription.Status.ToString(),
+                StartDate = subscription.StartDate,
+                SubscriptionPlan = new SubscriptionPlan
+                {
+                    Id = subscription.SubscriptionPlan.Id,
+                    BillingCycle = subscription.SubscriptionPlan.BillingCycle,
+                    Description = subscription.SubscriptionPlan.Description,
+                    Name = subscription.SubscriptionPlan.Name
+                },
+                SubscriptionPlanId = subscription.SubscriptionPlan.Id,
+                TrialEndDate = subscription.TrialEndDate,
+            };
+
+            return Ok(output);
         }
 
         [HttpPost("agency/{agencyId:guid}/subscribe")]
