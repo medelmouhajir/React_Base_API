@@ -146,7 +146,7 @@
     border-radius: 0.375rem;
     transition-property: color, background-color;
     transition-duration: 200ms;
-    background-color: white;
+    background-color: transparent;
     border: none;
     cursor: pointer;
 }
@@ -155,9 +155,13 @@
         background-color: #F3F4F6;
     }
 
-.dark .landing-mobile-menu-button:hover {
-    background-color: #374151;
+.dark .landing-mobile-menu-button {
+    background-color: transparent; /* Add for dark mode */
 }
+
+    .dark .landing-mobile-menu-button:hover {
+        background-color: #374151;
+    }
 
 .landing-mobile-menu-button:focus {
     outline: none;
@@ -170,6 +174,7 @@
     right: 0;
     top: 4rem;
     z-index: 50;
+    background-color: white; /* Add default background */
     border-top: 1px solid #E5E7EB;
     border-bottom: 1px solid #E5E7EB;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -181,6 +186,8 @@
 }
 
 .dark .landing-mobile-menu {
+    background-color: #1f2937; /* Dark mode background */
+    border-color: #374151;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 

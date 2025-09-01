@@ -44,6 +44,24 @@ const LandingLayout = () => {
         return () => clearTimeout(timer);
     }, [user, loading, navigate]);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (mobileMenuOpen && !event.target.closest('.landing-mobile-menu') && !event.target.closest('.landing-mobile-menu-button')) {
+                setMobileMenuOpen(false);
+            }
+        };
+
+        if (mobileMenuOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('touchstart', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, [mobileMenuOpen]);
+
     // Define main navigation items
     const navItems = [
         { path: '#features', label: t('landing.features') },
