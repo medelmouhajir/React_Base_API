@@ -217,10 +217,10 @@ const ExpenseList = () => {
             </div>
 
             {/* Filters Section */}
-            <div className="filters-section">
-                <div className="filters-row">
-                    <div className="search-group">
-                        <div className="search-input-wrapper">
+            <div className="filters-expenses-section">
+                <div className="filters-expenses-row">
+                    <div className="search-expenses-group">
+                        <div className="search-expenses-input-wrapper">
                             <svg className="search-icon-expenses" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <circle cx="11" cy="11" r="8" strokeWidth={2} />
                                 <path d="m21 21-4.35-4.35" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
@@ -235,11 +235,11 @@ const ExpenseList = () => {
                         </div>
                     </div>
 
-                    <div className="filter-group">
+                    <div className="filter-expenses-group">
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="filter-select"
+                            className="filter-expenses-select"
                         >
                             <option value="">{t('expenses.filters.allCategories')}</option>
                             {categories.map(category => (
@@ -250,7 +250,7 @@ const ExpenseList = () => {
                         </select>
                     </div>
 
-                    <div className="filter-group">
+                    <div className="filter-expenses-group">
                         <input
                             type="date"
                             value={dateRange.startDate}
@@ -260,7 +260,7 @@ const ExpenseList = () => {
                         />
                     </div>
 
-                    <div className="filter-group">
+                    <div className="filter-expenses-group">
                         <input
                             type="date"
                             value={dateRange.endDate}

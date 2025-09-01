@@ -215,6 +215,89 @@ namespace React_Rentify.Server.Controllers
         }
 
         /// <summary>
+        /// GET: api/Cars/agency/{agencyId}/available?startDate={startDate}&endDate={endDate}
+        /// Returns available cars for a specific agency within the given date range (no overlapping reservations).
+        /// </summary>
+        [HttpGet("agency/{agencyId:guid}/available")]
+        public async Task<IActionResult> GetCarsByAgencyIdAndDates(
+            Guid agencyId,
+            [FromQuery] DateTime startDate,
+            [FromQuery] DateTime endDate)
+        {
+            _logger.LogInformation("Retrieving available cars for agency {AgencyId} between {StartDate} and {EndDate}",
+                agencyId, startDate, endDate);
+
+            // Validate date range
+            if (startDate >= endDate)
+            {
+                _logger.LogWarning("Invalid date range: StartDate {StartDate} must be before EndDate {EndDate}", startDate, endDate);
+                return BadRequest(new { message = "Start date must be before end date." });
+            }
+
+            // Check if agency exists
+            var agencyExists = await _context.Set<Agency>().AnyAsync(a => a.Id == agencyId);
+            if (!agencyExists)
+            {
+                _logger.LogWarning("Agency with Id {AgencyId} not found", agencyId);
+                return NotFound(new { message = $"Agency with Id '{agencyId}' not found." });
+            }
+
+            // Check authorization to access this agency
+            if (!await _authService.HasAccessToAgencyAsync(agencyId))
+                return Unauthorized();
+
+            // Get cars with overlapping reservations in the date range
+            var carsWithReservations = await _context.Set<Reservation>()
+                .Where(r => r.AgencyId == agencyId)
+                .Where(r => r.Status != "Cancelled" && r.Status != "Completed")
+                .Where(r =>
+                    (startDate >= r.StartDate && startDate < r.EndDate) || // Start date falls within existing reservation
+                    (endDate > r.StartDate && endDate <= r.EndDate) ||     // End date falls within existing reservation
+                    (startDate <= r.StartDate && endDate >= r.EndDate))    // New reservation completely contains existing reservation
+                .Select(r => r.CarId)
+                .Distinct()
+                .ToListAsync();
+
+            // Get all available cars from the agency excluding those with reservations
+            var availableCars = await _context.Set<Car>()
+                .Include(c => c.Car_Year)
+                .Include(c => c.Car_Model)
+                .ThenInclude(m => m.Manufacturer)
+                .Where(c => c.AgencyId == agencyId)
+                .Where(c => c.Status != "Retired")
+                .Where(c => !carsWithReservations.Contains(c.Id))
+                .ToListAsync();
+
+            var dtoList = availableCars.Select(c => new CarDto
+            {
+                Id = c.Id,
+                AgencyId = c.AgencyId,
+                Car_ModelId = c.Car_ModelId,
+                Car_YearId = c.Car_YearId,
+                LicensePlate = c.LicensePlate,
+                Color = c.Color,
+                IsAvailable = c.IsAvailable,
+                Status = c.Status,
+                DailyRate = c.DailyRate,
+                HourlyRate = c.HourlyRate,
+                CurrentKM = c.CurrentKM,
+                LastKmUpdate = c.LastKmUpdate,
+                DeviceSerialNumber = c.DeviceSerialNumber,
+                IsTrackingActive = c.IsTrackingActive,
+
+                Fields = new Car_Fields
+                {
+                    Manufacturer = c.Car_Model?.Manufacturer?.Name ?? "Unknown",
+                    Model = c.Car_Model?.Name ?? "Unknown",
+                    Year = c.Car_Year?.YearValue ?? 0
+                }
+            }).ToList();
+
+            _logger.LogInformation("Retrieved {Count} available cars for agency {AgencyId} in date range", dtoList.Count, agencyId);
+            return Ok(dtoList);
+        }
+
+        /// <summary>
         /// POST: api/Cars
         /// Creates a new car. Accepts CreateCarDto.
         /// </summary>

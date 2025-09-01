@@ -31,6 +31,16 @@ export const carService = {
         }
     },
 
+    async getByAgencyIdAndDates(agencyId) {
+        try {
+            const response = await apiClient.get(`/cars/agency/${agencyId}/available`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error fetching cars for agency ${agencyId}:`, error);
+            throw error;
+        }
+    },
+
     async checkCarReservationsByDate(carId, date) {
         try {
             const response = await apiClient.get(`/cars/${carId}/reservations/date/${date}`);

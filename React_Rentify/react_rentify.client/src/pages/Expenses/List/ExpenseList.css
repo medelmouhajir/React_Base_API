@@ -283,7 +283,7 @@
 /*---------------------------------------------
   Filters Section
 ---------------------------------------------*/
-.filters-section {
+.filters-expenses-section {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
@@ -292,19 +292,19 @@
     box-shadow: var(--shadow);
 }
 
-.filters-row {
+.filters-expenses-row {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
     gap: 1rem;
     align-items: end;
 }
 
-.search-group {
+.search-expenses-group {
     display: flex;
     flex-direction: column;
 }
 
-.search-input-wrapper {
+.search-expenses-input-wrapper {
     position: relative;
 }
 
@@ -320,7 +320,7 @@
 }
 
 .search-input-expenses,
-.filter-select,
+.filter-expenses-select,
 .date-input,
 .sort-select {
     width: 100%;
@@ -338,7 +338,7 @@
 }
 
     .search-input-expenses:focus,
-    .filter-select:focus,
+    .filter-expenses-select:focus,
     .date-input:focus,
     .sort-select:focus {
         outline: none;
@@ -350,7 +350,7 @@
         color: var(--text-secondary);
     }
 
-.filter-group,
+.filter-expenses-group,
 .sort-group {
     display: flex;
     flex-direction: column;
@@ -699,7 +699,7 @@
   Mobile Responsive Design
 ---------------------------------------------*/
 @media (max-width: 1024px) {
-    .filters-row {
+    .filters-expenses-row {
         grid-template-columns: 1fr 1fr;
         gap: 0.75rem;
     }
@@ -748,11 +748,11 @@
         font-size: 1.25rem;
     }
 
-    .filters-section {
+    .filters-expenses-section {
         padding: 1rem;
     }
 
-    .filters-row {
+    .filters-expenses-row {
         grid-template-columns: 1fr;
         gap: 0.75rem;
     }
@@ -819,7 +819,7 @@
         margin-bottom: 0.75rem;
     }
 
-    .filters-section {
+    .filters-expenses-section {
         padding: 0.75rem;
     }
 
@@ -901,7 +901,7 @@
         border: none;
     }
 
-    .filters-section,
+    .filters-expenses-section,
     .pagination-container,
     .expense-list-header .btn,
     .action-buttons {

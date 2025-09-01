@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Modal from '../../../../components/Modals/Modal';
 import customerService from '../../../../services/customerService';
+import { useAuth } from '../../../../contexts/AuthContext';
 import './ModalStyles.css';
 
 const CustomerModal = ({ action, customer, onClose, onEditSubmit, onAddSubmit, onRemoveSubmit }) => {
@@ -22,6 +23,8 @@ const CustomerModal = ({ action, customer, onClose, onEditSubmit, onAddSubmit, o
         licenseNumber: ''
     });
 
+    const { user } = useAuth();
+
     console.log('action : ' + action);
 
     // Fetch customers for add action
@@ -30,7 +33,7 @@ const CustomerModal = ({ action, customer, onClose, onEditSubmit, onAddSubmit, o
             const fetchCustomers = async () => {
                 try {
                     setLoading(true);
-                    const customerList = await customerService.getAll();
+                    const customerList = await customerService.getByAgencyId(user?.agencyId);
                     setCustomers(customerList);
                 } catch (err) {
                     console.error('Error fetching customers:', err);
