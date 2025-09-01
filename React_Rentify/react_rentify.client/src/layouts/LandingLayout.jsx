@@ -86,23 +86,24 @@ const LandingLayout = () => {
                     </nav>
 
                     {/* Actions */}
-                    <div className="flex items-center space-x-2">
+                    <div className="landing-header-actions">
                         <LanguageSelector />
                         <ThemeToggle />
 
-                        <div className="hidden md:flex items-center space-x-2">
+
+                        <div className="hidden md:flex items-center space-x-2 ml-2">
                             <NavLink
                                 to="/login"
-                                className={`px-3 py-2 rounded-md text-sm font-medium ${isDarkMode
-                                        ? 'text-white hover:bg-gray-700'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${isDarkMode
+                                    ? 'text-white hover:bg-gray-700'
+                                    : 'text-gray-700 hover:bg-gray-100'
                                     }`}
                             >
                                 {t('auth.login')}
                             </NavLink>
                             <NavLink
                                 to="/register"
-                                className="px-3 py-2 rounded-md text-sm font-medium bg-primary-600 text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                                className="px-4 py-2 rounded-md text-sm font-medium bg-gradient-to-r from-primary-600 to-primary-500 text-white hover:from-primary-700 hover:to-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transform transition-all duration-200 hover:scale-105 shadow-lg"
                             >
                                 {t('auth.register')}
                             </NavLink>
@@ -110,7 +111,7 @@ const LandingLayout = () => {
 
                         {/* Mobile menu button */}
                         <button
-                            className="landing-mobile-menu-button md:hidden"
+                            className="landing-mobile-menu-button md:hidden ml-2"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             aria-expanded={mobileMenuOpen}
                         >
@@ -168,8 +169,9 @@ const LandingLayout = () => {
             {/* Main content */}
             <main className="landing-main">
                 {pageLoading ? (
-                    <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 80px)' }}>
-                        <Loading type="pulse" />
+                    <div className="landing-loading-container">
+                        <div className="landing-loading-spinner"></div>
+                        <div className="landing-loading-text">{t('common.loading')}</div>
                     </div>
                 ) : (
                     <div className="page-fade-enter page-fade-enter-active">

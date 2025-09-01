@@ -83,11 +83,11 @@
     transition-duration: 200ms;
 }
 
-/* ===== NAVIGATION ===== */
+/* ===== IMPROVED NAVIGATION ===== */
 .landing-nav {
     display: none;
     align-items: center;
-    gap: 1.5rem;
+    gap: 0.5rem;
 }
 
 @media (min-width: 768px) {
@@ -96,38 +96,48 @@
     }
 }
 
-.landing-nav > * + * {
-    margin-left: 1.5rem;
-}
-
 .landing-nav-link {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
+    position: relative;
+    padding: 0.625rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
-    border-radius: 0.375rem;
-    transition-property: color, background-color;
-    transition-duration: 200ms;
+    border-radius: 0.5rem;
+    transition: all 200ms ease;
+    text-decoration: none;
+    overflow: hidden;
 }
 
-    .landing-nav-link:active {
-        background-color: #F3F4F6;
+    .landing-nav-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, var(--color-primary-500, #0ea5e9), var(--color-primary-400, #38bdf8));
+        opacity: 0;
+        transition: opacity 200ms ease;
+        border-radius: 0.5rem;
     }
 
-.dark .landing-nav-link:active {
-    background-color: #374151;
-}
+    .landing-nav-link:hover::before,
+    .landing-nav-link-active::before {
+        opacity: 0.1;
+    }
 
-.landing-nav-link-active {
-    background-color: rgba(59, 130, 246, 0.1); /* primary-50 */
-    color: #1E40AF; /* primary-700 */
-}
+    .landing-nav-link span {
+        position: relative;
+        z-index: 1;
+    }
 
-.dark .landing-nav-link-active {
-    background-color: rgba(29, 78, 216, 0.3); /* dark:bg-primary-900/30 */
-    color: #93C5FD; /* dark:text-primary-300 */
+    .landing-nav-link:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+.dark .landing-nav-link:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 }
 
 /* ===== MOBILE MENU BUTTON ===== */
@@ -398,3 +408,123 @@
         margin-left: 0;
         margin-right: 1rem;
     }
+
+
+/* ===== IMPROVED LANDING PAGE LOADING ===== */
+.landing-loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+.dark .landing-loading-container {
+    background-color: rgba(17, 24, 39, 0.95);
+}
+
+.landing-loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e5e7eb;
+    border-top: 4px solid var(--color-primary-600, #0ea5e9);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.dark .landing-loading-spinner {
+    border-color: #374151;
+    border-top-color: var(--color-primary-400, #38bdf8);
+}
+
+.landing-loading-text {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.dark .landing-loading-text {
+    color: #9ca3af;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* ===== HEADER ACTIONS CONTAINER ===== */
+.landing-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .landing-header-actions .language-selector,
+    .landing-header-actions .theme-toggle-wrapper {
+        position: relative;
+    }
+
+/* Improve language selector button */
+.language-selector-toggle {
+    height: 2.5rem;
+    width: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: all 200ms ease;
+}
+
+.dark .language-selector-toggle {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.language-selector-toggle:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+}
+
+.dark .language-selector-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Improve theme toggle button */
+.theme-toggle {
+    height: 2.5rem !important;
+    width: 2.5rem !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 0.5rem !important;
+}
+
+.dark .theme-toggle {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.1) !important;
+    transform: scale(1.05) !important;
+}
+
+.dark .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
