@@ -1,6 +1,7 @@
 ﻿// src/pages/Gadgets/IdentityReaders/IdentityReader.jsx
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import identityService from '../../../services/identityService';
@@ -10,6 +11,7 @@ import './IdentityReader.css';
 
 const IdentityReader = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
     const fileInputRef = useRef(null);
@@ -198,7 +200,8 @@ const IdentityReader = () => {
                     : null
             };
 
-            await customerService.create(customerData);
+            var response = await customerService.create(customerData);
+            navigate('/customers/' + response.id);
             setSuccess(t('identityReader.customerCreated'));
 
             // Reset form

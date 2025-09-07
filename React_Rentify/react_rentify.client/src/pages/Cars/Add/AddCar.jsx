@@ -134,8 +134,11 @@ const AddCar = () => {
                 HourlyRate: formData.HourlyRate ? parseFloat(formData.HourlyRate) : null,
                 Car_YearId: parseInt(formData.Car_YearId, 10),
             };
-            await carService.create(payload);
-            navigate('/cars');
+
+            const response = await carService.create(payload);
+
+            // Navigate to car details using the ID from response
+            navigate(`/cars/${response.id}`);
         } catch (err) {
             console.error('❌ Error adding car:', err);
             setError(t('car.add.error'));

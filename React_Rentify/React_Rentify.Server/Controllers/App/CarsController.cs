@@ -219,10 +219,7 @@ namespace React_Rentify.Server.Controllers
         /// Returns available cars for a specific agency within the given date range (no overlapping reservations).
         /// </summary>
         [HttpGet("agency/{agencyId:guid}/available")]
-        public async Task<IActionResult> GetCarsByAgencyIdAndDates(
-            Guid agencyId,
-            [FromQuery] DateTime startDate,
-            [FromQuery] DateTime endDate)
+        public async Task<IActionResult> GetCarsByAgencyIdAndDates( Guid agencyId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             _logger.LogInformation("Retrieving available cars for agency {AgencyId} between {StartDate} and {EndDate}",
                 agencyId, startDate, endDate);

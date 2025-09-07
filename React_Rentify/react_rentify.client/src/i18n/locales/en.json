@@ -112,7 +112,9 @@
     "unlimited": "Unlimited",
     "update": "Update",
     "create": "Create",
-    "confirmDelete": "Confirm deletion"
+    "confirmDelete": "Confirm deletion",
+    "change": "Change",
+    "status": "Status"
   },
   "landing": {
     "features": "Features",
@@ -561,7 +563,9 @@
       "errorNoCustomers": "Please select at least one customer.",
       "errorNoCar": "Please select a car.",
       "errorNoDates": "Please select start and end dates.",
-      "error": "Failed to add reservation. Please try again."
+      "error": "Failed to add reservation. Please try again.",
+      "locations": "Locations",
+      "searchCustomers": "Search customers"
     },
     "remove": {
       "title": "Remove Reservation",
@@ -998,7 +1002,8 @@
       "availability": "Availability",
       "actions": "Actions",
       "noCarsFound": "No cars found",
-      "allManufacturers": "All manufacturers"
+      "allManufacturers": "All manufacturers",
+      "allColors": "All colors"
     },
     "search": {
       "placeholder": "Search cars...",
@@ -1076,7 +1081,8 @@
     "tracking": {
       "active": "Active",
       "inactive": "Inactive"
-    }
+    },
+    "currentKm": "Current Km"
   },
   "carDetails": {
     "fetchError": "Error fetching car details.",
@@ -1182,7 +1188,8 @@
     "expand": "Expand",
     "brand": "Rentify",
     "gadgets": "Gadgets",
-    "expenses": "Expenses"
+    "expenses": "Expenses",
+    "serviceAlerts": "Alerts"
   },
   "profile": {
     "myProfile": "My Profile",

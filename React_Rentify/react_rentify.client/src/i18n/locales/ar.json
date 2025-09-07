@@ -112,7 +112,9 @@
     "unlimited": "غير محدود",
     "update": "تحديث",
     "create": "إنشاء",
-    "confirmDelete": "تأكيد الحذف"
+    "confirmDelete": "تأكيد الحذف",
+    "change": "تغيير",
+    "status": "الحالة"
   },
   "landing": {
     "features": "الميزات",
@@ -547,7 +549,9 @@
       "errorNoCustomers": "يرجى اختيار عميل واحد على الأقل.",
       "errorNoCar": "يرجى اختيار سيارة.",
       "errorNoDates": "يرجى اختيار تاريخ البدء وتاريخ الانتهاء.",
-      "error": "فشل في إضافة الحجز. الرجاء المحاولة مرة أخرى."
+      "error": "فشل في إضافة الحجز. الرجاء المحاولة مرة أخرى.",
+      "locations": "المواقع",
+      "searchCustomers": "البحث عن العملاء"
     },
     "placeholders": {
       "price": "أدخل السعر",
@@ -990,7 +994,8 @@
       "availability": "التوفر",
       "actions": "إجراءات",
       "noCarsFound": "لم يتم العثور على سيارات",
-      "allManufacturers": "جميع الشركات المصنعة"
+      "allManufacturers": "جميع الشركات المصنعة",
+      "allColors": "جميع الألوان"
     },
     "search": {
       "placeholder": "ابحث في السيارات...",
@@ -1068,7 +1073,8 @@
     "tracking": {
       "active": "نشط",
       "inactive": "غير نشط"
-    }
+    },
+    "currentKm": "المسافة المقطوعة الحالية"
   },
   "carDetails": {
     "fetchError": "خطأ في جلب تفاصيل السيارة.",
@@ -1174,7 +1180,8 @@
     "expand": "توسيع",
     "brand": "رينتيفاي",
     "gadgets": "الأدوات",
-    "expenses": "النفقات"
+    "expenses": "النفقات",
+    "serviceAlerts": "التنبيهات"
   },
   "profile": {
     "myProfile": "ملفي الشخصي",

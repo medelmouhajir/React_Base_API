@@ -413,7 +413,7 @@ const ServiceAlertsList = () => {
                                 {filteredAndSortedAlerts.map(alert => (
                                     <div
                                         key={alert.id}
-                                        className={`alert-card ${getAlertStatusClass(alert)}`}
+                                        className={`alert-card-car ${getAlertStatusClass(alert)}`}
                                         onClick={() => navigate(`/maintenances/${alert.id}`)}
                                     >
                                         <div className="card-header">

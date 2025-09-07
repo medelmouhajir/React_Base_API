@@ -385,7 +385,7 @@ const Contract = () => {
                 <tr>
                   <td>
                     {reservation.agency?.conditions && (
-                      <div dangerouslySetInnerHTML={{ __html: reservation.agency.conditions.replace(/\n/g, '<br/>') }} />
+                      <div className="conditions-cell" dangerouslySetInnerHTML={{ __html: reservation.agency.conditions.replace(/\n/g, '<br/>') }} />
                     )}
                   </td>
                 </tr>

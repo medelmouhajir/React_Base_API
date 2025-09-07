@@ -116,8 +116,9 @@ const ReservationAdd = () => {
         const searchLower = customerSearchTerm.toLowerCase();
         return customers.filter(customer =>
             customer.fullName?.toLowerCase().includes(searchLower) ||
-            customer.phone?.toLowerCase().includes(searchLower) ||
-            customer.email?.toLowerCase().includes(searchLower)
+            customer.licenseNumber?.toLowerCase().includes(searchLower) ||
+            customer.nationalId?.toLowerCase().includes(searchLower)||
+            customer.passportId?.toLowerCase().includes(searchLower)
         );
     }, [customers, customerSearchTerm]);
 
@@ -196,8 +197,8 @@ const ReservationAdd = () => {
                 DropoffLocation: formData.DropoffLocation,
             };
 
-            await reservationService.create(payload);
-            navigate('/reservations');
+            var reponse = await reservationService.create(payload);
+            navigate('/reservations/' + reponse.id);
         } catch (err) {
             console.error('❌ Error adding reservation:', err);
             setError(t('reservation.add.error'));
@@ -408,9 +409,7 @@ const ReservationAdd = () => {
                                         >
                                             <div className="customer-info">
                                                 <span className="customer-name">{customer.fullName}</span>
-                                                {customer.phoneNumber && (
-                                                    <span className="customer-phone">{customer.phoneNumber}</span>
-                                                )}
+                                                <span className="customer-phone">{customer.nationalId} -- {customer.licenseNumber} -- {customer.passportId}</span>
                                             </div>
                                         </div>
                                     ))}

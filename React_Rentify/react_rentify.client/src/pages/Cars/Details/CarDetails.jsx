@@ -178,7 +178,7 @@ const CarDetails = () => {
             formData.append('file', fileToUpload);
             formData.append('carId', id);
 
-            await carAttachmentService.upload(formData);
+            await carAttachmentService.uploadFile(id , formData);
 
             // Refresh attachments
             const attachmentData = await carAttachmentService.getByCarId(id);
@@ -427,11 +427,13 @@ const CarDetails = () => {
                             {t('reservation.status.current') || 'Current'}
                         </span>
                     </div>
-                    <p className="reservation-customer">
-                        {t('reservation.customer') || 'Customer'}: {currentReservation.customerName || 'N/A'}
-                    </p>
+                    {currentReservation.reservation_Customers?.map((customer, index) => (
+                        <p key={index} className="reservation-customer">
+                            {t('reservation.customer') || 'Customer'}: {customer.customer.name || 'N/A'}
+                        </p>
+                    ))}
                     <p className="reservation-total">
-                        {t('reservation.total') || 'Total'}: ${currentReservation.totalAmount || 'N/A'}
+                        {t('reservation.fields.price') || 'Total'}: {currentReservation.totalAmount || 'N/A'}
                     </p>
                 </div>
             ) : (
@@ -458,11 +460,13 @@ const CarDetails = () => {
                                     {t('reservation.status.upcoming') || 'Upcoming'}
                                 </span>
                             </div>
-                            <p className="reservation-customer">
-                                {t('reservation.customer') || 'Customer'}: {reservation.customerName || 'N/A'}
-                            </p>
+                            {reservation.reservation_Customers?.map((customer, index) => (
+                                <p key={index} className="reservation-customer">
+                                    {t('reservation.customer') || 'Customer'}: {customer.customer.name || 'N/A'}
+                                </p>
+                            ))}
                             <p className="reservation-total">
-                                {t('reservation.total') || 'Total'}: ${reservation.totalAmount || 'N/A'}
+                                {t('reservation.fields.price') || 'Total'}: {reservation.agreedPrice || 'N/A'}
                             </p>
                         </div>
                     ))}

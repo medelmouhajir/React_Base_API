@@ -319,7 +319,7 @@ namespace React_Rentify.Server.Controllers.App
                 reservation.Id, dto.CustomersId.Count);
 
 
-            return Ok();
+            return Ok( new { id = reservation.Id});
         }
 
         /// <summary>

@@ -131,8 +131,8 @@ const AddCustomer = () => {
                     : null,
             };
 
-            await customerService.create(payload);
-            navigate('/customers');
+            var reponse = await customerService.create(payload);
+            navigate('/customers/' + reponse.id);
         } catch (err) {
             console.error('❌ Error adding customer:', err);
             setError(t('customer.add.error'));

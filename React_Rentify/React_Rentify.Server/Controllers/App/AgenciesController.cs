@@ -174,7 +174,7 @@ namespace React_Rentify.Server.Controllers
         /// </summary>
         [Authorize(Roles = "Admin,Manager,Owner")]
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateAgency(Guid id, [FromBody] Agency updatedAgency)
+        public async Task<IActionResult> UpdateAgency(Guid id, [FromBody] AgengyUpdateDTO updatedAgency)
         {
             if (!await _authService.HasAccessToAgencyAsync(id))
                 return Unauthorized();
@@ -184,10 +184,10 @@ namespace React_Rentify.Server.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != updatedAgency.Id)
-            {
-                return BadRequest(new { message = "The Id in the URL does not match the Id in the payload." });
-            }
+            //if (id != updatedAgency.Id)
+            //{
+            //    return BadRequest(new { message = "The Id in the URL does not match the Id in the payload." });
+            //}
 
             var existingAgency = await _context.Set<Agency>()
                 .Include(a => a.Agency_Attachments)
@@ -210,18 +210,18 @@ namespace React_Rentify.Server.Controllers
             // are typically managed elsewhere (e.g., separate endpoints or services).
             // Here, we only update attachments if provided.
 
-            if (updatedAgency.Agency_Attachments != null)
-            {
-                // Replace attachments collection
-                _context.Set<Agency_Attachment>().RemoveRange(existingAgency.Agency_Attachments);
+            //if (updatedAgency.Agency_Attachments != null)
+            //{
+            //    // Replace attachments collection
+            //    _context.Set<Agency_Attachment>().RemoveRange(existingAgency.Agency_Attachments);
 
-                foreach (var attach in updatedAgency.Agency_Attachments)
-                {
-                    attach.Id = Guid.NewGuid();
-                    attach.AgencyId = existingAgency.Id;
-                    _context.Set<Agency_Attachment>().Add(attach);
-                }
-            }
+            //    foreach (var attach in updatedAgency.Agency_Attachments)
+            //    {
+            //        attach.Id = Guid.NewGuid();
+            //        attach.AgencyId = existingAgency.Id;
+            //        _context.Set<Agency_Attachment>().Add(attach);
+            //    }
+            //}
 
             _context.Entry(existingAgency).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -269,6 +269,17 @@ namespace React_Rentify.Server.Controllers
         public string? Email { get; set; }
 
         public Guid SubscriptionPlanId { get; set; }
+    }
+
+    public class AgengyUpdateDTO
+    {
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string PhoneOne { get; set; }
+        public string? PhoneTwo { get; set; }
+        public string? Email { get; set; }
+        public string? Conditions { get; set; }
+
     }
     #endregion
 }

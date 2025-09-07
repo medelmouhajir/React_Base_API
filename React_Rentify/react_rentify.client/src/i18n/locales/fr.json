@@ -112,7 +112,9 @@
     "unlimited": "Illimité",
     "update": "Mettre à jour",
     "create": "Créer",
-    "confirmDelete": "Confirmer la suppression"
+    "confirmDelete": "Confirmer la suppression",
+    "change": "Changer",
+    "status": "Statut"
   },
   "landing": {
     "features": "Fonctionnalités",
@@ -535,7 +537,9 @@
       "errorNoCustomers": "Veuillez sélectionner au moins un client.",
       "errorNoCar": "Veuillez sélectionner un véhicule.",
       "errorNoDates": "Veuillez sélectionner une date de début et une date de fin.",
-      "error": "Échec de l'ajout de la réservation. Veuillez réessayer."
+      "error": "Échec de l'ajout de la réservation. Veuillez réessayer.",
+      "locations": "Emplacements",
+      "searchCustomers": "Rechercher des clients"
     },
     "placeholders": {
       "price": "Entrez le prix",
@@ -977,7 +981,8 @@
       "availability": "Disponibilité",
       "actions": "Actions",
       "noCarsFound": "Aucune voiture trouvée",
-      "allManufacturers": "Tous les constructeurs"
+      "allManufacturers": "Tous les constructeurs",
+      "allColors": "Toutes les couleurs"
     },
     "search": {
       "placeholder": "Recherchez des voitures...",
@@ -1056,7 +1061,8 @@
       "active": "Actif",
       "inactive": "Inactif"
     },
-    "car": "Voiture"
+    "car": "Voiture",
+    "currentKm": "Kilométrage actuel"
   },
   "carDetails": {
     "fetchError": "Erreur lors de la récupération des détails de la voiture.",
@@ -1162,7 +1168,8 @@
     "expand": "Développer",
     "brand": "Rentify",
     "gadgets": "Gadgets",
-    "expenses": "Dépenses"
+    "expenses": "Dépenses",
+    "serviceAlerts": "Alertes"
   },
   "profile": {
     "myProfile": "Mon profil",

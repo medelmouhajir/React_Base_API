@@ -567,7 +567,7 @@
     padding: 0.5rem 0;
 }
 
-.alert-card {
+.alert-card-car {
     background-color: var(--card-bg);
     border-radius: var(--border-radius-lg);
     padding: 1.5rem;
@@ -580,7 +580,7 @@
     box-shadow: var(--shadow);
 }
 
-    .alert-card::before {
+    .alert-card-car::before {
         content: '';
         position: absolute;
         top: 0;
@@ -591,32 +591,32 @@
         transition: all var(--transition-normal);
     }
 
-    .alert-card:hover {
+    .alert-card-car:hover {
         transform: translateY(-3px) scale(1.02);
         box-shadow: var(--shadow-xl);
         border-color: var(--border-hover);
     }
 
-    .alert-card.swiping {
+    .alert-card-car.swiping {
         transform: scale(0.98);
         opacity: 0.8;
     }
 
     /* Status-based card styling */
-    .alert-card.pending::before {
+    .alert-card-car.pending::before {
         background: linear-gradient(90deg, var(--warning-color), var(--primary-color));
     }
 
-    .alert-card.urgent::before {
+    .alert-card-car.urgent::before {
         background: linear-gradient(90deg, var(--urgent-color), var(--danger-color));
     }
 
-    .alert-card.overdue::before {
+    .alert-card-car.overdue::before {
         background: linear-gradient(90deg, var(--danger-color), #dc2626);
         animation: pulse-danger 2s ease-in-out infinite alternate;
     }
 
-    .alert-card.resolved::before {
+    .alert-card-car.resolved::before {
         background: linear-gradient(90deg, var(--success-color), var(--resolved-color));
     }
 
@@ -663,7 +663,7 @@
     transform: translateX(10px);
 }
 
-.alert-card:hover .card-actions {
+.alert-card-car:hover .card-actions {
     opacity: 1;
     transform: translateX(0);
 }
@@ -1074,7 +1074,7 @@
         display: none;
     }
 
-    .alert-card {
+    .alert-card-car {
         padding: 1.25rem;
         margin-bottom: 0.5rem;
     }
@@ -1099,7 +1099,7 @@
     }
 
     /* Touch-friendly interactions */
-    .alert-card:active {
+    .alert-card-car:active {
         transform: scale(0.98);
     }
 
@@ -1121,7 +1121,7 @@
         font-size: 1.5rem;
     }
 
-    .alert-card {
+    .alert-card-car {
         padding: 1rem;
         border-radius: var(--border-radius);
     }
@@ -1154,7 +1154,7 @@
 /*---------------------------------------------
   Accessibility & Focus States
 ---------------------------------------------*/
-.alert-card:focus,
+.alert-card-car:focus,
 .action-btn:focus,
 .add-button:focus,
 .filters-toggle:focus,
@@ -1164,7 +1164,7 @@
     outline-offset: 2px;
 }
 
-.alert-card:focus {
+.alert-card-car:focus {
     transform: translateY(-2px) scale(1.02);
     box-shadow: var(--shadow-xl), 0 0 0 3px rgba(14, 165, 233, 0.2);
 }
@@ -1182,7 +1182,7 @@
 
     .status-badge.status-urgent,
     .status-badge.status-overdue,
-    .alert-card.overdue::before {
+    .alert-card-car.overdue::before {
         animation: none;
     }
 }
@@ -1217,7 +1217,7 @@
         display: none;
     }
 
-    .alert-card {
+    .alert-card-car {
         break-inside: avoid;
         box-shadow: none;
         border: 1px solid #ccc;
