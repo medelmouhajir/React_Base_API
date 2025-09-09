@@ -9,7 +9,7 @@ COPY package*.json ./
 
 # Install all required dependencies based on your imports
 RUN npm install
-RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs react-leaflet@^4.0.0
+RUN npm install react-router-dom axios react-i18next i18next@^25.4.1 i18next-browser-languagedetector react-toastify hammerjs react-leaflet@^4.0.0
 
 # Copy source code
 COPY . .

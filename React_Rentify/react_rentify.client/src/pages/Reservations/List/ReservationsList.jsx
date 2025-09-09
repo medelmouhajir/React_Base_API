@@ -396,7 +396,7 @@ const ReservationsList = () => {
                                                 : 'Unknown'}
                                         </h3>
                                         <span className={`status-badge status-${r.status?.toLowerCase()}`}>
-                                            {r.status}
+                                            {t('reservation.status.' + r.status.toLowerCase())}
                                         </span>
                                     </div>
 
@@ -422,7 +422,7 @@ const ReservationsList = () => {
                                             className="action-button details-button"
                                             onClick={() => navigate(`/reservations/${r.id}`)}
                                         >
-                                            {t('reservation.list.details', 'Details')}
+                                            {t('common.details', 'Details')}
                                         </button>
                                         <button
                                             className="action-button contract-button"

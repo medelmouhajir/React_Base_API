@@ -287,7 +287,7 @@ const LandingPage = () => {
                         <img className="company-logo" width="120" height="70" src="/companies/kc-cars-logo.png" />
                     </div>
                     <div className="trusted-logo animate-on-scroll">
-                        <img className="company-logo" width="120" height="70" src="/companies/kc-cars-logo.png" />
+                        <img className="company-logo" width="120" height="70" src="/companies/rentify-cars-logo.png" />
                     </div>
                     <div className="trusted-logo animate-on-scroll">
                         <img className="company-logo" width="120" height="70" src="/companies/kc-cars-logo.png" />

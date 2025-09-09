@@ -255,7 +255,7 @@ const ServiceAlertsList = () => {
                         )}
                         <button
                             className="add-button"
-                            onClick={() => navigate('/maintenances/add')}
+                            onClick={() => navigate('/service-alerts/add')}
                             aria-label={t('alerts.list.addButton') || 'Add Service Alert'}
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

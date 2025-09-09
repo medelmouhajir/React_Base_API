@@ -114,7 +114,8 @@
     "create": "Créer",
     "confirmDelete": "Confirmer la suppression",
     "change": "Changer",
-    "status": "Statut"
+    "status": "Statut",
+    "optional": "Facultatif"
   },
   "landing": {
     "features": "Fonctionnalités",
@@ -1806,6 +1807,42 @@
       "overdue": "En retard",
       "today": "Échéance aujourd'hui",
       "tomorrow": "Échéance demain"
+    },
+    "types": {
+      "oilChange": "Vidange (huile)",
+      "brakeInspection": "Inspection des freins",
+      "tireRotation": "Permutation des pneus",
+      "fluidCheck": "Contrôle des fluides",
+      "drain": "Purge",
+      "other": "Autre"
+    },
+    "add": {
+      "title": "Nouvelle alerte de service",
+      "subtitle": "Définissez un rappel pour une maintenance à venir.",
+      "create": "Créer l'alerte",
+      "success": "Alerte de service créée avec succès.",
+      "errors": {
+        "loadCars": "Échec du chargement des véhicules.",
+        "createFailed": "Échec de la création de l'alerte de service."
+      },
+      "form": {
+        "car": "Véhicule",
+        "selectCar": "Sélectionner un véhicule",
+        "alertType": "Type d’alerte",
+        "dueDate": "Date d’échéance",
+        "dueMileage": "Kilométrage cible (km)",
+        "dueMileagePlaceholder": "ex. 120000",
+        "dueMileageHelp": "Facultatif. Nous vous avertirons lorsque l’odomètre atteindra cette valeur.",
+        "notes": "Notes",
+        "notesPlaceholder": "Ajoutez des détails (500 caractères max)...",
+        "notesHelp": "Notes facultatives concernant cette alerte."
+      },
+      "validation": {
+        "carRequired": "Veuillez sélectionner un véhicule.",
+        "dueDateRequired": "Veuillez choisir une date d’échéance.",
+        "dueDateFuture": "La date d’échéance doit être aujourd’hui ou ultérieure.",
+        "dueMileageValid": "Saisissez un nombre valide et non négatif pour le kilométrage."
+      }
     }
   },
   "subscriptions": {

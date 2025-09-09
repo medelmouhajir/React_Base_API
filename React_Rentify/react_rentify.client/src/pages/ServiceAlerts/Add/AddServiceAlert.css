@@ -1,0 +1,856 @@
+/*------------------------------------------------------------
+  AddServiceAlert Component Styles - Enhanced Mobile Version
+  ------------------------------------------------------------*/
+
+/*---------------------------------------------
+  Theme Variables (Inherited from global)
+---------------------------------------------*/
+:root {
+    /* Primary Colors */
+    --primary-active: #0369a1;
+    --primary-light: rgba(14, 165, 233, 0.1);
+    /* State Colors */
+    --success-color: #10b981;
+    --success-light: rgba(16, 185, 129, 0.1);
+    --success-hover: #059669;
+    --warning-color: #f59e0b;
+    --warning-light: rgba(245, 158, 11, 0.1);
+    --warning-hover: #d97706;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --danger-light: rgba(239, 68, 68, 0.1);
+    --urgent-color: #f97316;
+    --urgent-light: rgba(249, 115, 22, 0.1);
+    --resolved-color: #6b7280;
+    --resolved-light: rgba(107, 114, 128, 0.1);
+    --secondary-color: #6b7280;
+    --secondary-hover: #4b5563;
+    /* Light theme variables */
+    --card-hover-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --text-muted-light: #9ca3af;
+    --border-color-light: #e5e7eb;
+    --border-hover-light: #d1d5db;
+    --input-bg-light: #f9fafb;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #3b82f6;
+    --shadow-light: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg-light: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl-light: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    /* Dark theme variables */
+    --card-hover-dark: #374151;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --text-muted-dark: #9ca3af;
+    --border-color-dark: #374151;
+    --border-hover-dark: #4b5563;
+    --input-bg-dark: #374151;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #60a5fa;
+    --shadow-dark: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+    --shadow-md-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg-dark: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    --shadow-xl-dark: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    /* Common Variables */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --border-radius-xl: 1rem;
+    --border-radius-sm: 0.25rem;
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/*---------------------------------------------
+  Base Container
+---------------------------------------------*/
+.addServiceAlert-container {
+    max-width: 95%;
+    width: 95%;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: transparent;
+    min-height: 100vh;
+    transition: all var(--transition-normal);
+}
+
+    /* Theme-specific variables */
+    .addServiceAlert-container.light {
+        --bg-color: var(--bg-color-light);
+        --card-bg: var(--card-bg-light);
+        --card-hover: var(--card-hover-light);
+        --text-color: var(--text-color-light);
+        --text-secondary: var(--text-secondary-light);
+        --text-muted: var(--text-muted-light);
+        --border-color: var(--border-color-light);
+        --border-hover: var(--border-hover-light);
+        --input-bg: var(--input-bg-light);
+        --input-border: var(--input-border-light);
+        --input-focus-border: var(--input-focus-border-light);
+        --shadow: var(--shadow-light);
+        --shadow-md: var(--shadow-md-light);
+        --shadow-lg: var(--shadow-lg-light);
+        --shadow-xl: var(--shadow-xl-light);
+    }
+
+    .addServiceAlert-container.dark {
+        --bg-color: var(--bg-color-dark);
+        --card-bg: var(--card-bg-dark);
+        --card-hover: var(--card-hover-dark);
+        --text-color: var(--text-color-dark);
+        --text-secondary: var(--text-secondary-dark);
+        --text-muted: var(--text-muted-dark);
+        --border-color: var(--border-color-dark);
+        --border-hover: var(--border-hover-dark);
+        --input-bg: var(--input-bg-dark);
+        --input-border: var(--input-border-dark);
+        --input-focus-border: var(--input-focus-border-dark);
+        --shadow: var(--shadow-dark);
+        --shadow-md: var(--shadow-md-dark);
+        --shadow-lg: var(--shadow-lg-dark);
+        --shadow-xl: var(--shadow-xl-dark);
+    }
+
+/*---------------------------------------------
+  Header Section
+---------------------------------------------*/
+.addServiceAlert-header {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-normal);
+}
+
+    .addServiceAlert-header:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-1px);
+    }
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--card-bg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+    .back-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
+        transition: left var(--transition-normal);
+    }
+
+    .back-button:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-1px);
+    }
+
+        .back-button:hover::before {
+            left: 100%;
+        }
+
+    .back-button:active {
+        transform: scale(0.95);
+    }
+
+.header-info {
+    flex: 1;
+}
+
+.header-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0 0 0.5rem 0;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+    font-weight: 400;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+/* Header Action Buttons */
+.cancel-button, .submit-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    min-width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+    .cancel-button::before, .submit-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left var(--transition-normal);
+    }
+
+.cancel-button {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+    .cancel-button:hover {
+        background-color: var(--card-hover);
+        border-color: var(--border-hover);
+        color: var(--text-color);
+        transform: translateY(-1px);
+    }
+
+        .cancel-button:hover::before {
+            left: 100%;
+        }
+
+    .cancel-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+.submit-button {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    border: none;
+    color: white;
+}
+
+    .submit-button:hover:not(:disabled) {
+        background: linear-gradient(135deg, var(--primary-hover), var(--primary-active));
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .submit-button:hover::before {
+        left: 100%;
+    }
+
+    .submit-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .submit-button:active {
+        transform: scale(0.98);
+    }
+
+/*---------------------------------------------
+  Error Message
+---------------------------------------------*/
+.addServiceAlert-error {
+    background: linear-gradient(135deg, var(--danger-light), rgba(239, 68, 68, 0.05));
+    color: var(--danger-color);
+    padding: 1.25rem;
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 500;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(10px);
+    animation: slideIn 300ms ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/*---------------------------------------------
+  Form Container
+---------------------------------------------*/
+.addServiceAlert-form-container {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    transition: all var(--transition-normal);
+    overflow: hidden;
+}
+
+    .addServiceAlert-form-container:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-1px);
+    }
+
+.addServiceAlert-form {
+    padding: 2rem;
+}
+
+/*---------------------------------------------
+  Form Groups & Inputs
+---------------------------------------------*/
+.form-group {
+    margin-bottom: 2rem;
+}
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    transition: color var(--transition-normal);
+}
+
+.required {
+    color: var(--danger-color);
+    font-weight: 700;
+}
+
+.optional {
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-left: 0.25rem;
+}
+
+.form-input-wrapper {
+    position: relative;
+    transition: all var(--transition-normal);
+}
+
+.form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--input-border);
+    border-radius: var(--border-radius);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-size: 0.875rem;
+    transition: all var(--transition-normal);
+    font-family: inherit;
+}
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+        outline: none;
+        border-color: var(--input-focus-border);
+        background-color: var(--card-bg);
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .form-input:hover, .form-select:hover, .form-textarea:hover {
+        border-color: var(--border-hover);
+    }
+
+    .form-input.error, .form-select.error, .form-textarea.error {
+        border-color: var(--danger-color);
+        background-color: var(--danger-light);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+/* Select Specific Styles */
+.form-select {
+    appearance: none;
+    background-image: none;
+    padding-right: 2.5rem;
+    cursor: pointer;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text-muted);
+    transition: all var(--transition-normal);
+}
+
+.form-input-wrapper:hover .select-arrow {
+    color: var(--text-secondary);
+}
+
+/* Input Icon Styles */
+.input-icon {
+    position: absolute;
+    right: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text-muted);
+    transition: all var(--transition-normal);
+}
+
+.form-input:focus + .input-icon {
+    color: var(--primary-color);
+}
+
+/* Textarea Specific */
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+/* Form Error */
+.form-error {
+    display: block;
+    color: var(--danger-color);
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    animation: slideIn 200ms ease-out;
+}
+
+/* Form Help */
+.form-help {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+    line-height: 1.4;
+}
+
+.form-help-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 0.5rem;
+    gap: 1rem;
+}
+
+.char-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/*---------------------------------------------
+  Car Info Display
+---------------------------------------------*/
+.car-info-display {
+    background: linear-gradient(135deg, var(--primary-light), rgba(14, 165, 233, 0.05));
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-top: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    backdrop-filter: blur(10px);
+    animation: slideIn 300ms ease-out;
+}
+
+.car-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.car-info-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.car-info-value {
+    font-size: 0.875rem;
+    color: var(--text-color);
+    font-weight: 600;
+    text-align: right;
+}
+
+/*---------------------------------------------
+  Loading Spinner
+---------------------------------------------*/
+.loading-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/*---------------------------------------------
+  Mobile Actions
+---------------------------------------------*/
+.mobile-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.mobile-cancel-button, .mobile-submit-button {
+    flex: 1;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+}
+
+    .mobile-cancel-button::before, .mobile-submit-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left var(--transition-normal);
+    }
+
+.mobile-cancel-button {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+    .mobile-cancel-button:hover {
+        background-color: var(--card-hover);
+        border-color: var(--border-hover);
+        color: var(--text-color);
+        transform: translateY(-1px);
+    }
+
+        .mobile-cancel-button:hover::before {
+            left: 100%;
+        }
+
+    .mobile-cancel-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+.mobile-submit-button {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    border: none;
+    color: white;
+}
+
+    .mobile-submit-button:hover:not(:disabled) {
+        background: linear-gradient(135deg, var(--primary-hover), var(--primary-active));
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .mobile-submit-button:hover::before {
+        left: 100%;
+    }
+
+    .mobile-submit-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .mobile-submit-button:active {
+        transform: scale(0.98);
+    }
+
+/*---------------------------------------------
+  Mobile Responsive Design
+---------------------------------------------*/
+@media (max-width: 768px) {
+    .addServiceAlert-container {
+        padding: 1rem;
+        width: 100%;
+    }
+
+    .addServiceAlert-header {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .header-nav {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .header-title {
+        font-size: 1.5rem;
+    }
+
+    .header-subtitle {
+        font-size: 0.875rem;
+    }
+
+    .header-actions {
+        display: none; /* Hide desktop actions on mobile */
+    }
+
+    .addServiceAlert-form {
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .car-info-display {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .car-info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .car-info-value {
+        text-align: left;
+        font-weight: 500;
+    }
+
+    .form-help-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .char-count {
+        align-self: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .addServiceAlert-container {
+        padding: 0.75rem;
+    }
+
+    .addServiceAlert-header {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .header-title {
+        font-size: 1.375rem;
+    }
+
+    .addServiceAlert-form {
+        padding: 1rem;
+    }
+
+    .back-button {
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+
+    .mobile-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .mobile-cancel-button, .mobile-submit-button {
+        width: 100%;
+    }
+}
+
+/*---------------------------------------------
+  RTL Support
+---------------------------------------------*/
+[dir="rtl"] .addServiceAlert-container {
+    direction: rtl;
+}
+
+[dir="rtl"] .header-nav {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .form-input-wrapper .select-arrow,
+[dir="rtl"] .form-input-wrapper .input-icon {
+    right: auto;
+    left: 0.875rem;
+}
+
+[dir="rtl"] .form-select {
+    padding-right: 1rem;
+    padding-left: 2.5rem;
+}
+
+[dir="rtl"] .car-info-item {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .car-info-value {
+    text-align: left;
+}
+
+[dir="rtl"] .form-help-row {
+    flex-direction: row-reverse;
+}
+
+/*---------------------------------------------
+  Focus and Accessibility
+---------------------------------------------*/
+.form-input:focus-visible,
+.form-select:focus-visible,
+.form-textarea:focus-visible,
+.back-button:focus-visible,
+.cancel-button:focus-visible,
+.submit-button:focus-visible,
+.mobile-cancel-button:focus-visible,
+.mobile-submit-button:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Screen reader only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/*---------------------------------------------
+  Print Styles
+---------------------------------------------*/
+@media print {
+    .addServiceAlert-container {
+        box-shadow: none;
+        padding: 0;
+    }
+
+    .header-actions,
+    .mobile-actions,
+    .back-button {
+        display: none;
+    }
+
+    .addServiceAlert-header,
+    .addServiceAlert-form-container {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
+
+/*---------------------------------------------
+  High Contrast Mode Support
+---------------------------------------------*/
+@media (prefers-contrast: high) {
+    .addServiceAlert-container {
+        --border-color: #000000;
+        --text-color: #000000;
+        --text-secondary: #333333;
+    }
+
+    .form-input, .form-select, .form-textarea {
+        border-width: 2px;
+    }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-width: 3px;
+        }
+}
+
+/*---------------------------------------------
+  Reduced Motion Support
+---------------------------------------------*/
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .loading-spinner {
+        animation: none;
+        border: 2px solid currentColor;
+        border-radius: 50%;
+    }
+}

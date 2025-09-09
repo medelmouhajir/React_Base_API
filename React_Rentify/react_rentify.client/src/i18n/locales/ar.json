@@ -114,7 +114,8 @@
     "create": "إنشاء",
     "confirmDelete": "تأكيد الحذف",
     "change": "تغيير",
-    "status": "الحالة"
+    "status": "الحالة",
+    "optional": "اختياري"
   },
   "landing": {
     "features": "الميزات",
@@ -1826,6 +1827,42 @@
       "overdue": "متأخر",
       "today": "مستحق اليوم",
       "tomorrow": "مستحق غداً"
+    },
+    "types": {
+      "oilChange": "تغيير الزيت",
+      "brakeInspection": "فحص الفرامل",
+      "tireRotation": "تدوير الإطارات",
+      "fluidCheck": "فحص السوائل",
+      "drain": "تفريغ/تنفيس",
+      "other": "أخرى"
+    },
+    "add": {
+      "title": "تنبيه صيانة جديد",
+      "subtitle": "اضبط تذكيراً للصيانة القادمة.",
+      "create": "إنشاء التنبيه",
+      "success": "تم إنشاء تنبيه الصيانة بنجاح.",
+      "errors": {
+        "loadCars": "تعذّر تحميل السيارات.",
+        "createFailed": "فشل إنشاء تنبيه الصيانة."
+      },
+      "form": {
+        "car": "السيارة",
+        "selectCar": "اختر سيارة",
+        "alertType": "نوع التنبيه",
+        "dueDate": "تاريخ الاستحقاق",
+        "dueMileage": "المسافة المستهدفة (كم)",
+        "dueMileagePlaceholder": "مثال: 120000",
+        "dueMileageHelp": "اختياري. سنخطرك عند وصول عدّاد المسافة إلى هذه القيمة.",
+        "notes": "ملاحظات",
+        "notesPlaceholder": "أضف أي تفاصيل (حتى 500 حرف)...",
+        "notesHelp": "ملاحظات اختيارية حول هذا التنبيه."
+      },
+      "validation": {
+        "carRequired": "يرجى اختيار سيارة.",
+        "dueDateRequired": "يرجى تحديد تاريخ الاستحقاق.",
+        "dueDateFuture": "يجب أن يكون تاريخ الاستحقاق اليوم أو بعده.",
+        "dueMileageValid": "أدخل رقماً صالحاً غير سالب للمسافة."
+      }
     }
   },
   "subscriptions": {

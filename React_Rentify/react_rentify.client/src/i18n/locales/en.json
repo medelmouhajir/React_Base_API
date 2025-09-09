@@ -114,7 +114,8 @@
     "create": "Create",
     "confirmDelete": "Confirm deletion",
     "change": "Change",
-    "status": "Status"
+    "status": "Status",
+    "optional": "Optional"
   },
   "landing": {
     "features": "Features",
@@ -1860,6 +1861,42 @@
       "overdue": "Overdue",
       "today": "Due today",
       "tomorrow": "Due tomorrow"
+    },
+    "types": {
+      "oilChange": "Oil change",
+      "brakeInspection": "Brake inspection",
+      "tireRotation": "Tire rotation",
+      "fluidCheck": "Fluids check",
+      "drain": "Drain/Purge",
+      "other": "Other"
+    },
+    "add": {
+      "title": "New Service Alert",
+      "subtitle": "Set a reminder for upcoming maintenance.",
+      "create": "Create alert",
+      "success": "Service alert created successfully.",
+      "errors": {
+        "loadCars": "Failed to load cars.",
+        "createFailed": "Failed to create service alert."
+      },
+      "form": {
+        "car": "Car",
+        "selectCar": "Select a car",
+        "alertType": "Alert type",
+        "dueDate": "Due date",
+        "dueMileage": "Due mileage (km)",
+        "dueMileagePlaceholder": "e.g., 120000",
+        "dueMileageHelp": "Optional. We'll notify you when the odometer reaches this value.",
+        "notes": "Notes",
+        "notesPlaceholder": "Add any details (max 500 chars)...",
+        "notesHelp": "Optional notes about this alert."
+      },
+      "validation": {
+        "carRequired": "Please select a car.",
+        "dueDateRequired": "Please choose a due date.",
+        "dueDateFuture": "The due date must be today or later.",
+        "dueMileageValid": "Enter a valid non-negative number for mileage."
+      }
     }
   },
   "subscriptions": {
