@@ -1,9 +1,10 @@
 ﻿// src/pages/Landing/LandingPage.jsx
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link , useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../contexts/ThemeContext';
 import ticketService from '../../services/ticketService';
+import FloatingButtons from './FloatingButtons/FloatingButtons';
 import './LandingPage.css';
 
 const LandingPage = () => {
@@ -15,12 +16,13 @@ const LandingPage = () => {
     const benefitsRef = useRef(null);
     const pricingRef = useRef(null);
     const contactRef = useRef(null);
+    const navigate = useNavigate();
 
     const [contactForm, setContactForm] = useState({
         name: '',
         phone: '',
-        subject: '',
-        message: ''
+        subject: t('tickets.demo.subject'),
+        message: t('tickets.demo.message')
     });
     const [isSubmittingContact, setIsSubmittingContact] = useState(false);
     const [contactStatus, setContactStatus] = useState(null);
@@ -49,6 +51,7 @@ const LandingPage = () => {
             await ticketService.create(ticketData);
             setContactStatus('success');
             setContactForm({ name: '', phone: '', subject: '', message: '' });
+            navigate('/tickets/thanks');
         } catch (error) {
             console.error('Contact form submission error:', error);
             setContactStatus('error');
@@ -192,9 +195,9 @@ const LandingPage = () => {
         {
             id: 'basic',
             name: t('landing.pricingBasicName'),
-            price: '99',
+            price: '149',
             currency: t('landing.pricingCurrency'),
-            period: t('landing.pricingPeriod'),
+            period: t('landing.pricingPeriod.month'),
             description: t('landing.pricingBasicDesc'),
             features: [
                 t('landing.pricingBasicFeature1'),
@@ -208,9 +211,9 @@ const LandingPage = () => {
         {
             id: 'pro',
             name: t('landing.pricingProName'),
-            price: '199',
+            price: '1428',
             currency: t('landing.pricingCurrency'),
-            period: t('landing.pricingPeriod'),
+            period: t('landing.pricingPeriod.year'),
             description: t('landing.pricingProDesc'),
             features: [
                 t('landing.pricingProFeature1'),
@@ -225,9 +228,9 @@ const LandingPage = () => {
         {
             id: 'enterprise',
             name: t('landing.pricingEnterpriseName'),
-            price: '399',
+            price: '2000',
             currency: t('landing.pricingCurrency'),
-            period: t('landing.pricingPeriod'),
+            period: t('landing.pricingPeriod.year'),
             description: t('landing.pricingEnterpriseDesc'),
             features: [
                 t('landing.pricingEnterpriseFeature1'),
@@ -250,9 +253,9 @@ const LandingPage = () => {
                     <h1 className="hero-title animate-on-scroll">{t('landing.heroTitle')}</h1>
                     <p className="hero-subtitle animate-on-scroll">{t('landing.heroSubtitle')}</p>
                     <div className="hero-cta animate-on-scroll">
-                        <Link to="/login" className="cta-button primary">
-                            {t('auth.login')}
-                        </Link>
+                        <a href="#contact" className="cta-button primary">
+                            {t('landing.contactTitle')}
+                        </a>
                         <a href="#features" className="cta-button secondary">
                             {t('landing.heroLearnMore')}
                         </a>
@@ -284,13 +287,13 @@ const LandingPage = () => {
                         <img className="company-logo" width="120" height="70" src="/companies/kc-cars-logo.png"/>
                     </div>
                     <div className="trusted-logo animate-on-scroll">
-                        <img className="company-logo" width="120" height="70" src="/companies/kc-cars-logo.png" />
+                        <img className="company-logo" width="120" height="70" src="/companies/dir-car-logo.png" />
                     </div>
                     <div className="trusted-logo animate-on-scroll">
                         <img className="company-logo" width="120" height="70" src="/companies/rentify-cars-logo.png" />
                     </div>
                     <div className="trusted-logo animate-on-scroll">
-                        <img className="company-logo" width="120" height="70" src="/companies/kc-cars-logo.png" />
+                        <img className="company-logo" width="120" height="70" src="/companies/rentify-car-logo.png" />
                     </div>
                 </div>
             </section>
@@ -389,7 +392,7 @@ const LandingPage = () => {
                                 }}
                             />
                             <div className="testimonial-info">
-                                <h4 className="testimonial-name">Ahmed Hassan</h4>
+                                <h4 className="testimonial-name">Mohamed Tazgha</h4>
                                 <p className="testimonial-role">{t('landing.testimonialRole1')}</p>
                             </div>
                         </div>
@@ -409,7 +412,7 @@ const LandingPage = () => {
                                 }}
                             />
                             <div className="testimonial-info">
-                                <h4 className="testimonial-name">Fatima Zahra</h4>
+                                <h4 className="testimonial-name">Imad Allam</h4>
                                 <p className="testimonial-role">{t('landing.testimonialRole2')}</p>
                             </div>
                         </div>
@@ -429,7 +432,7 @@ const LandingPage = () => {
                                 }}
                             />
                             <div className="testimonial-info">
-                                <h4 className="testimonial-name">Karim Benali</h4>
+                                <h4 className="testimonial-name">M. Mariem</h4>
                                 <p className="testimonial-role">{t('landing.testimonialRole3')}</p>
                             </div>
                         </div>
@@ -492,7 +495,7 @@ const LandingPage = () => {
                     <p className="cta-description">{t('landing.ctaDescription')}</p>
                     <div className="cta-buttons">
                         <a
-                            href="https://api.whatsapp.com/send?phone=+212668507183"
+                            href="https://api.whatsapp.com/send?phone=212668507183"
                             className="cta-button primary"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -634,6 +637,7 @@ const LandingPage = () => {
                     </div>
                 </div>
             </section>
+            <FloatingButtons />
         </div>
     );
 };

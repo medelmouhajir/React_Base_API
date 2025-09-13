@@ -14,6 +14,7 @@
     <Folder Include="src\pages\Agencies\Create\" />
     <Folder Include="src\pages\Agencies\List\" />
     <Folder Include="src\pages\Agencies\Stuff\" />
+    <Folder Include="src\pages\Auth\ThanksPage\" />
     <Folder Include="src\pages\Cars\Add\" />
     <Folder Include="src\pages\Cars\List\" />
     <Folder Include="src\pages\Cars\Edit\" />
@@ -34,12 +35,11 @@
     <Folder Include="src\pages\Gadgets\IdentityReaders\" />
     <Folder Include="src\pages\Gps\Home\" />
     <Folder Include="src\pages\Home\" />
-    <Folder Include="src\pages\Auth\" />
     <Folder Include="src\pages\Dashboard\" />
     <Folder Include="src\pages\Invoices\Add\" />
     <Folder Include="src\pages\Invoices\List\" />
     <Folder Include="src\pages\Invoices\Details\" />
-    <Folder Include="src\pages\Landing\" />
+    <Folder Include="src\pages\Landing\FloatingButtons\" />
     <Folder Include="src\pages\Maintenances\List\" />
     <Folder Include="src\pages\Maintenances\Edit\" />
     <Folder Include="src\pages\Maintenances\Details\" />

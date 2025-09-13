@@ -1,0 +1,74 @@
+/* FloatingButtons.css */
+.floating-buttons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 1000;
+}
+
+.floating-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white;
+    font-size: 0;
+    outline: none;
+}
+
+    .floating-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .floating-btn:active {
+        transform: translateY(0);
+    }
+
+.whatsapp-btn {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+}
+
+    .whatsapp-btn:hover {
+        background: linear-gradient(135deg, #22C55E, #16A34A);
+    }
+
+.contact-btn {
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+}
+
+    .contact-btn:hover {
+        background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    }
+
+.floating-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .floating-buttons {
+        bottom: 16px;
+        right: 16px;
+    }
+
+    .floating-btn {
+        width: 48px;
+        height: 48px;
+    }
+
+        .floating-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+}

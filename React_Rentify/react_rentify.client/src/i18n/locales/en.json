@@ -165,9 +165,11 @@
     "pricingDescription": "Choose a plan that fits your needs.",
     "pricingPopular": "Most Popular",
     "pricingNote": "No credit card required to start your free trial.",
-
     "pricingCurrency": "MAD",
-    "pricingPeriod": "month",
+    "pricingPeriod": {
+      "month": "Month",
+      "year":  "Year"
+    },
 
     "pricingBasicName": "Basic",
     "pricingBasicDesc": "Essential tools for small agencies.",
@@ -254,7 +256,8 @@
     "accessDenied": "Access Denied",
     "insufficientPermissions": "You do not have sufficient permissions to view this page.",
     "requiredRole": "Required Role",
-    "yourRole": "Your Role"
+    "yourRole": "Your Role",
+    "signingIn": "Signing In"
   },
   "filters": {
     "pageTitle": "Filters",
@@ -1306,7 +1309,11 @@
     "searchPlaceholder": "Search tickets...",
     "noTickets": "No tickets found",
     "noTicketsDescription": "There are no tickets to display at the moment.",
-    "createFirstTicket": "Create your first ticket"
+    "createFirstTicket": "Create your first ticket",
+    "demo": {
+      "subject": "Trial subscription request",
+      "message":  "I would like to have a trial period to try your solution"
+    }
   },
   "blacklistCheck": {
     "title": "Blacklist Check",
@@ -1995,5 +2002,24 @@
       "upgradeConfirmation": "Are you sure you want to upgrade to the selected plan?",
       "confirmCancel": "Are you sure you want to cancel your subscription?"
     }
+  },
+  "thanks": {
+    "title": "Thank you!",
+    "greeting": "Thank you, {{name}}!",
+    "description": "Your request has been submitted successfully.",
+    "ticketReference": "Reference",
+    "subject": "Subject",
+    "nextSteps": {
+      "title": "What happens next?",
+      "step1": "We’re reviewing your request.",
+      "step2": "A confirmation has been sent to your email.",
+      "step3": "We’ll get back to you shortly."
+    },
+    "contactText": "Need help? Contact our support team:",
+    "actions": {
+      "goHome": "Go to Home",
+      "goBack": "Go Back"
+    },
+    "autoRedirect": "You’ll be redirected to the home page in {{seconds}}s."
   }
 }

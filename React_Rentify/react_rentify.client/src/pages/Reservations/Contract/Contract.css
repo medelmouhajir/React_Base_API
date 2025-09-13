@@ -219,3 +219,41 @@ body.contract-print-page {
     max-width: 300px; /* Adjust as needed */
     overflow-wrap: break-word;
 }
+
+
+
+
+
+
+
+
+
+/* ===== MOBILE RESPONSIVE FIXES ===== */
+/* Fix mobile zoom issue for invoice-print container */
+@media screen and (max-width: 768px) {
+    .invoice-print {
+        transform: scale(0.65);
+        transform-origin: top left;
+        width: 153.85%; /* 100% / 0.65 to compensate for scale */
+        margin-bottom: -35%; /* Adjust bottom margin to prevent overflow */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .invoice-print {
+        transform: scale(0.55);
+        transform-origin: top left;
+        width: 181.82%; /* 100% / 0.55 to compensate for scale */
+        margin-bottom: -45%; /* Adjust bottom margin to prevent overflow */
+    }
+}
+
+/* Ensure print styles remain unchanged */
+@media print {
+    .invoice-print {
+        transform: none !important;
+        transform-origin: initial !important;
+        width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+}

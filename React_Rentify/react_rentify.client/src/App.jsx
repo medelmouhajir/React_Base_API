@@ -11,6 +11,8 @@ import './App.css';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 
+import { useFacebookPixel } from './hooks/useFacebookPixel';
+
 // Layouts
 import LandingLayout from './layouts/LandingLayout';
 import MainLayout from './layouts/MainLayout';
@@ -89,6 +91,7 @@ const AgencySettings = lazy(() => import('./pages/Settings/Agency/AgencySettings
 
 //// Child route for Tickets
 const TicketsList = lazy(() => import('./pages/Tickets/List/TicketsList'));
+const ThanksPage = lazy(() => import('./pages/Auth/ThanksPage/ThanksPage'));
 
 
 //// Child route for Reports
@@ -142,6 +145,9 @@ const ThemedToastContainer = () => {
 };
 
 function App() {
+
+    const { trackEvent } = useFacebookPixel('1340532967689342');
+
     // Initialize RTL direction
     useRtlDirection();
     return (
@@ -150,11 +156,12 @@ function App() {
                 <ThemeProvider>
                     <Suspense fallback={<LoadingScreen />}>
                         <Routes>
+                            <Route path="/login" element={<Login />} />
                             {/* Public routes */}
                             <Route element={<LandingLayout />}>
                                 <Route path="/" element={<LandingPage />} />
-                                <Route path="/login" element={<Login />} />
                                 <Route path="/forgot-password" element={<ForgotPassword />} />
+                                <Route path="/tickets/thanks" element={<ThanksPage />} />
                             </Route>
 
                             {/* Protected routes */}
@@ -166,6 +173,7 @@ function App() {
                                 }
                             >
                                 <Route path="/dashboard" element={<RoleBasedDashboard />} />
+                                <Route path="/client" element={<RoleBasedDashboard />} />
 
                                 <Route path="/agencies" element={<AgenciesList />} />
                                 <Route path="/agencies/create" element={<AgencyCreate />} />

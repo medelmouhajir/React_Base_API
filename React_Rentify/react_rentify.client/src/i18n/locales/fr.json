@@ -161,7 +161,10 @@
     "pricingPopular": "Le plus populaire",
     "pricingNote": "Aucune carte de crédit nécessaire pour l'essai gratuit.",
     "pricingCurrency": "MAD",
-    "pricingPeriod": "Mois",
+    "pricingPeriod": {
+      "month": "Mois",
+      "year": "Année"
+    },
     "pricingBasicName": "Basique",
     "pricingBasicDesc": "Outils essentiels pour les petites agences.",
     "pricingBasicFeature1": "Réservations illimitées",
@@ -240,7 +243,8 @@
     "accessDenied": "Accès refusé",
     "insufficientPermissions": "Vous n’avez pas les permissions nécessaires pour voir cette page.",
     "requiredRole": "Rôle requis",
-    "yourRole": "Votre rôle"
+    "yourRole": "Votre rôle",
+    "signingIn": "connexion en cours"
   },
   "filters": {
     "pageTitle": "Filtres",
@@ -1278,7 +1282,11 @@
     "searchPlaceholder": "Rechercher des tickets...",
     "noTickets": "Aucun ticket",
     "noTicketsDescription": "Aucun ticket à afficher pour le moment.",
-    "createFirstTicket": "Créer le premier ticket"
+    "createFirstTicket": "Créer le premier ticket",
+    "demo": {
+      "subject": "Demande d'abonnement d'essai",
+      "message": "J'aimerais avoir une période d'essai pour essayer votre solution"
+    }
   },
   "blacklistCheck": {
     "title": "Vérification Liste Noire",
@@ -1941,5 +1949,24 @@
       "upgradeConfirmation": "Voulez-vous vraiment mettre à niveau vers la formule sélectionnée ?",
       "confirmCancel": "Voulez-vous vraiment annuler votre abonnement ?"
     }
+  },
+  "thanks": {
+    "title": "Merci !",
+    "greeting": "Merci, {{name}} !",
+    "description": "Votre demande a été envoyée avec succès.",
+    "ticketReference": "Référence",
+    "subject": "Objet",
+    "nextSteps": {
+      "title": "Et ensuite ?",
+      "step1": "Nous examinons votre demande.",
+      "step2": "Une confirmation a été envoyée à votre e-mail.",
+      "step3": "Nous vous recontacterons prochainement."
+    },
+    "contactText": "Besoin d’aide ? Contactez notre support :",
+    "actions": {
+      "goHome": "Aller à l’accueil",
+      "goBack": "Retour"
+    },
+    "autoRedirect": "Redirection vers l’accueil dans {{seconds}} s."
   }
 }

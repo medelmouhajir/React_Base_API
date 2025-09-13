@@ -1,0 +1,677 @@
+/* src/pages/Auth/ThanksPage/ThanksPage.css */
+
+/*---------------------------------------------
+  Theme Variables
+---------------------------------------------*/
+:root {
+    /* Primary Colors */
+    --thanks-primary: #0ea5e9;
+    --thanks-primary-hover: #0284c7;
+    --thanks-success: #10b981;
+    --thanks-success-light: rgba(16, 185, 129, 0.1);
+    /* Light theme */
+    --thanks-bg-light: #f8fafc;
+    --thanks-card-bg-light: #ffffff;
+    --thanks-text-light: #111827;
+    --thanks-text-muted-light: #6b7280;
+    --thanks-border-light: #e5e7eb;
+    --thanks-shadow-light: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    /* Dark theme */
+    --thanks-bg-dark: #0f172a;
+    --thanks-card-bg-dark: #1e293b;
+    --thanks-text-dark: #f8fafc;
+    --thanks-text-muted-dark: #94a3b8;
+    --thanks-border-dark: #334155;
+    --thanks-shadow-dark: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    /* Animation durations */
+    --thanks-transition-fast: 200ms;
+    --thanks-transition-normal: 300ms;
+    --thanks-transition-slow: 500ms;
+}
+
+/*---------------------------------------------
+  Main Container
+---------------------------------------------*/
+.thanks-page {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-color: var(--thanks-bg-light);
+    color: var(--thanks-text-light);
+    transition: background-color var(--thanks-transition-normal), color var(--thanks-transition-normal);
+    overflow-x: hidden;
+}
+
+    .thanks-page.dark {
+        background-color: var(--thanks-bg-dark);
+        color: var(--thanks-text-dark);
+    }
+
+.thanks-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+/*---------------------------------------------
+  Success Animation
+---------------------------------------------*/
+.thanks-animation {
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+    transition: opacity var(--thanks-transition-slow) ease, transform var(--thanks-transition-slow) ease;
+}
+
+    .thanks-animation.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+.success-circle {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    position: relative;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--thanks-success), #059669);
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse-success 2s ease-in-out infinite;
+}
+
+.dark .success-circle {
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+}
+
+@keyframes pulse-success {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+    }
+}
+
+.success-icon {
+    width: 60px;
+    height: 60px;
+}
+
+.checkmark {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    stroke: white;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    animation: checkmark-draw 0.6s ease-out 0.3s both;
+}
+
+.checkmark-circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke: white;
+    fill: none;
+    animation: stroke-draw 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke-draw 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+}
+
+@keyframes stroke-draw {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes checkmark-draw {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/*---------------------------------------------
+  Content Sections
+---------------------------------------------*/
+.thanks-content {
+    background-color: var(--thanks-card-bg-light);
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--thanks-shadow-light);
+    border: 1px solid var(--thanks-border-light);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity var(--thanks-transition-slow) ease 0.2s, transform var(--thanks-transition-slow) ease 0.2s, background-color var(--thanks-transition-normal), border-color var(--thanks-transition-normal);
+}
+
+.dark .thanks-content {
+    background-color: var(--thanks-card-bg-dark);
+    border-color: var(--thanks-border-dark);
+    box-shadow: var(--thanks-shadow-dark);
+}
+
+.thanks-content.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/*---------------------------------------------
+  Header Section
+---------------------------------------------*/
+.thanks-header {
+    margin-bottom: 1.5rem;
+}
+
+.thanks-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--thanks-text-light);
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--thanks-success), #059669);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.dark .thanks-title {
+    color: var(--thanks-text-dark);
+}
+
+.thanks-greeting {
+    font-size: 1.125rem;
+    color: var(--thanks-text-muted-light);
+    margin: 0;
+    font-weight: 500;
+}
+
+.dark .thanks-greeting {
+    color: var(--thanks-text-muted-dark);
+}
+
+/*---------------------------------------------
+  Main Message
+---------------------------------------------*/
+.thanks-message {
+    margin-bottom: 2rem;
+}
+
+.thanks-description {
+    font-size: 1.125rem;
+    color: var(--thanks-text-muted-light);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.dark .thanks-description {
+    color: var(--thanks-text-muted-dark);
+}
+
+.ticket-info {
+    background-color: var(--thanks-success-light);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    margin-bottom: 1rem;
+}
+
+.ticket-reference {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.ticket-subject {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.ticket-label {
+    font-weight: 600;
+    color: var(--thanks-text-light);
+    font-size: 0.875rem;
+}
+
+.dark .ticket-label {
+    color: var(--thanks-text-dark);
+}
+
+.ticket-id {
+    font-weight: 700;
+    color: var(--thanks-success);
+    background-color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.ticket-text {
+    font-weight: 500;
+    color: var(--thanks-text-muted-light);
+    font-style: italic;
+}
+
+.dark .ticket-text {
+    color: var(--thanks-text-muted-dark);
+}
+
+/*---------------------------------------------
+  Next Steps Section
+---------------------------------------------*/
+.thanks-next-steps {
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.next-steps-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--thanks-text-light);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.dark .next-steps-title {
+    color: var(--thanks-text-dark);
+}
+
+.next-steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.next-step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--thanks-border-light);
+}
+
+.dark .next-step-item {
+    border-color: var(--thanks-border-dark);
+}
+
+.next-step-item:last-child {
+    border-bottom: none;
+}
+
+.step-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background-color: var(--thanks-primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.next-step-item span {
+    flex: 1;
+    color: var(--thanks-text-muted-light);
+    line-height: 1.6;
+    padding-top: 0.5rem;
+}
+
+.dark .next-step-item span {
+    color: var(--thanks-text-muted-dark);
+}
+
+/*---------------------------------------------
+  Contact Section
+---------------------------------------------*/
+.thanks-contact {
+    padding: 1.5rem;
+    background-color: var(--thanks-bg-light);
+    border-radius: 12px;
+    border: 1px solid var(--thanks-border-light);
+}
+
+.dark .thanks-contact {
+    background-color: var(--thanks-bg-dark);
+    border-color: var(--thanks-border-dark);
+}
+
+.contact-text {
+    font-size: 0.875rem;
+    color: var(--thanks-text-muted-light);
+    margin-bottom: 1rem;
+}
+
+.dark .contact-text {
+    color: var(--thanks-text-muted-dark);
+}
+
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--thanks-primary);
+    font-weight: 500;
+}
+
+/*---------------------------------------------
+  Action Buttons
+---------------------------------------------*/
+.thanks-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity var(--thanks-transition-slow) ease 0.4s, transform var(--thanks-transition-slow) ease 0.4s;
+}
+
+    .thanks-actions.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all var(--thanks-transition-fast) ease;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+}
+
+.btn-primary {
+    background-color: var(--thanks-primary);
+    color: white;
+    box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+}
+
+    .btn-primary:hover {
+        background-color: var(--thanks-primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(14, 165, 233, 0.3);
+    }
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--thanks-text-muted-light);
+    border: 1px solid var(--thanks-border-light);
+}
+
+.dark .btn-secondary {
+    color: var(--thanks-text-muted-dark);
+    border-color: var(--thanks-border-dark);
+}
+
+.btn-secondary:hover {
+    background-color: var(--thanks-bg-light);
+    color: var(--thanks-text-light);
+    transform: translateY(-1px);
+}
+
+.dark .btn-secondary:hover {
+    background-color: var(--thanks-bg-dark);
+    color: var(--thanks-text-dark);
+}
+
+/*---------------------------------------------
+  Auto-redirect Notice
+---------------------------------------------*/
+.thanks-redirect {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity var(--thanks-transition-slow) ease 0.6s, transform var(--thanks-transition-slow) ease 0.6s;
+}
+
+    .thanks-redirect.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+.redirect-text {
+    font-size: 0.75rem;
+    color: var(--thanks-text-muted-light);
+    margin: 0;
+    opacity: 0.8;
+}
+
+.dark .redirect-text {
+    color: var(--thanks-text-muted-dark);
+}
+
+/*---------------------------------------------
+  Background Decoration
+---------------------------------------------*/
+.thanks-background {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.bg-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(14, 165, 233, 0.15) 1px, transparent 0);
+    background-size: 20px 20px;
+    opacity: 0.3;
+}
+
+.dark .bg-pattern {
+    opacity: 0.1;
+}
+
+.bg-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( 135deg, rgba(14, 165, 233, 0.05) 0%, rgba(16, 185, 129, 0.05) 50%, transparent 100% );
+}
+
+/*---------------------------------------------
+  Mobile Responsiveness
+---------------------------------------------*/
+@media (max-width: 768px) {
+    .thanks-page {
+        padding: 1rem;
+        min-height: 100vh;
+    }
+
+    .thanks-container {
+        max-width: 100%;
+    }
+
+    .thanks-content {
+        padding: 2rem 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: 12px;
+    }
+
+    .thanks-title {
+        font-size: 1.875rem;
+    }
+
+    .thanks-description {
+        font-size: 1rem;
+    }
+
+    .success-circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    .success-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .thanks-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .ticket-reference,
+    .ticket-subject {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .contact-details {
+        gap: 0.75rem;
+    }
+
+    .next-steps-title {
+        font-size: 1.125rem;
+    }
+
+    .step-icon {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .thanks-page {
+        padding: 0.75rem;
+    }
+
+    .thanks-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .thanks-title {
+        font-size: 1.5rem;
+    }
+
+    .success-circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .success-icon {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/*---------------------------------------------
+  Accessibility & Focus States
+---------------------------------------------*/
+.btn:focus {
+    outline: 2px solid var(--thanks-primary);
+    outline-offset: 2px;
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .thanks-animation,
+    .thanks-content,
+    .thanks-actions,
+    .thanks-redirect {
+        transition: opacity 0.2s ease;
+        animation: none;
+    }
+
+    .success-circle {
+        animation: none;
+    }
+
+    .checkmark,
+    .checkmark-circle,
+    .checkmark-check {
+        animation: none;
+        stroke-dashoffset: 0;
+    }
+
+    .btn:hover {
+        transform: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .thanks-content {
+        border-width: 2px;
+    }
+
+    .btn {
+        border-width: 2px;
+    }
+
+    .success-circle {
+        box-shadow: none;
+        border: 3px solid var(--thanks-success);
+    }
+}
+
+/* Print styles */
+@media print {
+    .thanks-page {
+        background: white;
+        color: black;
+    }
+
+    .thanks-background {
+        display: none;
+    }
+
+    .thanks-actions {
+        display: none;
+    }
+
+    .thanks-redirect {
+        display: none;
+    }
+}

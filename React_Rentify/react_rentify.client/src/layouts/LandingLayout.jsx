@@ -67,8 +67,7 @@ const LandingLayout = () => {
         { path: '#features', label: t('landing.features') },
         { path: '#benefits', label: t('landing.benefits') },
         { path: '#pricing', label: t('landing.pricing') },
-        { path: '#contact', label: t('landing.contact') },
-        { path: '/login', label: t('auth.login') }
+        { path: '#contact', label: t('landing.contact') }
     ];
 
     // Function to determine if link is active
@@ -164,22 +163,6 @@ const LandingLayout = () => {
                                 {item.label}
                             </a>
                         ))}
-                        <div className="pt-4 mt-2 border-t border-gray-200 dark:border-gray-700">
-                            <NavLink
-                                to="/login"
-                                className={`landing-mobile-nav-link ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`}
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                {t('auth.login')}
-                            </NavLink>
-                            <NavLink
-                                to="/register"
-                                className={`landing-mobile-nav-link font-semibold ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-primary-50 text-primary-700'}`}
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                {t('auth.register')}
-                            </NavLink>
-                        </div>
                     </nav>
                 </div>
             </header>
@@ -226,6 +209,7 @@ const LandingLayout = () => {
                         <div className="landing-footer-column">
                             <h3 className={isDarkMode ? 'text-white' : 'text-gray-900'}>{t('footer.support')}</h3>
                             <div className="landing-footer-links">
+                                <a href="/login" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('auth.login')}</a>
                                 <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.help')}</a>
                                 <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.faq')}</a>
                                 <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.contact')}</a>
