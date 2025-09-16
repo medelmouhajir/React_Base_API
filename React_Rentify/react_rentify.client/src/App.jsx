@@ -11,8 +11,6 @@ import './App.css';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 
-import { useFacebookPixel } from './hooks/useFacebookPixel';
-
 // Layouts
 import LandingLayout from './layouts/LandingLayout';
 import MainLayout from './layouts/MainLayout';
@@ -145,9 +143,6 @@ const ThemedToastContainer = () => {
 };
 
 function App() {
-
-    const { trackEvent } = useFacebookPixel('1340532967689342');
-
     // Initialize RTL direction
     useRtlDirection();
     return (

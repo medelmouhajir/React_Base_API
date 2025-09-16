@@ -5,8 +5,8 @@ import './FloatingButtons.css';
 const FloatingButtons = () => {
     const handleWhatsAppClick = () => {
         // Replace with your WhatsApp number (format: country code + number without +)
-        const phoneNumber = '1234567890'; // Example: US number
-        const message = encodeURIComponent('Hello! I\'m interested in your services.');
+        const phoneNumber = '212666182615'; // Example: US number
+        const message = encodeURIComponent('Bonjour ! Je suis intéressé(e) par vos services.');
         window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
     };
 

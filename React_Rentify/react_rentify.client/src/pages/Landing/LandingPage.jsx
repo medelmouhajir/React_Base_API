@@ -51,6 +51,10 @@ const LandingPage = () => {
             await ticketService.create(ticketData);
             setContactStatus('success');
             setContactForm({ name: '', phone: '', subject: '', message: '' });
+
+            // Track Subscribe event
+            window.fbq && window.fbq('track', 'Purchase');
+            
             navigate('/tickets/thanks');
         } catch (error) {
             console.error('Contact form submission error:', error);
@@ -59,6 +63,10 @@ const LandingPage = () => {
             setIsSubmittingContact(false);
         }
     };
+    
+    useEffect(() => {
+        window.fbq && window.fbq('track', 'ViewContent');
+        }, []);
 
     // Animation on scroll
     useEffect(() => {
@@ -588,7 +596,7 @@ const LandingPage = () => {
                                 </svg>
                             </div>
                             <h3 className="contact-card-title">{t('landing.contactPhoneTitle')}</h3>
-                            <p className="contact-card-text"><a href="tel:+212668507183">+212 668 507 183</a></p>
+                            <p className="contact-card-text"><a href="tel:+212666182615">+212 666 182 615</a></p>
                             <p className="contact-card-text"><a href="tel:+212674975410">+212 674 975 410</a></p>
                         </div>
 
@@ -607,7 +615,7 @@ const LandingPage = () => {
                             </div>
                             <h3 className="contact-card-title">{t('landing.contactWhatsapp')}</h3>
                             <p className="contact-card-text">
-                                <a href="https://api.whatsapp.com/send?phone=+212668507183">+212 668 507 183</a>
+                                <a href="https://api.whatsapp.com/send?phone=212666182615">+212 666 182 615</a>
                             </p>
                         </div>
 

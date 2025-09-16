@@ -86,7 +86,7 @@ const LandingLayout = () => {
                     {/* Logo */}
                     <a href="/" className="landing-logo">
                         <img src="/logo.png" alt="Rentify" />
-                        <span className={`landing-logo-text ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Rentify</span>
+                        <span className={`landing-logo-text ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Renter</span>
                     </a>
 
                     {/* Desktop Navigation */}
@@ -222,7 +222,6 @@ const LandingLayout = () => {
                             <div className="landing-footer-links">
                                 <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.terms')}</a>
                                 <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.privacy')}</a>
-                                <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.cookies')}</a>
                             </div>
                         </div>
                     </div>

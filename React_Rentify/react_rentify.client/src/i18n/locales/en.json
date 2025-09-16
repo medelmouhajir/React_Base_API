@@ -143,7 +143,7 @@
     "featureReportsDesc": "Generate detailed reports to drive your decisions.",
 
     "benefitsTitle": "Benefits",
-    "benefitsDescription": "Why choose Rentify?",
+    "benefitsDescription": "Why choose Renter?",
     "benefitsCta": "Sign Up Now",
     "benefitTimeTitle": "Save Time",
     "benefitTimeDesc": "Automate tasks and reduce manual work.",
@@ -154,7 +154,7 @@
 
     "testimonialsTitle": "What Our Clients Say",
     "testimonialsDescription": "Real feedback from our users.",
-    "testimonial1": "Rentify has transformed our rental operations. It's intuitive and powerful.",
+    "testimonial1": "Renter has transformed our rental operations. It's intuitive and powerful.",
     "testimonialRole1": "CEO, AutoRent",
     "testimonial2": "The GPS tracking feature is a game-changer for our business.",
     "testimonialRole2": "Operations Manager, CityDrive",
@@ -199,7 +199,7 @@
     "pricingEnterpriseCta": "Contact Sales",
 
     "ctaTitle": "Ready to Accelerate Your Business?",
-    "ctaDescription": "Join hundreds of agencies using Rentify today.",
+    "ctaDescription": "Join hundreds of agencies using Renter today.",
     "ctaButtonPrimary": "Create Account",
     "ctaButtonSecondary": "Learn More",
 
@@ -222,7 +222,7 @@
   },
   "auth": {
     "welcomeBack": "Welcome Back",
-    "loginToContinue": "Login to continue using Rentify",
+    "loginToContinue": "Login to continue using Renter",
     "email": "Email",
     "emailPlaceholder": "Enter your email",
     "emailRequired": "Email is required",
@@ -1190,7 +1190,7 @@
     "myInvoices": "My Invoices",
     "collapse": "Collapse",
     "expand": "Expand",
-    "brand": "Rentify",
+    "brand": "Renter",
     "gadgets": "Gadgets",
     "expenses": "Expenses",
     "serviceAlerts": "Alerts"

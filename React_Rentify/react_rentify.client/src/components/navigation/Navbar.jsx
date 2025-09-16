@@ -73,8 +73,8 @@ const Navbar = ({ toggleSidebar, sidebarOpen }) => {
 
                     {/* Logo */}
                     <Link to="/dashboard" className="navbar-logo-link">
-                        <img src="/logo.png" alt="Rentify Logo" className="navbar-logo-image" />
-                        <span className="navbar-logo-text">Rentify</span>
+                        <img src="/logo.png" alt="Renter Logo" className="navbar-logo-image" />
+                        <span className="navbar-logo-text">Renter</span>
                     </Link>
                 </div>
 
