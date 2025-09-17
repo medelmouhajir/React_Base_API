@@ -1,0 +1,639 @@
+/* src/pages/Tickets/Details/TicketDetails.css */
+
+/* ===== CONTAINER & LAYOUT ===== */
+.ticket-details-container {
+    padding: 1.5rem;
+    max-width: 95%;
+    margin: 0 auto;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* ===== HEADER ===== */
+.ticket-details-header {
+    margin-bottom: 2rem;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: fit-content;
+}
+
+    .btn-back:hover {
+        color: #4b5563;
+        border-color: #9ca3af;
+        background-color: #f9fafb;
+    }
+
+    .btn-back svg {
+        width: 1rem;
+        height: 1rem;
+    }
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+    .header-title h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0;
+    }
+
+/* ===== STATUS BADGES ===== */
+.status-badge {
+    padding: 0.375rem 0.875rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.status-blue {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.status-yellow {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.status-green {
+    background-color: #d1fae5;
+    color: #047857;
+}
+
+.status-red {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.status-gray {
+    background-color: #f3f4f6;
+    color: #6b7280;
+}
+
+/* ===== CONTENT LAYOUT ===== */
+.ticket-details-content {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+    .ticket-details-content {
+        grid-template-columns: 2fr 1fr;
+        grid-template-areas:
+            "info status"
+            "info contact";
+    }
+
+    .ticket-info-card {
+        grid-area: info;
+    }
+
+    .status-update-card {
+        grid-area: status;
+    }
+
+    .contact-actions-card {
+        grid-area: contact;
+    }
+}
+
+/* ===== CARDS ===== */
+.card {
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1.5rem 1.5rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+    .card-header h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #111827;
+        margin: 0;
+    }
+
+.created-date {
+    font-size: 0.875rem;
+    color: #6b7280;
+    background-color: #f3f4f6;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* ===== INFO GRID ===== */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+    .info-item.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .info-item label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+.info-value {
+    font-size: 1rem;
+    color: #111827;
+    line-height: 1.5;
+}
+
+.message-content {
+    background-color: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #3b82f6;
+    white-space: pre-wrap;
+}
+
+.phone-link {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+    .phone-link:hover {
+        color: #1d4ed8;
+        text-decoration: underline;
+    }
+
+/* ===== STATUS MANAGEMENT ===== */
+.current-status {
+    margin-bottom: 2rem;
+}
+
+    .current-status label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+.status-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.status-indicator {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+/* ===== STATUS ACTIONS ===== */
+.status-actions {
+    margin-bottom: 1.5rem;
+}
+
+    .status-actions label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+
+.status-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .status-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.btn-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    min-height: 3rem;
+}
+
+    .btn-status:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+.btn-status-blue {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+    .btn-status-blue:hover:not(:disabled) {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+    .btn-status-blue.active {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+.btn-status-yellow {
+    border-color: #f59e0b;
+    color: #f59e0b;
+}
+
+    .btn-status-yellow:hover:not(:disabled) {
+        background-color: #f59e0b;
+        color: white;
+    }
+
+    .btn-status-yellow.active {
+        background-color: #f59e0b;
+        color: white;
+    }
+
+.btn-status-green {
+    border-color: #10b981;
+    color: #10b981;
+}
+
+    .btn-status-green:hover:not(:disabled) {
+        background-color: #10b981;
+        color: white;
+    }
+
+    .btn-status-green.active {
+        background-color: #10b981;
+        color: white;
+    }
+
+.btn-status-red {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+    .btn-status-red:hover:not(:disabled) {
+        background-color: #ef4444;
+        color: white;
+    }
+
+    .btn-status-red.active {
+        background-color: #ef4444;
+        color: white;
+    }
+
+/* ===== SPINNERS ===== */
+.btn-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.updating-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    padding: 0.75rem;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+}
+
+.updating-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* ===== CONTACT ACTIONS ===== */
+.action-buttons {
+    display: grid;
+    gap: 1rem;
+}
+
+.btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+    .btn-action svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+.btn-call {
+    background-color: #10b981;
+    color: white;
+    border-color: #10b981;
+}
+
+    .btn-call:hover {
+        background-color: #059669;
+        border-color: #059669;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+.btn-message {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+    .btn-message:hover {
+        background-color: #2563eb;
+        border-color: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+/* ===== LOADING & ERROR STATES ===== */
+.ticket-details-loading,
+.ticket-details-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.loading-spinner {
+    margin-bottom: 1rem;
+}
+
+.spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid #e5e7eb;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.error-icon {
+    width: 4rem;
+    height: 4rem;
+    color: #ef4444;
+    margin-bottom: 1rem;
+}
+
+    .error-icon svg {
+        width: 100%;
+        height: 100%;
+    }
+
+.ticket-details-error h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+}
+
+.ticket-details-error p {
+    color: #6b7280;
+    margin-bottom: 2rem;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+    .btn-primary:hover {
+        background-color: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== DARK THEME ===== */
+@media (prefers-color-scheme: dark) {
+    .ticket-details-container {
+        color: #f9fafb;
+    }
+
+    .card {
+        background-color: #1f2937;
+        border-color: #374151;
+    }
+
+    .card-header h2 {
+        color: #f9fafb;
+    }
+
+    .created-date {
+        background-color: #374151;
+        color: #d1d5db;
+    }
+
+    .info-item label {
+        color: #d1d5db;
+    }
+
+    .info-value {
+        color: #f9fafb;
+    }
+
+    .message-content {
+        background-color: #374151;
+        border-color: #60a5fa;
+    }
+
+    .btn-back {
+        color: #d1d5db;
+        border-color: #4b5563;
+    }
+
+        .btn-back:hover {
+            color: #f9fafb;
+            border-color: #6b7280;
+            background-color: #374151;
+        }
+
+    .header-title h1 {
+        color: #f9fafb;
+    }
+
+    .current-status label,
+    .status-actions label {
+        color: #d1d5db;
+    }
+
+    .updating-message {
+        background-color: #374151;
+        color: #d1d5db;
+    }
+
+    .ticket-details-error h2 {
+        color: #f9fafb;
+    }
+
+    .ticket-details-error p {
+        color: #d1d5db;
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+    .ticket-details-container {
+        padding: 1rem;
+    }
+
+    .header-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+        }
+
+    .card-header {
+        padding: 1rem 1rem 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .status-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        gap: 0.75rem;
+    }
+
+    .btn-action {
+        padding: 0.875rem 1rem;
+        font-size: 0.875rem;
+    }
+}

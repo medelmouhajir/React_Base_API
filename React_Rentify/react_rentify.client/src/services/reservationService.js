@@ -42,6 +42,16 @@ export const reservationService = {
         }
     },
 
+    updateReservationPrices: async (id, priceData) => {
+        try {
+            const response = await apiClient.put(`/reservations/${id}/prices`, priceData);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating reservation prices:', error);
+            throw error;
+        }
+    },
+
     async updateReservationCar(reservationId, carId) {
         try {
             const response = await apiClient.patch(`/reservations/${reservationId}/car`, { carId });

@@ -30,8 +30,58 @@ const IdentityReader = () => {
     const [showBlacklistWarning, setShowBlacklistWarning] = useState(false);
     const [manualData, setManualData] = useState({});
 
+    const compressImage = (file, maxWidth = 1920, maxHeight = 1080, quality = 0.8) => {
+        return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = () => {
+                // Calculate new dimensions while maintaining aspect ratio
+                let { width, height } = img;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = (width * maxHeight) / height;
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                // Draw and compress
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob(
+                    (blob) => {
+                        resolve(blob);
+                    },
+                    'image/jpeg',
+                    quality
+                );
+            };
+
+            img.src = URL.createObjectURL(file);
+        });
+    };
+
+    const createFileFromBlob = (blob, originalFileName) => {
+        const extension = originalFileName.split('.').pop();
+        const name = originalFileName.replace(/\.[^/.]+$/, "") + '_compressed.jpg';
+        return new File([blob], name, {
+            type: 'image/jpeg',
+            lastModified: Date.now()
+        });
+    };
+
     // Handle file upload
-    const handleFileUpload = (e) => {
+    const handleFileUpload = async (e) => {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
 
@@ -50,16 +100,41 @@ const IdentityReader = () => {
             return;
         }
 
-        // Add files to state
-        const newImages = files.map(file => ({
-            id: Date.now() + Math.random(),
-            file,
-            preview: URL.createObjectURL(file),
-            name: file.name
-        }));
+        setIsProcessing(true); // Show loading state while compressing
 
-        setImages(prev => [...prev, ...newImages]);
-        setError(null);
+        try {
+            // Compress images before adding to state
+            const compressedImages = await Promise.all(
+                files.map(async (file) => {
+                    const compressedBlob = await compressImage(file, 1920, 1080, 0.85);
+                    const compressedFile = createFileFromBlob(compressedBlob, file.name);
+
+                    return {
+                        id: Date.now() + Math.random(),
+                        file: compressedFile, // Use compressed file instead of original
+                        preview: URL.createObjectURL(compressedFile),
+                        name: file.name, // Keep original name for display
+                        originalSize: file.size,
+                        compressedSize: compressedFile.size
+                    };
+                })
+            );
+
+            setImages(prev => [...prev, ...compressedImages]);
+            setError(null);
+
+            // Log compression results (optional - remove in production)
+            compressedImages.forEach(img => {
+                const reduction = ((img.originalSize - img.compressedSize) / img.originalSize * 100).toFixed(1);
+                console.log(`📸 ${img.name}: ${(img.originalSize / 1024).toFixed(1)}KB → ${(img.compressedSize / 1024).toFixed(1)}KB (${reduction}% reduction)`);
+            });
+
+        } catch (error) {
+            console.error('❌ Error compressing images:', error);
+            setError(t('identityReader.compressionError') || 'Error compressing images');
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     // Handle camera capture

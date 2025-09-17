@@ -9,10 +9,7 @@ const GenerateInvoiceModal = ({ reservation, onClose, onSubmit }) => {
 
     // Calculate default values
     const calculateTotal = () => {
-        const startDate = new Date(reservation.startDate);
-        const endDate = new Date(reservation.endDate);
-        const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-        return days * (reservation.agreedPrice || 0);
+        return reservation.finalPrice ?? reservation.agreedPrice ?? 0;
     };
 
     const [formData, setFormData] = useState({

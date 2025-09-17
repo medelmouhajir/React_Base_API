@@ -29,6 +29,9 @@ i18n
     .init({
         resources,
 
+        // Set French as the default language for first-time visitors
+        lng: 'fr', // This sets the initial language
+
         // Language detection options
         detection: {
             // Order of language detection methods
@@ -41,8 +44,8 @@ i18n
             excludeCacheFor: ['cimode'],
         },
 
-        // Fallback language
-        fallbackLng: 'en',
+        // Fallback language (in case French resources are missing)
+        fallbackLng: 'fr', // Changed from 'en' to 'fr'
 
         // Debug mode (set to false in production)
         debug: import.meta.env.DEV,

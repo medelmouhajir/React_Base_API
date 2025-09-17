@@ -31,12 +31,16 @@ export const carService = {
         }
     },
 
-    async getByAgencyIdAndDates(agencyId) {
+    async getByAgencyIdAndDates(agencyId, startDate, endDate) {
         try {
-            const response = await apiClient.get(`/cars/agency/${agencyId}/available`);
+            const params = new URLSearchParams();
+            if (startDate) params.append('startDate', startDate);
+            if (endDate) params.append('endDate', endDate);
+
+            const response = await apiClient.get(`/cars/agency/${agencyId}/available?${params.toString()}`);
             return response.data;
         } catch (error) {
-            console.error(`❌ Error fetching cars for agency ${agencyId}:`, error);
+            console.error(`❌ Error fetching available cars for agency ${agencyId} between ${startDate} and ${endDate}:`, error);
             throw error;
         }
     },

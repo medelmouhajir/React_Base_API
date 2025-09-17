@@ -147,3 +147,215 @@
         --primary-dark: #1565c0;
     }
 }
+
+/* Edit Prices Modal Specific Styles */
+.pricing-summary {
+    background-color: var(--highlight-bg, #f8f9fa);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.pricing-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.pricing-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+    .pricing-row:last-child {
+        border-bottom: none;
+    }
+
+    .pricing-row.additional .pricing-value {
+        color: #d32f2f;
+        font-weight: 500;
+    }
+
+    .pricing-row.discount .pricing-value {
+        color: #388e3c;
+        font-weight: 500;
+    }
+
+    .pricing-row.total {
+        border-top: 2px solid var(--border-color, #e0e0e0);
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+        font-weight: 600;
+        font-size: 1.1em;
+    }
+
+        .pricing-row.total .pricing-label {
+            font-weight: 700;
+        }
+
+        .pricing-row.total .pricing-value {
+            color: var(--primary, #1976d2);
+            font-size: 1.2em;
+        }
+
+.pricing-label {
+    color: var(--text-secondary, #666);
+    font-size: 0.9em;
+}
+
+.pricing-value {
+    font-weight: 500;
+    color: var(--text-primary, #333);
+}
+
+/* Price info section in reservation details */
+.price-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.price-label {
+    color: var(--text-secondary, #666);
+    font-weight: 500;
+}
+
+.price-value {
+    font-weight: 600;
+    color: var(--text-primary, #333);
+}
+
+.edit-prices-btn {
+    background-color: var(--primary, #1976d2);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+    align-self: flex-start;
+}
+
+    .edit-prices-btn:hover {
+        background-color: var(--primary-dark, #1565c0);
+        transform: translateY(-1px);
+    }
+
+    .edit-prices-btn:active {
+        transform: translateY(0);
+    }
+
+/* Form section spacing for pricing modal */
+.modal-form .form-section:not(:last-child) {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.modal-form .form-section h3 {
+    margin-bottom: 1rem;
+    color: var(--text-primary, #333);
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+/* Enhanced form group styling */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-primary, #333);
+        font-size: 0.9em;
+    }
+
+    .form-group input[type="number"],
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color, #ddd);
+        border-radius: 6px;
+        background-color: var(--input-bg, #fff);
+        color: var(--text-primary, #333);
+        font-size: 0.9em;
+        transition: all 0.2s ease;
+    }
+
+        .form-group input[type="number"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary, #1976d2);
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+        }
+
+.input-hint {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.8em;
+    color: var(--text-secondary, #666);
+    font-style: italic;
+}
+
+/* Responsive adjustments for pricing modal */
+@media (max-width: 768px) {
+    .pricing-breakdown {
+        gap: 0.5rem;
+    }
+
+    .pricing-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .pricing-value {
+        align-self: flex-end;
+        margin-top: -1.5rem;
+    }
+
+    .price-info {
+        margin: 0.75rem 0;
+    }
+
+    .edit-prices-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .pricing-summary {
+        --highlight-bg: #2a2a2a;
+        --border-color: #3d3d3d;
+    }
+
+    .pricing-row.additional .pricing-value {
+        color: #ef5350;
+    }
+
+    .pricing-row.discount .pricing-value {
+        color: #66bb6a;
+    }
+
+    .pricing-row.total .pricing-value {
+        color: #42a5f5;
+    }
+}

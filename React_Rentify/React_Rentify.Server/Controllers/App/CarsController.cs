@@ -248,9 +248,9 @@ namespace React_Rentify.Server.Controllers
                 .Where(r => r.AgencyId == agencyId)
                 .Where(r => r.Status != "Cancelled" && r.Status != "Completed")
                 .Where(r =>
-                    (startDate >= r.StartDate && startDate < r.EndDate) || // Start date falls within existing reservation
-                    (endDate > r.StartDate && endDate <= r.EndDate) ||     // End date falls within existing reservation
-                    (startDate <= r.StartDate && endDate >= r.EndDate))    // New reservation completely contains existing reservation
+                    (startDate.ToUniversalTime() >= r.StartDate && startDate.ToUniversalTime() < r.EndDate) || // Start date falls within existing reservation
+                    (endDate.ToUniversalTime() > r.StartDate && endDate.ToUniversalTime() <= r.EndDate) ||     // End date falls within existing reservation
+                    (startDate.ToUniversalTime() <= r.StartDate && endDate.ToUniversalTime() >= r.EndDate))    // New reservation completely contains existing reservation
                 .Select(r => r.CarId)
                 .Distinct()
                 .ToListAsync();

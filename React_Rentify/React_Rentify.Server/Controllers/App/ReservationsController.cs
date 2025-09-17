@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace React_Rentify.Server.Controllers.App
@@ -1122,6 +1123,121 @@ namespace React_Rentify.Server.Controllers.App
             return Ok(dtoList);
         }
 
+        [HttpPut("{id}/prices")]
+        public async Task<IActionResult> UpdateReservationPrices(Guid id, [FromBody] UpdateReservationPricesDto pricesDto)
+        {
+            try
+            {
+                // Validate the reservation exists and belongs to the user's agency
+                var existingReservation = await _context.Reservations
+                    .Include(r => r.Agency)
+                    .FirstOrDefaultAsync(r => r.Id == id);
+
+                if (existingReservation == null)
+                {
+                    return NotFound(new { message = "Reservation not found" });
+                }
+
+                // Check if user has permission to modify this reservation
+
+                if (!await _authService.HasAccessToAgencyAsync(existingReservation.AgencyId))
+                    return Unauthorized();
+
+                // Validate that the reservation can be modified (not completed or cancelled)
+                if (existingReservation.Status == "Completed" || existingReservation.Status == "Cancelled")
+                {
+                    return BadRequest(new { message = "Cannot modify prices for completed or cancelled reservations" });
+                }
+
+                // Validate price values
+                if (pricesDto.AgreedPrice < 0 || pricesDto.FinalPrice < 0)
+                {
+                    return BadRequest(new { message = "Prices cannot be negative" });
+                }
+
+                // Update the reservation prices
+                existingReservation.AgreedPrice = pricesDto.AgreedPrice;
+                existingReservation.FinalPrice = pricesDto.FinalPrice;
+
+                // Add audit trail for price changes
+                var priceHistory = new ReservationPriceHistory
+                {
+                    Id = Guid.NewGuid(),
+                    ReservationId = id,
+                    PreviousAgreedPrice = existingReservation.AgreedPrice,
+                    NewAgreedPrice = pricesDto.AgreedPrice,
+                    PreviousFinalPrice = existingReservation.FinalPrice ?? pricesDto.AgreedPrice,
+                    NewFinalPrice = pricesDto.FinalPrice,
+                    AdditionalFees = pricesDto.AdditionalFees,
+                    AdditionalFeesReason = pricesDto.AdditionalFeesReason,
+                    Discount = pricesDto.Discount,
+                    DiscountReason = pricesDto.DiscountReason,
+                    UpdatedAt = DateTime.UtcNow,
+                    UpdatedBy = GetUserId() // Assuming you have a method to get current user ID
+                };
+
+                // Add the price history record (if you have this table)
+                // _context.ReservationPriceHistories.Add(priceHistory);
+
+                // Save changes
+                await _context.SaveChangesAsync();
+
+                // Return updated reservation data
+                var updatedReservation = await _context.Reservations
+                    .Include(r => r.Agency)
+                    .Include(r => r.Car)
+                        .ThenInclude(c => c.Car_Model)
+                            .ThenInclude(m => m.Manufacturer)
+                    .Include(r => r.Reservation_Customers)
+                        .ThenInclude(rc => rc.Customer)
+                    .Select(r => new ReservationDto
+                    {
+                        Id = r.Id,
+                        AgencyId = r.AgencyId,
+                        AgencyName = r.Agency.Name,
+                        CarId = r.CarId,
+                        CarLicensePlate = r.Car.LicensePlate,
+                        Model = r.Car.Car_Model.Name + " " + r.Car.Car_Model.Manufacturer.Name,
+                        Customers = r.Reservation_Customers.Select(rc => new Customer
+                        {
+                            Id = rc.CustomerId,
+                            FullName = rc.Customer.FullName,
+                            Email = rc.Customer.Email,
+                            PhoneNumber = rc.Customer.PhoneNumber
+                        }).ToList(),
+                        StartDate = r.StartDate,
+                        EndDate = r.EndDate,
+                        ActualStartTime = r.ActualStartTime,
+                        ActualEndTime = r.ActualEndTime,
+                        Status = r.Status,
+                        AgreedPrice = r.AgreedPrice,
+                        FinalPrice = r.FinalPrice,
+                        OdometerStart = r.OdometerStart,
+                        OdometerEnd = r.OdometerEnd,
+                        FuelLevelStart = r.FuelLevelStart,
+                        FuelLevelEnd = r.FuelLevelEnd,
+                        PickupLocation = r.PickupLocation,
+                        DropoffLocation = r.DropoffLocation
+                    })
+                    .FirstOrDefaultAsync(r => r.Id == id);
+
+                return Ok(updatedReservation);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating reservation prices for reservation {ReservationId}", id);
+                return StatusCode(500, new { message = "An error occurred while updating reservation prices" });
+            }
+        }
+
+        private string GetUserId()
+        {
+            // Extract user ID from claims
+            return User.FindFirst("sub")?.Value ??
+                   User.FindFirst("id")?.Value ??
+                   User.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
+                   "Unknown";
+        }
         #region Helper Methods & DTOs
 
         private static ReservationDto MapToDto(Reservation r)
@@ -1299,4 +1415,35 @@ namespace React_Rentify.Server.Controllers.App
         public object IsPrimary { get; set; }
         public object Customer { get; set; }
     }
+
+    public class UpdateReservationPricesDto
+    {
+        public decimal AgreedPrice { get; set; }
+        public decimal FinalPrice { get; set; }
+        public decimal AdditionalFees { get; set; }
+        public string? AdditionalFeesReason { get; set; }
+        public decimal Discount { get; set; }
+        public string? DiscountReason { get; set; }
+    }
+
+    // Optional: Add this model for price history tracking
+    public class ReservationPriceHistory
+    {
+        public Guid Id { get; set; }
+        public Guid ReservationId { get; set; }
+        public decimal PreviousAgreedPrice { get; set; }
+        public decimal NewAgreedPrice { get; set; }
+        public decimal PreviousFinalPrice { get; set; }
+        public decimal NewFinalPrice { get; set; }
+        public decimal AdditionalFees { get; set; }
+        public string? AdditionalFeesReason { get; set; }
+        public decimal Discount { get; set; }
+        public string? DiscountReason { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public string UpdatedBy { get; set; } // User ID who made the change
+
+        // Navigation property
+        public Reservation Reservation { get; set; }
+    }
+
 }

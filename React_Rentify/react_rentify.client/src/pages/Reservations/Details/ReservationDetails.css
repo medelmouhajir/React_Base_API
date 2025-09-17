@@ -329,13 +329,13 @@
     transition: all var(--transition-normal);
 }
 
-.action-buttons {
+.action-reservation-buttons {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-.action-group {
+.action-reservation-group {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1rem;
@@ -752,7 +752,7 @@
         padding: 1.25rem;
     }
 
-    .action-group {
+    .action-reservation-group {
         grid-template-columns: 1fr;
     }
 
@@ -849,7 +849,7 @@
     }
 
     /* Increase spacing between touch targets */
-    .action-group {
+    .action-reservation-group {
         gap: 1rem;
     }
 
@@ -898,5 +898,346 @@
         border: 1px solid #eee;
         margin-bottom: 1.5rem;
         break-inside: avoid;
+    }
+}
+
+
+
+
+
+
+
+/* Add these styles to src/pages/Reservations/Details/ReservationDetails.css */
+
+/* Price Information Section */
+.price-info {
+    background-color: var(--card-bg, #ffffff);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border: 1px solid var(--border-light, #e0e0e0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-light, #f0f0f0);
+}
+
+    .price-row:last-of-type {
+        border-bottom: none;
+        margin-bottom: 1rem;
+    }
+
+.price-label {
+    font-weight: 500;
+    color: var(--text-secondary, #666666);
+    font-size: 0.95rem;
+}
+
+.price-value {
+    font-weight: 600;
+    color: var(--text-primary, #333333);
+    font-size: 1.1rem;
+}
+
+/* Special styling for final price */
+.price-row:has(.price-label:contains("finalPrice")) .price-value,
+.price-row .price-value.final-price {
+    color: var(--success-color, #4caf50);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Edit Prices Button */
+.edit-prices-btn {
+    background: linear-gradient(135deg, var(--primary, #1976d2) 0%, var(--primary-dark, #1565c0) 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+    .edit-prices-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        background: linear-gradient(135deg, var(--primary-dark, #1565c0) 0%, #0d47a1 100%);
+    }
+
+    .edit-prices-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
+    }
+
+    .edit-prices-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+    }
+
+    /* Add icon to edit button */
+    .edit-prices-btn::before {
+        content: "✎";
+        font-size: 1rem;
+        margin-right: 0.25rem;
+    }
+
+/* Price info header */
+.price-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-light, #f0f0f0);
+}
+
+.price-info-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary, #333333);
+    margin: 0;
+}
+
+/* Price breakdown styling */
+.price-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Enhanced price values with currency formatting */
+.price-value.currency {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Price status indicators */
+.price-status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 1rem;
+}
+
+    .price-status.pending {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+
+    .price-status.confirmed {
+        background-color: #d1edff;
+        color: #0c4a6e;
+        border: 1px solid #7dd3fc;
+    }
+
+    .price-status.updated {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .price-info {
+        padding: 1rem;
+        margin: 0.75rem 0;
+    }
+
+    .price-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 1rem 0;
+    }
+
+    .price-value {
+        align-self: flex-end;
+        margin-top: -2rem;
+    }
+
+    .price-info-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .edit-prices-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+
+    .price-status {
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .price-info {
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+    }
+
+    .price-row {
+        padding: 0.75rem 0;
+    }
+
+    .price-label {
+        font-size: 0.9rem;
+    }
+
+    .price-value {
+        font-size: 1rem;
+        margin-top: -1.5rem;
+    }
+
+    .edit-prices-btn {
+        padding: 0.875rem;
+        font-size: 0.95rem;
+    }
+
+    .price-info-title {
+        font-size: 1.1rem;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .price-info {
+        --card-bg: #1e1e1e;
+        --border-light: #3d3d3d;
+        --text-primary: #e0e0e0;
+        --text-secondary: #a0a0a0;
+        background-color: var(--card-bg);
+        border-color: var(--border-light);
+    }
+
+    .price-row {
+        border-bottom-color: var(--border-light);
+    }
+
+    .edit-prices-btn {
+        background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+    }
+
+        .edit-prices-btn:hover {
+            background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        }
+
+    .price-status.pending {
+        background-color: #3e2723;
+        color: #ffcc02;
+        border-color: #5d4037;
+    }
+
+    .price-status.confirmed {
+        background-color: #0d47a1;
+        color: #bbdefb;
+        border-color: #1565c0;
+    }
+
+    .price-status.updated {
+        background-color: #1b5e20;
+        color: #c8e6c9;
+        border-color: #388e3c;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .price-info {
+        border-width: 2px;
+    }
+
+    .edit-prices-btn {
+        border: 2px solid white;
+    }
+
+    .price-value {
+        font-weight: 800;
+    }
+}
+
+/* Print styles */
+@media print {
+    .edit-prices-btn {
+        display: none;
+    }
+
+    .price-info {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+
+    .price-value {
+        color: #000 !important;
+    }
+}
+
+/* Animation for price updates */
+@keyframes priceUpdate {
+    0% {
+        background-color: rgba(76, 175, 80, 0.1);
+        transform: scale(1);
+    }
+
+    50% {
+        background-color: rgba(76, 175, 80, 0.2);
+        transform: scale(1.02);
+    }
+
+    100% {
+        background-color: transparent;
+        transform: scale(1);
+    }
+}
+
+.price-value.updated {
+    animation: priceUpdate 1s ease-out;
+}
+
+/* Loading state for price updates */
+.price-info.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+    .price-info.loading .edit-prices-btn {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+        .price-info.loading .edit-prices-btn::before {
+            content: "⟳";
+            animation: spin 1s linear infinite;
+        }
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
     }
 }

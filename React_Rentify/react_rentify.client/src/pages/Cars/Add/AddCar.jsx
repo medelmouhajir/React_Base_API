@@ -280,7 +280,6 @@ const AddCar = () => {
                 <div className={`form-group ${isFieldInvalid('DailyRate') ? 'form-group-error' : ''}`}>
                     <label htmlFor="DailyRate">{t('car.fields.dailyRate')}</label>
                     <div className="input-group">
-                        <span className="input-prefix">$</span>
                         <input
                             type="number"
                             id="DailyRate"
@@ -304,7 +303,6 @@ const AddCar = () => {
                 <div className="form-group">
                     <label htmlFor="HourlyRate">{t('car.fields.hourlyRate')}</label>
                     <div className="input-group">
-                        <span className="input-prefix">$</span>
                         <input
                             type="number"
                             id="HourlyRate"

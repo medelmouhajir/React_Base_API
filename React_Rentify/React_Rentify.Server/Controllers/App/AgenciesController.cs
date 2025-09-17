@@ -103,6 +103,52 @@ namespace React_Rentify.Server.Controllers
             return Ok(agency);
         }
 
+        [Authorize(Roles = "Admin,Manager,Owner")]
+        [HttpGet("{id:guid}/stats")]
+        public async Task<IActionResult> GetAgencyStats(Guid id)
+        {
+            if(! await _authService.HasAccessToAgencyAsync(id))
+                return Unauthorized();
+            
+            var agency = await _context.Set<Agency>()
+                .Include(a => a.Users)
+                .Include(a => a.Cars)
+                .Include(a => a.Customers)
+                .Include(a => a.Reservations)
+                .Include(a => a.Agency_Attachments)
+                .Select(x=>  new
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Address = x.Address,
+                    LogoUrl = x.LogoUrl,
+                    LogoUrlAssociation = x.LogoUrlAssociation,
+                    Conditions = x.Conditions,
+                    Email = x.Email,
+                    PhoneOne = x.PhoneOne,
+                    PhoneTwo = x.PhoneTwo,
+                    Agency_Attachments = x.Agency_Attachments.Select( c=> new Agency_Attachment
+                    {
+                        Id = c.Id,
+                        AgencyId = c.Id,
+                        FileName = c.FileName,
+                        FilePath = c.FilePath,
+                        UploadedAt = c.UploadedAt,
+                    }).ToList(),
+                    TotalCars = x.Cars.Count(),
+                    TotalCustomers = x.Customers.Count(),
+                    TotalReservations = x.Reservations.Count(),
+                })
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (agency == null)
+            {
+                return NotFound(new { message = $"Agency with Id '{id}' not found." });
+            }
+
+            return Ok(agency);
+        }
+
         /// <summary>
         /// POST: api/Agencies
         /// Creates a new agency. Expects the Agency object in the request body.
@@ -150,6 +196,7 @@ namespace React_Rentify.Server.Controllers
                 Email = dto.Email,
                 LogoUrl = "",
                 CurrentSubscription = sub,
+                Conditions = "و انا الموقع أسفله، أصرح أنني تسلمت مكتريا السيارة أعلاه، أعيدها على الحالة التي بقيت عليها طبقا لما هو مذكور من الشروط أسفله، \r\nخالبة، و التي استعملت عليها كاملة، و التي بإمكاني جيدا، و تسلمتها بكل الوثائق التي تخصها، و في حالة ضياع \r\nالكراء المذكور أعلاه.\r\n"
             };
 
 

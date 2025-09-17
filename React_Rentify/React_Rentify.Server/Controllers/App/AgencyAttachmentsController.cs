@@ -344,9 +344,9 @@ namespace React_Rentify.Server.Controllers.App
                 var urlPath = $"/uploads/agencies/{id}/{uniqueFileName}";
 
                 // Delete old logo file if it exists
-                if (!string.IsNullOrEmpty(agency.LogoUrl))
+                if (!string.IsNullOrEmpty(agency.LogoUrlAssociation))
                 {
-                    var oldLogoPath = Path.Combine(_env.WebRootPath, agency.LogoUrl.TrimStart('/'));
+                    var oldLogoPath = Path.Combine(_env.WebRootPath, agency.LogoUrlAssociation.TrimStart('/'));
                     if (System.IO.File.Exists(oldLogoPath))
                     {
                         System.IO.File.Delete(oldLogoPath);

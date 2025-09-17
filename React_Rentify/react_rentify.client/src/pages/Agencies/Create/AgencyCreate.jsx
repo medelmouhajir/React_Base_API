@@ -99,16 +99,16 @@ const AgencyCreate = () => {
 
     const getFeaturesList = (plan) => {
         const features = [];
-        features.push(t('subscription.agency.maxCars', { count: plan.maxCars }));
-        features.push(t('subscription.agency.maxUsers', { count: plan.maxUsers }));
-        features.push(t('subscription.agency.maxCustomers', { count: plan.maxCustomers }));
-        features.push(t('subscription.agency.maxReservations', { count: plan.maxReservations }));
+        features.push(t('subscriptions.agency.maxCars', { count: plan.maxCars }));
+        features.push(t('subscriptions.agency.maxUsers', { count: plan.maxUsers }));
+        features.push(t('subscriptions.agency.maxCustomers', { count: plan.maxCustomers }));
+        features.push(t('subscriptions.agency.maxReservations', { count: plan.maxReservations }));
 
-        if (plan.hasMaintenanceModule) features.push(t('subscription.agency.maintenanceModule'));
-        if (plan.hasExpenseTracking) features.push(t('subscription.agency.expenseTracking'));
-        if (plan.hasAdvancedReporting) features.push(t('subscription.agency.advancedReporting'));
-        if (plan.hasAPIAccess) features.push(t('subscription.agency.apiAccess'));
-        if (plan.hasGPSTracking) features.push(t('subscription.agency.gpsTracking'));
+        if (plan.hasMaintenanceModule) features.push(t('subscriptions.agency.maintenanceModule'));
+        if (plan.hasExpenseTracking) features.push(t('subscriptions.agency.expenseTracking'));
+        if (plan.hasAdvancedReporting) features.push(t('subscriptions.agency.advancedReporting'));
+        if (plan.hasAPIAccess) features.push(t('subscriptions.agency.apiAccess'));
+        if (plan.hasGPSTracking) features.push(t('subscriptions.agency.gpsTracking'));
 
         return features;
     };
@@ -238,7 +238,7 @@ const AgencyCreate = () => {
                                     )}
 
                                     <div className="plan-features">
-                                        <h4 className="features-title">{t('subscription.agency.features')}</h4>
+                                        <h4 className="features-title">{t('subscriptions.agency.features')}</h4>
                                         <ul className="features-list">
                                             {getFeaturesList(plan).map((feature, index) => (
                                                 <li key={index} className="feature-item">

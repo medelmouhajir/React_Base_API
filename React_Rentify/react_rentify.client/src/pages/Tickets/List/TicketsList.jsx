@@ -1,5 +1,6 @@
 // src/pages/Tickets/List/TicketsList.jsx
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { ticketService } from '../../../services/ticketService';
@@ -8,6 +9,7 @@ import './TicketsList.css';
 const TicketsList = () => {
     const { t } = useTranslation();
     const { isDarkMode } = useTheme();
+    const navigate = useNavigate();
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -148,13 +150,6 @@ const TicketsList = () => {
                         <span className="sr-only">{t('common.refresh')}</span>
                     </button>
 
-                    <button className="new-ticket-button">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
-                        <span>{t('tickets.newTicket')}</span>
-                    </button>
                 </div>
             </div>
 
@@ -304,16 +299,21 @@ const TicketsList = () => {
                             </div>
 
                             <div className="ticket-actions">
-                                <button className="action-button view-button" title={t('common.view')}>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <button
+                                    onClick={() => navigate('/tickets/' + ticket.id)}
+                                    className="action-button view-button"
+                                    title={t('common.view')}
+                                >
+                                    <svg
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                    >
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                         <circle cx="12" cy="12" r="3" />
-                                    </svg>
-                                </button>
-
-                                <button className="action-button edit-button" title={t('common.edit')}>
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                                     </svg>
                                 </button>
 

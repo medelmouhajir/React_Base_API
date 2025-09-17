@@ -115,14 +115,17 @@
     "confirmDelete": "Confirmer la suppression",
     "change": "Changer",
     "status": "Statut",
-    "optional": "Facultatif"
+    "optional": "Facultatif",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "add": "Ajouter"
   },
   "landing": {
     "features": "Fonctionnalités",
     "benefits": "Avantages",
     "pricing": "Tarifs",
     "contact": "Contactez‑nous",
-    "heroTitle": "Gérez votre flotte facilement",
+    "heroTitle": "Gérez votre agence facilement",
     "heroSubtitle": "Plateforme tout‑en‑un pour les agences de location de voitures.",
     "heroCta": "Commencez maintenant",
     "heroLearnMore": "En savoir plus",
@@ -482,7 +485,14 @@
       "status": "Statut",
       "pickupLocation": "Lieu de prise en charge",
       "dropoffLocation": "Lieu de restitution",
-      "customers": "Clients"
+      "customers": "Clients",
+      "days": "Jours",
+      "daysUnit": "jours",
+      "pricePerDay": "Prix par jour",
+      "discount": "Remise",
+      "discountReason": "Motif de la remise",
+      "baseAmount": "Montant de base",
+      "finalPrice": "Prix final"
     },
     "status": {
       "delivered": "Livré",
@@ -563,7 +573,23 @@
     "current": "Réservation en cours",
     "upcoming": "Réservations à venir",
     "noCurrent": "Aucune réservation en cours",
-    "noUpcoming": "Aucune réservation à venir"
+    "noUpcoming": "Aucune réservation à venir",
+    "summary": "Résumé",
+    "showAllCars": "Afficher toutes les voitures (y compris celles indisponibles)",
+    "selectedCustomers": "Les clients sélectionnés",
+    "editPrices": {
+      "title": "Modifier les prix",
+      "reservationInfo": "Infos de la réservation",
+      "basePricing": "Tarification de base",
+      "pricePerDayHint": "Calcul automatique × {{days}} jour(s).",
+      "agreedPriceHint": "Total avant frais et remises.",
+      "adjustments": "Ajustements",
+      "additionalFeesPlaceholder": "Expliquez les frais (livraison, nettoyage, retour tardif, ...)",
+      "discountPlaceholder": "Expliquez pourquoi la remise s'applique...",
+      "finalPricing": "Tarification finale",
+      "submit": "Enregistrer les prix",
+      "buttonText": "Modifier les prix"
+    }
   },
   "customerDetails": {
     "errorAddBlacklist": "Erreur lors de l'ajout à la liste noire. Veuillez réessayer.",
@@ -651,6 +677,23 @@
       "noStaff": "Aucun membre du personnel trouvé.",
       "tryDifferentSearch": "Essayez un autre terme de recherche.",
       "addFirstStaff": "Ajoutez votre premier membre du personnel."
+    },
+    "create": {
+      "title": "Créer une agence",
+      "basicInfo": "Informations de base",
+      "chooseSubscription": "Choisir une offre d’abonnement",
+      "subscriptionLoadError": "Échec du chargement des offres d’abonnement",
+      "subscriptionRequired": "Veuillez sélectionner une offre d’abonnement.",
+      "error": "Échec de la création de l’agence. Veuillez réessayer.",
+      "noPlansAvailable": "Aucune offre d’abonnement disponible",
+      "createAgency": "Créer l’agence"
+    },
+    "placeholders": {
+      "name": "Saisissez le nom de l’agence",
+      "address": "Saisissez l’adresse",
+      "email": "Saisissez l’e-mail",
+      "phoneOne": "Saisissez le téléphone principal",
+      "phoneTwo": "Saisissez le téléphone secondaire (optionnel)"
     }
   },
   "agencyDetails": {
@@ -1174,7 +1217,9 @@
     "brand": "Renter",
     "gadgets": "Gadgets",
     "expenses": "Dépenses",
-    "serviceAlerts": "Alertes"
+    "serviceAlerts": "Alertes",
+    "subscriptions": "Abonnements",
+    "tickets": "Tickets"
   },
   "profile": {
     "myProfile": "Mon profil",
@@ -1968,5 +2013,284 @@
       "goBack": "Retour"
     },
     "autoRedirect": "Redirection vers l’accueil dans {{seconds}} s."
+  },
+  "privacy": {
+    "title": "Politique de Confidentialité",
+    "subtitle": "Votre confidentialité est importante pour nous. Découvrez comment nous collectons, utilisons et protégeons vos données personnelles.",
+    "effectiveDate": "Date d'entrée en vigueur",
+    "effectiveDateValue": "1 janvier 2025",
+    "location": "Lieu",
+    "locationValue": "Maroc",
+    "quickNavigation": "Navigation rapide",
+    "footer": {
+      "title": "Des questions sur votre confidentialité ?",
+      "description": "Nous sommes là pour vous aider. Contactez notre équipe confidentialité si vous avez des questions ou préoccupations concernant la gestion de vos données personnelles.",
+      "contactUs": "Contactez-nous"
+    },
+    "sections": {
+      "introduction": {
+        "title": "Introduction",
+        "content": "Rentify (\"nous\", \"notre\") fournit une plateforme SaaS qui aide les agences de location de voitures au Maroc à gérer les réservations, les flottes, les clients, le personnel, les factures, la maintenance, le suivi GPS et les opérations associées. Nous respectons votre vie privée et nous engageons à protéger les données personnelles que vous partagez avec nous. Cette politique explique comment nous collectons, utilisons, stockons et protégeons vos informations lorsque vous utilisez nos services."
+      },
+      "informationWeCollect": {
+        "title": "Informations que nous collectons",
+        "intro": "Lorsque vous utilisez Rentify, nous pouvons collecter les catégories suivantes :",
+        "customerInfo": {
+          "title": "Informations client et utilisateur",
+          "fullName": "Nom complet, numéro de téléphone, email, adresse",
+          "contact": "Téléphone, adresse email, adresse physique",
+          "identification": "Documents et numéros d'identité (CIN, passeport, permis de conduire)",
+          "dateOfBirth": "Date de naissance et affiliation à une agence"
+        },
+        "agencyInfo": {
+          "title": "Informations sur l'agence et le personnel",
+          "details": "Détails de l'agence et informations de contact",
+          "staffInfo": "Informations sur le personnel (nom, contact, rôle)"
+        },
+        "reservationInfo": {
+          "title": "Réservations et factures",
+          "records": "Historique des réservations et métadonnées associées",
+          "invoices": "Factures, paiements et informations de facturation"
+        },
+        "gpsInfo": {
+          "title": "Données GPS et véhicules",
+          "identifiers": "Identifiants des appareils GPS et historiques de localisation des véhicules",
+          "vehicleDetails": "Détails du véhicule, pièces jointes, historique de maintenance"
+        },
+        "securityInfo": {
+          "title": "Informations de sécurité et listes noires",
+          "blacklist": "Entrées sur liste noire (nom, identifiant, permis, raison, agence signalante)",
+          "authentication": "Données de connexion et authentification (email, mots de passe chiffrés, jetons)"
+        },
+        "technicalInfo": {
+          "title": "Données techniques et d'utilisation",
+          "ipAddress": "Adresses IP et informations sur l'appareil/navigateur",
+          "deviceInfo": "Fichiers journaux et métriques d'utilisation"
+        }
+      },
+      "aiDocumentScanning": {
+        "title": "Utilisation de l'IA (Gemini) pour la numérisation des documents d'identité",
+        "intro": "Nous utilisons l'API Gemini AI (un service tiers) pour extraire automatiquement les informations d'identité à partir des images de cartes nationales, passeports et permis que vous téléchargez lors de la création d'un client.",
+        "whatWeSend": {
+          "title": "Ce que nous envoyons à Gemini",
+          "images": "Images des documents d'identité (scans ou photos téléchargées)",
+          "metadata": "Métadonnées minimales nécessaires (ID de requête, horodatage)"
+        },
+        "purpose": {
+          "title": "Objectif",
+          "extraction": "Extraire automatiquement les champs d'identité (nom, numéro, date de naissance...) pour accélérer la création de client et réduire les erreurs",
+          "qualityCheck": "Détecter les problèmes de qualité d'image et demander une nouvelle capture si nécessaire"
+        },
+        "legalBasis": {
+          "title": "Base légale et consentement",
+          "content": "Nous traitons les images sur la base de votre consentement explicite et pour exécuter le service. Ce consentement est demandé et enregistré avant tout envoi. En cas de refus, la création du client doit être faite manuellement."
+        },
+        "thirdPartyHandling": {
+          "title": "Traitement par un tiers (Gemini)",
+          "content": "Gemini est un processeur tiers. Nous partageons uniquement les données nécessaires. Le traitement est soumis à leurs conditions et pratiques de sécurité."
+        },
+        "retention": {
+          "title": "Conservation et suppression",
+          "content": "Les données extraites sont conservées chez Rentify jusqu'à demande de suppression ou expiration légale. Les images ne sont gardées que le temps nécessaire. En cas de demande, nous supprimons aussi les images de Gemini si possible."
+        },
+        "minimization": {
+          "title": "Minimisation et exactitude",
+          "content": "Nous ne stockons que les champs nécessaires (nom, numéro, date de naissance, permis) et ne conservons pas de copies inutiles. Une révision manuelle est possible si besoin."
+        },
+        "profiling": {
+          "title": "Profilage et décisions automatisées",
+          "content": "L'extraction par Gemini est uniquement utilisée pour parser les données, jamais pour un profilage ou des décisions juridiques."
+        },
+        "security": {
+          "title": "Sécurité",
+          "content": "Les données transmises sont chiffrées en transit. Les accès sont restreints et les identifiants sécurisés. Nous appliquons chiffrement, contrôles d'accès et journalisation."
+        }
+      },
+      "howWeUseYourInfo": {
+        "title": "Comment nous utilisons vos informations",
+        "intro": "Nous utilisons les données pour :",
+        "provideServices": "Fournir et améliorer les services Rentify",
+        "extractIdentity": "Extraire les données d'identité (avec consentement) pour créer des profils",
+        "authenticate": "Authentifier, prévenir la fraude, respecter la loi",
+        "support": "Fournir support client et rapports internes"
+      },
+      "dataSharing": {
+        "title": "Partage des données",
+        "intro": "Nous ne vendons pas vos données. Nous pouvons partager avec :",
+        "agencies": "Les agences que vous gérez via Rentify",
+        "serviceProviders": "Fournisseurs de services (paiement, hébergement, Gemini AI)",
+        "authorities": "Autorités marocaines si la loi l'exige",
+        "investigations": "Enquêtes de sécurité ou légales si nécessaire"
+      },
+      "dataStorage": {
+        "title": "Stockage et sécurité",
+        "content": "Nous stockons les données dans des systèmes sécurisés avec mesures techniques et organisationnelles. Les données peuvent être stockées au Maroc ou ailleurs selon les prestataires."
+      },
+      "dataRetention": {
+        "title": "Durée de conservation",
+        "content": "Nous conservons vos données tant que nécessaire pour fournir les services, respecter la loi ou résoudre des litiges. Les durées spécifiques sont disponibles sur demande."
+      },
+      "yourRights": {
+        "title": "Vos droits (selon la loi marocaine — Loi 09-08)",
+        "intro": "Vous pouvez :",
+        "access": "Accéder à vos données",
+        "correction": "Demander la correction de données inexactes",
+        "deletion": "Demander la suppression de vos données personnelles, sous réserve des obligations légales",
+        "object": "Vous opposer à certains traitements",
+        "contact": "Pour exercer vos droits, contactez : privacy@rentify.ma. Nous répondrons dans un délai raisonnable."
+      },
+      "cookies": {
+        "title": "Cookies et suivi",
+        "content": "Nous utilisons des cookies et technologies similaires pour la gestion des sessions, l'analyse et l'amélioration de l'expérience utilisateur. Vous pouvez contrôler vos préférences dans votre navigateur."
+      },
+      "thirdPartyServices": {
+        "title": "Services tiers",
+        "content": "Les services tiers (Gemini AI, passerelles de paiement, fournisseurs GPS) ont leurs propres politiques de confidentialité. Nous ne partageons que les données nécessaires et exigeons des mesures de protection."
+      },
+      "children": {
+        "title": "Enfants",
+        "content": "Nos services ne sont pas destinés aux enfants de moins de 16 ans. Nous ne collectons pas volontairement leurs données."
+      },
+      "changes": {
+        "title": "Modifications de cette politique",
+        "content": "Nous pouvons mettre à jour cette politique. Les changements seront publiés sur notre site avec la date d'entrée en vigueur."
+      },
+      "contact": {
+        "title": "Contact",
+        "intro": "Pour toute demande ou question relative à la confidentialité :",
+        "email": "privacy@rentify.ma",
+        "address": "Rentify Maroc - [Insérer l'adresse de l'entreprise]"
+      },
+      "consentCheckbox": {
+        "title": "Case à cocher de consentement pour la création de client",
+        "intro": "Lors de la création d'un nouveau client avec numérisation de document, le texte suivant doit être affiché :",
+        "text": "J'accepte que Rentify envoie les images du document d'identité que je télécharge à un service d'IA tiers (Gemini) afin d'extraire automatiquement les informations d'identité. Je confirme être autorisé à fournir ce document et comprends mes droits d'accès, de rectification et de suppression de ces données."
+      }
+    }
+  },
+  "terms": {
+    "title": "Conditions d'utilisation – Rentify",
+    "effectiveDate": "Date d'entrée en vigueur",
+    "lastUpdated": "15 janvier 2024",
+    "location": "Lieu",
+    "morocco": "Maroc",
+    "tableOfContents": "Table des matières",
+
+    "sections": {
+      "acceptance": "Acceptation des conditions",
+      "description": "Description du service",
+      "accounts": "Comptes utilisateurs",
+      "acceptableUse": "Utilisation acceptable",
+      "identityVerification": "Vérification d'identité (scannage IA)",
+      "gpsTracking": "Suivi GPS",
+      "dataPrivacy": "Données et confidentialité",
+      "payments": "Paiements et factures",
+      "intellectualProperty": "Propriété intellectuelle",
+      "suspension": "Suspension et résiliation",
+      "liability": "Limitation de responsabilité",
+      "changes": "Modifications des conditions",
+      "governingLaw": "Droit applicable et juridiction"
+    },
+
+    "content": {
+      "acceptance": {
+        "intro": "En accédant ou en utilisant Rentify (\"le Service\"), vous (\"Utilisateur\", \"Agence\" ou \"Client\") acceptez d'être lié par ces conditions et notre Politique de confidentialité. Si vous n'êtes pas d'accord, vous ne devez pas utiliser le Service."
+      },
+      "description": {
+        "intro": "Rentify fournit une plateforme cloud pour les agences de location de voitures au Maroc afin de gérer leurs opérations, notamment :",
+        "features": {
+          "reservations": "Réservations de véhicules, gestion de flotte et suivi de maintenance",
+          "onboarding": "Intégration et vérification des clients (y compris scannage IA des pièces d'identité)",
+          "gpsManagement": "Gestion des appareils GPS et suivi des véhicules en temps réel",
+          "financial": "Factures, paiements et enregistrements financiers",
+          "administration": "Gestion du personnel et de l'agence",
+          "fraud": "Outils de prévention de fraude tels que les listes noires clients"
+        }
+      },
+      "accounts": {
+        "registration": {
+          "title": "Inscription",
+          "content": "Pour utiliser Rentify, vous devez créer un compte avec des informations exactes et complètes."
+        },
+        "authentication": {
+          "title": "Authentification",
+          "content": "Les comptes sont protégés par identifiants et jetons. Vous êtes responsable de leur confidentialité."
+        },
+        "roles": {
+          "title": "Rôles",
+          "content": "Les droits d'accès sont basés sur les rôles (par ex. : Admin, Manager, Personnel, Client). Les agences sont responsables de leur attribution et suivi."
+        },
+        "sharing": {
+          "title": "Partage interdit",
+          "content": "Vous ne pouvez pas partager vos identifiants ou autoriser un accès non autorisé."
+        }
+      },
+      "acceptableUse": {
+        "intro": "Vous acceptez de ne pas :",
+        "prohibitions": {
+          "unlawful": "Utiliser le Service à des fins illégales ou frauduleuses",
+          "bypass": "Tenter de contourner l'authentification ou les mesures de sécurité",
+          "malicious": "Téléverser des fichiers malveillants ou perturber le système",
+          "blacklist": "Abuser du système de liste noire avec de fausses entrées",
+          "tracking": "Suivre des véhicules ou personnes sans base légale ni consentement"
+        }
+      },
+      "identityVerification": {
+        "integration": "Rentify intègre l'API Gemini AI pour traiter les images des pièces d'identité (CIN, passeport, permis) lors de l'intégration client.",
+        "consent": "En téléversant un document d'identité, vous consentez à l'extraction automatique et acceptez le traitement conformément à la Politique de confidentialité.",
+        "alternatives": "Rentify propose une alternative manuelle si vous refusez le traitement automatisé."
+      },
+      "gpsTracking": {
+        "connection": "Les agences peuvent connecter des appareils GPS pour suivre les véhicules.",
+        "compliance": "L'utilisation des données GPS doit respecter la législation marocaine. Les agences doivent informer conducteurs et clients du suivi."
+      },
+      "dataPrivacy": {
+        "processing": "Nous traitons les données selon notre Politique de confidentialité et la Loi marocaine 09-08.",
+        "controllers": "Les agences sont considérées comme \"responsables du traitement\" des données clients.",
+        "processor": "Rentify agit en tant que \"sous-traitant\", fournissant outils de stockage, facturation et prévention des fraudes."
+      },
+      "payments": {
+        "generation": "Rentify peut générer et stocker factures et enregistrements de paiements.",
+        "compliance": "Les agences sont responsables du respect de la fiscalité et des règles marocaines de facturation.",
+        "guarantor": "Rentify n'agit pas comme garant de paiement."
+      },
+      "intellectualProperty": {
+        "protection": "Le logiciel, les logos et la marque Rentify sont protégés par les droits de propriété intellectuelle.",
+        "prohibition": "Vous ne pouvez pas copier, distribuer ou rétro-concevoir le Service."
+      },
+      "suspension": {
+        "intro": "Nous pouvons suspendre ou résilier les comptes si :",
+        "reasons": {
+          "violation": "Vous violez ces conditions",
+          "misuse": "Vous utilisez abusivement le système (fraude, accès non autorisé, usage illégal)",
+          "legal": "Exigé par les autorités marocaines ou obligations légales"
+        },
+        "agencies": "Les agences peuvent également suspendre les comptes de leur personnel."
+      },
+      "liability": {
+        "asIs": "Le Service est fourni \"tel quel\" sans garantie d'absence d'erreurs ou d'interruptions.",
+        "notLiableFor": {
+          "title": "Nous ne sommes pas responsables de :",
+          "technical": "Pertes liées aux imprécisions GPS, pannes réseau ou erreurs d'extraction IA",
+          "actions": "Actes frauduleux ou illégaux commis par les agences ou leur personnel",
+          "damages": "Tout dommage au-delà de ce qu'impose la loi marocaine"
+        }
+      },
+      "changes": {
+        "modification": "Nous pouvons modifier ces conditions à tout moment. Les mises à jour seront publiées sur notre site.",
+        "acceptance": "La poursuite de l'utilisation après modification vaut acceptation."
+      },
+      "governingLaw": {
+        "moroccanLaw": "Ces conditions sont régies par la loi marocaine.",
+        "jurisdiction": "Tout litige sera tranché par les tribunaux marocains compétents."
+      }
+    },
+
+    "actions": {
+      "accept": "J'accepte",
+      "decline": "Refuser",
+      "close": "Fermer",
+      "scrollToTop": "Haut de page"
+    }
   }
 }

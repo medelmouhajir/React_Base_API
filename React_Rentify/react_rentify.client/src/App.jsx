@@ -23,9 +23,13 @@ import { useRtlDirection } from './hooks/useRtlDirection';
 
 // Pages - using lazy loading for better performance
 // Landing & Auth
-const LandingPage = lazy(() => import('./pages/Landing/LandingPage'));
 const Login = lazy(() => import('./pages/Auth/Login'));
 const ForgotPassword = lazy(() => import('./pages/Auth/ForgotPassword'));
+
+// Landing & terms
+const LandingPage = lazy(() => import('./pages/Landing/LandingPage'));
+const PrivacyPolicy = lazy(() => import('./pages/Landing/PrivacyPolicy/PrivacyPolicy'));
+const UseTerms = lazy(() => import('./pages/Landing/UseTerms/UseTerms'));
 
 // Main App
 const RoleBasedDashboard = lazy(() => import('./components/redirections/RoleBasedDashboard'));
@@ -89,6 +93,7 @@ const AgencySettings = lazy(() => import('./pages/Settings/Agency/AgencySettings
 
 //// Child route for Tickets
 const TicketsList = lazy(() => import('./pages/Tickets/List/TicketsList'));
+const TicketDetails = lazy(() => import('./pages/Tickets/Details/TicketDetails'));
 const ThanksPage = lazy(() => import('./pages/Auth/ThanksPage/ThanksPage'));
 
 
@@ -155,6 +160,8 @@ function App() {
                             {/* Public routes */}
                             <Route element={<LandingLayout />}>
                                 <Route path="/" element={<LandingPage />} />
+                                <Route path="/privacy" element={<PrivacyPolicy />} />
+                                <Route path="/terms" element={<UseTerms />} />
                                 <Route path="/forgot-password" element={<ForgotPassword />} />
                                 <Route path="/tickets/thanks" element={<ThanksPage />} />
                             </Route>
@@ -221,6 +228,7 @@ function App() {
 
                                 {/* Tickets */}
                                 <Route path="/tickets" element={<TicketsList />} />
+                                <Route path="/tickets/:id" element={<TicketDetails />} />
 
                                 {/* Reports */}
                                 <Route path="/reports" element={<ReportsHome />} />

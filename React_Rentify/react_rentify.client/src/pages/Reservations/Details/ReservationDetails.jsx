@@ -16,6 +16,7 @@ import GenerateInvoiceModal from './Modals/GenerateInvoiceModal';
 import AddPaymentModal from './Modals/AddPaymentModal';
 import SelectCarModal from './Modals/SelectCarModal';
 import CustomerModal from './Modals/CustomerModal';
+import EditPricesModal from './Modals/EditPricesModal';
 
 const ReservationDetails = () => {
     const { t } = useTranslation();
@@ -41,6 +42,7 @@ const ReservationDetails = () => {
     const [showSelectCarModal, setShowSelectCarModal] = useState(false);
     const [showCustomerModal, setShowCustomerModal] = useState(false);
     const [customerAction, setCustomerAction] = useState('edit'); // edit, add, remove
+    const [showEditPricesModal, setShowEditPricesModal] = useState(false);
 
     // Fetch reservation data
     useEffect(() => {
@@ -93,6 +95,18 @@ const ReservationDetails = () => {
             setShowEditDatesModal(false);
         } catch (err) {
             console.error('Error updating reservation dates:', err);
+        }
+    };
+
+    const handleEditPricesSubmit = async (priceData) => {
+        try {
+            await reservationService.updateReservationPrices(id, priceData);
+            // Refresh reservation data
+            const updated = await reservationService.getById(id);
+            setReservation(updated);
+            setShowEditPricesModal(false);
+        } catch (err) {
+            console.error('Error updating reservation prices:', err);
         }
     };
 
@@ -328,13 +342,33 @@ const ReservationDetails = () => {
                         )}
                     </div>
                 </div>
+                <div className="price-info">
+                    <div className="price-row">
+                        <span className="price-label">{t('reservation.fields.agreedPrice')}:</span>
+                        <span className="price-value">{reservation.agreedPrice?.toLocaleString() || 0} MAD</span>
+                    </div>
+                    {reservation.finalPrice && (
+                        <div className="price-row">
+                            <span className="price-label">{t('reservation.fields.finalPrice')}:</span>
+                            <span className="price-value">{reservation.finalPrice.toLocaleString()} MAD</span>
+                        </div>
+                    )}
+                    {isActive && (
+                        <button
+                            className="edit-prices-btn"
+                            onClick={() => setShowEditPricesModal(true)}
+                        >
+                            {t('reservation.editPrices.buttonText')}
+                        </button>
+                    )}
+                </div>
             </section>
 
             {/* Actions Section */}
             <section className="reservation-actions">
-                <div className="action-buttons">
+                <div className="action-reservation-buttons">
                     {/* Primary Actions Group */}
-                    <div className="action-group primary-actions">
+                    <div className="action-reservation-group primary-actions">
                         {canDeliver && (
                             <button
                                 className="action-btn deliver"
@@ -375,7 +409,7 @@ const ReservationDetails = () => {
                     </div>
 
                     {/* Edit Actions Group */}
-                    <div className="action-group edit-actions">
+                    <div className="action-reservation-group edit-actions">
                         {canEdit && (
                             <>
                                 <button
@@ -650,6 +684,14 @@ const ReservationDetails = () => {
                     onEditSubmit={handleEditCustomerSubmit}
                     onAddSubmit={handleAddCustomerSubmit}
                     onRemoveSubmit={handleRemoveCustomerSubmit}
+                />
+            )}
+
+            {showEditPricesModal && (
+                <EditPricesModal
+                    reservation={reservation}
+                    onClose={() => setShowEditPricesModal(false)}
+                    onSubmit={handleEditPricesSubmit}
                 />
             )}
         </div>

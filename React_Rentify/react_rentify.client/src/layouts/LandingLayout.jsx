@@ -189,9 +189,8 @@ const LandingLayout = () => {
                         <div className="landing-footer-column">
                             <h3 className={isDarkMode ? 'text-white' : 'text-gray-900'}>{t('footer.company')}</h3>
                             <div className="landing-footer-links">
-                                <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.about')}</a>
+                                <a href="https://www.wan.ma" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.about')}</a>
                                 <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.careers')}</a>
-                                <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.blog')}</a>
                             </div>
                         </div>
 
@@ -200,7 +199,6 @@ const LandingLayout = () => {
                             <h3 className={isDarkMode ? 'text-white' : 'text-gray-900'}>{t('footer.services')}</h3>
                             <div className="landing-footer-links">
                                 <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.carRental')}</a>
-                                <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.fleetManagement')}</a>
                                 <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.maintenance')}</a>
                             </div>
                         </div>
@@ -211,8 +209,6 @@ const LandingLayout = () => {
                             <div className="landing-footer-links">
                                 <a href="/login" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('auth.login')}</a>
                                 <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.help')}</a>
-                                <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.faq')}</a>
-                                <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.contact')}</a>
                             </div>
                         </div>
 
@@ -220,8 +216,8 @@ const LandingLayout = () => {
                         <div className="landing-footer-column">
                             <h3 className={isDarkMode ? 'text-white' : 'text-gray-900'}>{t('footer.legal')}</h3>
                             <div className="landing-footer-links">
-                                <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.terms')}</a>
-                                <a href="#" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.privacy')}</a>
+                                <a href="/terms" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.terms')}</a>
+                                <a href="/privacy" className={`landing-footer-link ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{t('footer.privacy')}</a>
                             </div>
                         </div>
                     </div>

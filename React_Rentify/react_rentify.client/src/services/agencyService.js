@@ -22,6 +22,16 @@ export const agencyService = {
         }
     },
 
+    async getStatsById(id) {
+        try {
+            const response = await apiClient.get(`/agencies/${id}/stats`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error fetching agency with ID ${id}:`, error);
+            throw error;
+        }
+    },
+
     async create(agencyData) {
         try {
             const response = await apiClient.post('/agencies', agencyData);

@@ -38,7 +38,7 @@ const AgencyDetails = () => {
                 setError(null);
 
                 // Fetch agency details
-                const agencyData = await agencyService.getById(id);
+                const agencyData = await agencyService.getStatsById(id);
                 setAgency(agencyData);
 
                 // Fetch staff if user is admin
@@ -177,10 +177,10 @@ const AgencyDetails = () => {
                 </div>
 
                 {isAdmin && (
-                    <div className="header-actions">
+                    <div className="header-agency-actions">
                         <button
                             onClick={handleEdit}
-                            className="action-button primary"
+                            className="action-agency-button primary"
                             aria-label={t('agencyDetails.editAgency')}
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -191,7 +191,7 @@ const AgencyDetails = () => {
                         </button>
 
                         <div className="dropdown-wrapper">
-                            <button className="action-button secondary dropdown-toggle">
+                            <button className="action-agency-button secondary dropdown-toggle">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <circle cx="12" cy="12" r="1" />
                                     <circle cx="12" cy="5" r="1" />
@@ -328,7 +328,7 @@ const AgencyDetails = () => {
                                     </svg>
                                 </div>
                                 <div className="stat-content">
-                                    <div className="stat-value">{agency.cars?.length || 0}</div>
+                                    <div className="stat-value">{agency.totalCars || 0}</div>
                                     <div className="stat-label">{t('agencyDetails.vehicles')}</div>
                                 </div>
                             </div>
@@ -343,7 +343,7 @@ const AgencyDetails = () => {
                                     </svg>
                                 </div>
                                 <div className="stat-content">
-                                    <div className="stat-value">{agency.customers?.length || 0}</div>
+                                    <div className="stat-value">{agency.totalCustomers || 0}</div>
                                     <div className="stat-label">{t('agencyDetails.customers')}</div>
                                 </div>
                             </div>
@@ -358,7 +358,7 @@ const AgencyDetails = () => {
                                     </svg>
                                 </div>
                                 <div className="stat-content">
-                                    <div className="stat-value">{agency.reservations?.length || 0}</div>
+                                    <div className="stat-value">{agency.totalReservations || 0}</div>
                                     <div className="stat-label">{t('agencyDetails.reservations')}</div>
                                 </div>
                             </div>
@@ -431,12 +431,12 @@ const AgencyDetails = () => {
                                     <div className="attachment-info">
                                         <h4>{attachment.fileName || attachment.title}</h4>
                                         <p className="attachment-date">
-                                            {formatDate(attachment.createdAt)}
+                                            {formatDate(attachment.uploadedAt)}
                                         </p>
                                     </div>
 
                                     <a
-                                        href={getImageUrl(attachment.urlPath)}
+                                        href={getImageUrl(attachment.filePath)}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="attachment-download"
