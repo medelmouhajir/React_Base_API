@@ -26,8 +26,11 @@ const IdentityReader = () => {
     const [success, setSuccess] = useState(null);
     const [showImages, setShowImages] = useState(true);
     const [isCheckingBlacklist, setIsCheckingBlacklist] = useState(false);
+    const [isCheckingCustomerExist, setIsCheckingCustomerExist] = useState(false);
     const [blacklistResults, setBlacklistResults] = useState([]);
+    const [existingCustomerResults, setExistingCustomerResults] = useState([]);
     const [showBlacklistWarning, setShowBlacklistWarning] = useState(false);
+    const [showExistingCustomerWarning, setShowExistingCustomerWarning] = useState(false);
     const [manualData, setManualData] = useState({});
 
     const compressImage = (file, maxWidth = 1920, maxHeight = 1080, quality = 0.8) => {
@@ -208,6 +211,33 @@ const IdentityReader = () => {
         }
     };
 
+    // Check blacklist for extracted data
+    const checkCustomerExist = async (data) => {
+        setIsCheckingCustomerExist(true);
+        try {
+            const searchParams = {
+                nationalId: data.nationalId || '',
+                passportId: data.passportId || '',
+                licenseNumber: data.licenseNumber || '',
+            };
+
+            const results = await customerService.checkCustomerIfExist(user?.agencyId, searchParams);
+            setExistingCustomerResults(results || []);
+
+            if (results && results.length > 0) {
+                setShowExistingCustomerWarning(true);
+                return true;
+            }
+
+            return false;
+        } catch (err) {
+            console.error('❌ Error checking existing customer:', err);
+            return false;
+        } finally {
+            setIsCheckingCustomerExist(false);
+        }
+    };
+
     // Process images using identity service
     const processImages = async () => {
         if (images.length === 0) {
@@ -228,6 +258,8 @@ const IdentityReader = () => {
             // Check blacklist before showing data
             const isBlacklisted = await checkBlacklist(result);
 
+            const isExisting = await checkCustomerExist(result);
+
             // Set extracted data and initialize manual data for missing fields
             setExtractedData(result);
 
@@ -242,7 +274,7 @@ const IdentityReader = () => {
             });
             setManualData(initialManualData);
 
-            if (!isBlacklisted) {
+            if (!isBlacklisted && !isExisting) {
                 setSuccess(t('identityReader.extractionSuccess'));
             }
         } catch (err) {
