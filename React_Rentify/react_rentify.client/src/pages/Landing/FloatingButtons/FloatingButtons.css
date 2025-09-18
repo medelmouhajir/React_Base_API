@@ -72,3 +72,11 @@
             height: 20px;
         }
 }
+.login-btn {
+    background: linear-gradient(135deg, #059669, #047857);
+    text-decoration: none;
+}
+
+    .login-btn:hover {
+        background: linear-gradient(135deg, #047857, #065f46);
+    }

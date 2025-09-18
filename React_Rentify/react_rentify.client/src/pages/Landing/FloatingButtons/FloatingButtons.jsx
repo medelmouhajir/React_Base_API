@@ -1,5 +1,6 @@
 // FloatingButtons.jsx
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './FloatingButtons.css';
 
 const FloatingButtons = () => {
@@ -38,6 +39,12 @@ const FloatingButtons = () => {
                     <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                 </svg>
             </button>
+            <Link to="/login" className="floating-btn login-btn" title="Login">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                        d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+            </Link>
         </div>
     );
 };
