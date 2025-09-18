@@ -504,7 +504,10 @@
       "discount": "الخصم",
       "discountReason": "سبب الخصم",
       "baseAmount": "المبلغ الأساسي",
-      "finalPrice": "السعر النهائي"
+      "finalPrice": "السعر النهائي",
+      "numberOfDays": "عدد الأيام",
+      "from": "من",
+      "to": "إلى"
     },
     "status": {
       "delivered": "تم التسليم",

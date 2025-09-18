@@ -494,7 +494,10 @@
       "discountReason": "Reason for discount",
       "baseAmount": "Base amount",
       "finalPrice": "Final price",
-      "days": "Days"
+      "days": "Days",
+      "numberOfDays": "Number of days",
+      "from": "From",
+      "to": "To"
     },
     "placeholders": {
       "price": "Enter price",

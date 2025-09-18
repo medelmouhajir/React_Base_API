@@ -31,6 +31,32 @@ export const customerService = {
         }
     },
 
+
+    async checkCustomerIfExist(agencyId , { nationalId = '', passportId = '', licenseNumber = '' } = {}) {
+        try {
+            const queryParams = new URLSearchParams();
+
+            if (nationalId) {
+                queryParams.append('nationalId', nationalId);
+            }
+            if (passportId) {
+                queryParams.append('passportId', passportId);
+            }
+            if (licenseNumber) {
+                queryParams.append('licenseNumber', licenseNumber);
+            }
+
+            const response = await apiClient.get(`/customers/${agencyId}/exist?${queryParams.toString()}`);
+            return response.data;
+        } catch (error) {
+            console.error(
+                `❌ Error searching customers (nationalId=${nationalId}, passportId=${passportId}, licenseNumber=${licenseNumber}):`,
+                error
+            );
+            throw error;
+        }
+    },
+
     async create(customerData) {
         try {
             const response = await apiClient.post('/customers', customerData);

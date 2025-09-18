@@ -49,15 +49,58 @@ const ReservationAdd = () => {
     const [showAllCars, setShowAllCars] = useState(false);
     const [selectedCar, setSelectedCar] = useState(null);
 
+    const [numberOfDaysInput, setNumberOfDaysInput] = useState('');
+
     // Calculate number of days and total price
     const numberOfDays = useMemo(() => {
         if (!formData.StartDate || !formData.EndDate) return 0;
         const start = new Date(formData.StartDate);
         const end = new Date(formData.EndDate);
-        const diffTime = Math.abs(end - start);
+        const diffTime = end - start;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays;
+        return diffDays > 0 ? diffDays : 0;
     }, [formData.StartDate, formData.EndDate]);
+
+    useEffect(() => {
+        if (numberOfDays > 0) {
+            setNumberOfDaysInput(numberOfDays.toString());
+        }
+    }, [numberOfDays]);
+
+    const handleDateChange = (field, value) => {
+        setFormData(prev => {
+            const newFormData = { ...prev, [field]: value };
+
+            // Validate dates
+            if (newFormData.StartDate && newFormData.EndDate) {
+                const startDate = new Date(newFormData.StartDate);
+                const endDate = new Date(newFormData.EndDate);
+
+                if (startDate >= endDate) {
+                    setError('End date must be after start date');
+                    return prev; // Don't update if invalid
+                } else {
+                    setError(null); // Clear error if dates are valid
+                }
+            }
+
+            return newFormData;
+        });
+    };
+    const handleNumberOfDaysChange = (value) => {
+        const days = parseInt(value) || 0;
+        setNumberOfDaysInput(value);
+
+        if (formData.StartDate && days > 0) {
+            const startDate = new Date(formData.StartDate);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + days);
+
+            const endDateString = endDate.toISOString().split('T')[0];
+            setFormData(prev => ({ ...prev, EndDate: endDateString }));
+            setError(null);
+        }
+    };
 
     // Auto-calculate agreed price when daily price or dates change
     useEffect(() => {
@@ -337,36 +380,63 @@ const ReservationAdd = () => {
                     <div className="form-section">
                         <h2 className="section-title">{t('reservation.fields.period')}</h2>
                         <div className="form-grid">
+
                             <div className="form-group">
-                                <label className="form-label">
+                                <label htmlFor="startDate" className="form-label">
                                     {t('reservation.fields.startDate')} *
                                 </label>
                                 <input
                                     type="date"
+                                    id="startDate"
                                     name="StartDate"
                                     value={formData.StartDate}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => handleDateChange('StartDate', e.target.value)}
                                     className="form-input"
                                     required
+                                    min={new Date().toISOString().split('T')[0]} // Prevent past dates
                                 />
                             </div>
+
                             <div className="form-group">
-                                <label className="form-label">
+                                <label htmlFor="endDate" className="form-label">
                                     {t('reservation.fields.endDate')} *
                                 </label>
                                 <input
                                     type="date"
+                                    id="endDate"
                                     name="EndDate"
                                     value={formData.EndDate}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => handleDateChange('EndDate', e.target.value)}
                                     className="form-input"
                                     required
+                                    min={formData.StartDate || new Date().toISOString().split('T')[0]}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="numberOfDays" className="form-label">
+                                    {t('reservation.fields.numberOfDays')}
+                                </label>
+                                <input
+                                    type="number"
+                                    id="numberOfDays"
+                                    name="numberOfDays"
+                                    value={numberOfDaysInput}
+                                    onChange={(e) => handleNumberOfDaysChange(e.target.value)}
+                                    className="form-input"
+                                    min="1"
+                                    placeholder="Enter number of days"
                                 />
                             </div>
                         </div>
-                        {numberOfDays > 0 && (
+
+                        {formData.StartDate && formData.EndDate && numberOfDays > 0 && (
                             <div className="date-info">
-                                <p>{t('reservation.fields.period')}: {numberOfDays} {t('reservation.fields.daysUnit')}</p>
+                                <strong>{t('reservation.fields.period')}:</strong> {numberOfDays} {numberOfDays === 1 ? 'day' : 'days'}
+                                <br />
+                                <strong>{t('reservation.fields.from')}:</strong> {new Date(formData.StartDate).toLocaleDateString()}
+                                <br />
+                                <strong>{t('reservation.fields.to')}:</strong> {new Date(formData.EndDate).toLocaleDateString()}
                             </div>
                         )}
                     </div>

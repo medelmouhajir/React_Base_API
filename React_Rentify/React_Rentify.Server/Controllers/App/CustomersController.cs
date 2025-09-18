@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models;
 using React_Rentify.Server.Models.Agencies;
+using React_Rentify.Server.Models.Blacklists;
 using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.Customers;
 using React_Rentify.Server.Services;
@@ -442,6 +443,51 @@ namespace React_Rentify.Server.Controllers
             };
 
             return CreatedAtAction(nameof(GetCustomerById), new { id = customer.Id }, attachmentDto);
+        }
+
+
+        [HttpGet("{agencyId:guid}/exist")]
+        public async Task<IActionResult> CheckCustomerIfExist(
+            Guid agencyId,
+            [FromQuery] string? nationalId,
+            [FromQuery] string? passportId,
+            [FromQuery] string? licenseNumber)
+        {
+            _logger.LogInformation(
+                "Searching blacklist entries with NationalId='{NationalId}', PassportId='{PassportId}', LicenseNumber='{LicenseNumber}'",
+                nationalId, passportId, licenseNumber);
+
+            IQueryable<Customer> query = _context.Set<Customer>()
+                .Where(x=> x.AgencyId == agencyId);
+
+            if (!string.IsNullOrWhiteSpace(nationalId))
+            {
+                query = query.Where(e => e.NationalId != null && e.NationalId.Contains(nationalId));
+            }
+
+            if (!string.IsNullOrWhiteSpace(passportId))
+            {
+                query = query.Where(e => e.PassportId != null && e.PassportId.Contains(passportId));
+            }
+
+            if (!string.IsNullOrWhiteSpace(licenseNumber))
+            {
+                query = query.Where(e => e.LicenseNumber != null && e.LicenseNumber.Contains(licenseNumber));
+            }
+
+            var results = await query.ToListAsync();
+
+            var dtoList = results.Select(e => new CustomerDto
+            {
+                Id = e.Id,
+                NationalId = e.NationalId,
+                PassportId = e.PassportId,
+                LicenseNumber = e.LicenseNumber,
+                FullName = e.FullName,
+            }).ToList();
+
+            _logger.LogInformation("Search returned {Count} entries", dtoList.Count);
+            return Ok(dtoList);
         }
     }
 

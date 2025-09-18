@@ -492,7 +492,10 @@
       "discount": "Remise",
       "discountReason": "Motif de la remise",
       "baseAmount": "Montant de base",
-      "finalPrice": "Prix final"
+      "finalPrice": "Prix final",
+      "numberOfDays": "Nombre de jours",
+      "from": "De",
+      "to": "À"
     },
     "status": {
       "delivered": "Livré",
