@@ -258,6 +258,34 @@ services:
         aliases:
           - db
 
+
+  backup-service:
+    build:
+      context: ./Backup_Service
+    container_name: postgres-backup-service
+    depends_on:
+      - db
+    # env_file:
+    #   - .env
+    environment:
+      BACKUP_AUTH_USER: Proxy
+      BACKUP_AUTH_PASS: BackUp@1234
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: rentify_db_1
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      BACKUP_DIR: ${BACKUP_DIR:-/backups}
+    ports:
+      - "127.0.0.1:8085:8080"
+    volumes:
+      - db_backups:/backups
+    restart: unless-stopped
+    networks:
+      react-lawyer-network:
+        aliases:
+          - backup_service
+
   # Nginx reverse proxy (optional but helpful)
   nginx:
     image: nginx:latest
@@ -300,3 +328,4 @@ networks:
 volumes:
   postgres_data:
   mangati_uploads:
+  db_backups:
