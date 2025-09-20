@@ -1502,7 +1502,12 @@
     "address": "العنوان",
     "dateOfBirth": "تاريخ الميلاد",
     "creating": "جاري الإنشاء...",
-    "createCustomer": "إنشاء العميل"
+    "createCustomer": "إنشاء العميل",
+    "existingCustomerWarning": "⚠️ يوجد عميل بنفس البيانات مسبقاً",
+    "checkingCustomerExist": "جاري البحث عن العملاء الموجودين...",
+    "viewCustomer": "عرض العميل",
+    "continueAnyway": "متابعة إنشاء عميل جديد",
+    "customerAlreadyExists": "قد يكون هذا العميل موجود مسبقاً في النظام. يرجى مراجعة السجلات الموجودة قبل المتابعة."
   },
   "expenses": {
     "list": {

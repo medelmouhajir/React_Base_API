@@ -238,6 +238,14 @@ const IdentityReader = () => {
         }
     };
 
+    const handleContinueAnyway = () => {
+        setShowExistingCustomerWarning(false);
+    };
+
+    const handleViewExistingCustomer = (customerId) => {
+        navigate(`/customers/${customerId}`);
+    };
+
     // Process images using identity service
     const processImages = async () => {
         if (images.length === 0) {
@@ -384,6 +392,45 @@ const IdentityReader = () => {
                 </div>
             )}
 
+
+            {/* Existing Customer Warning */}
+            {showExistingCustomerWarning && existingCustomerResults.length > 0 && (
+                <div className="identity-reader-alert existing-customer-warning">
+                    <span className="alert-icon">👤</span>
+                    <div>
+                        <strong>{t('identityReader.existingCustomerWarning')}</strong>
+                        <div className="existing-customer-list">
+                            {existingCustomerResults.map((customer, index) => (
+                                <div key={index} className="existing-customer-item">
+                                    <div className="customer-info">
+                                        <span className="customer-name">{customer.fullName}</span>
+                                        {customer.nationalId && <span className="customer-detail">ID: {customer.nationalId}</span>}
+                                        {customer.passportId && <span className="customer-detail">Passport: {customer.passportId}</span>}
+                                        {customer.licenseNumber && <span className="customer-detail">License: {customer.licenseNumber}</span>}
+                                    </div>
+                                    <div className="customer-actions">
+                                        <button
+                                            className="view-customer-btn"
+                                            onClick={() => navigate(`/customers/${customer.id}`)}
+                                        >
+                                            {t('identityReader.viewCustomer')}
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="existing-customer-options">
+                            <button
+                                className="continue-anyway-btn"
+                                onClick={() => setShowExistingCustomerWarning(false)}
+                            >
+                                {t('identityReader.continueAnyway')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Upload Section - Hidden after processing */}
             {showImages && (
                 <>
@@ -499,6 +546,13 @@ const IdentityReader = () => {
                         <div className="checking-blacklist">
                             <span className="spinner"></span>
                             {t('identityReader.checkingBlacklist')}
+                        </div>
+                    )}
+
+                    {isCheckingCustomerExist && (
+                        <div className="checking-customer-exist">
+                            <span className="spinner"></span>
+                            {t('identityReader.checkingCustomerExist')}
                         </div>
                     )}
 

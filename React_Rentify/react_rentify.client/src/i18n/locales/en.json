@@ -1509,7 +1509,12 @@
     "address": "Address",
     "dateOfBirth": "Date of Birth",
     "creating": "Creating...",
-    "createCustomer": "Create Customer"
+    "createCustomer": "Create Customer",
+    "existingCustomerWarning": "⚠️ Customer with similar data already exists",
+    "checkingCustomerExist": "Checking for existing customers...",
+    "viewCustomer": "View Customer",
+    "continueAnyway": "Continue Creating New Customer",
+    "customerAlreadyExists": "This customer may already exist in the system. Please review the existing records before proceeding."
   },
   "expenses": {
     "list": {

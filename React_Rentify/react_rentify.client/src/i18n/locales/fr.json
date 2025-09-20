@@ -1482,7 +1482,12 @@
     "address": "Adresse",
     "dateOfBirth": "Date de naissance",
     "creating": "Création en cours...",
-    "createCustomer": "Créer le client"
+    "createCustomer": "Créer le client",
+    "existingCustomerWarning": "⚠️ Un client avec des données similaires existe déjà",
+    "checkingCustomerExist": "Vérification des clients existants...",
+    "viewCustomer": "Afficher le client",
+    "continueAnyway": "Continuer la création d'un nouveau client",
+    "customerAlreadyExists": "Ce client existe peut-être déjà dans le système. Veuillez vérifier les enregistrements existants avant de continuer."
   },
   "expenses": {
     "list": {
