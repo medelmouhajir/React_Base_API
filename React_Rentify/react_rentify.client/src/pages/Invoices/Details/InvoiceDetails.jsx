@@ -52,6 +52,25 @@ const InvoiceDetails = () => {
         navigate(`/invoices/${id}/add-payment`);
     };
 
+    const handleRemovePayment = async (paymentId) => {
+        const confirmDelete = window.confirm(
+            t('invoice.details.confirmRemovePayment') || 'Are you sure you want to remove this payment?'
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            await invoiceService.removePayment(id, paymentId);
+            setPayments((prevPayments) => prevPayments.filter((payment) => payment.id !== paymentId));
+            setError(null);
+        } catch (err) {
+            console.error('❌ Error removing payment:', err);
+            setError(t('invoice.details.removePaymentError') || 'Failed to remove payment.');
+        }
+    };
+
     if (loading) {
         return (
             <div className="invoicedetails-loading">
@@ -161,6 +180,15 @@ const InvoiceDetails = () => {
                             <div className="payment-row">
                                 <span className="payment-label">{t('payment.fields.transactionId') || 'Transaction ID'}:</span>
                                 <span className="payment-value">{p.transactionId}</span>
+                            </div>
+                            <div className="payment-actions">
+                                <button
+                                    type="button"
+                                    className="btn-remove-payment"
+                                    onClick={() => handleRemovePayment(p.id)}
+                                >
+                                    {t('invoice.details.removePayment') || t('common.remove') || 'Remove'}
+                                </button>
                             </div>
                         </div>
                     ))}

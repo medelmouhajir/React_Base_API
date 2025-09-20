@@ -698,9 +698,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 }
 
-.payment-details {
+.payment-details,
+.payment-info {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -721,6 +723,29 @@
     font-weight: 600;
     color: var(--success);
 }
+
+.payment-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-remove-payment {
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    background-color: var(--danger-light);
+    color: var(--danger-dark);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+    .btn-remove-payment:hover {
+        background-color: var(--danger);
+        color: white;
+    }
 
 .no-payments {
     text-align: center;
