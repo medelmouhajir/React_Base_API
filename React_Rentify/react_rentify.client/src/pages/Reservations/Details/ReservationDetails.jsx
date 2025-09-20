@@ -182,6 +182,40 @@ const ReservationDetails = () => {
         }
     };
 
+    const handleRemovePayment = async (paymentId) => {
+        if (!invoice) {
+            return;
+        }
+
+        const confirmMessage = t('reservation.payments.confirmRemove', {
+            defaultValue: t('invoice.details.confirmRemovePayment', {
+                defaultValue: 'Are you sure you want to remove this payment?'
+            })
+        });
+
+        const confirmDelete = window.confirm(confirmMessage);
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            await invoiceService.removePayment(invoice.id, paymentId);
+            const updatedInvoice = await invoiceService.getById(invoice.id);
+            setInvoice(updatedInvoice);
+            setPayments(updatedInvoice.payments || []);
+        } catch (err) {
+            console.error('Error removing payment:', err);
+            window.alert(
+                t('reservation.payments.removeError', {
+                    defaultValue: t('invoice.details.removePaymentError', {
+                        defaultValue: 'Failed to remove payment.'
+                    })
+                })
+            );
+        }
+    };
+
     const handleEditCarSubmit = async (carId) => {
         try {
             await reservationService.updateReservationCar(id, carId);
@@ -609,9 +643,20 @@ const ReservationDetails = () => {
                                     </span>
                                     <span className="payment-method">{payment.method}</span>
                                 </div>
-                                <span className="payment-amount">
-                                    {payment.amount.toLocaleString()} {invoice.currency}
-                                </span>
+                                <div className="payment-actions">
+                                    <span className="payment-amount">
+                                        {payment.amount.toLocaleString()} {invoice.currency}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        className="btn-remove-payment"
+                                        onClick={() => handleRemovePayment(payment.id)}
+                                    >
+                                        {t('invoice.details.removePayment', {
+                                            defaultValue: t('common.remove', { defaultValue: 'Remove' })
+                                        })}
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
