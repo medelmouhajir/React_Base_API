@@ -83,6 +83,16 @@ export const invoiceService = {
             console.error(`❌ Error adding payment to invoice ID ${invoiceId}:`, error);
             throw error;
         }
+    },
+
+    async removePayment(invoiceId, paymentId) {
+        try {
+            const response = await apiClient.delete(`/invoices/${invoiceId}/payments/${paymentId}`);
+            return response.status === 204;
+        } catch (error) {
+            console.error(`❌ Error removing payment ${paymentId} from invoice ID ${invoiceId}:`, error);
+            throw error;
+        }
     }
 };
 

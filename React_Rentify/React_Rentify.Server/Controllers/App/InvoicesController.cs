@@ -79,7 +79,7 @@ namespace React_Rentify.Server.Controllers
             _logger.LogInformation("Retrieving invoice with Id {InvoiceId}", id);
             var invoice = await _context.Set<Invoice>()
                 .Include(i => i.Payments)
-                .Include(x=> x.Reservation)
+                .Include(x => x.Reservation)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
             if (invoice == null)
@@ -188,7 +188,7 @@ namespace React_Rentify.Server.Controllers
             var invoices = await _context.Set<Invoice>()
                 .Include(i => i.Payments)
                 .Include(i => i.Reservation)
-                .Where(x=> x.Reservation.AgencyId == agencyId)
+                .Where(x => x.Reservation.AgencyId == agencyId)
                 .ToListAsync();
 
             var dtoList = invoices.Select(i => new InvoiceDto
@@ -265,7 +265,8 @@ namespace React_Rentify.Server.Controllers
             catch (Exception e)
             {
 
-            };
+            }
+            ;
 
             _logger.LogInformation("Created invoice {InvoiceId}", invoice.Id);
 
@@ -472,6 +473,59 @@ namespace React_Rentify.Server.Controllers
             };
 
             return CreatedAtAction(nameof(GetInvoiceById), new { id = invoice.Id }, paymentDto);
+        }
+
+
+        /// <summary>
+        /// DELETE: api/Invoices/{invoiceId}/payments/{paymentId}
+        /// Removes a payment from an invoice.
+        /// </summary>
+        [HttpDelete("{invoiceId:guid}/payments/{paymentId:guid}")]
+        public async Task<IActionResult> RemovePaymentFromInvoice(Guid invoiceId, Guid paymentId)
+        {
+            _logger.LogInformation("Removing payment {PaymentId} from Invoice {InvoiceId}", paymentId, invoiceId);
+
+            var invoice = await _context.Set<Invoice>()
+                .Include(i => i.Payments)
+                .Include(i => i.Reservation)
+                .FirstOrDefaultAsync(i => i.Id == invoiceId);
+
+            if (invoice == null)
+            {
+                _logger.LogWarning("Invoice with Id {InvoiceId} not found when attempting to remove payment {PaymentId}", invoiceId, paymentId);
+                return NotFound(new { message = $"Invoice with Id '{invoiceId}' not found." });
+            }
+
+            if (!await _authService.HasAccessToAgencyAsync(invoice.Reservation.AgencyId))
+                return Unauthorized();
+
+            var payment = invoice.Payments?.FirstOrDefault(p => p.Id == paymentId);
+
+            if (payment == null)
+            {
+                _logger.LogWarning("Payment {PaymentId} not found for Invoice {InvoiceId}", paymentId, invoiceId);
+                return NotFound(new { message = $"Payment with Id '{paymentId}' not found for invoice '{invoiceId}'." });
+            }
+
+            _context.Set<Payment>().Remove(payment);
+            await _context.SaveChangesAsync();
+
+            var totalPaid = await _context.Set<Payment>()
+                .Where(p => p.InvoiceId == invoiceId)
+                .SumAsync(p => p.Amount);
+
+            var shouldBePaid = totalPaid >= invoice.Amount;
+
+            if (invoice.IsPaid != shouldBePaid)
+            {
+                invoice.IsPaid = shouldBePaid;
+                _context.Entry(invoice).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+
+            _logger.LogInformation("Removed payment {PaymentId} from Invoice {InvoiceId}", paymentId, invoiceId);
+
+            return NoContent();
         }
     }
 

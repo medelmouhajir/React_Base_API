@@ -1,28 +1,35 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rentify_GPS_Service_Worker.Data;
 using Rentify_GPS_Service_Worker.Models;
-using System;
+using Rentify_GPS_Service_Worker.Protocols;
+using Rentify_GPS_Service_Worker.Protocols.Teltonika;
+using System.Buffers.Binary;
 using System.Collections.Concurrent;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Rentify_GPS_Service_Worker
 {
     public class Worker : BackgroundService
     {
+        private static readonly byte[] TcpHandshakeResponse = new byte[] { 0x01 };
+
         private readonly ILogger<Worker> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly int _listenPort;
         private readonly string _serverIp;
-        private Socket _udpSocket;
-        private TcpListener _tcpListener;
-        private CancellationTokenSource _internalCts;
+        private Socket? _udpSocket;
+        private TcpListener? _tcpListener;
+        private CancellationTokenSource? _internalCts;
         private readonly ConcurrentDictionary<string, TcpClient> _connectedClients = new();
 
         public Worker(
@@ -33,11 +40,7 @@ namespace Rentify_GPS_Service_Worker
             _logger = logger;
             _serviceProvider = serviceProvider;
 
-            // Read the listening port from configuration
             _listenPort = configuration.GetValue<int>("GpsListener:Port");
-
-            // In Docker, we should always bind to 0.0.0.0 (all interfaces)
-            // The external IP (152.53.243.82) is handled by Docker port mapping
             _serverIp = "0.0.0.0";
         }
 
@@ -46,11 +49,9 @@ namespace Rentify_GPS_Service_Worker
             _internalCts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
             var combinedToken = _internalCts.Token;
 
-            // Start both UDP and TCP listeners in separate tasks
             Task udpTask = StartUdpListener(combinedToken);
             Task tcpTask = StartTcpListener(combinedToken);
 
-            // Return a task that completes when both listeners complete
             return Task.WhenAll(udpTask, tcpTask);
         }
 
@@ -60,42 +61,39 @@ namespace Rentify_GPS_Service_Worker
             {
                 try
                 {
-                    // Create a UDP socket
                     _udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                     IPAddress bindAddress = _serverIp == "0.0.0.0" ? IPAddress.Any : IPAddress.Parse(_serverIp);
 
-                    // Bind to the specified IP and port
                     _udpSocket.Bind(new IPEndPoint(bindAddress, _listenPort));
-                    _logger.LogInformation("UDP GPS Listener started. Listening on {IP}:{Port}",
-                        bindAddress, _listenPort);
+                    _logger.LogInformation("UDP GPS Listener started. Listening on {IP}:{Port}", bindAddress, _listenPort);
 
-                    var buffer = new byte[4096];
+                    var buffer = new byte[65535];
                     EndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
 
                     while (!token.IsCancellationRequested)
                     {
                         try
                         {
-                            // Wait for incoming UDP packet (blocking)
                             int receivedBytes = _udpSocket.ReceiveFrom(buffer, ref remoteEP);
-                            if (receivedBytes > 0)
+                            if (receivedBytes <= 0)
                             {
-                                // Log the sender IP and port for debugging
-                                var senderEndPoint = (IPEndPoint)remoteEP;
-
-                                // Decode bytes → string
-                                var rawData = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-                                _logger.LogDebug("UDP: Received {Bytes} bytes from {IP}:{Port}: {Raw}",
-                                    receivedBytes, senderEndPoint.Address, senderEndPoint.Port, rawData);
-
-                                // Process the data
-                                await ProcessGpsMessage(rawData, "UDP", senderEndPoint.ToString(), token);
+                                continue;
                             }
+
+                            var datagram = new byte[receivedBytes];
+                            Buffer.BlockCopy(buffer, 0, datagram, 0, receivedBytes);
+
+                            var senderEndPoint = (IPEndPoint)remoteEP;
+                            await ProcessTeltonikaUdpPacketAsync(datagram, senderEndPoint, token);
                         }
                         catch (SocketException sockEx)
                         {
                             _logger.LogError(sockEx, "SocketException in UDP listener.");
                             await Task.Delay(1000, token);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            break;
                         }
                         catch (Exception ex)
                         {
@@ -121,53 +119,44 @@ namespace Rentify_GPS_Service_Worker
             {
                 try
                 {
-                    // Create a TCP listener
                     IPAddress bindAddress = _serverIp == "0.0.0.0" ? IPAddress.Any : IPAddress.Parse(_serverIp);
                     _tcpListener = new TcpListener(bindAddress, _listenPort);
                     _tcpListener.Start();
 
-                    _logger.LogInformation("TCP GPS Listener started. Listening on {IP}:{Port}",
-                        bindAddress, _listenPort);
+                    _logger.LogInformation("TCP GPS Listener started. Listening on {IP}:{Port}", bindAddress, _listenPort);
 
                     while (!token.IsCancellationRequested)
                     {
                         try
                         {
-                            // Accept new TCP clients (non-blocking with cancellation)
                             using var timeoutCts = new CancellationTokenSource();
                             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(token, timeoutCts.Token);
 
-                            // Set a timeout for accepting connections
                             timeoutCts.CancelAfter(TimeSpan.FromSeconds(1));
 
                             try
                             {
-                                // Wait for a client to connect
                                 var client = await _tcpListener.AcceptTcpClientAsync().WithCancellation(linkedCts.Token);
 
-                                // Get client info for logging
-                                var clientEndPoint = (IPEndPoint)client.Client.RemoteEndPoint;
+                                var clientEndPoint = (IPEndPoint)client.Client.RemoteEndPoint!;
                                 var clientId = $"{clientEndPoint.Address}:{clientEndPoint.Port}";
 
                                 _logger.LogInformation("New TCP client connected: {ClientId}", clientId);
 
-                                // Add to connected clients dictionary
                                 _connectedClients.TryAdd(clientId, client);
 
-                                // Handle this client in a separate task
-                                _ = HandleTcpClientAsync(client, clientId, token)
-                                    .ContinueWith(t =>
+                                _ = HandleTcpClientAsync(client, clientId, token).ContinueWith(t =>
+                                {
+                                    if (t.IsFaulted)
                                     {
-                                        if (t.IsFaulted)
-                                            _logger.LogError(t.Exception, "Error handling TCP client {ClientId}", clientId);
+                                        _logger.LogError(t.Exception, "Error handling TCP client {ClientId}", clientId);
+                                    }
 
-                                        // Remove from dictionary when done
-                                        _connectedClients.TryRemove(clientId, out _);
-                                    }, TaskScheduler.Default);
+                                    _connectedClients.TryRemove(clientId, out _);
+                                }, TaskScheduler.Default);
                             }
                             catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
                             {
-                                // This is just the timeout, continue the loop
                                 continue;
                             }
                         }
@@ -175,6 +164,10 @@ namespace Rentify_GPS_Service_Worker
                         {
                             _logger.LogError(sockEx, "SocketException in TCP listener.");
                             await Task.Delay(1000, token);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            break;
                         }
                         catch (Exception ex)
                         {
@@ -190,7 +183,6 @@ namespace Rentify_GPS_Service_Worker
                 {
                     _tcpListener?.Stop();
 
-                    // Close all client connections
                     foreach (var client in _connectedClients.Values)
                     {
                         try { client.Close(); } catch { }
@@ -208,53 +200,56 @@ namespace Rentify_GPS_Service_Worker
             {
                 using (client)
                 {
-                    // Get the client's stream
                     using var stream = client.GetStream();
 
-                    // Buffer for reading data
-                    byte[] buffer = new byte[4096];
+                    var imei = await PerformTcpHandshakeAsync(stream, clientId, token);
+                    if (string.IsNullOrWhiteSpace(imei))
+                    {
+                        _logger.LogWarning("TCP client {ClientId} closed because IMEI could not be determined", clientId);
+                        return;
+                    }
 
-                    // Set read timeout to prevent blocking forever
-                    client.ReceiveTimeout = 30000; // 30 seconds
+                    client.ReceiveTimeout = 30000;
+
+                    var buffer = new byte[4096];
+                    var connectionBuffer = new List<byte>();
 
                     while (!token.IsCancellationRequested && client.Connected)
                     {
-                        // Check if there's data available
-                        if (stream.DataAvailable)
+                        int bytesRead = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length), token);
+                        if (bytesRead == 0)
                         {
-                            // Read data from the client
-                            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, token);
+                            _logger.LogInformation("TCP client disconnected: {ClientId}", clientId);
+                            break;
+                        }
 
-                            if (bytesRead == 0)
+                        // append only the bytes we actually read
+                        for (int i = 0; i < bytesRead; i++)
+                            connectionBuffer.Add(buffer[i]);
+
+                        while (TryExtractTeltonikaFrame(connectionBuffer, out var frame))
+                        {
+                            if (!TeltonikaAvlDecoder.TryParsePacket(frame, out var packet, out var error))
                             {
-                                // Client disconnected
-                                _logger.LogInformation("TCP client disconnected: {ClientId}", clientId);
-                                break;
+                                _logger.LogWarning("Failed to parse Teltonika packet from {ClientId}: {Error}", clientId, error);
+                                await SendTeltonikaAckAsync(stream, 0, token);
+                                connectionBuffer.Clear();
+                                return;
                             }
 
-                            // Convert data to string
-                            var rawData = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                            _logger.LogDebug("TCP: Received {Bytes} bytes from {ClientId}: {Raw}",
-                                bytesRead, clientId, rawData);
-
-                            // Process the GPS data
-                            await ProcessGpsMessage(rawData, "TCP", clientId, token);
-
-                            // Optionally send acknowledgment back to the client
-                            // await SendAcknowledgment(stream, token);
-                        }
-                        else
-                        {
-                            // No data available, sleep briefly to avoid tight loop
-                            await Task.Delay(100, token);
+                            int saved = await PersistTeltonikaRecordsAsync(packet, imei, "TCP", clientId, token);
+                            await SendTeltonikaAckAsync(stream, packet.RecordCount, token);
                         }
                     }
                 }
             }
             catch (IOException ioEx)
             {
-                // This typically happens when the client disconnects abruptly
                 _logger.LogInformation(ioEx, "TCP client {ClientId} disconnected", clientId);
+            }
+            catch (OperationCanceledException)
+            {
+                // normal shutdown
             }
             catch (Exception ex)
             {
@@ -262,55 +257,323 @@ namespace Rentify_GPS_Service_Worker
             }
             finally
             {
-                // Ensure client is removed from dictionary
                 _connectedClients.TryRemove(clientId, out _);
             }
         }
 
-        // Optional: Send acknowledgment back to TCP client
-        private async Task SendAcknowledgment(NetworkStream stream, CancellationToken token)
+
+        private async Task<string?> PerformTcpHandshakeAsync(NetworkStream stream, string clientId, CancellationToken token)
         {
-            try
+            var lengthBuffer = new byte[2];
+            if (!await ReadExactAsync(stream, lengthBuffer, token))
             {
-                byte[] ackBytes = Encoding.ASCII.GetBytes("ACK\r\n");
-                await stream.WriteAsync(ackBytes, 0, ackBytes.Length, token);
-                await stream.FlushAsync(token);
+                _logger.LogWarning("TCP client {ClientId} closed before sending IMEI length", clientId);
+                return null;
             }
-            catch (Exception ex)
+
+            ushort imeiLength = BinaryPrimitives.ReadUInt16BigEndian(lengthBuffer);
+            if (imeiLength == 0 || imeiLength > 64)
             {
-                _logger.LogWarning(ex, "Failed to send acknowledgment to TCP client");
+                _logger.LogWarning("TCP client {ClientId} provided invalid IMEI length {Length}", clientId, imeiLength);
+                return null;
             }
+
+            var imeiBuffer = new byte[imeiLength];
+            if (!await ReadExactAsync(stream, imeiBuffer, token))
+            {
+                _logger.LogWarning("TCP client {ClientId} closed before sending IMEI payload", clientId);
+                return null;
+            }
+
+            string imei = Encoding.ASCII.GetString(imeiBuffer).Trim('\0', ' ');
+            if (imei.Length == 0)
+            {
+                _logger.LogWarning("TCP client {ClientId} sent empty IMEI", clientId);
+                return null;
+            }
+
+            await stream.WriteAsync(TcpHandshakeResponse, token);
+            await stream.FlushAsync(token);
+
+            _logger.LogInformation("TCP client {ClientId} identified as IMEI {IMEI}", clientId, imei);
+            return imei;
         }
 
-        // Process GPS message regardless of source (TCP or UDP)
-        private async Task ProcessGpsMessage(string rawData, string protocol, string clientId, CancellationToken token)
+        private async Task ProcessTeltonikaUdpPacketAsync(byte[] datagram, IPEndPoint sender, CancellationToken token)
         {
-            try
+            if (!TeltonikaAvlDecoder.TryParsePacket(datagram, out var packet, out var error))
             {
-                // Split into individual messages if multiple are received at once
-                string[] messages = rawData.Split(
-                    new[] { "\r\n", "\n" },
-                    StringSplitOptions.RemoveEmptyEntries);
+                _logger.LogWarning("UDP: Failed to parse Teltonika packet from {Sender}: {Error}", sender, error);
+                SendTeltonikaUdpAck(0, sender);
+                return;
+            }
 
-                foreach (var message in messages)
+            string? deviceSerial = ExtractDeviceSerial(packet);
+            if (string.IsNullOrWhiteSpace(deviceSerial))
+            {
+                _logger.LogWarning("UDP: Could not determine IMEI for packet from {Sender}", sender);
+                SendTeltonikaUdpAck(0, sender);
+                return;
+            }
+
+            await PersistTeltonikaRecordsAsync(packet, deviceSerial, "UDP", sender.ToString(), token);
+            SendTeltonikaUdpAck(packet.RecordCount, sender);
+        }
+
+        private async Task<int> PersistTeltonikaRecordsAsync(TeltonikaAvlPacket packet, string deviceSerial, string protocol, string clientId, CancellationToken token)
+        {
+            int saved = 0;
+
+            foreach (var avlRecord in packet.Records)
+            {
+                var locationRecord = ConvertToLocationRecord(packet.CodecId, avlRecord, deviceSerial, protocol, clientId);
+                await SaveLocationAsync(locationRecord, token);
+                saved++;
+            }
+
+            return saved;
+        }
+
+        private Location_Record ConvertToLocationRecord(byte codecId, TeltonikaAvlRecord record, string deviceSerial, string protocol, string clientId)
+        {
+            return new Location_Record
+            {
+                Id = Guid.NewGuid(),
+                DeviceSerialNumber = deviceSerial,
+                Timestamp = record.TimestampUtc,
+                Latitude = record.Latitude,
+                Longitude = record.Longitude,
+                SpeedKmh = record.SpeedKmh,
+                Heading = record.Heading,
+                Altitude = record.Altitude,
+                IgnitionOn = ResolveIgnition(record),
+                StatusFlags = BuildStatusFlags(codecId, record, protocol, clientId)
+            };
+        }
+
+        private static bool? ResolveIgnition(TeltonikaAvlRecord record)
+        {
+            if (record.IoElements.TryGetValue(239, out var extendedIgnition))
+            {
+                return extendedIgnition != 0;
+            }
+
+            if (record.IoElements.TryGetValue(1, out var legacyIgnition))
+            {
+                return legacyIgnition != 0;
+            }
+
+            return null;
+        }
+
+        private static string BuildStatusFlags(byte codecId, TeltonikaAvlRecord record, string protocol, string clientId)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"Protocol=Teltonika/{protocol};Codec=0x{codecId:X};Client={clientId};Priority={record.Priority};Satellites={record.Satellites};Event={record.EventIoId}");
+
+            var interpretation = TeltonikaEventInterpreter.Interpret(record);
+
+            if (!string.IsNullOrEmpty(interpretation.PrimaryEvent))
+            {
+                builder.Append($";EventName={SanitizeToken(interpretation.PrimaryEvent)}");
+            }
+
+            if (interpretation.Alerts.Count > 0)
+            {
+                builder.Append($";Alerts={string.Join('|', interpretation.Alerts.Select(SanitizeToken))}");
+            }
+
+            foreach (var metric in interpretation.Metrics)
+            {
+                builder.Append($";{metric.Key}={metric.Value}");
+            }
+
+            if (record.TotalIoElements > 0)
+            {
+                builder.Append($";IO={record.TotalIoElements}");
+            }
+
+            if (record.IoElements.TryGetValue(66, out var io66))
+            {
+                builder.Append($";IO66={io66}");
+            }
+
+            if (record.IoElements.TryGetValue(67, out var io67))
+            {
+                builder.Append($";IO67={io67}");
+            }
+
+            if (record.IoElements.TryGetValue(72, out var fuelLevel))
+            {
+                builder.Append($";FuelLevel={fuelLevel}");
+            }
+
+            if (record.IoElements.TryGetValue(73, out var fuelUsed))
+            {
+                builder.Append($";FuelUsed={fuelUsed}");
+            }
+
+            if (record.IoElements.TryGetValue(239, out var ignitionRaw))
+            {
+                builder.Append($";IgnitionRaw={ignitionRaw}");
+            }
+
+            return builder.ToString();
+        }
+
+        private static string SanitizeToken(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            var sanitized = value.Replace(';', '_').Replace('=', '_');
+            var parts = sanitized
+                .Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            return string.Join('_', parts);
+        }
+
+        private static string? ExtractDeviceSerial(TeltonikaAvlPacket packet)
+        {
+            foreach (var record in packet.Records)
+            {
+                if (TryExtractImei(record, out var imei))
                 {
-                    // Parse the raw message into a Location_Record object
-                    var locationRecord = ParseGpsMessage(message.Trim());
-                    if (locationRecord != null)
-                    {
-                        // Add protocol and client info to status flags for debugging
-                        locationRecord.StatusFlags = $"Protocol={protocol};ClientId={clientId}";
+                    return imei;
+                }
+            }
 
-                        // Save to database
-                        await SaveLocationAsync(locationRecord, token);
+            return null;
+        }
+
+        private static bool TryExtractImei(TeltonikaAvlRecord record, out string? imei)
+        {
+            foreach (var variable in record.VariableIoElements)
+            {
+                var candidate = Encoding.ASCII.GetString(variable.Value).Trim('\0', ' ');
+                if (IsImei(candidate))
+                {
+                    imei = candidate;
+                    return true;
+                }
+            }
+
+            foreach (var kvp in record.IoElements)
+            {
+                var value = kvp.Value;
+                if (value >= 100_000_000_000_000 && value <= 999_999_999_999_999)
+                {
+                    var candidate = value.ToString(CultureInfo.InvariantCulture);
+                    if (IsImei(candidate))
+                    {
+                        imei = candidate;
+                        return true;
                     }
                 }
             }
+
+            imei = null;
+            return false;
+        }
+
+        private static bool IsImei(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            var trimmed = value.Trim();
+            if (trimmed.Length != 15)
+            {
+                return false;
+            }
+
+            foreach (var ch in trimmed)
+            {
+                if (!char.IsDigit(ch))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void SendTeltonikaUdpAck(int recordCount, IPEndPoint endpoint)
+        {
+            try
+            {
+                var ack = new byte[4];
+                BinaryPrimitives.WriteInt32BigEndian(ack, recordCount);
+                _udpSocket?.SendTo(ack, endpoint);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing GPS message from {Protocol} client {ClientId}",
-                    protocol, clientId);
+                _logger.LogWarning(ex, "Failed to send UDP acknowledgement to {Endpoint}", endpoint);
             }
+        }
+
+        private static async Task SendTeltonikaAckAsync(NetworkStream stream, int recordCount, CancellationToken token)
+        {
+            var ack = new byte[4];
+            BinaryPrimitives.WriteInt32BigEndian(ack, recordCount);
+            await stream.WriteAsync(ack, token);
+            await stream.FlushAsync(token);
+        }
+
+        private static async Task<bool> ReadExactAsync(NetworkStream stream, Memory<byte> buffer, CancellationToken token)
+        {
+            int totalRead = 0;
+            while (totalRead < buffer.Length)
+            {
+                int read = await stream.ReadAsync(buffer.Slice(totalRead), token);
+                if (read == 0)
+                {
+                    return false;
+                }
+
+                totalRead += read;
+            }
+
+            return true;
+        }
+
+        private static bool TryExtractTeltonikaFrame(List<byte> buffer, out byte[] frame)
+        {
+            frame = Array.Empty<byte>();
+
+            if (buffer.Count < 8)
+            {
+                return false;
+            }
+
+            var span = CollectionsMarshal.AsSpan(buffer);
+
+            if (span[0] != 0 || span[1] != 0 || span[2] != 0 || span[3] != 0)
+            {
+                buffer.RemoveAt(0);
+                return false;
+            }
+
+            int dataLength = BinaryPrimitives.ReadInt32BigEndian(span.Slice(4, 4));
+            if (dataLength <= 0)
+            {
+                buffer.RemoveAt(0);
+                return false;
+            }
+
+            int totalLength = 8 + dataLength + 4;
+            if (span.Length < totalLength)
+            {
+                return false;
+            }
+
+            frame = span.Slice(0, totalLength).ToArray();
+            buffer.RemoveRange(0, totalLength);
+            return true;
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
@@ -319,20 +582,16 @@ namespace Rentify_GPS_Service_Worker
 
             try
             {
-                // Cancel our internal operations
                 _internalCts?.Cancel();
 
-                // Close UDP socket
                 _udpSocket?.Close();
-
-                // Stop TCP listener
                 _tcpListener?.Stop();
 
-                // Close all TCP client connections
                 foreach (var client in _connectedClients.Values)
                 {
                     try { client.Close(); } catch { }
                 }
+
                 _connectedClients.Clear();
             }
             catch (Exception ex)
@@ -343,103 +602,32 @@ namespace Rentify_GPS_Service_Worker
             return base.StopAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Parses a raw GPS message string into a Location_Record.
-        /// Adjust this method based on your GPS device's protocol/format.
-        /// Example format (comma‐separated): 
-        ///   "DEVICE123,2025-06-03T22:00:00Z,33.589886,-7.603869,60.5,270"
-        /// </summary>
-        private Location_Record ParseGpsMessage(string raw)
-        {
-            try
-            {
-                // Skip empty messages
-                if (string.IsNullOrWhiteSpace(raw))
-                {
-                    return null;
-                }
-
-                // Trim any whitespace
-                raw = raw.Trim();
-
-                // Split by comma (or by your device's delimiter)
-                var parts = raw.Split(',', StringSplitOptions.RemoveEmptyEntries);
-
-                if (parts.Length < 5)
-                {
-                    _logger.LogWarning("GPS message has insufficient parts: {Raw}", raw);
-                    return null;
-                }
-
-                // Map each part (adjust indices if your format differs)
-                string deviceSerial = parts[0].Trim();
-                DateTime timestamp = DateTime.Parse(parts[1].Trim());
-                double latitude = double.Parse(parts[2].Trim());
-                double longitude = double.Parse(parts[3].Trim());
-                double speedKmh = double.Parse(parts[4].Trim());
-
-                double? heading = null;
-                if (parts.Length >= 6 && double.TryParse(parts[5].Trim(), out var hdg))
-                {
-                    heading = hdg;
-                }
-
-                return new Location_Record
-                {
-                    Id = Guid.NewGuid(),
-                    DeviceSerialNumber = deviceSerial,
-                    Timestamp = timestamp,
-                    Latitude = latitude,
-                    Longitude = longitude,
-                    SpeedKmh = speedKmh,
-                    Heading = heading,
-                    StatusFlags = string.Empty // Will be populated in ProcessGpsMessage
-                };
-            }
-            catch (Exception parseEx)
-            {
-                _logger.LogWarning(parseEx, "Failed to parse GPS message: {Raw}", raw);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Saves the Location_Record into the database.
-        /// Also ensures there's a corresponding Gps_Device row (inserts if missing).
-        /// </summary>
         private async Task SaveLocationAsync(Location_Record locationRecord, CancellationToken token)
         {
-            // Create a new scope to get a MainDbContext instance
             using var scope = _serviceProvider.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<MainDbContext>();
 
-            // 1. Check if this DeviceSerialNumber exists in the Gps_Devices table
-            var device = await db.Gps_Devices
-                                 .FirstOrDefaultAsync(d => d.DeviceSerialNumber == locationRecord.DeviceSerialNumber, token);
+            var device = await db.Gps_Devices.FirstOrDefaultAsync(d => d.DeviceSerialNumber == locationRecord.DeviceSerialNumber, token);
 
             if (device == null)
             {
-                // If not found, create a new device entry
                 device = new Gps_Device
                 {
                     Id = Guid.NewGuid(),
                     DeviceSerialNumber = locationRecord.DeviceSerialNumber,
-                    Model = "Unknown",  // Can be updated later
-                    InstallCarPlate = "Unknown", // Can be updated later
+                    Model = "Unknown",
+                    InstallCarPlate = "Unknown",
                     InstalledOn = DateTime.UtcNow
                 };
                 db.Gps_Devices.Add(device);
 
-                // Save so that device.Id is generated
                 await db.SaveChangesAsync(token);
 
                 _logger.LogInformation("Created new GPS device record for {DeviceSerial}", device.DeviceSerialNumber);
             }
 
-            // 2. Assign foreign key
             locationRecord.Gps_DeviceId = device.Id;
 
-            // 3. Insert the Location_Record
             db.Location_Records.Add(locationRecord);
             await db.SaveChangesAsync(token);
 
@@ -452,19 +640,19 @@ namespace Rentify_GPS_Service_Worker
         }
     }
 
-    // Extension method for TcpListener to support cancellation
     public static class TaskExtensions
     {
         public static async Task<T> WithCancellation<T>(this Task<T> task, CancellationToken cancellationToken)
         {
             var tcs = new TaskCompletionSource<bool>();
-            using (cancellationToken.Register(s => ((TaskCompletionSource<bool>)s).TrySetResult(true), tcs))
+            using (cancellationToken.Register(static s => ((TaskCompletionSource<bool>)s!).TrySetResult(true), tcs))
             {
                 if (task != await Task.WhenAny(task, tcs.Task))
                 {
                     throw new OperationCanceledException(cancellationToken);
                 }
             }
+
             return await task;
         }
     }
