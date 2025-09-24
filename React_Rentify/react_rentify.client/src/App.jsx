@@ -85,6 +85,7 @@ const AddServiceAlert = lazy(() => import('./pages/ServiceAlerts/Add/AddServiceA
 //// Child route for Invoices
 const AddInvoice = lazy(() => import('./pages/Invoices/Add/AddInvoice'));
 const InvoiceDetails = lazy(() => import('./pages/Invoices/Details/InvoiceDetails'));
+const InvoicePrint = lazy(() => import('./pages/Invoices/Print/InvoicePrint'));
 
 
 //// Child route for Settings
@@ -222,6 +223,7 @@ function App() {
                                 <Route path="/invoices" element={<InvoicesList />} />
                                 <Route path="/invoices/add" element={<AddInvoice />} />
                                 <Route path="/invoices/:id" element={<InvoiceDetails />} />
+                                <Route path="/invoices/:id/print" element={<InvoicePrint />} />
 
                                 {/* GPS Tracking */}
                                 <Route path="/gps" element={<GpsHome />} />

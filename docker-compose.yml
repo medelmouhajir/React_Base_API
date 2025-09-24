@@ -1,4 +1,4 @@
-services:
+﻿services:
   # Backend .NET Core API services
   react_lawyer.server:
     build:
@@ -257,6 +257,43 @@ services:
       react-lawyer-network:
         aliases:
           - db
+
+  db_backup:
+    build:
+      context: ./db-backup
+    container_name: db-backup
+    restart: unless-stopped
+    ports:
+      - "55555:55555"   # Host → Container
+    environment:
+      PGHOST: db
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: ${DB_PASSWORD:-postgres}
+
+      # Only these DBs are dumpable:
+      ALLOWED_DBS: reactlawyerdb,lawyerdocumentgeneratordb,mangati_db_1,rentify_db_1,rentify_gps_db_1,virtuello_db_1
+
+      # Auth options (set at least one; you can require both)
+      BACKUP_TOKEN: ${BACKUP_TOKEN}
+      BACKUP_USER: ${BACKUP_USER}
+      BACKUP_PASS: ${BACKUP_PASS}
+      REQUIRE_BOTH: "false"     # set "true" to require BOTH Basic + Token
+
+      # Optional: restrict to specific public IPs
+      ALLOW_IPS: ${BACKUP_ALLOW_IPS}
+
+    depends_on:
+      - db
+    networks:
+      react-lawyer-network:
+        aliases:
+          - db_backup
+    # Hardening (optional)
+    cap_drop:
+      - ALL
+    read_only: true
+
 
   # Nginx reverse proxy (optional but helpful)
   nginx:

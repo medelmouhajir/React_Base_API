@@ -362,6 +362,7 @@ namespace React_Rentify.Server.Controllers
         /// Deletes a customer and all its attachments.
         /// </summary>
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = "Owner")]
         public async Task<IActionResult> DeleteCustomer(Guid id)
         {
             _logger.LogInformation("Deleting customer {CustomerId}", id);

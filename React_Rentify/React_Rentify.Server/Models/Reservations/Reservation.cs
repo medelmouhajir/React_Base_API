@@ -2,6 +2,7 @@
 using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.Customers;
 using React_Rentify.Server.Models.Invoices;
+using React_Rentify.Server.Models.Users;
 
 namespace React_Rentify.Server.Models.Reservations
 {
@@ -37,6 +38,9 @@ namespace React_Rentify.Server.Models.Reservations
 
         public string? PickupLocation { get; set; }
         public string? DropoffLocation { get; set; }
+
+        public string? CreatedByUserId { get; set; }
+        public virtual User? CreatedByUser { get; set; }
 
         /// <summary>
         /// Link to the generated invoice (1:1).

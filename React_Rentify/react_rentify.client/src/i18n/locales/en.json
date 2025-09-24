@@ -497,7 +497,8 @@
       "days": "Days",
       "numberOfDays": "Number of days",
       "from": "From",
-      "to": "To"
+      "to": "To",
+      "addedBy": "Added By"
     },
     "placeholders": {
       "price": "Enter price",

@@ -63,7 +63,17 @@ export const gpsService = {
             console.error(`❌ Error fetching latest record for device ${serialNumber}:`, error);
             throw error;
         }
-    }
+    },
+
+    async getCarsByAgencyId(agencyId) {
+        try {
+            const response = await apiClient.get(`/cars/gps/${agencyId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error fetching cars for agency ${agencyId}:`, error);
+            throw error;
+        }
+    },
 };
 
 export default gpsService;

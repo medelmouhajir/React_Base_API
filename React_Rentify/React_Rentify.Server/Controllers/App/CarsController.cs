@@ -214,6 +214,57 @@ namespace React_Rentify.Server.Controllers
             return Ok(dtoList);
         }
 
+
+        [HttpGet("gps/{agencyId:guid}")]
+        public async Task<IActionResult> GetGPSCarsByAgencyId(Guid agencyId)
+        {
+            _logger.LogInformation("Retrieving cars for Agency {AgencyId}", agencyId);
+
+
+            if (!await _authService.HasAccessToAgencyAsync(agencyId))
+                return Unauthorized();
+
+            try
+            {
+                var cars = await _context.Set<Car>()
+                    .Where(c => c.AgencyId == agencyId && c.IsTrackingActive && !string.IsNullOrEmpty(c.DeviceSerialNumber))
+                    .Include(x => x.Car_Model)
+                    .ThenInclude(x => x.Manufacturer)
+                    .Include(x => x.Car_Year)
+                    .ToListAsync();
+
+                var dtoList = cars.Select(c => new CarDto
+                {
+                    Id = c.Id,
+                    AgencyId = c.AgencyId,
+                    Car_ModelId = c.Car_ModelId,
+                    Car_YearId = c.Car_YearId,
+                    LicensePlate = c.LicensePlate,
+                    Color = c.Color,
+                    IsAvailable = c.IsAvailable,
+                    Status = c.Status,
+                    DailyRate = c.DailyRate,
+                    HourlyRate = c.HourlyRate,
+                    DeviceSerialNumber = c.DeviceSerialNumber,
+                    IsTrackingActive = c.IsTrackingActive,
+                    Fields = new Car_Fields
+                    {
+                        Manufacturer = c.Car_Model.Manufacturer.Name,
+                        Model = c.Car_Model.Name,
+                        Year = c.Car_Year.YearValue
+                    }
+                }).ToList();
+
+                _logger.LogInformation("Retrieved {Count} cars for Agency {AgencyId}", dtoList.Count, agencyId);
+                return Ok(dtoList);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
         /// <summary>
         /// GET: api/Cars/agency/{agencyId}/available?startDate={startDate}&endDate={endDate}
         /// Returns available cars for a specific agency within the given date range (no overlapping reservations).
@@ -594,6 +645,7 @@ namespace React_Rentify.Server.Controllers
         /// DELETE: api/Cars/{id}
         /// Deletes a car and its attachments.
         /// </summary>
+        [Authorize(Roles = "Owner")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteCar(Guid id)
         {

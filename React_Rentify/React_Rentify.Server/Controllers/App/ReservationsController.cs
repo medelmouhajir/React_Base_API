@@ -75,6 +75,7 @@ namespace React_Rentify.Server.Controllers.App
                     .ThenInclude(x => x.Manufacturer)
                     .Include(r => r.Reservation_Customers)
                     .ThenInclude(x => x.Customer)
+                    .Include(x=> x.CreatedByUser)
                     .Include(r => r.Invoice)
                     .Where(x => x.Id == id)
                     .Select(x => new
@@ -136,6 +137,12 @@ namespace React_Rentify.Server.Controllers.App
                             },
                             CurrentKM = x.Car.CurrentKM,
                             LastKmUpdate = x.Car.LastKmUpdate
+                        },
+                        CreatedBy = x.CreatedByUser == null ? null : new
+                        {
+                            x.CreatedByUser.Id,
+                            x.CreatedByUser.FullName,
+                            x.CreatedByUser.Picture
                         }
                     })
                     .FirstOrDefaultAsync();
@@ -297,7 +304,8 @@ namespace React_Rentify.Server.Controllers.App
                 Status = dto.Status ?? "Reserved",
                 AgreedPrice = dto.AgreedPrice,
                 PickupLocation = dto.PickupLocation,
-                DropoffLocation = dto.DropoffLocation
+                DropoffLocation = dto.DropoffLocation,
+                CreatedByUserId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
             };
 
             _context.Set<Reservation>().Add(reservation);
@@ -453,6 +461,7 @@ namespace React_Rentify.Server.Controllers.App
         /// DELETE: api/Reservations/{id}
         /// Deletes a reservation.
         /// </summary>
+        [Authorize(Roles = "Owner")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteReservation(Guid id)
         {
@@ -555,6 +564,7 @@ namespace React_Rentify.Server.Controllers.App
             return Ok();
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpDelete("{id:guid}/customers/{customerId:guid}")]
         public async Task<IActionResult> RemoveCustomerFromReservation(Guid id, Guid customerId)
         {
@@ -1123,6 +1133,7 @@ namespace React_Rentify.Server.Controllers.App
             return Ok(dtoList);
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpPut("{id}/prices")]
         public async Task<IActionResult> UpdateReservationPrices(Guid id, [FromBody] UpdateReservationPricesDto pricesDto)
         {

@@ -280,7 +280,7 @@ namespace React_Rentify.Server.Controllers
         /// DELETE: api/Agencies/{id}
         /// Deletes an agency and all its attachments.
         /// </summary>
-        [Authorize(Roles = "Admin,Manager,Owner")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteAgency(Guid id)
         {

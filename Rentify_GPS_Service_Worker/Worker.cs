@@ -232,6 +232,7 @@ namespace Rentify_GPS_Service_Worker
                             if (!TeltonikaAvlDecoder.TryParsePacket(frame, out var packet, out var error))
                             {
                                 _logger.LogWarning("Failed to parse Teltonika packet from {ClientId}: {Error}", clientId, error);
+                                _logger.LogInformation(frame.ToString());
                                 await SendTeltonikaAckAsync(stream, 0, token);
                                 connectionBuffer.Clear();
                                 return;
@@ -299,26 +300,87 @@ namespace Rentify_GPS_Service_Worker
             return imei;
         }
 
+
         private async Task ProcessTeltonikaUdpPacketAsync(byte[] datagram, IPEndPoint sender, CancellationToken token)
         {
-            if (!TeltonikaAvlDecoder.TryParsePacket(datagram, out var packet, out var error))
+            _logger.LogInformation("UDP raw datagram: {Data}", BitConverter.ToString(datagram).Replace("-", " "));
+
+            if (!TryParseTeltonikaUdpEnvelope(datagram, out var seq, out var imei, out var avl, out var envErr))
             {
-                _logger.LogWarning("UDP: Failed to parse Teltonika packet from {Sender}: {Error}", sender, error);
-                SendTeltonikaUdpAck(0, sender);
+                _logger.LogWarning("UDP: Envelope parse failed from {Sender}: {Err}", sender, envErr);
+                SendTeltonikaUdpAck(0, sender); // or echo seq if you change ACK scheme
                 return;
             }
 
-            string? deviceSerial = ExtractDeviceSerial(packet);
-            if (string.IsNullOrWhiteSpace(deviceSerial))
+            if (!TeltonikaAvlDecoder.TryParseAvlPayload(avl, out var packet, out var error))
             {
-                _logger.LogWarning("UDP: Could not determine IMEI for packet from {Sender}", sender);
-                SendTeltonikaUdpAck(0, sender);
+                _logger.LogWarning("UDP: Failed to parse AVL from {Sender}: {Error}", sender, error);
+                SendTeltonikaUdpAck(0, sender); // or echo seq
                 return;
             }
 
-            await PersistTeltonikaRecordsAsync(packet, deviceSerial, "UDP", sender.ToString(), token);
+            await PersistTeltonikaRecordsAsync(packet, imei, "UDP", sender.ToString(), token);
+
+            // ACK: you currently send 4B record count. For UDP many firmwares expect echo of seqId.
+            // If you see re-sends, change to:
+            // SendTeltonikaUdpSeqAck(seq, sender);
             SendTeltonikaUdpAck(packet.RecordCount, sender);
         }
+        private static bool TryParseTeltonikaUdpEnvelope(
+    byte[] datagram,
+    out byte seqId,
+    out string imei,
+    out byte[] avlPayload,
+    out string? error)
+        {
+            seqId = 0;
+            imei = string.Empty;
+            avlPayload = Array.Empty<byte>();
+            error = null;
+
+            if (datagram.Length < 1 + 3 + 2 + 2)
+            {
+                error = "UDP datagram too short";
+                return false;
+            }
+
+            int idx = 0;
+            seqId = datagram[idx++];
+
+            // Magic BE CA FE
+            if (datagram[idx++] != 0xBE || datagram[idx++] != 0xCA || datagram[idx++] != 0xFE)
+            {
+                error = "Missing UDP magic BE CA FE";
+                return false;
+            }
+
+            // Packet type/flags
+            idx += 2;
+
+            ushort imeiLen = BinaryPrimitives.ReadUInt16BigEndian(datagram.AsSpan(idx, 2));
+            idx += 2;
+
+            if (imeiLen == 0 || datagram.Length < idx + imeiLen)
+            {
+                error = "Invalid IMEI length";
+                return false;
+            }
+
+            imei = Encoding.ASCII.GetString(datagram, idx, imeiLen);
+            idx += imeiLen;
+
+            if (datagram.Length <= idx)
+            {
+                error = "No AVL payload";
+                return false;
+            }
+
+            // Copy out payload so it’s safe across awaits
+            avlPayload = datagram.Skip(idx).ToArray();
+            return true;
+        }
+
+
 
         private async Task<int> PersistTeltonikaRecordsAsync(TeltonikaAvlPacket packet, string deviceSerial, string protocol, string clientId, CancellationToken token)
         {

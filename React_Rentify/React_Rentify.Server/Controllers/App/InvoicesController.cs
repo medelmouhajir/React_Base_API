@@ -374,6 +374,7 @@ namespace React_Rentify.Server.Controllers
         /// DELETE: api/Invoices/{id}
         /// Deletes an invoice and its payments.
         /// </summary>
+        [Authorize(Roles = "Owner")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteInvoice(Guid id)
         {
@@ -480,6 +481,7 @@ namespace React_Rentify.Server.Controllers
         /// DELETE: api/Invoices/{invoiceId}/payments/{paymentId}
         /// Removes a payment from an invoice.
         /// </summary>
+        [Authorize(Roles = "Owner")]
         [HttpDelete("{invoiceId:guid}/payments/{paymentId:guid}")]
         public async Task<IActionResult> RemovePaymentFromInvoice(Guid invoiceId, Guid paymentId)
         {

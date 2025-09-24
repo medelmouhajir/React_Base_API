@@ -8,6 +8,38 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika
         public const byte Codec8 = 0x08;
         public const byte Codec8Extended = 0x8E;
 
+        public static bool TryParseAvlPayload(ReadOnlySpan<byte> payload, out TeltonikaAvlPacket packet, out string? error)
+        {
+            packet = default!;
+            error = null;
+
+            // payload here must start at codec (0x08 or 0x8E)
+            if (payload.Length < 3) { error = "Payload too short"; return false; }
+
+            byte codecId = payload[0];
+            int recordCount = payload[1];
+            if (recordCount <= 0) { error = "No AVL records present"; return false; }
+
+            var records = new List<TeltonikaAvlRecord>(recordCount);
+            int offset = 2;
+
+            for (int i = 0; i < recordCount; i++)
+            {
+                if (!TryParseRecord(payload.Slice(offset), codecId, out var record, out int consumed, out var recErr))
+                { error = $"Record {i}: {recErr}"; return false; }
+
+                records.Add(record);
+                offset += consumed;
+            }
+
+            if (offset >= payload.Length) { error = "Missing record count confirmation"; return false; }
+            byte confirmation = payload[offset];
+            if (confirmation != recordCount) { error = $"Record count mismatch ({recordCount} != {confirmation})"; return false; }
+
+            packet = new TeltonikaAvlPacket(codecId, records);
+            return true;
+        }
+
         public static bool TryParsePacket(ReadOnlySpan<byte> frame, out TeltonikaAvlPacket packet, out string? error)
         {
             packet = default!;
@@ -109,10 +141,11 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika
             ushort rawSpeed = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, 2));
             index += 2;
 
+
             bool isExtendedCodec = codecId == Codec8Extended;
             int idSize = isExtendedCodec ? 2 : 1;
 
-            if (data.Length < index + idSize + 1)
+            if(data.Length < index + idSize + (isExtendedCodec ? 2 : 1))
             {
                 error = "IO block truncated";
                 return false;
@@ -123,8 +156,17 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika
                 : data[index];
             index += idSize;
 
-            byte totalIo = data[index];
-            index += 1;
+            ushort totalIoCount;
+            if (isExtendedCodec)
+            {
+                totalIoCount = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, 2));
+                index += 2;
+            }
+            else
+            {
+                totalIoCount = data[index];
+                index += 1;
+            }
 
             ReadOnlySpan<byte> remainder = data.Slice(index);
             var ioElements = new Dictionary<int, long>();
@@ -177,7 +219,7 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika
                 heading,
                 satellites,
                 eventIoId,
-                totalIo,
+                (byte)Math.Min(totalIoCount, (ushort)255),
                 new ReadOnlyDictionary<int, long>(ioElements),
                 new ReadOnlyDictionary<int, byte[]>(variableIoElements));
 

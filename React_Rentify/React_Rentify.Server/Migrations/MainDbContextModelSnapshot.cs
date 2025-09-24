@@ -17,7 +17,7 @@ namespace React_Rentify.Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "8.0.19")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -715,6 +715,9 @@ namespace React_Rentify.Server.Migrations
                     b.Property<Guid>("CarId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("CreatedByUserId")
+                        .HasColumnType("text");
+
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
@@ -754,6 +757,8 @@ namespace React_Rentify.Server.Migrations
                     b.HasIndex("AgencyId");
 
                     b.HasIndex("CarId");
+
+                    b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("CustomerId");
 
@@ -1373,6 +1378,10 @@ namespace React_Rentify.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("React_Rentify.Server.Models.Users.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId");
+
                     b.HasOne("React_Rentify.Server.Models.Customers.Customer", null)
                         .WithMany("Reservations")
                         .HasForeignKey("CustomerId");
@@ -1380,6 +1389,8 @@ namespace React_Rentify.Server.Migrations
                     b.Navigation("Agency");
 
                     b.Navigation("Car");
+
+                    b.Navigation("CreatedByUser");
                 });
 
             modelBuilder.Entity("React_Rentify.Server.Models.Reservations.Reservation_Customer", b =>

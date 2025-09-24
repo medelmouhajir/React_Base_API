@@ -495,7 +495,8 @@
       "finalPrice": "Prix final",
       "numberOfDays": "Nombre de jours",
       "from": "De",
-      "to": "À"
+      "to": "À",
+      "addedBy": "Ajouté par"
     },
     "status": {
       "delivered": "Livré",

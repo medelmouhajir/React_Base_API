@@ -507,7 +507,8 @@
       "finalPrice": "السعر النهائي",
       "numberOfDays": "عدد الأيام",
       "from": "من",
-      "to": "إلى"
+      "to": "إلى",
+      "addedBy": "تمت الإضافة بواسطة"
     },
     "status": {
       "delivered": "تم التسليم",

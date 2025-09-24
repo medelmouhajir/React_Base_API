@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import carService from '../../../services/carService';
 import gpsService from '../../../services/gpsService';
 
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
@@ -50,7 +49,7 @@ const GpsHome = () => {
             setIsLoading(true);
             setError(null);
             try {
-                const data = await carService.getByAgencyId(agencyId);
+                const data = await gpsService.getCarsByAgencyId(agencyId);
                 setCars(data || []);
             } catch (err) {
                 console.error('Error fetching cars:', err);

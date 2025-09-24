@@ -39,6 +39,7 @@
     <Folder Include="src\pages\Invoices\Add\" />
     <Folder Include="src\pages\Invoices\List\" />
     <Folder Include="src\pages\Invoices\Details\" />
+    <Folder Include="src\pages\Invoices\Print\" />
     <Folder Include="src\pages\Landing\FloatingButtons\" />
     <Folder Include="src\pages\Landing\UseTerms\" />
     <Folder Include="src\pages\Landing\PrivacyPolicy\" />

@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
+using React_Rentify.Server.Models.Agencies;
+using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.GPS;
 using React_Rentify.Server.Models.GPS.Records;
+using React_Rentify.Server.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace React_Rentify.Server.Controllers
 {
@@ -19,11 +22,13 @@ namespace React_Rentify.Server.Controllers
     {
         private readonly GpsDbContext _context;
         private readonly ILogger<GPSController> _logger;
+        private readonly IAgencyAuthorizationService _authService;
 
-        public GPSController(GpsDbContext context, ILogger<GPSController> logger)
+        public GPSController(GpsDbContext context, ILogger<GPSController> logger , IAgencyAuthorizationService authService)
         {
             _context = context;
             _logger = logger;
+            _authService = authService;
         }
 
         /// <summary>
@@ -242,6 +247,8 @@ namespace React_Rentify.Server.Controllers
             _logger.LogInformation("Retrieved latest record {RecordId} for device {Serial}", dto.Id, serialNumber);
             return Ok(dto);
         }
+
+
     }
 
     #region DTOs

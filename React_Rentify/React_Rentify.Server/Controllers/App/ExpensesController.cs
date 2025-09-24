@@ -169,6 +169,7 @@ namespace React_Rentify.Server.Controllers.App
             return Ok(MapToExpenseDto(existing));
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteExpense(Guid id)
         {
@@ -307,6 +308,7 @@ namespace React_Rentify.Server.Controllers.App
             return Ok(MapToCategoryDto(existing));
         }
 
+        [Authorize(Roles = "Owner")]
         [HttpDelete("categories/{id:guid}")]
         public async Task<IActionResult> DeleteCategory(Guid id)
         {

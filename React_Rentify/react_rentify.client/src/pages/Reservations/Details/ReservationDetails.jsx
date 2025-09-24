@@ -348,6 +348,20 @@ const ReservationDetails = () => {
                         </time>
                     </div>
 
+                    {
+                        reservation.createdBy && (
+                            <div className="customer-tags">
+                                <span>{t('reservation.fields.addedBy')}:</span>
+                                <Link
+                                    key={reservation.createdBy.id}
+                                    className="customer-tag"
+                                >
+                                    {reservation.createdBy.fullName}
+                                </Link>
+                            </div>
+                        )
+                    }
+
                     <div className="reservation-status-container">
                         {isDelivered && (
                             <div className="status-item delivered">

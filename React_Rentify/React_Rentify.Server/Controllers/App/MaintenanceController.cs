@@ -333,6 +333,7 @@ namespace React_Rentify.Server.Controllers.App
         /// DELETE: api/Maintenance/{id}
         /// Deletes a maintenance record.
         /// </summary>
+        [Authorize(Roles = "Owner")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteMaintenance(Guid id)
         {

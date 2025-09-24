@@ -52,6 +52,9 @@ const InvoiceDetails = () => {
         navigate(`/invoices/${id}/add-payment`);
     };
 
+    const handlePrint = () => {
+        navigate(`/invoices/${id}/print`);
+    };
 
     const handleRemovePayment = async (paymentId) => {
         const confirmDelete = window.confirm(
@@ -105,6 +108,9 @@ const InvoiceDetails = () => {
                 <div className="invoicedetails-actions">
                     <button className="btn-secondary" onClick={handleEdit}>
                         {t('common.edit') || 'Edit'}
+                    </button>
+                    <button className="btn-secondary" onClick={handlePrint}>
+                        {t('common.print') || 'Print'}
                     </button>
                     <button className="btn-remove" onClick={handleRemove}>
                         {t('common.remove') || 'Remove'}
