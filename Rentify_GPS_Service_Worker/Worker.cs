@@ -302,27 +302,47 @@ namespace Rentify_GPS_Service_Worker
         }
 
 
-
         private async Task ProcessTeltonikaUdpPacketAsync(byte[] datagram, IPEndPoint sender, CancellationToken token)
         {
-            _logger.LogInformation("UDP raw datagram from {Sender}: {Data}", sender, BitConverter.ToString(datagram).Replace("-", " "));
+            _logger.LogDebug("UDP raw datagram from {Sender}: {Data}",
+                sender, BitConverter.ToString(datagram).Replace("-", " "));
 
             if (!TryParseTeltonikaUdpEnvelope(datagram, out var seq, out var imei, out var avl, out var envErr))
             {
-                _logger.LogWarning("UDP: Envelope parse failed from {Sender}: {Err}", sender, envErr);
-                SendTeltonikaUdpAck(0, sender);
-                return;
+                _logger.LogWarning("UDP: Envelope parse failed from {Sender}: {Error}", sender, envErr);
+
+                // Try alternative parsing strategies
+                if (TryParseAlternativeUdpFormat(datagram, out var altSeq, out var altImei, out var altAvl))
+                {
+                    _logger.LogInformation("UDP: Alternative format parsing succeeded for {Sender}", sender);
+                    seq = altSeq;
+                    imei = altImei;
+                    avl = altAvl;
+                }
+                else
+                {
+                    SendTeltonikaUdpAck(0, sender);
+                    return;
+                }
             }
 
             _logger.LogInformation("UDP: Successfully parsed envelope. IMEI: {IMEI}, SeqId: {SeqId}, AVL Length: {AvlLength}",
                 imei, seq, avl.Length);
 
+            // Validate IMEI format
+            if (!IsValidImei(imei))
+            {
+                _logger.LogWarning("UDP: Invalid IMEI format from {Sender}: {IMEI}", sender, imei);
+                SendTeltonikaUdpAck(0, sender);
+                return;
+            }
+
             if (!TeltonikaAvlDecoder.TryParseAvlPayload(avl, out var packet, out var error))
             {
                 _logger.LogWarning("UDP: Failed to parse AVL from {Sender}: {Error}", sender, error);
 
-                // Try fallback parsing
-                if (TryParseWithFallback(avl, out var fallbackPacket))
+                // Try fallback parsing with more detailed logging
+                if (TryParseWithFallback(avl, out var fallbackPacket, imei, sender))
                 {
                     _logger.LogInformation("Fallback parsing succeeded with {RecordCount} records", fallbackPacket.RecordCount);
                     await PersistTeltonikaRecordsAsync(fallbackPacket, imei, "UDP", sender.ToString(), token);
@@ -337,16 +357,96 @@ namespace Rentify_GPS_Service_Worker
             _logger.LogInformation("UDP: Successfully parsed {RecordCount} AVL records from IMEI {IMEI}",
                 packet.RecordCount, imei);
 
-            // Log some details about the records
-            foreach (var record in packet.Records.Take(3)) // Log first 3 records
+            // Validate GPS data quality
+            int validRecords = 0;
+            foreach (var record in packet.Records)
             {
                 var gpsValid = IsValidGpsCoordinate(record.Latitude, record.Longitude);
+                if (gpsValid)
+                {
+                    validRecords++;
+                }
+
                 _logger.LogDebug("Record: Time={Time}, Lat={Lat:F6}, Lon={Lon:F6}, Speed={Speed}km/h, Sats={Sats}, Valid={Valid}",
                     record.TimestampUtc, record.Latitude, record.Longitude, record.SpeedKmh, record.Satellites, gpsValid);
             }
 
+            _logger.LogInformation("UDP: {ValidRecords}/{TotalRecords} records have valid GPS coordinates",
+                validRecords, packet.RecordCount);
+
             await PersistTeltonikaRecordsAsync(packet, imei, "UDP", sender.ToString(), token);
             SendTeltonikaUdpAck(packet.RecordCount, sender);
+        }
+
+        private static bool IsValidImei(string imei)
+        {
+            if (string.IsNullOrWhiteSpace(imei) || imei.Length != 15)
+                return false;
+
+            // Check if all characters are digits
+            if (!imei.All(char.IsDigit))
+                return false;
+
+            // Luhn algorithm validation for IMEI
+            int sum = 0;
+            bool alternate = false;
+
+            for (int i = imei.Length - 1; i >= 0; i--)
+            {
+                int digit = int.Parse(imei[i].ToString());
+
+                if (alternate)
+                {
+                    digit *= 2;
+                    if (digit > 9)
+                        digit = (digit % 10) + 1;
+                }
+
+                sum += digit;
+                alternate = !alternate;
+            }
+
+            return sum % 10 == 0;
+        }
+
+        private bool TryParseAlternativeUdpFormat(byte[] datagram, out byte seqId, out string imei, out byte[] avlPayload)
+        {
+            seqId = 0;
+            imei = string.Empty;
+            avlPayload = Array.Empty<byte>();
+
+            try
+            {
+                // Sometimes the packet structure might be slightly different
+                // Try parsing without magic bytes validation
+                if (datagram.Length < 10)
+                    return false;
+
+                seqId = datagram[0];
+
+                // Look for IMEI length marker - typically after the first few bytes
+                for (int i = 4; i < Math.Min(10, datagram.Length - 17); i++)
+                {
+                    if (datagram[i] == 0x00 && datagram[i + 1] == 0x0F) // 15-byte IMEI
+                    {
+                        var imeiBytes = datagram.Skip(i + 2).Take(15).ToArray();
+                        var candidateImei = Encoding.ASCII.GetString(imeiBytes);
+
+                        if (IsValidImei(candidateImei))
+                        {
+                            imei = candidateImei;
+                            avlPayload = datagram.Skip(i + 17).ToArray();
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private bool IsValidGpsCoordinate(double latitude, double longitude)
@@ -377,12 +477,35 @@ namespace Rentify_GPS_Service_Worker
             int idx = 0;
             seqId = datagram[idx++];
 
-            // Magic BE CA FE
-            if (datagram[idx++] != 0xBE || datagram[idx++] != 0xCA || datagram[idx++] != 0xFE)
+            // Check for different magic byte patterns used by different Teltonika firmware versions
+            var magicBytes = new byte[] { datagram[idx], datagram[idx + 1], datagram[idx + 2] };
+
+            // Known magic patterns:
+            // BE CA FE - Standard Teltonika UDP
+            // 15 CA FE - Alternative pattern (some firmware versions)
+            // CA FE BA - Another variant
+            bool validMagic = false;
+
+            if (magicBytes[0] == 0xBE && magicBytes[1] == 0xCA && magicBytes[2] == 0xFE)
             {
-                error = "Missing UDP magic BE CA FE";
+                validMagic = true;
+            }
+            else if (magicBytes[0] == 0x15 && magicBytes[1] == 0xCA && magicBytes[2] == 0xFE)
+            {
+                validMagic = true;
+            }
+            else if (magicBytes[0] == 0xCA && magicBytes[1] == 0xFE && magicBytes[2] == 0xBA)
+            {
+                validMagic = true;
+            }
+
+            if (!validMagic)
+            {
+                error = $"Unknown UDP magic bytes: {BitConverter.ToString(magicBytes).Replace("-", " ")}";
                 return false;
             }
+
+            idx += 3; // Skip magic bytes
 
             // Packet type/flags
             idx += 2;
@@ -390,9 +513,9 @@ namespace Rentify_GPS_Service_Worker
             ushort imeiLen = BinaryPrimitives.ReadUInt16BigEndian(datagram.AsSpan(idx, 2));
             idx += 2;
 
-            if (imeiLen == 0 || datagram.Length < idx + imeiLen)
+            if (imeiLen == 0 || imeiLen > 64 || datagram.Length < idx + imeiLen)
             {
-                error = "Invalid IMEI length";
+                error = $"Invalid IMEI length: {imeiLen}";
                 return false;
             }
 
@@ -405,7 +528,7 @@ namespace Rentify_GPS_Service_Worker
                 return false;
             }
 
-            // Copy out payload so it’s safe across awaits
+            // Copy out payload so it's safe across awaits
             avlPayload = datagram.Skip(idx).ToArray();
             return true;
         }
@@ -730,7 +853,7 @@ namespace Rentify_GPS_Service_Worker
                 locationRecord.Longitude,
                 locationRecord.SpeedKmh);
         }
-        private bool TryParseWithFallback(byte[] avl, out TeltonikaAvlPacket packet)
+        private bool TryParseWithFallback(byte[] avl, out TeltonikaAvlPacket packet, string imei, IPEndPoint sender)
         {
             packet = default!;
 
@@ -741,22 +864,31 @@ namespace Rentify_GPS_Service_Worker
                 byte codecId = avl[0];
                 int expectedRecordCount = avl[1];
 
+                _logger.LogInformation("Fallback parser for {IMEI} from {Sender}: Codec=0x{Codec:X2}, Expected Records={Count}, Data Length={Length}",
+                    imei, sender, codecId, expectedRecordCount, avl.Length);
+
                 var records = new List<TeltonikaAvlRecord>();
                 int offset = 2;
 
-                _logger.LogDebug("Fallback parser: Codec=0x{Codec:X2}, Expected Records={Count}", codecId, expectedRecordCount);
-
-                // Try to parse as many records as possible
+                // Try to parse as many records as possible with more lenient validation
                 for (int i = 0; i < expectedRecordCount && offset < avl.Length - 30; i++)
                 {
                     if (TryParseRecordBasic(avl.AsSpan(offset), codecId, out var record, out int consumed))
                     {
-                        records.Add(record);
-                        offset += consumed;
+                        // Additional validation for reasonable GPS data
+                        if (record.TimestampUtc > DateTime.UtcNow.AddDays(-30) &&
+                            record.TimestampUtc < DateTime.UtcNow.AddHours(1))
+                        {
+                            records.Add(record);
+                            _logger.LogDebug("Fallback parsed valid record {Index}: Time={Time}, Lat={Lat:F6}, Lon={Lon:F6}, Speed={Speed}km/h",
+                                i, record.TimestampUtc, record.Latitude, record.Longitude, record.SpeedKmh);
+                        }
+                        else
+                        {
+                            _logger.LogDebug("Fallback skipped record {Index} with invalid timestamp: {Time}", i, record.TimestampUtc);
+                        }
 
-                        var gpsValid = IsValidGpsCoordinate(record.Latitude, record.Longitude);
-                        _logger.LogDebug("Fallback parsed record {Index}: Time={Time}, Lat={Lat:F6}, Lon={Lon:F6}, Speed={Speed}km/h, Valid={Valid}",
-                            i, record.TimestampUtc, record.Latitude, record.Longitude, record.SpeedKmh, gpsValid);
+                        offset += consumed;
                     }
                     else
                     {
@@ -768,13 +900,14 @@ namespace Rentify_GPS_Service_Worker
                 if (records.Count > 0)
                 {
                     packet = new TeltonikaAvlPacket(codecId, records);
-                    _logger.LogInformation("Fallback parser success: {ParsedCount}/{ExpectedCount} records", records.Count, expectedRecordCount);
+                    _logger.LogInformation("Fallback parser success for {IMEI}: {ParsedCount}/{ExpectedCount} records",
+                        imei, records.Count, expectedRecordCount);
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogDebug(ex, "Fallback parsing failed");
+                _logger.LogError(ex, "Fallback parsing failed for {IMEI} from {Sender}", imei, sender);
             }
 
             return false;

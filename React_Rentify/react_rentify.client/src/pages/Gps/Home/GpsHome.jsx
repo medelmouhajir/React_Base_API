@@ -9,17 +9,16 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import iconUrl from 'leaflet/dist/images/marker-icon.png';
-import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
-import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
 import './GpsHome.css';
 
+L.Icon.Default.imagePath = '';
+
 // Fix Leaflet's default icon paths (Vite-friendly imports)
 L.Icon.Default.mergeOptions({
-    iconRetinaUrl,
-    iconUrl,
-    shadowUrl,
+    iconRetinaUrl: '/markers/marker-sm.png',
+    iconUrl: '/markers/marker-md.png',
+    shadowUrl: '/markers/marker-shadow.png',
 });
 
 const GpsHome = () => {
@@ -70,7 +69,7 @@ const GpsHome = () => {
             const allRecords = {};
             await Promise.all(
                 cars.map(async (car) => {
-                    const serial = car.gpsDeviceSerial;
+                    const serial = car.deviceSerialNumber;
                     if (serial) {
                         try {
                             const recs = await gpsService.getRecordsByDevice(serial);
