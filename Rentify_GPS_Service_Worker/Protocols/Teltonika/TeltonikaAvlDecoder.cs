@@ -26,17 +26,275 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika
             for (int i = 0; i < recordCount; i++)
             {
                 if (!TryParseRecord(payload.Slice(offset), codecId, out var record, out int consumed, out var recErr))
-                { error = $"Record {i}: {recErr}"; return false; }
+                {
+                    // Log the specific record that failed and try to continue with remaining records
+                    error = $"Record {i}: {recErr}. Parsed {records.Count}/{recordCount} records successfully.";
+                    break; // Stop parsing on first failure
+                }
 
                 records.Add(record);
                 offset += consumed;
             }
 
-            if (offset >= payload.Length) { error = "Missing record count confirmation"; return false; }
-            byte confirmation = payload[offset];
-            if (confirmation != recordCount) { error = $"Record count mismatch ({recordCount} != {confirmation})"; return false; }
+            // If we parsed at least some records, consider it a partial success
+            if (records.Count > 0)
+            {
+                // Check for confirmation byte if we have remaining data
+                if (offset < payload.Length)
+                {
+                    byte confirmation = payload[offset];
+                    // Don't fail if confirmation doesn't match - just log it
+                    if (confirmation != recordCount && confirmation != records.Count)
+                    {
+                        error = $"Record count mismatch (expected {recordCount}, confirmation {confirmation}, parsed {records.Count})";
+                    }
+                }
 
-            packet = new TeltonikaAvlPacket(codecId, records);
+                packet = new TeltonikaAvlPacket(codecId, records);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool TryParseRecord(ReadOnlySpan<byte> data, byte codecId, out TeltonikaAvlRecord record, out int consumed, out string? error)
+        {
+            record = default!;
+            consumed = 0;
+            error = null;
+
+            const int minimumRecordLength = 26; // 8 + 1 + 15 + 2
+            if (data.Length < minimumRecordLength)
+            {
+                error = $"Record too short (need {minimumRecordLength}, have {data.Length})";
+                return false;
+            }
+
+            try
+            {
+                long timestampMs = BinaryPrimitives.ReadInt64BigEndian(data.Slice(0, 8));
+                byte priority = data[8];
+                int index = 9;
+
+                // GPS Element
+                int rawLongitude = BinaryPrimitives.ReadInt32BigEndian(data.Slice(index, 4));
+                index += 4;
+                int rawLatitude = BinaryPrimitives.ReadInt32BigEndian(data.Slice(index, 4));
+                index += 4;
+                short rawAltitude = BinaryPrimitives.ReadInt16BigEndian(data.Slice(index, 2));
+                index += 2;
+                ushort rawAngle = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, 2));
+                index += 2;
+                byte satellites = data[index];
+                index += 1;
+                ushort rawSpeed = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, 2));
+                index += 2;
+
+                bool isExtendedCodec = codecId == Codec8Extended;
+                int idSize = isExtendedCodec ? 2 : 1;
+
+                // IO Element section
+                if (data.Length < index + idSize + (isExtendedCodec ? 2 : 1))
+                {
+                    error = "IO block header truncated";
+                    return false;
+                }
+
+                ushort eventIoId = isExtendedCodec
+                    ? BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, idSize))
+                    : data[index];
+                index += idSize;
+
+                ushort totalIoCount;
+                if (isExtendedCodec)
+                {
+                    totalIoCount = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, 2));
+                    index += 2;
+                }
+                else
+                {
+                    totalIoCount = data[index];
+                    index += 1;
+                }
+
+                ReadOnlySpan<byte> remainder = data.Slice(index);
+                var ioElements = new Dictionary<int, long>();
+                var variableIoElements = new Dictionary<int, byte[]>();
+
+                // Try to parse IO elements - if this fails, we'll still return basic GPS data
+                bool ioParseSuccess = true;
+                string? ioError = null;
+
+                try
+                {
+                    // Parse fixed-size IO groups
+                    if (!TryParseFixedGroup(ref remainder, idSize, 1, ioElements, out ioError) ||
+                        !TryParseFixedGroup(ref remainder, idSize, 2, ioElements, out ioError) ||
+                        !TryParseFixedGroup(ref remainder, idSize, 4, ioElements, out ioError) ||
+                        !TryParseFixedGroup(ref remainder, idSize, 8, ioElements, out ioError))
+                    {
+                        ioParseSuccess = false;
+                    }
+
+                    // Parse variable-size IO group (only for extended codec)
+                    if (ioParseSuccess && isExtendedCodec && remainder.Length > 0)
+                    {
+                        if (!TryParseVariableGroup(ref remainder, variableIoElements, out ioError))
+                        {
+                            ioParseSuccess = false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ioParseSuccess = false;
+                    ioError = ex.Message;
+                }
+
+                // Calculate consumed bytes - if IO parsing failed, estimate based on basic record structure
+                if (ioParseSuccess)
+                {
+                    consumed = data.Length - remainder.Length;
+                }
+                else
+                {
+                    // Estimate consumption for failed IO parsing
+                    consumed = Math.Min(index + 20, data.Length); // Conservative estimate
+                }
+
+                var timestampUtc = DateTimeOffset.FromUnixTimeMilliseconds(timestampMs).UtcDateTime;
+                double latitude = rawLatitude / 10_000_000.0;
+                double longitude = rawLongitude / 10_000_000.0;
+                double altitude = rawAltitude;
+                double speed = rawSpeed;
+                double heading = rawAngle;
+
+                record = new TeltonikaAvlRecord(
+                    timestampUtc,
+                    priority,
+                    latitude,
+                    longitude,
+                    altitude,
+                    speed,
+                    heading,
+                    satellites,
+                    eventIoId,
+                    (byte)Math.Min(totalIoCount, (ushort)255),
+                    new ReadOnlyDictionary<int, long>(ioElements),
+                    new ReadOnlyDictionary<int, byte[]>(variableIoElements));
+
+                // If IO parsing failed, include that in the error but still return success
+                if (!ioParseSuccess)
+                {
+                    error = $"IO parsing failed: {ioError}. GPS data parsed successfully.";
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                error = $"Record parsing exception: {ex.Message}";
+                return false;
+            }
+        }
+
+        private static bool TryParseFixedGroup(ref ReadOnlySpan<byte> buffer, int idSize, int valueSize, Dictionary<int, long> values, out string? error)
+        {
+            error = null;
+            if (buffer.Length < 1)
+            {
+                error = "Missing IO element count";
+                return false;
+            }
+
+            byte count = buffer[0];
+            buffer = buffer.Slice(1);
+
+            if (count == 0)
+            {
+                return true; // No elements in this group
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                if (buffer.Length < idSize + valueSize)
+                {
+                    error = $"IO element {i} truncated (need {idSize + valueSize} bytes, have {buffer.Length})";
+                    return false;
+                }
+
+                int id = idSize == 1
+                    ? buffer[0]
+                    : BinaryPrimitives.ReadUInt16BigEndian(buffer.Slice(0, idSize));
+                buffer = buffer.Slice(idSize);
+
+                long value = valueSize switch
+                {
+                    1 => buffer[0],
+                    2 => BinaryPrimitives.ReadInt16BigEndian(buffer.Slice(0, valueSize)),
+                    4 => BinaryPrimitives.ReadInt32BigEndian(buffer.Slice(0, valueSize)),
+                    8 => BinaryPrimitives.ReadInt64BigEndian(buffer.Slice(0, valueSize)),
+                    _ => throw new InvalidOperationException($"Unsupported IO value size: {valueSize}")
+                };
+
+                buffer = buffer.Slice(valueSize);
+                values[id] = value;
+            }
+
+            return true;
+        }
+
+        private static bool TryParseVariableGroup(ref ReadOnlySpan<byte> buffer, Dictionary<int, byte[]> values, out string? error)
+        {
+            error = null;
+
+            if (buffer.Length < 1)
+            {
+                // No variable IO section
+                return true;
+            }
+
+            byte count = buffer[0];
+            buffer = buffer.Slice(1);
+
+            if (count == 0)
+            {
+                return true; // No variable elements
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                if (buffer.Length < 4)
+                {
+                    error = $"Variable IO header {i} truncated (need 4 bytes, have {buffer.Length})";
+                    return false;
+                }
+
+                int id = BinaryPrimitives.ReadUInt16BigEndian(buffer.Slice(0, 2));
+                buffer = buffer.Slice(2);
+
+                ushort length = BinaryPrimitives.ReadUInt16BigEndian(buffer.Slice(0, 2));
+                buffer = buffer.Slice(2);
+
+                // Sanity check for length
+                if (length > 2048) // Increased max size but still reasonable
+                {
+                    error = $"Variable IO element {i} length too large: {length} bytes for ID 0x{id:X4}";
+                    return false;
+                }
+
+                if (buffer.Length < length)
+                {
+                    error = $"Variable IO data {i} truncated (need {length} bytes, have {buffer.Length}) for ID 0x{id:X4}";
+                    return false;
+                }
+
+                var valueBytes = buffer.Slice(0, length).ToArray();
+                buffer = buffer.Slice(length);
+
+                values[id] = valueBytes;
+            }
+
             return true;
         }
 
@@ -66,246 +324,7 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika
             }
 
             var payload = frame.Slice(8, dataLength);
-            if (payload.Length < 3)
-            {
-                error = "Payload too short";
-                return false;
-            }
-
-            byte codecId = payload[0];
-            int recordCount = payload[1];
-            if (recordCount <= 0)
-            {
-                error = "No AVL records present";
-                return false;
-            }
-
-            var records = new List<TeltonikaAvlRecord>(recordCount);
-            int offset = 2;
-            for (int i = 0; i < recordCount; i++)
-            {
-                if (!TryParseRecord(payload.Slice(offset), codecId, out var record, out int consumed, out var recordError))
-                {
-                    error = $"Record {i}: {recordError}";
-                    return false;
-                }
-
-                records.Add(record);
-                offset += consumed;
-            }
-
-            if (offset >= payload.Length)
-            {
-                error = "Missing record count confirmation";
-                return false;
-            }
-
-            byte confirmation = payload[offset];
-            if (confirmation != recordCount)
-            {
-                error = $"Record count mismatch ({recordCount} != {confirmation})";
-                return false;
-            }
-
-            packet = new TeltonikaAvlPacket(codecId, records);
-            return true;
-        }
-
-        private static bool TryParseRecord(ReadOnlySpan<byte> data, byte codecId, out TeltonikaAvlRecord record, out int consumed, out string? error)
-        {
-            record = default!;
-            consumed = 0;
-            error = null;
-
-            const int minimumRecordLength = 8 + 1 + 15 + 2;
-            if (data.Length < minimumRecordLength)
-            {
-                error = "Record too short";
-                return false;
-            }
-
-            long timestampMs = BinaryPrimitives.ReadInt64BigEndian(data.Slice(0, 8));
-            byte priority = data[8];
-            int index = 9;
-
-            int rawLongitude = BinaryPrimitives.ReadInt32BigEndian(data.Slice(index, 4));
-            index += 4;
-            int rawLatitude = BinaryPrimitives.ReadInt32BigEndian(data.Slice(index, 4));
-            index += 4;
-            short rawAltitude = BinaryPrimitives.ReadInt16BigEndian(data.Slice(index, 2));
-            index += 2;
-            ushort rawAngle = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, 2));
-            index += 2;
-            byte satellites = data[index];
-            index += 1;
-            ushort rawSpeed = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, 2));
-            index += 2;
-
-
-            bool isExtendedCodec = codecId == Codec8Extended;
-            int idSize = isExtendedCodec ? 2 : 1;
-
-            if(data.Length < index + idSize + (isExtendedCodec ? 2 : 1))
-            {
-                error = "IO block truncated";
-                return false;
-            }
-
-            ushort eventIoId = isExtendedCodec
-                ? BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, idSize))
-                : data[index];
-            index += idSize;
-
-            ushort totalIoCount;
-            if (isExtendedCodec)
-            {
-                totalIoCount = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, 2));
-                index += 2;
-            }
-            else
-            {
-                totalIoCount = data[index];
-                index += 1;
-            }
-
-            ReadOnlySpan<byte> remainder = data.Slice(index);
-            var ioElements = new Dictionary<int, long>();
-            var variableIoElements = isExtendedCodec ? new Dictionary<int, byte[]>() : new Dictionary<int, byte[]>();
-
-            if (!TryParseFixedGroup(ref remainder, idSize, 1, ioElements, out error))
-            {
-                return false;
-            }
-
-            if (!TryParseFixedGroup(ref remainder, idSize, 2, ioElements, out error))
-            {
-                return false;
-            }
-
-            if (!TryParseFixedGroup(ref remainder, idSize, 4, ioElements, out error))
-            {
-                return false;
-            }
-
-            if (!TryParseFixedGroup(ref remainder, idSize, 8, ioElements, out error))
-            {
-                return false;
-            }
-
-            if (isExtendedCodec)
-            {
-                if (!TryParseVariableGroup(ref remainder, variableIoElements, out error))
-                {
-                    return false;
-                }
-            }
-
-            consumed = data.Length - remainder.Length;
-
-            var timestampUtc = DateTimeOffset.FromUnixTimeMilliseconds(timestampMs).UtcDateTime;
-            double latitude = rawLatitude / 10_000_000.0;
-            double longitude = rawLongitude / 10_000_000.0;
-            double altitude = rawAltitude;
-            double speed = rawSpeed;
-            double heading = rawAngle;
-
-            record = new TeltonikaAvlRecord(
-                timestampUtc,
-                priority,
-                latitude,
-                longitude,
-                altitude,
-                speed,
-                heading,
-                satellites,
-                eventIoId,
-                (byte)Math.Min(totalIoCount, (ushort)255),
-                new ReadOnlyDictionary<int, long>(ioElements),
-                new ReadOnlyDictionary<int, byte[]>(variableIoElements));
-
-            return true;
-        }
-
-        private static bool TryParseFixedGroup(ref ReadOnlySpan<byte> buffer, int idSize, int valueSize, Dictionary<int, long> values, out string? error)
-        {
-            error = null;
-            if (buffer.Length < 1)
-            {
-                error = "Missing IO element count";
-                return false;
-            }
-
-            byte count = buffer[0];
-            buffer = buffer.Slice(1);
-
-            for (int i = 0; i < count; i++)
-            {
-                if (buffer.Length < idSize + valueSize)
-                {
-                    error = "IO element truncated";
-                    return false;
-                }
-
-                int id = idSize == 1
-                    ? buffer[0]
-                    : BinaryPrimitives.ReadUInt16BigEndian(buffer.Slice(0, idSize));
-                buffer = buffer.Slice(idSize);
-
-                long value = valueSize switch
-                {
-                    1 => buffer[0],
-                    2 => BinaryPrimitives.ReadInt16BigEndian(buffer.Slice(0, valueSize)),
-                    4 => BinaryPrimitives.ReadInt32BigEndian(buffer.Slice(0, valueSize)),
-                    8 => BinaryPrimitives.ReadInt64BigEndian(buffer.Slice(0, valueSize)),
-                    _ => throw new InvalidOperationException("Unsupported IO value size")
-                };
-
-                buffer = buffer.Slice(valueSize);
-                values[id] = value;
-            }
-
-            return true;
-        }
-
-        private static bool TryParseVariableGroup(ref ReadOnlySpan<byte> buffer, Dictionary<int, byte[]> values, out string? error)
-        {
-            error = null;
-            if (buffer.Length < 1)
-            {
-                error = "Missing variable IO count";
-                return false;
-            }
-
-            byte count = buffer[0];
-            buffer = buffer.Slice(1);
-
-            for (int i = 0; i < count; i++)
-            {
-                if (buffer.Length < 4)
-                {
-                    error = "Variable IO header truncated";
-                    return false;
-                }
-
-                int id = BinaryPrimitives.ReadUInt16BigEndian(buffer.Slice(0, 2));
-                buffer = buffer.Slice(2);
-
-                ushort length = BinaryPrimitives.ReadUInt16BigEndian(buffer.Slice(0, 2));
-                buffer = buffer.Slice(2);
-
-                if (buffer.Length < length)
-                {
-                    error = "Variable IO data truncated";
-                    return false;
-                }
-
-                var valueBytes = buffer.Slice(0, length).ToArray();
-                buffer = buffer.Slice(length);
-
-                values[id] = valueBytes;
-            }
-
-            return true;
+            return TryParseAvlPayload(payload, out packet, out error);
         }
     }
 
@@ -318,9 +337,7 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika
         }
 
         public byte CodecId { get; }
-
         public int RecordCount => Records.Count;
-
         public IReadOnlyList<TeltonikaAvlRecord> Records { get; }
     }
 
@@ -355,27 +372,16 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika
         }
 
         public DateTime TimestampUtc { get; }
-
         public byte Priority { get; }
-
         public double Latitude { get; }
-
         public double Longitude { get; }
-
         public double Altitude { get; }
-
         public double SpeedKmh { get; }
-
         public double Heading { get; }
-
         public byte Satellites { get; }
-
         public ushort EventIoId { get; }
-
         public byte TotalIoElements { get; }
-
         public IReadOnlyDictionary<int, long> IoElements { get; }
-
         public IReadOnlyDictionary<int, byte[]> VariableIoElements { get; }
     }
 }

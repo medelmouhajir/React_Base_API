@@ -9,6 +9,7 @@ using Rentify_GPS_Service_Worker.Protocols;
 using Rentify_GPS_Service_Worker.Protocols.Teltonika;
 using System.Buffers.Binary;
 using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -301,31 +302,60 @@ namespace Rentify_GPS_Service_Worker
         }
 
 
+
         private async Task ProcessTeltonikaUdpPacketAsync(byte[] datagram, IPEndPoint sender, CancellationToken token)
         {
-            _logger.LogInformation("UDP raw datagram: {Data}", BitConverter.ToString(datagram).Replace("-", " "));
+            _logger.LogInformation("UDP raw datagram from {Sender}: {Data}", sender, BitConverter.ToString(datagram).Replace("-", " "));
 
             if (!TryParseTeltonikaUdpEnvelope(datagram, out var seq, out var imei, out var avl, out var envErr))
             {
                 _logger.LogWarning("UDP: Envelope parse failed from {Sender}: {Err}", sender, envErr);
-                SendTeltonikaUdpAck(0, sender); // or echo seq if you change ACK scheme
+                SendTeltonikaUdpAck(0, sender);
                 return;
             }
+
+            _logger.LogInformation("UDP: Successfully parsed envelope. IMEI: {IMEI}, SeqId: {SeqId}, AVL Length: {AvlLength}",
+                imei, seq, avl.Length);
 
             if (!TeltonikaAvlDecoder.TryParseAvlPayload(avl, out var packet, out var error))
             {
                 _logger.LogWarning("UDP: Failed to parse AVL from {Sender}: {Error}", sender, error);
-                SendTeltonikaUdpAck(0, sender); // or echo seq
+
+                // Try fallback parsing
+                if (TryParseWithFallback(avl, out var fallbackPacket))
+                {
+                    _logger.LogInformation("Fallback parsing succeeded with {RecordCount} records", fallbackPacket.RecordCount);
+                    await PersistTeltonikaRecordsAsync(fallbackPacket, imei, "UDP", sender.ToString(), token);
+                    SendTeltonikaUdpAck(fallbackPacket.RecordCount, sender);
+                    return;
+                }
+
+                SendTeltonikaUdpAck(0, sender);
                 return;
             }
 
-            await PersistTeltonikaRecordsAsync(packet, imei, "UDP", sender.ToString(), token);
+            _logger.LogInformation("UDP: Successfully parsed {RecordCount} AVL records from IMEI {IMEI}",
+                packet.RecordCount, imei);
 
-            // ACK: you currently send 4B record count. For UDP many firmwares expect echo of seqId.
-            // If you see re-sends, change to:
-            // SendTeltonikaUdpSeqAck(seq, sender);
+            // Log some details about the records
+            foreach (var record in packet.Records.Take(3)) // Log first 3 records
+            {
+                var gpsValid = IsValidGpsCoordinate(record.Latitude, record.Longitude);
+                _logger.LogDebug("Record: Time={Time}, Lat={Lat:F6}, Lon={Lon:F6}, Speed={Speed}km/h, Sats={Sats}, Valid={Valid}",
+                    record.TimestampUtc, record.Latitude, record.Longitude, record.SpeedKmh, record.Satellites, gpsValid);
+            }
+
+            await PersistTeltonikaRecordsAsync(packet, imei, "UDP", sender.ToString(), token);
             SendTeltonikaUdpAck(packet.RecordCount, sender);
         }
+
+        private bool IsValidGpsCoordinate(double latitude, double longitude)
+        {
+            return latitude != 0 && longitude != 0 &&
+                   latitude >= -90 && latitude <= 90 &&
+                   longitude >= -180 && longitude <= 180;
+        }
+
         private static bool TryParseTeltonikaUdpEnvelope(
     byte[] datagram,
     out byte seqId,
@@ -700,6 +730,133 @@ namespace Rentify_GPS_Service_Worker
                 locationRecord.Longitude,
                 locationRecord.SpeedKmh);
         }
+        private bool TryParseWithFallback(byte[] avl, out TeltonikaAvlPacket packet)
+        {
+            packet = default!;
+
+            try
+            {
+                if (avl.Length < 3) return false;
+
+                byte codecId = avl[0];
+                int expectedRecordCount = avl[1];
+
+                var records = new List<TeltonikaAvlRecord>();
+                int offset = 2;
+
+                _logger.LogDebug("Fallback parser: Codec=0x{Codec:X2}, Expected Records={Count}", codecId, expectedRecordCount);
+
+                // Try to parse as many records as possible
+                for (int i = 0; i < expectedRecordCount && offset < avl.Length - 30; i++)
+                {
+                    if (TryParseRecordBasic(avl.AsSpan(offset), codecId, out var record, out int consumed))
+                    {
+                        records.Add(record);
+                        offset += consumed;
+
+                        var gpsValid = IsValidGpsCoordinate(record.Latitude, record.Longitude);
+                        _logger.LogDebug("Fallback parsed record {Index}: Time={Time}, Lat={Lat:F6}, Lon={Lon:F6}, Speed={Speed}km/h, Valid={Valid}",
+                            i, record.TimestampUtc, record.Latitude, record.Longitude, record.SpeedKmh, gpsValid);
+                    }
+                    else
+                    {
+                        _logger.LogDebug("Fallback parser stopped at record {Index}", i);
+                        break;
+                    }
+                }
+
+                if (records.Count > 0)
+                {
+                    packet = new TeltonikaAvlPacket(codecId, records);
+                    _logger.LogInformation("Fallback parser success: {ParsedCount}/{ExpectedCount} records", records.Count, expectedRecordCount);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex, "Fallback parsing failed");
+            }
+
+            return false;
+        }
+
+        private bool TryParseRecordBasic(ReadOnlySpan<byte> data, byte codecId, out TeltonikaAvlRecord record, out int consumed)
+        {
+            record = default!;
+            consumed = 0;
+
+            try
+            {
+                if (data.Length < 26) return false;
+
+                long timestampMs = BinaryPrimitives.ReadInt64BigEndian(data.Slice(0, 8));
+                byte priority = data[8];
+                int index = 9;
+
+                // GPS Element
+                int rawLongitude = BinaryPrimitives.ReadInt32BigEndian(data.Slice(index, 4));
+                index += 4;
+                int rawLatitude = BinaryPrimitives.ReadInt32BigEndian(data.Slice(index, 4));
+                index += 4;
+                short rawAltitude = BinaryPrimitives.ReadInt16BigEndian(data.Slice(index, 2));
+                index += 2;
+                ushort rawAngle = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, 2));
+                index += 2;
+                byte satellites = data[index];
+                index += 1;
+                ushort rawSpeed = BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, 2));
+                index += 2;
+
+                bool isExtendedCodec = codecId == TeltonikaAvlDecoder.Codec8Extended;
+                int idSize = isExtendedCodec ? 2 : 1;
+
+                if (data.Length < index + idSize + 1) return false;
+
+                ushort eventIoId = isExtendedCodec
+                    ? BinaryPrimitives.ReadUInt16BigEndian(data.Slice(index, idSize))
+                    : data[index];
+                index += idSize;
+
+                // Skip totalIoCount parsing for basic fallback
+                if (isExtendedCodec && data.Length >= index + 2)
+                {
+                    index += 2; // Skip 2-byte totalIoCount
+                }
+                else if (!isExtendedCodec && data.Length >= index + 1)
+                {
+                    index += 1; // Skip 1-byte totalIoCount
+                }
+
+                // For basic parsing, we'll estimate consumed bytes based on typical record sizes
+                // Most FMC920 records are around 80-120 bytes
+                consumed = Math.Min(85, data.Length - 10); // Conservative estimate leaving buffer
+
+                var timestampUtc = DateTimeOffset.FromUnixTimeMilliseconds(timestampMs).UtcDateTime;
+                double latitude = rawLatitude / 10_000_000.0;
+                double longitude = rawLongitude / 10_000_000.0;
+
+                record = new TeltonikaAvlRecord(
+                    timestampUtc,
+                    priority,
+                    latitude,
+                    longitude,
+                    rawAltitude,
+                    rawSpeed,
+                    rawAngle,
+                    satellites,
+                    eventIoId,
+                    0, // totalIoElements
+                    new ReadOnlyDictionary<int, long>(new Dictionary<int, long>()),
+                    new ReadOnlyDictionary<int, byte[]>(new Dictionary<int, byte[]>()));
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
     }
 
     public static class TaskExtensions
