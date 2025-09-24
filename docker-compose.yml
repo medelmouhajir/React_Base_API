@@ -25,32 +25,32 @@
         aliases:
           - react_lawyer.server
 
-  react_mangati.server:
-    build:
-      context: .
-      dockerfile: React_Mangati/React_Mangati.Server/Dockerfile
-    container_name: react-managti-api
-    ports:
-      - "7063:8081"  # HTTPS port
-      - "5229:8080"  # HTTP port
-    volumes:
-      - ./React_Mangati/React_Mangati.Server:/app/mangati/server/
-      - mangati_uploads:/app/mangati/server/uploads
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080;https://+:8081
-      - DOTNET_RUNNING_IN_CONTAINER=true
-      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-      - DOTNET_USE_POLLING_FILE_WATCHER=1
-      # Enable debugging
-      - DOTNET_EnableDiagnostics=1
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=mangati_db_1;Username=postgres;Password=postgres
-    depends_on:
-      - db
-    networks:
-      react-lawyer-network:
-        aliases:
-          - react_mangati.server
+  # react_mangati.server:
+  #   build:
+  #     context: .
+  #     dockerfile: React_Mangati/React_Mangati.Server/Dockerfile
+  #   container_name: react-managti-api
+  #   ports:
+  #     - "7063:8081"  # HTTPS port
+  #     - "5229:8080"  # HTTP port
+  #   volumes:
+  #     - ./React_Mangati/React_Mangati.Server:/app/mangati/server/
+  #     - mangati_uploads:/app/mangati/server/uploads
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=http://+:8080;https://+:8081
+  #     - DOTNET_RUNNING_IN_CONTAINER=true
+  #     - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+  #     - DOTNET_USE_POLLING_FILE_WATCHER=1
+  #     # Enable debugging
+  #     - DOTNET_EnableDiagnostics=1
+  #     - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=mangati_db_1;Username=postgres;Password=postgres
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     react-lawyer-network:
+  #       aliases:
+  #         - react_mangati.server
 
   react_rentify.server:
     build:
@@ -78,77 +78,77 @@
           - react_rentify.server
 
           
-  react_virtuello.server:
-    build:
-      context: .
-      dockerfile: React_Virtuello/React_Virtuello.Server/Dockerfile
-    container_name: react-virtuello-api
-    ports:
-      - "7221:8081"  # HTTPS port
-      - "5023:8080"  # HTTP port
-    volumes:
-      - ./React_Virtuello/React_Virtuello.Server:/app/virtuello/server/
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080;https://+:8081
-      - DOTNET_RUNNING_IN_CONTAINER=true
-      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-      - DOTNET_USE_POLLING_FILE_WATCHER=1
-      # Enable debugging
-      - DOTNET_EnableDiagnostics=1
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=virtuello_db_1;Username=postgres;Password=postgres
-    depends_on:
-      - db
-    networks:
-      react-lawyer-network:
-        aliases:
-          - react_virtuello.server
+  # react_virtuello.server:
+  #   build:
+  #     context: .
+  #     dockerfile: React_Virtuello/React_Virtuello.Server/Dockerfile
+  #   container_name: react-virtuello-api
+  #   ports:
+  #     - "7221:8081"  # HTTPS port
+  #     - "5023:8080"  # HTTP port
+  #   volumes:
+  #     - ./React_Virtuello/React_Virtuello.Server:/app/virtuello/server/
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_URLS=http://+:8080;https://+:8081
+  #     - DOTNET_RUNNING_IN_CONTAINER=true
+  #     - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+  #     - DOTNET_USE_POLLING_FILE_WATCHER=1
+  #     # Enable debugging
+  #     - DOTNET_EnableDiagnostics=1
+  #     - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=virtuello_db_1;Username=postgres;Password=postgres
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     react-lawyer-network:
+  #       aliases:
+  #         - react_virtuello.server
 
 
-  # Frontend React client service
-  react_lawyer.client:
-    build:
-      context: ./React_Lawyer/react_lawyer.client
-      dockerfile: Dockerfile
-    container_name: react-lawyer-client
-    ports:
-      - "54440:54440"
-    volumes:
-      - ./React_Lawyer/react_lawyer.client:/app
-      - /app/node_modules
-    environment:
-      - DEV_SERVER_PORT=54440
-      - ASPNETCORE_HTTPS_PORT=8081
-      - ASPNETCORE_URLS=https://+:8081;http://+:8080
-      - DOCKER_CONTAINER=true
-    depends_on:
-      - react_lawyer.server
-    networks:
-      react-lawyer-network:
-        aliases:
-          - react_lawyer.client
+  # # Frontend React client service
+  # react_lawyer.client:
+  #   build:
+  #     context: ./React_Lawyer/react_lawyer.client
+  #     dockerfile: Dockerfile
+  #   container_name: react-lawyer-client
+  #   ports:
+  #     - "54440:54440"
+  #   volumes:
+  #     - ./React_Lawyer/react_lawyer.client:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - DEV_SERVER_PORT=54440
+  #     - ASPNETCORE_HTTPS_PORT=8081
+  #     - ASPNETCORE_URLS=https://+:8081;http://+:8080
+  #     - DOCKER_CONTAINER=true
+  #   depends_on:
+  #     - react_lawyer.server
+  #   networks:
+  #     react-lawyer-network:
+  #       aliases:
+  #         - react_lawyer.client
 
-  react_mangati.client:
-    build:
-      context: ./React_Mangati/react_mangati.client
-      dockerfile: Dockerfile
-    container_name: react-mangati-client
-    ports:
-      - "54450:54450"
-    volumes:
-      - ./React_Mangati/react_mangati.client:/app/mangati
-      - /app/mangati/node_modules
-    environment:
-      - DEV_SERVER_PORT=54450
-      - ASPNETCORE_HTTPS_PORT=8081
-      - ASPNETCORE_URLS=https://+:8081;http://+:8080
-      - DOCKER_CONTAINER=true
-    depends_on:
-      - react_mangati.server
-    networks:
-      react-lawyer-network:
-        aliases:
-          - react_mangati.client
+  # react_mangati.client:
+  #   build:
+  #     context: ./React_Mangati/react_mangati.client
+  #     dockerfile: Dockerfile
+  #   container_name: react-mangati-client
+  #   ports:
+  #     - "54450:54450"
+  #   volumes:
+  #     - ./React_Mangati/react_mangati.client:/app/mangati
+  #     - /app/mangati/node_modules
+  #   environment:
+  #     - DEV_SERVER_PORT=54450
+  #     - ASPNETCORE_HTTPS_PORT=8081
+  #     - ASPNETCORE_URLS=https://+:8081;http://+:8080
+  #     - DOCKER_CONTAINER=true
+  #   depends_on:
+  #     - react_mangati.server
+  #   networks:
+  #     react-lawyer-network:
+  #       aliases:
+  #         - react_mangati.client
 
   react_rentify.client:
     build:
@@ -174,44 +174,44 @@
 
 
           
-  react_virtuello.client:
-    build:
-      context: ./React_Virtuello/react_virtuello.client
-      dockerfile: Dockerfile
-    container_name: react-virtuello-client
-    ports:
-      - "53256:53256"
-    volumes:
-      - ./React_Virtuello/react_virtuello.client:/app/virtuello
-      - /app/virtuello/node_modules
-    environment:
-      - DEV_SERVER_PORT=53256
-      - ASPNETCORE_HTTPS_PORT=8081
-      - ASPNETCORE_URLS=https://+:8081;http://+:8080
-      - DOCKER_CONTAINER=true
-    depends_on:
-      - react_virtuello.server
-    networks:
-      react-lawyer-network:
-        aliases:
-          - react_virtuello.client
+  # react_virtuello.client:
+  #   build:
+  #     context: ./React_Virtuello/react_virtuello.client
+  #     dockerfile: Dockerfile
+  #   container_name: react-virtuello-client
+  #   ports:
+  #     - "53256:53256"
+  #   volumes:
+  #     - ./React_Virtuello/react_virtuello.client:/app/virtuello
+  #     - /app/virtuello/node_modules
+  #   environment:
+  #     - DEV_SERVER_PORT=53256
+  #     - ASPNETCORE_HTTPS_PORT=8081
+  #     - ASPNETCORE_URLS=https://+:8081;http://+:8080
+  #     - DOCKER_CONTAINER=true
+  #   depends_on:
+  #     - react_virtuello.server
+  #   networks:
+  #     react-lawyer-network:
+  #       aliases:
+  #         - react_virtuello.client
 
 
-  document_generator:
-    build:
-      context: .
-      dockerfile: React_Lawyer/React_Lawyer.DocumentGenerator/Dockerfile
-    container_name: react-lawyer-document-generator
-    ports:
-      - "5268:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - Gemini__ApiKey=AIzaSyDfh3IQfQtg3FuRMvX1o3npm7yJzf9ABv4
-      - MainApi__Url=http://react_lawyer.server:8080
-    networks:
-      react-lawyer-network:
-        aliases:
-          - generator
+  # document_generator:
+  #   build:
+  #     context: .
+  #     dockerfile: React_Lawyer/React_Lawyer.DocumentGenerator/Dockerfile
+  #   container_name: react-lawyer-document-generator
+  #   ports:
+  #     - "5268:8080"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - Gemini__ApiKey=AIzaSyDfh3IQfQtg3FuRMvX1o3npm7yJzf9ABv4
+  #     - MainApi__Url=http://react_lawyer.server:8080
+  #   networks:
+  #     react-lawyer-network:
+  #       aliases:
+  #         - generator
 
   rentify-gps-listener:
     build:
@@ -296,27 +296,27 @@
 
 
   # Nginx reverse proxy (optional but helpful)
-  nginx:
-    image: nginx:latest
-    container_name: react-lawyer-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/ssl:/etc/nginx/ssl
-      - ./nginx/ssl:/etc/letsencrypt
-      - ./nginx/www:/var/www/certbot
-      - /etc/letsencrypt:/etc/letsencrypt
-      - /var/lib/letsencrypt:/var/lib/letsencrypt
-    depends_on:
-      - react_lawyer.server
-      - react_lawyer.client
-    networks:
-      react-lawyer-network:
-        aliases:
-          - nginx
+  # nginx:
+  #   image: nginx:latest
+  #   container_name: react-lawyer-nginx
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+  #     - ./nginx/conf.d:/etc/nginx/conf.d
+  #     - ./nginx/ssl:/etc/nginx/ssl
+  #     - ./nginx/ssl:/etc/letsencrypt
+  #     - ./nginx/www:/var/www/certbot
+  #     - /etc/letsencrypt:/etc/letsencrypt
+  #     - /var/lib/letsencrypt:/var/lib/letsencrypt
+  #   depends_on:
+  #     - react_lawyer.server
+  #     - react_lawyer.client
+  #   networks:
+  #     react-lawyer-network:
+  #       aliases:
+  #         - nginx
 
 
   certbot:

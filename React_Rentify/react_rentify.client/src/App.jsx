@@ -167,6 +167,16 @@ function App() {
                                 <Route path="/tickets/thanks" element={<ThanksPage />} />
                             </Route>
 
+                            {/* GPS Route - Independent (no MainLayout) */}
+                            <Route
+                                path="/gps"
+                                element={
+                                    <ProtectedRoute>
+                                        <GpsHome />
+                                    </ProtectedRoute>
+                                }
+                            />
+
                             {/* Protected routes */}
                             <Route
                                 element={
@@ -189,6 +199,8 @@ function App() {
                                 <Route path="/filters/models" element={<Models />} />
                                 <Route path="/filters/caryear" element={<CarYear />} />
 
+
+                                {/*<Route path="/gps" element={<GpsHome />} />*/}
 
                                 {/* Cars */}
                                 <Route path="/cars" element={<CarsList />} />
@@ -225,8 +237,6 @@ function App() {
                                 <Route path="/invoices/:id" element={<InvoiceDetails />} />
                                 <Route path="/invoices/:id/print" element={<InvoicePrint />} />
 
-                                {/* GPS Tracking */}
-                                <Route path="/gps" element={<GpsHome />} />
 
                                 {/* Tickets */}
                                 <Route path="/tickets" element={<TicketsList />} />
