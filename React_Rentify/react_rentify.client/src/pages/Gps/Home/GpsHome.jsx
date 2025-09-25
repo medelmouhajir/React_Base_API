@@ -212,21 +212,6 @@ const GpsHome = () => {
 
 
 
-    const polylinePositions = useMemo(() => {
-        if (!selectedCarRecords?.length) return [];
-
-        const sorted = [...selectedCarRecords].sort(
-            (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
-        );
-
-        return sorted
-            .map(r => [Number(r.latitude), Number(r.longitude)])
-            .filter(([lat, lng]) =>
-                Number.isFinite(lat) && Number.isFinite(lng) &&
-                lat !== 0 && lng !== 0 && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
-            );
-    }, [selectedCarRecords]);
-
     // Car control actions
     const handleStartEngine = async () => {
         if (!selectedCar) return;
@@ -368,8 +353,8 @@ const GpsHome = () => {
 
         return (
             <Polyline
-                key={`${selectedCar?.id || 'car'}:${polylinePositions.length}`}
-                positions={polylinePositions}
+                key={`${selectedCar?.id || 'car'}:${positions.length}`}
+                positions={positions}  // ✅ Use the locally computed positions
                 color={selectedCar?.color || '#3b82f6'}
                 weight={4}
                 opacity={0.9}
