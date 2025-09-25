@@ -1,5 +1,5 @@
 ﻿// src/pages/Gps/Home/GpsHome.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -41,6 +41,14 @@ const GpsHome = () => {
     // Mobile and responsive states
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [showFloatingCard, setShowFloatingCard] = useState(true);
+    const [cardMinimized, setCardMinimized] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStartY, setDragStartY] = useState(0);
+    const [cardTransformY, setCardTransformY] = useState(0);
+
+    // Refs for dragging
+    const cardRef = useRef(null);
+    const headerRef = useRef(null);
 
     // Fetch cars for this agency on component mount
     useEffect(() => {
@@ -81,6 +89,8 @@ const GpsHome = () => {
                 const records = await gpsService.getRecordsByDevice(selectedCar.deviceSerialNumber);
                 setSelectedCarRecords(records || []);
 
+                console.warn(records);
+
                 // Center map on latest position if records exist
                 if (records && records.length > 0) {
                     const latest = records[records.length - 1];
@@ -105,11 +115,68 @@ const GpsHome = () => {
         const handleResize = () => {
             const mobile = window.innerWidth <= 768;
             setIsMobile(mobile);
+            if (!mobile) {
+                setCardMinimized(false);
+                setCardTransformY(0);
+            }
         };
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    // Mobile drag handling for card
+    useEffect(() => {
+        if (!isMobile || !headerRef.current) return;
+
+        const handleTouchStart = (e) => {
+            setIsDragging(true);
+            setDragStartY(e.touches[0].clientY);
+        };
+
+        const handleTouchMove = (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+
+            const currentY = e.touches[0].clientY;
+            const deltaY = currentY - dragStartY;
+
+            // Only allow dragging down when expanded or up when minimized
+            if ((!cardMinimized && deltaY > 0) || (cardMinimized && deltaY < 0)) {
+                setCardTransformY(deltaY);
+            }
+        };
+
+        const handleTouchEnd = () => {
+            if (!isDragging) return;
+            setIsDragging(false);
+
+            // Determine if should minimize or expand based on drag distance
+            const threshold = 100;
+            if (Math.abs(cardTransformY) > threshold) {
+                if (cardTransformY > 0 && !cardMinimized) {
+                    // Dragged down, minimize
+                    setCardMinimized(true);
+                } else if (cardTransformY < 0 && cardMinimized) {
+                    // Dragged up, expand
+                    setCardMinimized(false);
+                }
+            }
+
+            setCardTransformY(0);
+        };
+
+        const headerElement = headerRef.current;
+        headerElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleTouchEnd);
+
+        return () => {
+            headerElement.removeEventListener('touchstart', handleTouchStart);
+            document.removeEventListener('touchmove', handleTouchMove);
+            document.removeEventListener('touchend', handleTouchEnd);
+        };
+    }, [isMobile, isDragging, dragStartY, cardTransformY, cardMinimized]);
 
     // Handle car selection
     const handleCarSelect = (car) => {
@@ -117,7 +184,12 @@ const GpsHome = () => {
         setShowCarModal(false);
     };
 
-    // Handle map interactions
+    // Navigation handlers
+    const handleGoHome = () => {
+        window.location.href = '/dashboard'; // Adjust to your home route
+    };
+
+    // Map interaction handlers
     const handleZoomIn = () => {
         const map = mapRef.current;
         if (map) map.zoomIn();
@@ -136,6 +208,98 @@ const GpsHome = () => {
         if (map) {
             map.flyTo([latest.latitude, latest.longitude], 18, { duration: 1.5 });
         }
+    };
+
+
+
+    const polylinePositions = useMemo(() => {
+        if (!selectedCarRecords?.length) return [];
+
+        const sorted = [...selectedCarRecords].sort(
+            (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+        );
+
+        return sorted
+            .map(r => [Number(r.latitude), Number(r.longitude)])
+            .filter(([lat, lng]) =>
+                Number.isFinite(lat) && Number.isFinite(lng) &&
+                lat !== 0 && lng !== 0 && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
+            );
+    }, [selectedCarRecords]);
+
+    // Car control actions
+    const handleStartEngine = async () => {
+        if (!selectedCar) return;
+        try {
+            // TODO: Implement API call for engine start
+            console.log('Starting engine for car:', selectedCar.id);
+            // await carControlService.startEngine(selectedCar.id);
+            // Show success message
+        } catch (error) {
+            console.error('Failed to start engine:', error);
+        }
+    };
+
+    const handleStopEngine = async () => {
+        if (!selectedCar) return;
+        try {
+            // TODO: Implement API call for engine stop
+            console.log('Stopping engine for car:', selectedCar.id);
+            // await carControlService.stopEngine(selectedCar.id);
+            // Show success message
+        } catch (error) {
+            console.error('Failed to stop engine:', error);
+        }
+    };
+
+    const handleActivateHorn = async () => {
+        if (!selectedCar) return;
+        try {
+            // TODO: Implement API call for horn activation
+            console.log('Activating horn for car:', selectedCar.id);
+            // await carControlService.activateHorn(selectedCar.id);
+            // Show success message
+        } catch (error) {
+            console.error('Failed to activate horn:', error);
+        }
+    };
+
+    const handleLockCar = async () => {
+        if (!selectedCar) return;
+        try {
+            // TODO: Implement API call for car lock
+            console.log('Locking car:', selectedCar.id);
+            // await carControlService.lockCar(selectedCar.id);
+            // Show success message
+        } catch (error) {
+            console.error('Failed to lock car:', error);
+        }
+    };
+
+    const handleUnlockCar = async () => {
+        if (!selectedCar) return;
+        try {
+            // TODO: Implement API call for car unlock
+            console.log('Unlocking car:', selectedCar.id);
+            // await carControlService.unlockCar(selectedCar.id);
+            // Show success message
+        } catch (error) {
+            console.error('Failed to unlock car:', error);
+        }
+    };
+
+    // Card visibility handlers
+    const handleToggleCard = () => {
+        if (isMobile) {
+            setCardMinimized(!cardMinimized);
+        } else {
+            setShowFloatingCard(!showFloatingCard);
+        }
+    };
+
+    const handleShowCard = () => {
+        setShowFloatingCard(true);
+        setCardMinimized(false);
     };
 
     // Get car status based on last location timestamp
@@ -181,21 +345,39 @@ const GpsHome = () => {
 
     // Render polyline for selected car's path
     const renderCarPath = () => {
-        if (!selectedCarRecords.length) return null;
+        if (!selectedCarRecords?.length) return null;
 
-        const positions = selectedCarRecords.map(record => [record.latitude, record.longitude]);
+        // sort oldest → newest
+        const sorted = [...selectedCarRecords].sort(
+            (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+        );
+
+        // build [lat, lng] tuples, cast to numbers, and filter invalids
+        const positions = sorted
+            .map(r => [Number(r.latitude), Number(r.longitude)])
+            .filter(([lat, lng]) =>
+                Number.isFinite(lat) &&
+                Number.isFinite(lng) &&
+                lat !== 0 &&
+                lng !== 0 &&
+                Math.abs(lat) <= 90 &&
+                Math.abs(lng) <= 180
+            );
+
+        if (positions.length < 2) return null;
 
         return (
             <Polyline
-                positions={positions}
-                pathOptions={{
-                    color: selectedCar?.color || '#3b82f6',
-                    weight: 4,
-                    opacity: 0.8,
-                }}
+                key={`${selectedCar?.id || 'car'}:${polylinePositions.length}`}
+                positions={polylinePositions}
+                color={selectedCar?.color || '#3b82f6'}
+                weight={4}
+                opacity={0.9}
+                dashArray="5,5"
             />
         );
     };
+
 
     // Render marker for selected car's current position
     const renderCarMarker = () => {
@@ -261,7 +443,7 @@ const GpsHome = () => {
                     center={mapCenter}
                     zoom={mapZoom}
                     style={{ width: '100%', height: '100%' }}
-                    ref={mapRef}
+                    whenCreated={(map) => { mapRef.current = map; }}   // <— use this, not ref
                     zoomControl={false}
                 >
                     <TileLayer
@@ -278,6 +460,16 @@ const GpsHome = () => {
 
             {/* Custom Map Controls */}
             <div className="map-controls">
+                {/* Go to Home Button */}
+                <button
+                    className="control-btn home-btn"
+                    onClick={handleGoHome}
+                    title={t('common.goHome', 'Go to Home')}
+                >
+                    🏠
+                </button>
+
+                {/* Zoom Controls */}
                 <div className="zoom-controls">
                     <button
                         className="control-btn zoom-in"
@@ -305,22 +497,31 @@ const GpsHome = () => {
                     </button>
                 )}
 
-                {/* Toggle floating card on mobile */}
-                {isMobile && (
+                {/* Toggle floating card on mobile or show card when hidden */}
+                {(isMobile || !showFloatingCard) && (
                     <button
                         className="control-btn toggle-card-btn"
-                        onClick={() => setShowFloatingCard(!showFloatingCard)}
+                        onClick={isMobile ? handleToggleCard : handleShowCard}
                         title={t('gps.toggleInfo', 'Toggle Info')}
                     >
-                        {showFloatingCard ? '📍' : '🗂️'}
+                        {(isMobile && cardMinimized) || (!isMobile && !showFloatingCard) ? '📍' : '🗂️'}
                     </button>
                 )}
             </div>
 
             {/* Floating Car Info Card */}
             {selectedCar && showFloatingCard && (
-                <div className={`floating-card ${isMobile ? 'mobile' : ''}`}>
-                    <div className="card-header">
+                <div
+                    ref={cardRef}
+                    className={`floating-card ${isMobile ? 'mobile' : ''} ${cardMinimized ? 'minimized' : ''}`}
+                    style={{
+                        transform: isMobile && isDragging ? `translateY(${cardTransformY}px)` : undefined
+                    }}
+                >
+                    <div
+                        ref={headerRef}
+                        className={`card-header ${isMobile ? 'draggable' : ''}`}
+                    >
                         <div className="car-info">
                             <h3 className="car-title">{selectedCar.model}</h3>
                             <span className="car-plate">{selectedCar.licensePlate}</span>
@@ -344,50 +545,122 @@ const GpsHome = () => {
                                     ✕
                                 </button>
                             )}
+
+                            {isMobile && (
+                                <button
+                                    className="action-btn minimize-card"
+                                    onClick={() => setCardMinimized(!cardMinimized)}
+                                    title={cardMinimized ? t('common.expand', 'Expand') : t('common.minimize', 'Minimize')}
+                                >
+                                    {cardMinimized ? '▲' : '▼'}
+                                </button>
+                            )}
                         </div>
-                    </div>
 
-                    <div className="card-content">
-                        {isLoadingRecords ? (
-                            <div className="loading-records">
-                                <div className="loading-spinner-sm"></div>
-                                <span>{t('gps.loadingLocation', 'Loading location...')}</span>
-                            </div>
-                        ) : selectedCarRecords.length > 0 ? (
-                            <div className="car-details">
-                                <div className="status-row">
-                                    <div
-                                        className="status-indicator"
-                                        style={{ backgroundColor: getStatusColor(getCarStatus(selectedCar)) }}
-                                    ></div>
-                                    <span className="status-text">{getStatusText(getCarStatus(selectedCar))}</span>
-                                </div>
-
-                                <div className="detail-row">
-                                    <span className="label">{t('gps.speed', 'Speed')}:</span>
-                                    <span className="value">
-                                        {selectedCarRecords[selectedCarRecords.length - 1]?.speedKmh?.toFixed(1) || '0'} km/h
-                                    </span>
-                                </div>
-
-                                <div className="detail-row">
-                                    <span className="label">{t('gps.lastUpdate', 'Last Update')}:</span>
-                                    <span className="value">
-                                        {new Date(selectedCarRecords[selectedCarRecords.length - 1]?.timestamp).toLocaleString()}
-                                    </span>
-                                </div>
-
-                                <div className="detail-row">
-                                    <span className="label">{t('gps.totalPoints', 'Total Points')}:</span>
-                                    <span className="value">{selectedCarRecords.length}</span>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="no-data">
-                                <p>{t('gps.noLocationData', 'No location data available for this vehicle.')}</p>
-                            </div>
+                        {/* Mobile drag indicator */}
+                        {isMobile && (
+                            <div className="drag-indicator"></div>
                         )}
                     </div>
+
+                    {!cardMinimized && (
+                        <div className="card-content">
+                            {isLoadingRecords ? (
+                                <div className="loading-records">
+                                    <div className="loading-spinner-sm"></div>
+                                    <span>{t('gps.loadingLocation', 'Loading location...')}</span>
+                                </div>
+                            ) : selectedCarRecords.length > 0 ? (
+                                <>
+                                    <div className="car-details">
+                                        <div className="status-row">
+                                            <div
+                                                className="status-indicator"
+                                                style={{ backgroundColor: getStatusColor(getCarStatus(selectedCar)) }}
+                                            ></div>
+                                            <span className="status-text">{getStatusText(getCarStatus(selectedCar))}</span>
+                                        </div>
+
+                                        <div className="detail-row">
+                                            <span className="label">{t('gps.speed', 'Speed')}:</span>
+                                            <span className="value">
+                                                {selectedCarRecords[selectedCarRecords.length - 1]?.speedKmh?.toFixed(1) || '0'} km/h
+                                            </span>
+                                        </div>
+
+                                        <div className="detail-row">
+                                            <span className="label">{t('gps.lastUpdate', 'Last Update')}:</span>
+                                            <span className="value">
+                                                {new Date(selectedCarRecords[selectedCarRecords.length - 1]?.timestamp).toLocaleString()}
+                                            </span>
+                                        </div>
+
+                                        <div className="detail-row">
+                                            <span className="label">{t('gps.totalPoints', 'Total Points')}:</span>
+                                            <span className="value">{selectedCarRecords.length}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Car Control Actions */}
+                                    <div className="car-actions-section">
+                                        <h4 className="actions-title">{t('gps.carActions', 'Car Actions')}</h4>
+                                        <div className="action-buttons">
+                                            <div className="action-row">
+                                                <button
+                                                    className="action-btn-full start-engine"
+                                                    onClick={handleStartEngine}
+                                                    title={t('gps.actions.startEngine', 'Start Engine')}
+                                                >
+                                                    <span className="btn-icon">🔥</span>
+                                                    <span>{t('gps.actions.startEngine', 'Start Engine')}</span>
+                                                </button>
+                                                <button
+                                                    className="action-btn-full stop-engine"
+                                                    onClick={handleStopEngine}
+                                                    title={t('gps.actions.stopEngine', 'Stop Engine')}
+                                                >
+                                                    <span className="btn-icon">⏹️</span>
+                                                    <span>{t('gps.actions.stopEngine', 'Stop Engine')}</span>
+                                                </button>
+                                            </div>
+
+                                            <div className="action-row">
+                                                <button
+                                                    className="action-btn-full activate-horn"
+                                                    onClick={handleActivateHorn}
+                                                    title={t('gps.actions.activateHorn', 'Activate Horn')}
+                                                >
+                                                    <span className="btn-icon">📯</span>
+                                                    <span>{t('gps.actions.horn', 'Horn')}</span>
+                                                </button>
+                                                <button
+                                                    className="action-btn-full lock-car"
+                                                    onClick={handleLockCar}
+                                                    title={t('gps.actions.lockCar', 'Lock Car')}
+                                                >
+                                                    <span className="btn-icon">🔒</span>
+                                                    <span>{t('gps.actions.lock', 'Lock')}</span>
+                                                </button>
+                                            </div>
+
+                                            <button
+                                                className="action-btn-full unlock-car"
+                                                onClick={handleUnlockCar}
+                                                title={t('gps.actions.unlockCar', 'Unlock Car')}
+                                            >
+                                                <span className="btn-icon">🔓</span>
+                                                <span>{t('gps.actions.unlock', 'Unlock Car')}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="no-data">
+                                    <p>{t('gps.noLocationData', 'No location data available for this vehicle.')}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
 

@@ -46,6 +46,14 @@ const Contract = () => {
     };
   }, [id, t]);
 
+    const getDaysBetween = (startDate, endDate) => {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        const diffTime = end.getTime() - start.getTime();
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    };
+
   const handlePrint = () => {
           const contractEl = document.querySelector('.invoice-print');
           if (!contractEl) return;
@@ -212,7 +220,6 @@ const Contract = () => {
           <table className="table table-bordered text-center">
             <tbody>
               <tr>
-                <td>Prix par jour</td>
                 <td>Nombre des jours</td>
                 <td>Total</td>
                 <td>Reste</td>
@@ -220,9 +227,8 @@ const Contract = () => {
                 <td>KM d'arriver</td>
               </tr>
               <tr style={{ height: '25px' }}>
-                <td>{reservation.agreedPrice}</td>
-                <td></td>
-                <td>{reservation.finalPrice || reservation.agreedPrice}</td>
+                <td>{getDaysBetween(reservation.startDate ,reservation.endDate)}</td>
+                <td>{reservation.finalPrice || reservation.agreedPrice} MAD</td>
                 <td></td>
                 <td>{reservation.odometerStart || ''}</td>
                 <td>{reservation.odometerEnd || ''}</td>
@@ -233,10 +239,10 @@ const Contract = () => {
           <table className="table table-bordered mb-2 text-center">
             <tbody>
               <tr>
-                <td>Carte grise <input type="checkbox" className="ml-4" /></td>
+                <td>C. Grise <input type="checkbox" className="ml-4" /></td>
                 <td>Assurance <input type="checkbox" className="ml-4" /></td>
                 <td>Vignette <input type="checkbox" className="ml-4" /></td>
-                <td>Visite Technique <input type="checkbox" className="ml-4" /></td>
+                <td>V. Technique <input type="checkbox" className="ml-4" /></td>
                 <td>Autorisation <input type="checkbox" className="ml-4" /></td>
                 <td>Contrat <input type="checkbox" className="ml-4" /></td>
                 <td>Pisrina <input type="checkbox" className="ml-4" /></td>

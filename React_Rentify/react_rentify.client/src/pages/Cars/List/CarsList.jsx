@@ -372,7 +372,7 @@ const CarsList = () => {
 
                 <div className="car-info">
                     <div className="info-item">
-                        <span className="info-label">{t('car.year')}:</span>
+                        <span className="info-label">{t('car.fields.year')}:</span>
                         <span className="info-value">{yearValue}</span>
                     </div>
                     <div className="info-item">
@@ -393,7 +393,7 @@ const CarsList = () => {
                     )}
                     <div className="info-item">
                         <span className="info-label">{t('car.dailyRate')}:</span>
-                        <span className="info-value">${car.dailyRate}</span>
+                        <span className="info-value">{car.dailyRate} {t('common.currency')}</span>
                     </div>
                 </div>
 
