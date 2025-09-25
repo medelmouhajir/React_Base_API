@@ -135,6 +135,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
             { id: 'dashboard', label: t('sidebar.dashboard'), icon: icons.dashboard, path: '/dashboard' },
             { id: 'agencies', label: t('sidebar.agencies'), icon: icons.agencies, path: '/agencies' },
             { id: 'filters', label: t('sidebar.filters'), icon: icons.staff, path: '/filters' },
+            { id: 'gps', label: t('sidebar.gpsTracking'), icon: icons.gps, path: '/gps/cars' },
             { id: 'subscriptions', label: t('sidebar.subscriptions'), icon: icons.subscriptions, path: '/subscriptions' },
             { id: 'tickets', label: t('sidebar.tickets'), icon: icons.tickets, path: '/tickets' },
         ];

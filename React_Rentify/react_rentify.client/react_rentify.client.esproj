@@ -34,6 +34,7 @@
     <Folder Include="src\pages\Gadgets\CarChecks\" />
     <Folder Include="src\pages\Gadgets\IdentityReaders\" />
     <Folder Include="src\pages\Gps\Home\" />
+    <Folder Include="src\pages\Gps\Cars\" />
     <Folder Include="src\pages\Home\" />
     <Folder Include="src\pages\Dashboard\" />
     <Folder Include="src\pages\Invoices\Add\" />

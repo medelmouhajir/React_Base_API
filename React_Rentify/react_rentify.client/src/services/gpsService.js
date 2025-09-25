@@ -74,6 +74,26 @@ export const gpsService = {
             throw error;
         }
     },
+
+    async updateCarGps(carId, gpsData) {
+        try {
+            const response = await apiClient.put(`/gps/cars/${carId}`, gpsData);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error updating GPS for car ${carId}:`, error);
+            throw error;
+        }
+    },
+
+    async getCarsByAgencyWithGps(agencyId) {
+        try {
+            const response = await apiClient.get(`/gps/cars/agency/${agencyId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error fetching cars with GPS for agency ${agencyId}:`, error);
+            throw error;
+        }
+    },
 };
 
 export default gpsService;

@@ -121,8 +121,12 @@ const BlacklistCheck = lazy(() => import('./pages/Gadgets/BlacklistChecks/Blackl
 const CarCheck = lazy(() => import('./pages/Gadgets/CarChecks/CarCheck'));
 const IdentityReader = lazy(() => import('./pages/Gadgets/IdentityReaders/IdentityReader'));
 
-//// Other standalone pages
+
+//// Child route for GPS
 const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
+const SetCarGps = lazy(() => import('./pages/Gps/Cars/SetCarGps'));
+
+//// Other standalone pages
 const SearchPage = lazy(() => import('./pages/Search/SearchPage'));
 
 //// Other standalone pages
@@ -200,7 +204,7 @@ function App() {
                                 <Route path="/filters/caryear" element={<CarYear />} />
 
 
-                                {/*<Route path="/gps" element={<GpsHome />} />*/}
+                                <Route path="/gps/cars" element={<SetCarGps />} />
 
                                 {/* Cars */}
                                 <Route path="/cars" element={<CarsList />} />

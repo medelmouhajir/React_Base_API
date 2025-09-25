@@ -97,7 +97,17 @@ export const carService = {
             console.error(`❌ Error adding attachment to car ID ${carId}:`, error);
             throw error;
         }
-    }
+    },
+    async updateCarGps(carId, gpsData) {
+        try {
+            const response = await apiClient.put(`/gps/cars/${carId}`, gpsData);
+            console.log(`✅ Successfully updated GPS settings for car ${carId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error updating GPS settings for car ${carId}:`, error);
+            throw error;
+        }
+    },
 };
 
 export default carService;

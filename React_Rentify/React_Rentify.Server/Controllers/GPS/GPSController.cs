@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models.Agencies;
@@ -21,14 +22,16 @@ namespace React_Rentify.Server.Controllers
     public class GPSController : ControllerBase
     {
         private readonly GpsDbContext _context;
+        private readonly MainDbContext _contextMain;
         private readonly ILogger<GPSController> _logger;
         private readonly IAgencyAuthorizationService _authService;
 
-        public GPSController(GpsDbContext context, ILogger<GPSController> logger , IAgencyAuthorizationService authService)
+        public GPSController(GpsDbContext context, ILogger<GPSController> logger , IAgencyAuthorizationService authService, MainDbContext contextMain)
         {
             _context = context;
             _logger = logger;
             _authService = authService;
+            _contextMain = contextMain;
         }
 
         /// <summary>
@@ -249,6 +252,112 @@ namespace React_Rentify.Server.Controllers
         }
 
 
+        /// <summary>
+        /// PUT: api/GPS/cars/{carId}
+        /// Updates GPS settings for a specific car (deviceSerialNumber and isTrackingActive)
+        /// </summary>
+        [HttpPut("cars/{carId:guid}")]
+        public async Task<IActionResult> UpdateCarGps(Guid carId, [FromBody] UpdateCarGpsDto dto)
+        {
+            _logger.LogInformation("Updating GPS settings for car {CarId}", carId);
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid UpdateCarGpsDto received for car {CarId}", carId);
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+
+                var car = await _contextMain.Cars
+                    .Include(x=> x.Car_Model)
+                    .FirstOrDefaultAsync(c => c.Id == carId);
+
+                if (car == null)
+                {
+                    _logger.LogWarning("Car with ID {CarId} not found", carId);
+                    return NotFound(new { message = $"Car with ID '{carId}' not found." });
+                }
+
+                // Check if user has access to this car's agency (if needed)
+                var hasAccess = await _authService.HasAccessToAgencyAsync(car.AgencyId);
+                if (!hasAccess)
+                {
+                    _logger.LogWarning("User does not have access to car {CarId} in agency {AgencyId}", carId, car.AgencyId);
+                    return Forbid();
+                }
+
+                // Update car GPS settings
+                car.DeviceSerialNumber = string.IsNullOrWhiteSpace(dto.DeviceSerialNumber) ? null : dto.DeviceSerialNumber.Trim();
+                car.IsTrackingActive = dto.IsTrackingActive && !string.IsNullOrWhiteSpace(car.DeviceSerialNumber);
+
+                await _contextMain.SaveChangesAsync();
+
+                _logger.LogInformation("Successfully updated GPS settings for car {CarId}. Device: {Device}, Tracking: {Tracking}",
+                    carId, car.DeviceSerialNumber ?? "None", car.IsTrackingActive);
+
+                // Return updated car info
+                var result = new CarGpsDto
+                {
+                    Id = car.Id,
+                    Model = car.Car_Model.Name,
+                    LicensePlate = car.LicensePlate,
+                    DeviceSerialNumber = car.DeviceSerialNumber,
+                    IsTrackingActive = car.IsTrackingActive
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating GPS settings for car {CarId}", carId);
+                return StatusCode(500, new { message = "An error occurred while updating GPS settings." });
+            }
+        }
+
+
+        /// <summary>
+        /// GET: api/GPS/cars/agency/{agencyId}
+        /// Gets all cars with their GPS status for a specific agency
+        /// </summary>
+        [HttpGet("cars/agency/{agencyId:guid}")]
+        public async Task<IActionResult> GetCarsByAgencyWithGpsStatus(Guid agencyId)
+        {
+            _logger.LogInformation("Retrieving cars with GPS status for agency {AgencyId}", agencyId);
+
+            try
+            {
+                // Check if user has access to this agency
+                var hasAccess = await _authService.HasAccessToAgencyAsync(agencyId);
+                if (!hasAccess)
+                {
+                    _logger.LogWarning("User does not have access to agency {AgencyId}", agencyId);
+                    return Forbid();
+                }
+
+                var cars = await _contextMain.Cars
+                    .Include(x=> x.Car_Model)
+                    .Where(c => c.AgencyId == agencyId)
+                    .Select(c => new CarGpsDto
+                    {
+                        Id = c.Id,
+                        Model = c.Car_Model.Name,
+                        LicensePlate = c.LicensePlate,
+                        DeviceSerialNumber = c.DeviceSerialNumber,
+                        IsTrackingActive = c.IsTrackingActive
+                    })
+                    .ToListAsync();
+
+                _logger.LogInformation("Retrieved {Count} cars for agency {AgencyId}", cars.Count, agencyId);
+                return Ok(cars);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving cars for agency {AgencyId}", agencyId);
+                return StatusCode(500, new { message = "An error occurred while retrieving cars." });
+            }
+        }
     }
 
     #region DTOs
@@ -287,5 +396,19 @@ namespace React_Rentify.Server.Controllers
         public string StatusFlags { get; set; }
     }
 
+    public class UpdateCarGpsDto
+    {
+        public string? DeviceSerialNumber { get; set; }
+        public bool IsTrackingActive { get; set; }
+    }
+
+    public class CarGpsDto
+    {
+        public Guid Id { get; set; }
+        public string Model { get; set; }
+        public string LicensePlate { get; set; }
+        public string? DeviceSerialNumber { get; set; }
+        public bool IsTrackingActive { get; set; }
+    }
     #endregion
 }

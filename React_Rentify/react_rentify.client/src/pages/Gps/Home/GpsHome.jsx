@@ -5,7 +5,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import gpsService from '../../../services/gpsService';
 
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, CircleMarker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -330,61 +330,252 @@ const GpsHome = () => {
 
     // Render polyline for selected car's path
     const renderCarPath = () => {
-        if (!selectedCarRecords?.length) return null;
+        if (!selectedCarRecords || selectedCarRecords.length === 0) {
+            console.log('No records to display polyline');
+            return null;
+        }
 
-        // sort oldest → newest
-        const sorted = [...selectedCarRecords].sort(
+        // Sort records by timestamp (oldest first)
+        const sortedRecords = [...selectedCarRecords].sort(
             (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
         );
 
-        // build [lat, lng] tuples, cast to numbers, and filter invalids
-        const positions = sorted
-            .map(r => [Number(r.latitude), Number(r.longitude)])
-            .filter(([lat, lng]) =>
-                Number.isFinite(lat) &&
-                Number.isFinite(lng) &&
-                lat !== 0 &&
-                lng !== 0 &&
-                Math.abs(lat) <= 90 &&
-                Math.abs(lng) <= 180
-            );
+        // Create positions array, ensuring proper number conversion
+        const positions = sortedRecords
+            .map(record => {
+                const lat = parseFloat(record.latitude);
+                const lng = parseFloat(record.longitude);
+                return [lat, lng];
+            })
+            .filter(([lat, lng]) => {
+                const isValid = !isNaN(lat) &&
+                    !isNaN(lng) &&
+                    Math.abs(lat) <= 90 &&
+                    Math.abs(lng) <= 180 &&
+                    (lat !== 0 || lng !== 0);
+                return isValid;
+            });
 
-        if (positions.length < 2) return null;
+        // Remove duplicate consecutive points
+        const uniquePositions = positions.filter((pos, index) => {
+            if (index === 0) return true;
+            const prevPos = positions[index - 1];
+            return pos[0] !== prevPos[0] || pos[1] !== prevPos[1];
+        });
+
+        console.log('Polyline positions:', uniquePositions);
+
+        if (uniquePositions.length < 2) {
+            console.warn('Not enough unique positions for polyline');
+            return null;
+        }
+
+        const polylineKey = `polyline-${selectedCar?.id}-${uniquePositions.length}`;
 
         return (
             <Polyline
-                key={`${selectedCar?.id || 'car'}:${positions.length}`}
-                positions={positions}  // ✅ Use the locally computed positions
-                color={selectedCar?.color || '#3b82f6'}
-                weight={4}
-                opacity={0.9}
-                dashArray="5,5"
+                key={polylineKey}
+                positions={uniquePositions}
+                pathOptions={{
+                    color: '#3b82f6',
+                    weight: 4,
+                    opacity: 0.8,
+                    dashArray: null,
+                    lineCap: 'round',
+                    lineJoin: 'round'
+                }}
             />
         );
     };
 
+    const renderPathPoints = () => {
+        if (!selectedCarRecords || selectedCarRecords.length === 0) return null;
+
+        // Sort records by timestamp (oldest first)
+        const sortedRecords = [...selectedCarRecords].sort(
+            (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+        );
+
+        // Don't show a circle for the last point (it will have the marker)
+        const pathPoints = sortedRecords.slice(0, -1);
+
+        return pathPoints.map((record, index) => {
+            const lat = parseFloat(record.latitude);
+            const lng = parseFloat(record.longitude);
+
+            if (isNaN(lat) || isNaN(lng)) return null;
+
+            // Determine circle color based on speed or status
+            let circleColor = '#3b82f6'; // Default blue
+
+            if (!record.ignitionOn) {
+                circleColor = '#6b7280'; // Gray for stopped
+            } else if (record.speedKmh > 50) {
+                circleColor = '#ef4444'; // Red for high speed
+            } else if (record.speedKmh > 30) {
+                circleColor = '#f59e0b'; // Orange for medium speed
+            } else if (record.speedKmh > 0) {
+                circleColor = '#10b981'; // Green for low speed
+            } else {
+                circleColor = '#6b7280'; // Gray for stationary
+            }
+
+            return (
+                <CircleMarker
+                    key={`point-${record.id}`}
+                    center={[lat, lng]}
+                    radius={6}
+                    pathOptions={{
+                        fillColor: circleColor,
+                        color: '#ffffff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }}
+                >
+                    <Popup>
+                        <div className="popup-content">
+                            <div style={{ fontSize: '0.875rem' }}>
+                                <strong>Point {index + 1}</strong><br />
+                                <div style={{ marginTop: '0.5rem' }}>
+                                    <strong>Time:</strong> {new Date(record.timestamp).toLocaleTimeString()}<br />
+                                    <strong>Date:</strong> {new Date(record.timestamp).toLocaleDateString()}<br />
+                                    <strong>Speed:</strong> {record.speedKmh?.toFixed(1)} km/h<br />
+                                    <strong>Heading:</strong> {record.heading}°<br />
+                                    <strong>Altitude:</strong> {record.altitude?.toFixed(1)} m<br />
+                                    <strong>Ignition:</strong> {record.ignitionOn ? '✅ ON' : '❌ OFF'}<br />
+                                    {record.statusFlags && (
+                                        <>
+                                            <strong>Event:</strong> {
+                                                record.statusFlags.match(/EventName=([^;]+)/)?.[1] || 'N/A'
+                                            }
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </Popup>
+                </CircleMarker>
+            );
+        });
+    };
+
+
+    useEffect(() => {
+        if (selectedCarRecords && selectedCarRecords.length > 0) {
+            console.group('GPS Records Debug');
+            console.log('Selected car:', selectedCar);
+            console.log('Total records:', selectedCarRecords.length);
+
+            // Check for unique positions
+            const uniqueCoords = new Set();
+            selectedCarRecords.forEach(record => {
+                const coordKey = `${record.latitude},${record.longitude}`;
+                uniqueCoords.add(coordKey);
+            });
+
+            console.log('Unique coordinate pairs:', uniqueCoords.size);
+            console.log('Coordinates:', Array.from(uniqueCoords));
+
+            // Check if coordinates are changing
+            const latitudes = selectedCarRecords.map(r => parseFloat(r.latitude));
+            const longitudes = selectedCarRecords.map(r => parseFloat(r.longitude));
+
+            console.log('Latitude range:', Math.min(...latitudes), 'to', Math.max(...latitudes));
+            console.log('Longitude range:', Math.min(...longitudes), 'to', Math.max(...longitudes));
+
+            console.groupEnd();
+        }
+    }, [selectedCarRecords, selectedCar]);
+
 
     // Render marker for selected car's current position
     const renderCarMarker = () => {
-        if (!selectedCarRecords.length) return null;
+        if (!selectedCarRecords || selectedCarRecords.length === 0) return null;
 
-        const latest = selectedCarRecords[selectedCarRecords.length - 1];
-        const position = [latest.latitude, latest.longitude];
+        // Get the most recent record
+        const sortedRecords = [...selectedCarRecords].sort(
+            (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+        );
+        const latest = sortedRecords[0];
+
+        const lat = parseFloat(latest.latitude);
+        const lng = parseFloat(latest.longitude);
+
+        if (isNaN(lat) || isNaN(lng)) return null;
+
+        // Create custom icon for the car's current position
+        const carIcon = L.divIcon({
+            html: `
+            <div style="
+                background-color: ${latest.ignitionOn ? '#10b981' : '#ef4444'};
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                border: 3px solid white;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                position: relative;
+            ">
+                <div style="
+                    position: absolute;
+                    top: -8px;
+                    left: 50%;
+                    transform: translateX(-50%) rotate(${latest.heading || 0}deg);
+                    width: 0;
+                    height: 0;
+                    border-left: 6px solid transparent;
+                    border-right: 6px solid transparent;
+                    border-bottom: 12px solid ${latest.ignitionOn ? '#10b981' : '#ef4444'};
+                "></div>
+            </div>
+        `,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12],
+            className: 'car-current-position'
+        });
 
         return (
-            <Marker position={position}>
+            <Marker
+                position={[lat, lng]}
+                icon={carIcon}
+            >
                 <Popup>
                     <div className="popup-content">
                         <div className="popup-header">
                             <strong>{selectedCar.model}</strong>
-                            <span className="popup-plate">{selectedCar.licensePlate}</span>
+                            <span className="popup-plate" style={{
+                                marginLeft: '0.5rem',
+                                padding: '0.125rem 0.5rem',
+                                backgroundColor: '#f3f4f6',
+                                borderRadius: '0.25rem',
+                                fontSize: '0.75rem'
+                            }}>
+                                {selectedCar.licensePlate}
+                            </span>
                         </div>
-                        <div className="popup-details">
-                            <p><strong>{t('gps.speed', 'Speed')}:</strong> {latest.speedKmh?.toFixed(1) || '0'} km/h</p>
-                            <p><strong>{t('gps.lastSeen', 'Last seen')}:</strong> {new Date(latest.timestamp).toLocaleString()}</p>
-                            {latest.ignitionOn !== null && (
-                                <p><strong>{t('gps.ignition', 'Ignition')}:</strong> {latest.ignitionOn ? t('gps.on', 'On') : t('gps.off', 'Off')}</p>
-                            )}
+                        <div className="popup-details" style={{ marginTop: '0.75rem' }}>
+                            <p><strong>Current Status</strong></p>
+                            <div style={{ marginTop: '0.5rem' }}>
+                                <strong>Speed:</strong> {latest.speedKmh?.toFixed(1) || '0'} km/h<br />
+                                <strong>Heading:</strong> {latest.heading || 0}°<br />
+                                <strong>Altitude:</strong> {latest.altitude?.toFixed(1) || '0'} m<br />
+                                <strong>Ignition:</strong> {
+                                    latest.ignitionOn
+                                        ? <span style={{ color: '#10b981' }}>✅ ON</span>
+                                        : <span style={{ color: '#ef4444' }}>❌ OFF</span>
+                                }<br />
+                                <strong>Last Update:</strong> {new Date(latest.timestamp).toLocaleString()}<br />
+                                <strong>Satellites:</strong> {
+                                    latest.statusFlags?.match(/Satellites=(\d+)/)?.[1] || 'N/A'
+                                }<br />
+                                {latest.statusFlags && (
+                                    <>
+                                        <strong>Last Event:</strong> {
+                                            latest.statusFlags.match(/EventName=([^;]+)/)?.[1] || 'N/A'
+                                        }
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </Popup>
@@ -424,23 +615,35 @@ const GpsHome = () => {
         <div className={`gps-home-container full-page ${isDarkMode ? 'dark' : ''}`}>
             {/* Main Map Container */}
             <div className="map-container">
+
                 <MapContainer
+                    ref={mapRef}
                     center={mapCenter}
                     zoom={mapZoom}
-                    style={{ width: '100%', height: '100%' }}
-                    whenCreated={(map) => { mapRef.current = map; }}   // <— use this, not ref
+                    style={{ height: '100%', width: '100%' }}
+                    scrollWheelZoom={true}
                     zoomControl={false}
                 >
                     <TileLayer
                         url={tileUrl}
                         attribution={attribution}
-                        subdomains={['a', 'b', 'c']}
-                        maxZoom={19}
                     />
 
-                    {renderCarPath()}
-                    {renderCarMarker()}
+                    {/* Render in this order for proper layering */}
+                    {selectedCar && selectedCarRecords.length > 0 && (
+                        <>
+                            {/* 1. Polyline (bottom layer) */}
+                            {renderCarPath()}
+
+                            {/* 2. Path points (middle layer) */}
+                            {renderPathPoints()}
+
+                            {/* 3. Current position marker (top layer) */}
+                            {renderCarMarker()}
+                        </>
+                    )}
                 </MapContainer>
+
             </div>
 
             {/* Custom Map Controls */}
