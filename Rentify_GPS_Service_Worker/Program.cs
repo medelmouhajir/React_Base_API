@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Rentify_GPS_Service_Worker.Data;
+using Rentify_GPS_Service_Worker.Protocols.Teltonika.Commands;
 
 namespace Rentify_GPS_Service_Worker
 {
@@ -21,6 +22,14 @@ namespace Rentify_GPS_Service_Worker
 
             var host = builder.Build();
             host.Run();
+        }
+    }
+    public static class ServiceCollectionExtensions
+    {
+        public static IServiceCollection AddTeltonikaCommandSender(this IServiceCollection services)
+        {
+            services.AddSingleton<TeltonikaCommandSender>();
+            return services;
         }
     }
 }

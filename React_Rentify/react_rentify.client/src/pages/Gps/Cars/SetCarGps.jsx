@@ -38,13 +38,51 @@ const SetCarGps = () => {
     const loadData = async () => {
         setIsLoading(true);
         try {
-            const [carsData, devicesData] = await Promise.all([
-                gpsService.getCarsByAgencyWithGps(agencyId),
-                gpsService.getAllDevices()
-            ]);
+            console.log('Loading data for agencyId:', agencyId);
 
-            setCars(carsData);
-            setDevices(devicesData);
+            // Try cars first
+            let carsData = [];
+            try {
+                console.log('Fetching cars...');
+                carsData = await gpsService.getCarsByAgencyWithGps(agencyId);
+                console.log('Cars loaded successfully:', carsData);
+                setCars(carsData);
+            } catch (carsError) {
+                console.error('Failed to load cars:', carsError);
+                console.error('Cars error details:', {
+                    message: carsError.message,
+                    response: carsError.response?.data,
+                    status: carsError.response?.status,
+                    url: carsError.config?.url
+                });
+                // Set empty cars but don't throw - let devices load
+                setCars([]);
+            }
+
+            // Try devices second
+            let devicesData = [];
+            try {
+                console.log('Fetching devices...');
+                devicesData = await gpsService.getAllDevices();
+                console.log('Devices loaded successfully:', devicesData);
+                setDevices(devicesData);
+            } catch (devicesError) {
+                console.error('Failed to load devices:', devicesError);
+                console.error('Devices error details:', {
+                    message: devicesError.message,
+                    response: devicesError.response?.data,
+                    status: devicesError.response?.status,
+                    url: devicesError.config?.url
+                });
+                // Set empty devices but don't throw
+                setDevices([]);
+            }
+
+            // If both calls failed, show error
+            if (carsData.length === 0 && devicesData.length === 0) {
+                toast.error(t('gps.cars.loadError', 'Failed to load data'));
+            }
+
         } catch (error) {
             console.error('Error loading data:', error);
             toast.error(t('gps.cars.loadError', 'Failed to load data'));
