@@ -990,7 +990,9 @@
       "isTrackingActive": "Suivi actif",
       "availability": "Disponibilité",
       "trackingActive": "Suivi actif",
-      "vin": "Numéro de châssis (VIN)"
+      "vin": "Numéro de châssis (VIN)",
+      "gearType": "Transmission",
+      "engineType": "Type de Moteur"
     },
     "placeholders": {
       "selectModel": "Sélectionnez le modèle",
@@ -1001,7 +1003,8 @@
       "dailyRate": "Entrez le tarif journalier",
       "hourlyRate": "Entrez le tarif horaire",
       "deviceSerialNumber": "Entrez le numéro de série de l’appareil",
-      "selectManufacturer": "Sélectionnez le constructeur"
+      "selectManufacturer": "Sélectionnez le constructeur",
+      "selectColor": "Sélectionner la couleur"
     },
     "fuelLevels": {
       "full": "Plein",
@@ -1114,7 +1117,48 @@
       "inactive": "Inactif"
     },
     "car": "Voiture",
-    "currentKm": "Kilométrage actuel"
+    "currentKm": "Kilométrage actuel",
+    "add": {
+      "subtitle": "Ajouter un nouveau véhicule à votre flotte",
+      "vehicleInfo": "Informations du Véhicule",
+      "registrationDetails": "Détails d'Immatriculation",
+      "pricing": "Informations de Tarification",
+      "images": "Images du Véhicule",
+      "imagesDescription": "Téléchargez des photos de votre véhicule (optionnel, max 5MB par image)",
+      "uploadImages": "Cliquez pour télécharger des images",
+      "imageFormats": "Supportés : JPEG, PNG, WebP",
+      "selectedImages": "Images Sélectionnées",
+      "setMainImage": "Définir comme image principale",
+      "removeImage": "Supprimer l'image",
+      "mainImage": "Image Principale",
+      "creating": "Création du véhicule...",
+      "createCar": "Créer le Véhicule",
+      "invalidImageFormat": "Veuillez sélectionner uniquement des images JPEG, PNG ou WebP",
+      "imageTooLarge": "La taille du fichier image doit être inférieure à 5MB",
+      "fetchError": "Échec du chargement des données du formulaire. Veuillez actualiser et réessayer."
+    },
+    "gearType": {
+      "manual": "Manuelle",
+      "automatic": "Automatique"
+    },
+    "engineType": {
+      "gasoline": "Essence",
+      "diesel": "Diesel",
+      "electric": "Électrique",
+      "hybrid": "Hybride"
+    },
+    "colors": {
+      "white": "Blanc",
+      "black": "Noir",
+      "silver": "Argent",
+      "gray": "Gris",
+      "red": "Rouge",
+      "blue": "Bleu",
+      "green": "Vert",
+      "yellow": "Jaune",
+      "orange": "Orange",
+      "brown": "Marron"
+    }
   },
   "carDetails": {
     "fetchError": "Erreur lors de la récupération des détails de la voiture.",

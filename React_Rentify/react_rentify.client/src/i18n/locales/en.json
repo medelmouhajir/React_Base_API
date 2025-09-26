@@ -1011,7 +1011,9 @@
       "isTrackingActive": "Tracking Active",
       "availability": "Availability",
       "trackingActive": "Tracking",
-      "vin": "VIN"
+      "vin": "VIN",
+      "gearType": "Transmission",
+      "engineType": "Engine Type"
     },
     "placeholders": {
       "selectModel": "Select model",
@@ -1021,7 +1023,8 @@
       "status": "Enter status",
       "dailyRate": "Enter daily rate",
       "hourlyRate": "Enter hourly rate",
-      "deviceSerialNumber": "Enter device serial number"
+      "deviceSerialNumber": "Enter device serial number",
+      "selectColor": "Select color"
     },
     "fuelLevels": {
       "full": "Full",
@@ -1133,7 +1136,48 @@
       "active": "Active",
       "inactive": "Inactive"
     },
-    "currentKm": "Current Km"
+    "currentKm": "Current Km",
+    "add": {
+      "subtitle": "Add a new vehicle to your fleet",
+      "vehicleInfo": "Vehicle Information",
+      "registrationDetails": "Registration & Details",
+      "pricing": "Pricing Information",
+      "images": "Vehicle Images",
+      "imagesDescription": "Upload photos of your vehicle (optional, max 5MB per image)",
+      "uploadImages": "Click to upload images",
+      "imageFormats": "Supported: JPEG, PNG, WebP",
+      "selectedImages": "Selected Images",
+      "setMainImage": "Set as main image",
+      "removeImage": "Remove image",
+      "mainImage": "Main Image",
+      "creating": "Creating vehicle...",
+      "createCar": "Create Vehicle",
+      "invalidImageFormat": "Please select only JPEG, PNG, or WebP images",
+      "imageTooLarge": "Image file size must be less than 5MB",
+      "fetchError": "Failed to load form data. Please refresh and try again."
+    },
+    "gearType": {
+      "manual": "Manual",
+      "automatic": "Automatic"
+    },
+    "engineType": {
+      "gasoline": "Gasoline",
+      "diesel": "Diesel",
+      "electric": "Electric",
+      "hybrid": "Hybrid"
+    },
+    "colors": {
+      "white": "White",
+      "black": "Black",
+      "silver": "Silver",
+      "gray": "Gray",
+      "red": "Red",
+      "blue": "Blue",
+      "green": "Green",
+      "yellow": "Yellow",
+      "orange": "Orange",
+      "brown": "Brown"
+    }
   },
   "carDetails": {
     "fetchError": "Error fetching car details.",

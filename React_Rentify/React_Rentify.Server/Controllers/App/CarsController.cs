@@ -27,12 +27,14 @@ namespace React_Rentify.Server.Controllers
         private readonly MainDbContext _context;
         private readonly ILogger<CarsController> _logger;
         private readonly IAgencyAuthorizationService _authService;
+        private readonly IWebHostEnvironment _env;
 
-        public CarsController(MainDbContext context, ILogger<CarsController> logger, IAgencyAuthorizationService authService)
+        public CarsController(MainDbContext context, ILogger<CarsController> logger, IAgencyAuthorizationService authService, IWebHostEnvironment env)
         {
             _context = context;
             _logger = logger;
             _authService = authService;
+            _env = env;
         }
 
         /// <summary>
@@ -99,6 +101,7 @@ namespace React_Rentify.Server.Controllers
                 .Include(x=> x.Car_Model)
                 .ThenInclude(x=> x.Manufacturer)
                 .Include(c => c.Car_Attachments)
+                .Include(c => c.Car_Images)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (car == null)
@@ -141,7 +144,12 @@ namespace React_Rentify.Server.Controllers
                     Year = car.Car_Year.YearValue
                 },
                 CurrentKM = car.CurrentKM,
-                LastKmUpdate = car.LastKmUpdate
+                LastKmUpdate = car.LastKmUpdate,
+                Images = car.Car_Images.Select(x=> new Car_Details_Image_DTO
+                {
+                    IsMainImage = x.IsMainImage,
+                    Path = x.Path,
+                }).ToList(),
             };
 
             _logger.LogInformation("Retrieved car {CarId}", id);
@@ -416,10 +424,42 @@ namespace React_Rentify.Server.Controllers
 
             if( dto.Images != null )
             {
-                foreach( var image in dto.Images )
-                {
+                var uploadsFolder = Path.Combine(
+                    _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
+                    "uploads", "agencies", car.AgencyId.ToString(), "cars", car.Id.ToString());
 
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
                 }
+
+                List<Car_Image> images = new List<Car_Image>();
+
+                foreach ( var image in dto.Images )
+                {
+                    var uniqueFileName = $"image_{Guid.NewGuid()}{Path.GetExtension(image.Image.FileName)}";
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await image.Image.CopyToAsync(fileStream);
+                    }
+
+                    // Create a URL-friendly path
+                    var urlPath = $"/uploads/agencies/{car.Agency}/cars/{car.Id}/{uniqueFileName}";
+
+                    images.Add(new Car_Image
+                    {
+                        CarId = car.Id,
+                        IsMainImage = image.IsMain,
+                        Path = urlPath,
+                        Id = new Guid()
+                    });
+                }
+
+                await _context.Set<Car_Image>().AddRangeAsync(images);
+                await _context.SaveChangesAsync();
+
             }
 
             var resultDto = new CarDto
@@ -763,6 +803,14 @@ namespace React_Rentify.Server.Controllers
 
         public int CurrentKM { get; set; }
         public DateTime? LastKmUpdate { get; set; }
+
+        public List<Car_Details_Image_DTO>? Images { get; set; }
+    }
+
+    public class Car_Details_Image_DTO
+    {
+        public string Path { get; set; }
+        public bool IsMainImage { get; set; }
     }
 
     public class Car_Fields

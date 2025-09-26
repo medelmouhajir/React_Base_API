@@ -18,6 +18,7 @@ const CarDetails = () => {
     const { isDarkMode } = useTheme();
     const agencyId = user?.agencyId;
     const fileInputRef = useRef(null);
+    var MainPicture = null;
 
     // Car data state
     const [car, setCar] = useState(null);
@@ -55,6 +56,14 @@ const CarDetails = () => {
                 ]);
 
                 setCar(carData);
+
+                console.log(carData);
+
+                const MainPicture = carData.images && carData.images.length > 0
+                    ? (carData.images.find(img => img.isMainImage === true) || null)
+                    : null;
+
+
                 setMaintenanceRecords(maintenanceData || []);
 
                 // Process reservations
@@ -216,10 +225,14 @@ const CarDetails = () => {
         <div className="car-info-section">
             <div className="car-hero">
                 <div className="car-placeholder">
-                    <div className="car-placeholder-content">
-                        <div className="car-placeholder-icon">🚗</div>
-                        <p>{t('car.details.noImage') || 'No image available'}</p>
-                    </div>
+                    {MainPicture === null ? (
+                        <div className="car-placeholder-content">
+                            <div className="car-placeholder-icon">🚗</div>
+                            <p>{t('car.details.noImage') || 'No image available'}</p>
+                        </div>
+                    ) : (
+                        <img src={MainPicture.path} alt="Car" />
+                    )}
                 </div>
                 <div className="car-hero-content">
                     <h2 className="car-title">

@@ -1003,7 +1003,9 @@
       "isTrackingActive": "التتبع مفعل",
       "availability": "التوفر",
       "trackingActive": "التتبع",
-      "vin": "رقم الهيكل"
+      "vin": "رقم الهيكل",
+      "gearType": "نوع ناقل الحركة",
+      "engineType": "نوع المحرك"
     },
     "placeholders": {
       "selectModel": "اختر الطراز",
@@ -1014,7 +1016,8 @@
       "dailyRate": "أدخل السعر اليومي",
       "hourlyRate": "أدخل السعر بالساعة",
       "deviceSerialNumber": "أدخل الرقم التسلسلي للجهاز",
-      "selectManufacturer": "اختر الشركة المصنعة"
+      "selectManufacturer": "اختر الشركة المصنعة",
+      "selectColor": "اختر اللون"
     },
     "fuelLevels": {
       "full": "ممتلئ",
@@ -1126,7 +1129,48 @@
       "active": "نشط",
       "inactive": "غير نشط"
     },
-    "currentKm": "المسافة المقطوعة الحالية"
+    "currentKm": "المسافة المقطوعة الحالية",
+    "add": {
+      "subtitle": "أضف مركبة جديدة إلى أسطولك",
+      "vehicleInfo": "معلومات المركبة",
+      "registrationDetails": "التسجيل والتفاصيل",
+      "pricing": "معلومات التسعير",
+      "images": "صور المركبة",
+      "imagesDescription": "قم بتحميل صور لمركبتك (اختياري، بحد أقصى 5 ميغابايت لكل صورة)",
+      "uploadImages": "انقر لتحميل الصور",
+      "imageFormats": "مدعوم: JPEG، PNG، WebP",
+      "selectedImages": "الصور المحددة",
+      "setMainImage": "تعيين كصورة رئيسية",
+      "removeImage": "إزالة الصورة",
+      "mainImage": "الصورة الرئيسية",
+      "creating": "جاري إنشاء المركبة...",
+      "createCar": "إنشاء مركبة",
+      "invalidImageFormat": "الرجاء اختيار صور بصيغة JPEG أو PNG أو WebP فقط",
+      "imageTooLarge": "يجب أن يكون حجم الصورة أقل من 5 ميغابايت",
+      "fetchError": "فشل تحميل بيانات النموذج. يرجى التحديث والمحاولة مرة أخرى."
+    },
+    "gearType": {
+      "manual": "يدوي",
+      "automatic": "أوتوماتيكي"
+    },
+    "engineType": {
+      "gasoline": "بنزين",
+      "diesel": "ديزل",
+      "electric": "كهربائي",
+      "hybrid": "هجين"
+    },
+    "colors": {
+      "white": "أبيض",
+      "black": "أسود",
+      "silver": "فضي",
+      "gray": "رمادي",
+      "red": "أحمر",
+      "blue": "أزرق",
+      "green": "أخضر",
+      "yellow": "أصفر",
+      "orange": "برتقالي",
+      "brown": "بني"
+    }
   },
   "carDetails": {
     "fetchError": "خطأ في جلب تفاصيل السيارة.",
