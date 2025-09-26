@@ -1,4 +1,5 @@
-﻿using React_Rentify.Server.Models.GPS.Records;
+﻿using React_Rentify.Server.Models.GPS.Commands;
+using React_Rentify.Server.Models.GPS.Records;
 
 namespace React_Rentify.Server.Models.GPS
 {
@@ -9,10 +10,14 @@ namespace React_Rentify.Server.Models.GPS
         public string DeviceSerialNumber { get; set; }  // Primary Key (unique ID of device)
         public string Model { get; set; }               // Device model name
         public string InstallCarPlate { get; set; }     // (optional) Car plate for quick reference
+
+        public string? IMEI { get; set; }
         public DateTime InstalledOn { get; set; }
         public DateTime? DeactivatedOn { get; set; }
 
 
         public virtual ICollection<Location_Record>? Location_Records { get; set; }
+
+        public virtual ICollection<CommandQueue>? CommandQueues { get; set; }
     }
 }

@@ -41,6 +41,10 @@
     line-height: 1.5;
     font-weight: 400;
     color-scheme: light;
+    --bg-color-light: #ffffff;
+    --card-bg-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
 }
 
 /* ===== DARK MODE VARIABLES ===== */
@@ -54,6 +58,10 @@
     --color-shadow: rgba(0, 0, 0, 0.4);
     --color-shadow-strong: rgba(0, 0, 0, 0.5);
     color-scheme: dark;
+    --bg-color-dark: #111827;
+    --card-bg-dark: #1e293b;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
 }
 
 /* ===== GLOBAL STYLES ===== */

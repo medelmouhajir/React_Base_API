@@ -1,11 +1,58 @@
 /* src/pages/Gps/Cars/SetCarGps.css */
 
+:root {
+    /* Base colors */
+    --primary-color: #0ea5e9;
+    --primary-hover: #0284c7;
+    --secondary-color: #d9534f;
+    --secondary-hover: #c9302c;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+    /* Light theme */
+    --bg-color-light: #ffffff;
+    --card-bg-light: #f9fafb;
+    --text-color-light: #111827;
+    --text-secondary-light: #6b7280;
+    --text-muted-light: #9ca3af;
+    --border-color-light: #e5e7eb;
+    --input-bg-light: #ffffff;
+    --input-text-light: #111827;
+    --input-border-light: #d1d5db;
+    --input-focus-border-light: #60a5fa;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-hover-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --table-header-bg-light: #f3f4f6;
+    --table-row-hover-light: rgba(0, 0, 0, 0.025);
+    /* Dark theme */
+    --bg-color-dark: #111827;
+    --card-bg-dark: #1e293b;
+    --text-color-dark: #f9fafb;
+    --text-secondary-dark: #d1d5db;
+    --text-muted-dark: #9ca3af;
+    --border-color-dark: #374151;
+    --input-bg-dark: #1f2937;
+    --input-text-dark: #f9fafb;
+    --input-border-dark: #4b5563;
+    --input-focus-border-dark: #3b82f6;
+    --shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover-dark: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --table-header-bg-dark: #374151;
+    --table-row-hover-dark: rgba(255, 255, 255, 0.05);
+    /* Common */
+    --border-radius: 0.5rem;
+    --border-radius-lg: 0.75rem;
+    --transition-speed: 0.25s;
+    --transition-fast: 0.15s;
+    --transition-normal: 0.3s;
+}
+
 .set-car-gps-container {
     padding: 1rem;
-    max-width: 1400px;
+    max-width: 95%;
     margin: 0 auto;
     min-height: 100vh;
-    background-color: var(--color-bg);
+    background-color: transparent;
     color: var(--color-text);
     transition: background-color var(--transition-normal), color var(--transition-normal);
 }
@@ -66,6 +113,21 @@
     border-top-color: var(--color-primary-400);
 }
 
+.loading-spinner-sm {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--border-light);
+    border-top: 2px solid var(--color-primary-500);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+.set-car-gps-container.dark .loading-spinner-sm {
+    border-color: var(--border-dark);
+    border-top-color: var(--color-primary-400);
+}
+
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -90,83 +152,6 @@
 .search-input {
     width: 100%;
     padding: 0.75rem 1rem 0.75rem 3rem;
-    border: 1px solid var(--border-light);
-    border-radius: var(--border-radius);
-    background-color: var(--bg-light);
-    color: var(--text-light);
-    font-size: 0.95rem;
-    transition: all var(--transition-fast);
-}
-
-.set-car-gps-container.dark .search-input {
-    border-color: var(--border-dark);
-    background-color: var(--bg-dark);
-    color: var(--text-dark);
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.search-icon {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1.25rem;
-    height: 1.25rem;
-    color: var(--text-light-secondary);
-}
-
-.set-car-gps-container.dark .search-icon {
-    color: var(--text-dark-secondary);
-}
-
-.clear-search-btn {
-    position: absolute;
-    right: 0.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2rem;
-    height: 2rem;
-    border: none;
-    background: none;
-    color: var(--text-light-secondary);
-    cursor: pointer;
-    border-radius: var(--border-radius);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition-fast);
-}
-
-    .clear-search-btn:hover {
-        background-color: var(--bg-light-secondary);
-        color: var(--text-light);
-    }
-
-.set-car-gps-container.dark .clear-search-btn:hover {
-    background-color: var(--bg-dark-secondary);
-    color: var(--text-dark);
-}
-
-.clear-search-btn svg {
-    width: 1rem;
-    height: 1rem;
-}
-
-/* ===== STATS GRID ===== */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.stat-card {
-    background-color: var(--bg-light);
     border: 1px solid var(--border-light);
     border-radius: var(--border-radius-lg);
     padding: 1.5rem;
@@ -261,6 +246,34 @@
     transition: all var(--transition-fast);
     position: relative;
     overflow: hidden;
+}
+
+.set-car-gps-container.dark .car-card {
+    background-color: var(--bg-dark);
+    border-color: var(--border-dark);
+}
+
+.car-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-light);
+}
+
+.set-car-gps-container.dark .car-card:hover {
+    box-shadow: var(--shadow-dark);
+}
+
+.car-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.car-model {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin: 0;
 }
 
 .set-car-gps-container.dark .car-model {
@@ -441,22 +454,6 @@
     animation: fadeIn var(--transition-fast) ease-out;
 }
 
-.modal-content {
-    background-color: var(--bg-light);
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-light-lg);
-    width: 100%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow: hidden;
-    animation: slideIn var(--transition-normal) ease-out;
-}
-
-.set-car-gps-container.dark .modal-content {
-    background-color: var(--bg-dark);
-    box-shadow: var(--shadow-dark-lg);
-}
-
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -467,91 +464,98 @@
     }
 }
 
+.modal-content {
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light-lg);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideIn var(--transition-fast) ease-out;
+}
+
+.set-car-gps-container.dark .modal-content {
+    background-color: var(--bg-dark);
+    box-shadow: var(--shadow-dark-lg);
+}
+
 @keyframes slideIn {
     from {
+        transform: translateY(-2rem);
         opacity: 0;
-        transform: scale(0.95) translateY(-10px);
     }
 
     to {
+        transform: translateY(0);
         opacity: 1;
-        transform: scale(1) translateY(0);
     }
 }
 
 .modal-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-light);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--bg-light-secondary);
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .set-car-gps-container.dark .modal-header {
     border-bottom-color: var(--border-dark);
-    background-color: var(--bg-dark-secondary);
 }
 
-.modal-header h2 {
-    margin: 0;
+.modal-header h3 {
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--text-light);
+    margin: 0;
 }
 
-.set-car-gps-container.dark .modal-header h2 {
+.set-car-gps-container.dark .modal-header h3 {
     color: var(--text-dark);
 }
 
-.modal-close {
+.modal-close-btn {
     width: 2rem;
     height: 2rem;
     border: none;
     background: none;
     color: var(--text-light-secondary);
-    font-size: 1.5rem;
     cursor: pointer;
     border-radius: var(--border-radius);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all var(--transition-fast);
-    line-height: 1;
 }
 
-.set-car-gps-container.dark .modal-close {
-    color: var(--text-dark-secondary);
-}
+    .modal-close-btn:hover {
+        background-color: var(--bg-light-secondary);
+        color: var(--text-light);
+    }
 
-.modal-close:hover {
-    background-color: var(--border-light);
-    color: var(--text-light);
-}
-
-.set-car-gps-container.dark .modal-close:hover {
-    background-color: var(--border-dark);
+.set-car-gps-container.dark .modal-close-btn:hover {
+    background-color: var(--bg-dark-secondary);
     color: var(--text-dark);
 }
 
-.modal-form {
+.modal-close-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.modal-body {
     padding: 1.5rem;
-    max-height: 60vh;
-    overflow-y: auto;
 }
 
 .form-group {
     margin-bottom: 1.5rem;
 }
 
-    .form-group:last-of-type {
-        margin-bottom: 2rem;
-    }
-
 .form-label {
     display: block;
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--text-light);
     margin-bottom: 0.5rem;
 }
@@ -569,7 +573,6 @@
     color: var(--text-light);
     font-size: 0.95rem;
     transition: all var(--transition-fast);
-    box-sizing: border-box;
 }
 
 .set-car-gps-container.dark .form-input {
@@ -584,88 +587,42 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.device-input-group {
-    display: flex;
-    gap: 0.5rem;
-}
-
-    .device-input-group .form-input {
-        flex: 1;
-    }
-
-.new-device-toggle {
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border-light);
-    border-radius: var(--border-radius);
-    background-color: var(--bg-light);
-    color: var(--text-light-secondary);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    white-space: nowrap;
-}
-
-.set-car-gps-container.dark .new-device-toggle {
-    border-color: var(--border-dark);
-    background-color: var(--bg-dark);
-    color: var(--text-dark-secondary);
-}
-
-.new-device-toggle:hover {
-    border-color: var(--color-primary-500);
-    color: var(--text-light);
-}
-
-.set-car-gps-container.dark .new-device-toggle:hover {
-    color: var(--text-dark);
-}
-
-.new-device-toggle.active {
-    background-color: var(--color-primary-500);
-    border-color: var(--color-primary-500);
-    color: white;
-}
-
 .form-hint {
-    display: block;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: var(--text-light-secondary);
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0;
 }
 
 .set-car-gps-container.dark .form-hint {
     color: var(--text-dark-secondary);
 }
 
-.checkbox-group {
+.checkbox-label {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-}
-
-.form-checkbox {
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 0.25rem;
     cursor: pointer;
-}
-
-.checkbox-label {
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     color: var(--text-light);
-    cursor: pointer;
 }
 
 .set-car-gps-container.dark .checkbox-label {
     color: var(--text-dark);
 }
 
+.checkbox-label input[type="checkbox"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    cursor: pointer;
+}
+
 .modal-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
+    gap: 1rem;
+    padding: 1.5rem;
     border-top: 1px solid var(--border-light);
 }
 
@@ -673,24 +630,34 @@
     border-top-color: var(--border-dark);
 }
 
-.btn {
+.btn-primary,
+.btn-secondary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     padding: 0.75rem 1.5rem;
+    border: none;
     border-radius: var(--border-radius);
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-fast);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-height: 2.75rem;
-    box-sizing: border-box;
 }
 
-    .btn:disabled {
+.btn-primary {
+    background-color: var(--color-primary-500);
+    color: white;
+}
+
+    .btn-primary:hover:not(:disabled) {
+        background-color: var(--color-primary-600);
+        transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
         opacity: 0.6;
         cursor: not-allowed;
-        pointer-events: none;
+        transform: none;
     }
 
 .btn-secondary {
@@ -705,72 +672,38 @@
     border-color: var(--border-dark);
 }
 
-.btn-secondary:hover {
-    background-color: var(--border-light);
+.btn-secondary:hover:not(:disabled) {
+    background-color: var(--bg-light);
+    transform: translateY(-1px);
 }
 
-.set-car-gps-container.dark .btn-secondary:hover {
-    background-color: var(--border-dark);
+.set-car-gps-container.dark .btn-secondary:hover:not(:disabled) {
+    background-color: var(--bg-dark);
 }
 
-.btn-primary {
-    background-color: var(--color-primary-500);
-    color: white;
-    border: 1px solid var(--color-primary-500);
+.btn-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
-    .btn-primary:hover {
-        background-color: var(--color-primary-600);
-        border-color: var(--color-primary-600);
-        transform: translateY(-1px);
-    }
-
-.btn-spinner {
-    width: 1rem;
-    height: 1rem;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top: 2px solid white;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-/* ===== MOBILE RESPONSIVENESS ===== */
+/* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
     .set-car-gps-container {
-        padding: 0.75rem;
+        padding: 0.5rem;
     }
 
     .page-header {
-        padding: 1.5rem 0;
-        margin-bottom: 1.5rem;
+        padding: 1rem 0;
     }
 
     .header-content h1 {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
     }
 
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .stat-card {
-        padding: 1rem;
-    }
-
-    .stat-icon {
-        width: 2.5rem;
-        height: 2.5rem;
-    }
-
-        .stat-icon svg {
-            width: 1.25rem;
-            height: 1.25rem;
-        }
-
-    .stat-number {
-        font-size: 1.75rem;
     }
 
     .cars-grid {
@@ -782,129 +715,128 @@
         padding: 1rem;
     }
 
-    .car-header {
-        flex-direction: column;
-        gap: 0.75rem;
-        align-items: flex-start;
-    }
-
     .modal-content {
         margin: 0.5rem;
+        max-height: 95vh;
     }
 
-    .modal-header {
-        padding: 1rem;
-    }
-
-    .modal-form {
+    .modal-header,
+    .modal-body,
+    .modal-actions {
         padding: 1rem;
     }
 
     .modal-actions {
         flex-direction: column;
-        gap: 0.5rem;
     }
 
-    .btn {
+    .btn-primary,
+    .btn-secondary {
         width: 100%;
         justify-content: center;
     }
+}
 
-    .device-input-group {
+@media (max-width: 480px) {
+    .car-header {
         flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 
-    .new-device-toggle {
-        align-self: flex-start;
-    }
-}
-
-/* ===== TOUCH IMPROVEMENTS ===== */
-@media (hover: none) {
-    .car-card:hover,
-    .stat-card:hover {
-        transform: none;
-        box-shadow: none;
+    .search-box {
+        max-width: 100%;
     }
 
-    .config-btn:hover,
-    .btn-primary:hover {
-        transform: none;
+    .stats-grid {
+        grid-template-columns: 1fr;
     }
 
-    .config-btn:active,
-    .btn-primary:active {
-        transform: scale(0.98);
+    .stat-card {
+        padding: 1rem;
     }
 
-    .search-input,
-    .form-input {
-        font-size: 16px; /* Prevents zoom on iOS */
+    .stat-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
     }
 }
 
-/* ===== ACCESSIBILITY ===== */
-@media (prefers-reduced-motion: reduce) {
-    .modal-overlay,
-    .modal-content,
-    .loading-spinner,
-    .btn-spinner {
-        animation: none;
-    }
-
-    * {
-        transition: none !important;
-    }
+);
+background-color: var(--bg-light);
+color: var(--text-light);
+font-size: 0.95rem;
+transition: all var(--transition-fast);
 }
 
-/* Focus states for keyboard navigation */
-.config-btn:focus,
-.btn:focus,
-.form-input:focus,
-.form-checkbox:focus,
-.new-device-toggle:focus {
-    outline: 2px solid var(--color-primary-500);
-    outline-offset: 2px;
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-    .car-card,
-    .stat-card,
-    .modal-content {
-        border-width: 2px;
-    }
-
-    .gps-status {
-        border: 1px solid currentColor;
-    }
-}
-
-card {
-    background-color: var(--bg-dark);
+.set-car-gps-container.dark .search-input {
     border-color: var(--border-dark);
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
 }
 
-.car-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-light);
+.search-input:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.set-car-gps-container.dark .car-card:hover {
-    box-shadow: var(--shadow-dark);
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--text-light-secondary);
 }
 
-.car-header {
+.set-car-gps-container.dark .search-icon {
+    color: var(--text-dark-secondary);
+}
+
+.clear-search-btn {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: none;
+    color: var(--text-light-secondary);
+    cursor: pointer;
+    border-radius: var(--border-radius);
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
 }
 
-.car-model {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0;
-    color: var(--text-light);
-    flex: 1;
+    .clear-search-btn:hover {
+        background-color: var(--bg-light-secondary);
+        color: var(--text-light);
+    }
+
+.set-car-gps-container.dark .clear-search-btn:hover {
+    background-color: var(--bg-dark-secondary);
+    color: var(--text-dark);
 }
+
+.clear-search-btn svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* ===== STATS GRID ===== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+

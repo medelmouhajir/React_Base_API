@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Rentify_GPS_Service_Worker.Data;
 using Rentify_GPS_Service_Worker.Protocols.Teltonika.Commands;
+using Rentify_GPS_Service_Worker.Services;
 
 namespace Rentify_GPS_Service_Worker
 {
@@ -20,15 +21,21 @@ namespace Rentify_GPS_Service_Worker
             // 2. Register Worker as a hosted service
             //builder.Services.AddHostedService<Worker>();
 
+
             var host = builder.Build();
             host.Run();
         }
     }
+
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddTeltonikaCommandSender(this IServiceCollection services)
+        public static IServiceCollection AddCommandProcessing(this IServiceCollection services)
         {
             services.AddSingleton<TeltonikaCommandSender>();
+
+            // For database approach
+            services.AddHostedService<CommandQueueProcessor>();
+
             return services;
         }
     }

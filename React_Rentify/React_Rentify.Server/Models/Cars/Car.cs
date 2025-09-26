@@ -78,6 +78,10 @@ namespace React_Rentify.Server.Models.Cars
         /// </summary>
         public bool IsTrackingActive { get; set; } = true;
 
+        public Gear_type Gear_Type { get; set; } = Gear_type.MANUAL;
+        public Engine_Type Engine_Type { get; set; } = Engine_Type.DIESEL;
+
+
         // === Navigation ===
         public virtual ICollection<Reservation>? Reservations { get; set; }
         public virtual ICollection<Maintenance_Record>? MaintenanceRecords { get; set; }
@@ -86,10 +90,25 @@ namespace React_Rentify.Server.Models.Cars
         /// File attachments (e.g., vehicle registration, inspection certificates, photos).
         /// </summary>
         public virtual ICollection<Car_Attachment>? Car_Attachments { get; set; }
+        public virtual ICollection<Car_Image>? Car_Images { get; set; }
 
         /// <summary>
         /// Periodic service alerts (e.g. vidange, drain).
         /// </summary>
         public virtual ICollection<Service_Alert>? ServiceAlerts { get; set; }
+    }
+
+    public enum Gear_type
+    {
+        MANUAL = 0,
+        AUTOMATIC = 1,
+    }
+
+    public enum Engine_Type
+    {
+        GASOLINE = 0,
+        DIESEL = 1,
+        HYBRID = 2,
+        ELECTRIC = 3
     }
 }

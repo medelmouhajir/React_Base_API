@@ -358,6 +358,36 @@ namespace React_Rentify.Server.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving cars." });
             }
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("cars/all")]
+        public async Task<IActionResult> GetCarsWithGpsStatus()
+        {
+            _logger.LogInformation("Retrieving cars with GPS status for all agencies");
+
+            try
+            {
+                var cars = await _contextMain.Cars
+                    .Include(x => x.Car_Model)
+                    .Select(c => new CarGpsDto
+                    {
+                        Id = c.Id,
+                        Model = c.Car_Model.Name,
+                        LicensePlate = c.LicensePlate,
+                        DeviceSerialNumber = c.DeviceSerialNumber,
+                        IsTrackingActive = c.IsTrackingActive
+                    })
+                    .ToListAsync();
+
+                _logger.LogInformation("Retrieved {Count} cars for all agencies", cars.Count);
+                return Ok(cars);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving cars for all agencies");
+                return StatusCode(500, new { message = "An error occurred while retrieving cars." });
+            }
+        }
     }
 
     #region DTOs

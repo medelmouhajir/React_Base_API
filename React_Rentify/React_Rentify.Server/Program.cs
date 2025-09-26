@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
+using React_Rentify.Server.Controllers.GPS.Services;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Extensions;
 using React_Rentify.Server.Models.Users;
@@ -40,6 +40,9 @@ namespace React_Rentify.Server
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
             builder.Services.AddScoped<ISubscriptionAuthorizationService, SubscriptionAuthorizationService>();
             builder.Services.AddHostedService<SubscriptionBillingService>();
+
+
+            builder.Services.AddScoped<IGpsServiceCommunicator, DatabaseGpsServiceCommunicator>();
 
             // Configure database
             builder.Services.AddDbContext<GpsDbContext>(options =>

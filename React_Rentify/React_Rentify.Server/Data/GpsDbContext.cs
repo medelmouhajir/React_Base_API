@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using React_Rentify.Server.Models.GPS;
+using React_Rentify.Server.Models.GPS.Commands;
 using React_Rentify.Server.Models.GPS.Records;
 
 namespace React_Rentify.Server.Data
@@ -14,6 +15,8 @@ namespace React_Rentify.Server.Data
         public DbSet<Gps_Device> Gps_Devices { get; set; }
 
         public DbSet<Location_Record> Location_Records { get; set; }
+
+        public DbSet<CommandQueue> CommandQueues { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

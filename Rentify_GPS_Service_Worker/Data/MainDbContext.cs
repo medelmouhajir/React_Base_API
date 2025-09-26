@@ -14,6 +14,8 @@ namespace Rentify_GPS_Service_Worker.Data
 
         public DbSet<Location_Record> Location_Records { get; set; }
 
+        public DbSet<CommandQueue> CommandQueues { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

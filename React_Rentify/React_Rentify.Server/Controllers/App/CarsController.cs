@@ -399,19 +399,28 @@ namespace React_Rentify.Server.Controllers
                 Car_YearId = dto.Car_YearId,
                 LicensePlate = dto.LicensePlate,
                 Color = dto.Color,
-                IsAvailable = dto.IsAvailable,
+                IsAvailable = true,
                 Status = "Available",
                 DailyRate = dto.DailyRate,
                 HourlyRate = dto.HourlyRate,
-                DeviceSerialNumber = dto.DeviceSerialNumber,
-                IsTrackingActive = dto.IsTrackingActive,
-                Car_Attachments = new List<Car_Attachment>()
+                IsTrackingActive = false,
+                Car_Attachments = new List<Car_Attachment>(),
+                Gear_Type = dto.Gear_Type,
+                Engine_Type = dto.Engine_Type,
             };
 
             _context.Set<Car>().Add(car);
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Created car {CarId}", car.Id);
+
+            if( dto.Images != null )
+            {
+                foreach( var image in dto.Images )
+                {
+
+                }
+            }
 
             var resultDto = new CarDto
             {
@@ -770,11 +779,20 @@ namespace React_Rentify.Server.Controllers
         public int Car_YearId { get; set; }
         public string LicensePlate { get; set; }
         public string Color { get; set; }
-        public bool IsAvailable { get; set; } = true;
         public decimal DailyRate { get; set; }
         public decimal? HourlyRate { get; set; }
-        public string? DeviceSerialNumber { get; set; }
-        public bool IsTrackingActive { get; set; } = true;
+
+
+        public Gear_type Gear_Type { get; set; }
+        public Engine_Type Engine_Type { get; set; }
+
+        public List<CarImageDTO>? Images { get; set; }
+    }
+
+    public class CarImageDTO
+    {
+        public IFormFile Image { get; set; }
+        public bool IsMain { get; set; }
     }
 
     public class UpdateCarDto

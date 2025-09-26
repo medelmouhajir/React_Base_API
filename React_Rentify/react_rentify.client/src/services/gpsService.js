@@ -94,6 +94,16 @@ export const gpsService = {
             throw error;
         }
     },
+
+    async getCarsWithGps() {
+        try {
+            const response = await apiClient.get(`/gps/cars/all`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error fetching cars with GPS for all agencies:`, error);
+            throw error;
+        }
+    },
 };
 
 export default gpsService;
