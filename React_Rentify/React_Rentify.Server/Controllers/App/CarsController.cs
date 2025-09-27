@@ -150,6 +150,8 @@ namespace React_Rentify.Server.Controllers
                     IsMainImage = x.IsMainImage,
                     Path = x.Path,
                 }).ToList(),
+                Engine = car.Engine_Type.ToString(),
+                Gear = car.Gear_Type.ToString()
             };
 
             _logger.LogInformation("Retrieved car {CarId}", id);
@@ -791,6 +793,8 @@ namespace React_Rentify.Server.Controllers
         public int Car_YearId { get; set; }
         public string LicensePlate { get; set; }
         public string Color { get; set; }
+        public string Engine { get; set; }
+        public string Gear { get; set; }
         public bool IsAvailable { get; set; }
         public string Status { get; set; }
         public decimal DailyRate { get; set; }
