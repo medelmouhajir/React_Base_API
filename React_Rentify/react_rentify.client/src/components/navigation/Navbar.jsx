@@ -59,33 +59,16 @@ const Navbar = ({ toggleSidebar, sidebarOpen }) => {
                 {/* Left section with hamburger and logo */}
                 <div className="navbar-left">
                     <button
-                        className="hamburger-button"
+                        type="button"
+                        className={`hamburger-button ${sidebarOpen ? 'hamburger-active' : ''}`}
                         onClick={toggleSidebar}
-                        aria-label={sidebarOpen ? t('navbar.closeSidebar') : t('navbar.openSidebar')}
+                        aria-controls="sidebar"
                         aria-expanded={sidebarOpen}
                     >
-                        <svg
-                            className="hamburger-icon"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            aria-hidden="true"
-                        >
-                            {sidebarOpen ? (
-                                // X icon when sidebar is open
-                                <>
-                                    <line x1="18" y1="6" x2="6" y2="18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    <line x1="6" y1="6" x2="18" y2="18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </>
-                            ) : (
-                                // Hamburger icon when sidebar is closed
-                                <>
-                                    <line x1="4" y1="6" x2="20" y2="6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    <line x1="4" y1="12" x2="20" y2="12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                    <line x1="4" y1="18" x2="20" y2="18" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                </>
-                            )}
-                        </svg>
+                        <span className="sr-only">Toggle sidebar</span>
+                        <span className="hamburger-line"></span>
+                        <span className="hamburger-line"></span>
+                        <span className="hamburger-line"></span>
                     </button>
 
                     {/* Logo */}
