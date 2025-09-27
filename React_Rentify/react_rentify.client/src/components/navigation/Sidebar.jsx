@@ -185,11 +185,11 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
     const location = useLocation();
     const { attachSwipeHandler } = useHammer();
     const sidebarRef = useRef(null);
-
+    
     // Carousel state
     const [currentPage, setCurrentPage] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
-
+    
     // Touch tracking for carousel
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
@@ -270,10 +270,14 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
 
     // Carousel navigation
     const goToPage = (pageIndex) => {
-        if (isAnimating || pageIndex === currentPage) return;
+        if (pageIndex === currentPage) return;
+
         setIsAnimating(true);
         setCurrentPage(pageIndex);
-        setTimeout(() => setIsAnimating(false), 300);
+
+        setTimeout(() => {
+            setIsAnimating(false);
+        }, 300);
     };
 
     const handleTouchStart = (e) => {
@@ -287,7 +291,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
 
     const handleTouchEnd = () => {
         if (!touchStart || !touchEnd) return;
-
+        
         const distance = touchStart - touchEnd;
         const isLeftSwipe = distance > 50;
         const isRightSwipe = distance < -50;
@@ -300,14 +304,12 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
         }
     };
 
-    const handleShortcutClick = (shortcut) => {
-        if (shortcut.action) {
-            shortcut.action();
+    const handleShortcutClick = (item) => {
+        if (item.action) {
+            item.action();
         }
-        // Close sidebar after action on mobile
-        if (isMobile) {
-            toggleSidebar();
-        }
+        // Close sidebar after clicking shortcut
+        toggleSidebar();
     };
 
     const handleNavClick = () => {
@@ -356,7 +358,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
                                 </span>
                             </div>
                         </div>
-
+                        
                         <button
                             className="close-button"
                             onClick={toggleSidebar}
@@ -368,7 +370,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
                             </svg>
                         </button>
                     </div>
-
+                    
                     {/* Page indicators */}
                     <div className="page-indicators">
                         <button
@@ -386,7 +388,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
 
                 {/* Carousel container */}
                 <div className="carousel-container">
-                    <div
+                    <div 
                         className="carousel-track"
                         style={{
                             transform: `translateX(-${currentPage * 100}%)`,
@@ -398,7 +400,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
                             <div className="page-title">
                                 <h2>{t('sidebar.navigation')}</h2>
                             </div>
-
+                            
                             <div className="grid-container">
                                 {menuItems.map((item) => (
                                     <NavLink
@@ -429,7 +431,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
                             <div className="page-title">
                                 <h2>{t('sidebar.shortcuts')}</h2>
                             </div>
-
+                            
                             <div className="grid-container">
                                 {shortcutItems.map((item) => (
                                     <button
