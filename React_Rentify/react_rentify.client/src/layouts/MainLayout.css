@@ -3,56 +3,34 @@
 /* Main layout container */
 .main-layout {
     display: flex;
+    flex-direction: column;
     min-height: 100vh;
-    width:100%;
-    max-width:100%;
+    background-color: var(--color-bg);
+    transition: all 0.3s ease;
 }
 
 /* Main content wrapper */
 .main-content {
-    flex: 1 1 0%;
     display: flex;
     flex-direction: column;
-    transition-property: all;
-    transition-duration: 300ms;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    max-width: 100%;
+    flex: 1;
+    width: 100%;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
 }
 
-/* When sidebar is expanded (large screens and above) */
-@media (min-width: 1024px) {
-    .main-content-with-sidebar {
-        margin-left: 16rem; /* lg:ml-64 */
-    }
-
-    .main-content-with-collapsed-sidebar {
-        margin-left: 4rem; /* lg:ml-20 */
-    }
-}
-
-/* RTL support for large screens */
-@media (min-width: 1024px) {
-    [dir="rtl"] .main-content-with-sidebar {
-        margin-left: 0;
-        margin-right: 16rem; /* lg:mr-64 */
-    }
-
-    [dir="rtl"] .main-content-with-collapsed-sidebar {
-        margin-left: 0;
-        margin-right: 4rem; /* lg:mr-20 */
-    }
-}
 
 /* Main content area */
 .main-content-area {
-    flex: 1 1 0%;
-    padding-left: 1rem; /* px-4 */
-    padding-right: 1rem; /* px-4 */
-    padding-top: 1.5rem; /* py-6 */
-    padding-bottom: 1.5rem; /* py-6 */
+    flex: 1;
+    padding: 1rem;
     overflow-y: auto;
-    max-width:100%;
-    min-height: calc(100vh - 9rem); /* Adjust for navbar (4rem) + footer (1rem) + extra spacing (4rem) */
+}
+
+.content-inner-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 /* Medium screens and above adjust padding */
@@ -97,10 +75,22 @@
 }
 
 /* Page transition animations */
-.page-transition-enter,
-.page-transition-enter-active {
-    animation: fadeIn 0.3s ease-out;
+.page-transition-enter {
+    opacity: 1;
+    transform: translateY(0);
 }
+
+.page-transition-enter-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.loading-screen-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--color-bg);
+}
+
 
 @keyframes fadeIn {
     from {

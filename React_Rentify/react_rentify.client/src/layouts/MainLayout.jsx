@@ -16,42 +16,16 @@ const MainLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false); // Changed: default to false
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
-
-    // Handle swipe gestures for mobile
-    useEffect(() => {
-        const handleSwipeRight = () => {
-            if (isMobile && !sidebarOpen) {
-                setSidebarOpen(true);
-            }
-        };
-        const handleSwipeLeft = () => {
-            if (isMobile && sidebarOpen) {
-                setSidebarOpen(false);
-            }
-        };
-
-        document.addEventListener('app:swiperight', handleSwipeRight);
-        document.addEventListener('app:swipeleft', handleSwipeLeft);
-
-        return () => {
-            document.removeEventListener('app:swiperight', handleSwipeRight);
-            document.removeEventListener('app:swipeleft', handleSwipeLeft);
-        };
-    }, [isMobile, sidebarOpen]);
-
-    // Close sidebar by default on mobile
+    // Close sidebar by default on all devices now (since it's full-screen)
     useEffect(() => {
         const handleResize = () => {
             const mobile = window.innerWidth < 1024;
             setIsMobile(mobile);
-            if (mobile) {
-                setSidebarOpen(false);
-            } else {
-                setSidebarOpen(false);
-            }
+            // Sidebar should be closed by default on all devices now
+            setSidebarOpen(false);
         };
 
         window.addEventListener('resize', handleResize);
@@ -60,19 +34,10 @@ const MainLayout = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Redirect to landing page if not authenticated
+    // Auto-close sidebar when navigating (for all devices now)
     useEffect(() => {
-        if (!loading && !user && location.pathname !== '/login') {
-            navigate('/');
-        }
-    }, [user, loading, navigate, location]);
-
-    // Auto-close sidebar on mobile when navigating
-    useEffect(() => {
-        if (isMobile) {
-            setSidebarOpen(false);
-        }
-    }, [location.pathname, isMobile]);
+        setSidebarOpen(false);
+    }, [location.pathname]);
 
     const toggleSidebar = () => {
         setSidebarOpen((prev) => !prev);
@@ -97,15 +62,8 @@ const MainLayout = () => {
             {/* Sidebar */}
             <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} isMobile={isMobile} />
 
-            {/* Main content */}
-            <div
-                className={`main-content ${isMobile
-                        ? ''
-                        : sidebarOpen
-                            ? 'main-content-with-sidebar'
-                            : 'main-content-with-collapsed-sidebar'
-                    }`}
-            >
+            {/* Main content - no longer needs margin adjustments since sidebar is overlay */}
+            <div className="main-content">
                 {/* Navbar */}
                 <Navbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
 
@@ -126,13 +84,6 @@ const MainLayout = () => {
                 </footer>
             </div>
 
-            {/* Mobile sidebar overlay */}
-            {isMobile && (
-                <div
-                    className={`sidebar-overlay ${sidebarOpen ? 'sidebar-overlay-visible' : ''}`}
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
         </div>
     );
 };
