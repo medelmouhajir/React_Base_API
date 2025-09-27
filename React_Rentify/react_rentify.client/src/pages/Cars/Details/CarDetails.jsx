@@ -1,5 +1,5 @@
 ﻿// src/pages/Cars/Details/CarDetails.jsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -18,7 +18,6 @@ const CarDetails = () => {
     const { isDarkMode } = useTheme();
     const agencyId = user?.agencyId;
     const fileInputRef = useRef(null);
-    var MainPicture = null;
 
     // Car data state
     const [car, setCar] = useState(null);
@@ -40,6 +39,9 @@ const CarDetails = () => {
 
     // For attachment upload
     const [fileToUpload, setFileToUpload] = useState(null);
+
+
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     // Fetch car and related data
     useEffect(() => {
@@ -118,6 +120,20 @@ const CarDetails = () => {
         setTouchStartY(touch.clientY);
         setIsSwiping(false);
     };
+
+
+    const mainPicture = useMemo(() => {
+        const imgs = car?.images || [];
+        if (imgs.length === 0) return null;
+
+        // be tolerant to key casing/naming
+        const byFlag =
+            imgs.find(i => i.isMainImage === true) ||
+            imgs.find(i => i.isMain === true) ||
+            imgs.find(i => i.IsMain === true);
+
+        return byFlag || null; // or fallback to first: byFlag || imgs[0]
+    }, [car]);
 
     const handleTouchMove = (e) => {
         if (!touchStartX || !touchStartY) return;
@@ -225,13 +241,14 @@ const CarDetails = () => {
         <div className="car-info-section">
             <div className="car-hero">
                 <div className="car-placeholder">
-                    {MainPicture === null ? (
+                    {mainPicture === null ? (
                         <div className="car-placeholder-content">
                             <div className="car-placeholder-icon">🚗</div>
                             <p>{t('car.details.noImage') || 'No image available'}</p>
                         </div>
                     ) : (
-                        <img src={MainPicture.path} alt="Car" />
+                        // pick the right field name for the URL:
+                        <img src={apiUrl + mainPicture.path} alt="Car" />
                     )}
                 </div>
                 <div className="car-hero-content">

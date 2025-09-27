@@ -190,6 +190,7 @@ const AddCar = () => {
         setMainImageIndex(index);
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -213,7 +214,7 @@ const AddCar = () => {
         setError(null);
 
         try {
-            // Create car data as JSON (matching CreateCarDto)
+            // Create car data payload
             const carPayload = {
                 AgencyId: agencyId,
                 Car_ModelId: formData.Car_ModelId,
@@ -223,34 +224,29 @@ const AddCar = () => {
                 DailyRate: parseFloat(formData.DailyRate),
                 HourlyRate: formData.HourlyRate ? parseFloat(formData.HourlyRate) : null,
                 Gear_Type: parseInt(formData.Gear_Type, 10),
-                Engine_Type: parseInt(formData.Engine_Type, 10),
-                Images: null // Images will be uploaded separately
+                Engine_Type: parseInt(formData.Engine_Type, 10)
             };
 
-            // Create the car first
-            const response = await carService.create(carPayload);
-            const carId = response.id;
+            let response;
 
-            // Upload images if any are selected
+            // Check if we have images to upload
             if (selectedImages.length > 0) {
-                try {
-                    for (let i = 0; i < selectedImages.length; i++) {
-                        const image = selectedImages[i];
-                        const formData = new FormData();
-                        formData.append('file', image);
-                        formData.append('carId', carId);
-
-                        // Upload each image using the car attachments endpoint
-                        await carAttachmentService.uploadFile(carId, formData);
-                    }
-                } catch (imageError) {
-                    console.warn('⚠️ Car created but image upload failed:', imageError);
-                    // Continue to navigate even if image upload fails
-                }
+                // Use the new method that sends everything together
+                response = await carService.createWithImages(carPayload, selectedImages, mainImageIndex);
+            } else {
+                // Use the original method for cars without images
+                const carPayloadWithNullImages = {
+                    ...carPayload,
+                    Images: null
+                };
+                response = await carService.create(carPayloadWithNullImages);
             }
+
+            const carId = response.id;
 
             // Navigate to car details using the ID from response
             navigate(`/cars/${carId}`);
+
         } catch (err) {
             console.error('❌ Error adding car:', err);
             setError(t('car.add.error'));

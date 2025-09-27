@@ -65,6 +65,42 @@ export const carService = {
         }
     },
 
+    async createWithImages(carData, images, mainImageIndex = 0) {
+        try {
+            const formData = new FormData();
+
+            // Add car data as JSON string or individual fields
+            formData.append('AgencyId', carData.AgencyId);
+            formData.append('Car_ModelId', carData.Car_ModelId);
+            formData.append('Car_YearId', carData.Car_YearId);
+            formData.append('LicensePlate', carData.LicensePlate);
+            formData.append('Color', carData.Color);
+            formData.append('DailyRate', carData.DailyRate);
+            if (carData.HourlyRate) {
+                formData.append('HourlyRate', carData.HourlyRate);
+            }
+            formData.append('Gear_Type', carData.Gear_Type);
+            formData.append('Engine_Type', carData.Engine_Type);
+
+            // Add images
+            images.forEach((image, index) => {
+                formData.append(`Images[${index}].Image`, image);
+                formData.append(`Images[${index}].IsMain`, index === mainImageIndex);
+            });
+
+            const response = await apiClient.post('/cars', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            return response.data;
+        } catch (error) {
+            console.error('❌ Error creating car with images:', error);
+            throw error;
+        }
+    },
+
     async update(id, carData) {
         try {
             if (id !== carData.id) {

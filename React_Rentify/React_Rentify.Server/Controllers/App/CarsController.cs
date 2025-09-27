@@ -358,7 +358,7 @@ namespace React_Rentify.Server.Controllers
         /// Creates a new car. Accepts CreateCarDto.
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> CreateCar([FromBody] CreateCarDto dto)
+        public async Task<IActionResult> CreateCar([FromForm] CreateCarDto dto)
         {
             _logger.LogInformation("Creating new car for Agency {AgencyId}", dto.AgencyId);
 
@@ -446,7 +446,7 @@ namespace React_Rentify.Server.Controllers
                     }
 
                     // Create a URL-friendly path
-                    var urlPath = $"/uploads/agencies/{car.Agency}/cars/{car.Id}/{uniqueFileName}";
+                    var urlPath = $"/uploads/agencies/{car.AgencyId}/cars/{car.Id}/{uniqueFileName}";
 
                     images.Add(new Car_Image
                     {
