@@ -16,7 +16,7 @@ const MainLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
 
@@ -47,11 +47,6 @@ const MainLayout = () => {
         const handleResize = () => {
             const mobile = window.innerWidth < 1024;
             setIsMobile(mobile);
-            if (mobile) {
-                setSidebarOpen(false);
-            } else {
-                setSidebarOpen(false);
-            }
         };
 
         window.addEventListener('resize', handleResize);
@@ -99,12 +94,7 @@ const MainLayout = () => {
 
             {/* Main content */}
             <div
-                className={`main-content ${isMobile
-                        ? ''
-                        : sidebarOpen
-                            ? 'main-content-with-sidebar'
-                            : 'main-content-with-collapsed-sidebar'
-                    }`}
+                className={`main-content`} // Simplified - no need for sidebar width adjustments since it's full screen
             >
                 {/* Navbar */}
                 <Navbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
@@ -118,21 +108,8 @@ const MainLayout = () => {
                     </div>
                 </main>
 
-                {/* Footer */}
-                <footer className={`main-footer ${isDarkMode ? 'dark' : ''}`}>
-                    <div className="footer-text">
-                        &copy; {new Date().getFullYear()} Rentify. {t('common.allRightsReserved')}
-                    </div>
-                </footer>
             </div>
 
-            {/* Mobile sidebar overlay */}
-            {isMobile && (
-                <div
-                    className={`sidebar-overlay ${sidebarOpen ? 'sidebar-overlay-visible' : ''}`}
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
         </div>
     );
 };

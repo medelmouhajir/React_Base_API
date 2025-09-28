@@ -1,10 +1,10 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 import fs from 'fs';
 import path from 'path';
 import child_process from 'child_process';
-// Process is available globally in Node.js
 
 // Enhanced Docker/CI detection
 const isDocker = process.env.DOCKER_CONTAINER === 'true' ||
@@ -27,7 +27,7 @@ if (!isDocker) {
     const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
     const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
-    // Only try to create certificates if not in Docker and folders don't exist
+    // Certificate setup code (keeping your existing logic)
     try {
         if (!fs.existsSync(baseFolder)) {
             fs.mkdirSync(baseFolder, { recursive: true });
@@ -49,7 +49,6 @@ if (!isDocker) {
             }
         }
 
-        // Only set HTTPS if certificates exist
         if (fs.existsSync(certFilePath) && fs.existsSync(keyFilePath)) {
             httpsConfig = {
                 key: fs.readFileSync(keyFilePath),
@@ -60,13 +59,120 @@ if (!isDocker) {
         console.warn("Certificate creation failed, continuing without HTTPS:", error.message);
     }
 
-    target = process.env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${process.env.ASPNETCORE_HTTPS_PORT}` :
+    target = process.env.ASPNETCORE_HTTPS_PORT ?
+        `https://localhost:${process.env.ASPNETCORE_HTTPS_PORT}` :
         process.env.ASPNETCORE_URLS ? process.env.ASPNETCORE_URLS.split(';')[0] : 'https://localhost:7039';
 }
 
+// PWA Configuration
+const pwaConfig = {
+    registerType: 'autoUpdate',
+    includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+    manifest: {
+        name: 'Rentify - Car Rental Management',
+        short_name: 'Rentify',
+        description: 'Complete car rental management system',
+        theme_color: '#0284c7',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/',
+        scope: '/',
+        orientation: 'portrait-primary',
+        icons: [
+            {
+                src: 'pwa-64x64.png',
+                sizes: '64x64',
+                type: 'image/png'
+            },
+            {
+                src: 'pwa-192x192.png',
+                sizes: '192x192',
+                type: 'image/png'
+            },
+            {
+                src: 'pwa-512x512.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'any'
+            },
+            {
+                src: 'maskable-icon-512x512.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'maskable'
+            }
+        ],
+        categories: ['business', 'productivity'],
+        screenshots: [
+            {
+                src: 'screenshot-wide.png',
+                sizes: '1280x720',
+                type: 'image/png',
+                form_factor: 'wide'
+            },
+            {
+                src: 'screenshot-narrow.png',
+                sizes: '750x1334',
+                type: 'image/png',
+                form_factor: 'narrow'
+            }
+        ]
+    },
+    workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        runtimeCaching: [
+            // Cache API calls
+            {
+                urlPattern: /^https:\/\/.*\/api\/.*/i,
+                handler: 'CacheFirst',
+                options: {
+                    cacheName: 'api-cache',
+                    expiration: {
+                        maxEntries: 100,
+                        maxAgeSeconds: 60 * 60 * 24 // 24 hours
+                    },
+                    cacheableResponse: {
+                        statuses: [0, 200]
+                    }
+                }
+            },
+            // Cache images
+            {
+                urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+                handler: 'CacheFirst',
+                options: {
+                    cacheName: 'images-cache',
+                    expiration: {
+                        maxEntries: 50,
+                        maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                    }
+                }
+            },
+            // Cache CSS and JS
+            {
+                urlPattern: /\.(?:css|js)$/,
+                handler: 'StaleWhileRevalidate',
+                options: {
+                    cacheName: 'static-resources',
+                }
+            }
+        ],
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true
+    },
+    devOptions: {
+        enabled: true,
+        type: 'module'
+    }
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [plugin()],
+    plugins: [
+        plugin(),
+        VitePWA(pwaConfig)
+    ],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -89,8 +195,7 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         allowedHosts: true,
-        port: parseInt(process.env.DEV_SERVER_PORT || '54450'),
-        // Only add proxy and HTTPS in development (non-Docker)
+        port: parseInt(process.env.DEV_SERVER_PORT || '54350'),
         ...(isDocker ? {} : {
             proxy: {
                 '^/weatherforecast': {

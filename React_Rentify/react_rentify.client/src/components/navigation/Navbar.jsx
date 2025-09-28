@@ -62,13 +62,15 @@ const Navbar = ({ toggleSidebar, sidebarOpen }) => {
                         type="button"
                         className={`hamburger-button ${sidebarOpen ? 'hamburger-active' : ''}`}
                         onClick={toggleSidebar}
-                        aria-controls="sidebar"
                         aria-expanded={sidebarOpen}
+                        aria-label={t('sidebar.toggleNavigation')}
+                        aria-controls="main-sidebar"
                     >
-                        <span className="sr-only">Toggle sidebar</span>
-                        <span className="hamburger-line"></span>
-                        <span className="hamburger-line"></span>
-                        <span className="hamburger-line"></span>
+                        <div className="hamburger-lines">
+                            <span className="hamburger-line"></span>
+                            <span className="hamburger-line"></span>
+                            <span className="hamburger-line"></span>
+                        </div>
                     </button>
 
                     {/* Logo */}
