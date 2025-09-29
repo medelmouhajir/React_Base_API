@@ -98,16 +98,27 @@ const icons = {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
     ),
+    idScanner: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            {/* scan frame corners */}
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M4 7V5a1 1 0 0 1 1-1h2M20 7V5a1 1 0 0 0-1-1h-2M4 17v2a1 1 0 0 0 1 1h2M20 17v2a1 1 0 0 1-1 1h-2" />
+            {/* ID card */}
+            <rect x="7" y="9" width="10" height="8" rx="2" strokeWidth="2" />
+            {/* photo circle */}
+            <circle cx="10" cy="13" r="1.5" strokeWidth="2" />
+            {/* text lines */}
+            <path strokeLinecap="round" strokeWidth="2" d="M13 12h3M13 15h3" />
+        </svg>
+    ),
 };
 
 // Dummy shortcuts data
 const shortcuts = [
     { id: 'add-car', label: 'Add Car', icon: icons.cars, action: () => window.location.href = '/cars/add' },
-    { id: 'new-reservation', label: 'New Booking', icon: icons.reservations, action: () => window.location.href = '/reservations/add' },
-    { id: 'quick-report', label: 'Reports', icon: icons.reports, action: () => window.location.href = '/reports' },
-    { id: 'maintenance', label: 'Maintenance', icon: icons.maintenance, action: () => window.location.href = '/maintenances' },
-    { id: 'customer-support', label: 'Support', icon: icons.tickets, action: () => window.location.href = '/tickets' },
-    { id: 'analytics', label: 'Analytics', icon: icons.dashboard, action: () => window.location.href = '/analytics' },
+    { id: 'new-reservation', label: 'dashboard.newReservation', icon: icons.reservations, action: () => window.location.href = '/reservations/add' },
+    { id: 'new-customer', label: 'customer.add.title', icon: icons.customers, action: () => window.location.href = '/customers/add' },
+    { id: 'idscanner', label: 'gadgets.identity.name', icon: icons.idScanner, action: () => window.location.href = '/gadgets/identity' },
 ];
 
 const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
@@ -242,7 +253,6 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
                 <div className="sidebar-content">
                     {/* Navigation Section */}
                     <div className="nav-section">
-                        <h3 className="section-title">{t('sidebar.navigation')}</h3>
                         <nav className="nav-items" aria-label="Main navigation">
                             {menuItems.map((item) => (
                                 <NavLink
@@ -283,7 +293,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
                                         {shortcut.icon}
                                     </div>
                                     <span className="shortcut-text">
-                                        {shortcut.label}
+                                        {t(shortcut.label)}
                                     </span>
                                 </button>
                             ))}

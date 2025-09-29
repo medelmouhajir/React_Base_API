@@ -130,17 +130,6 @@
     transform: rotate(-45deg) translate(3px, -3px);
 }
 
-/* Mobile optimizations */
-@media (max-width: 640px) {
-    .hamburger-button {
-        width: 2.25rem;
-        height: 2.25rem;
-    }
-
-    .hamburger-lines {
-        width: 1.125rem;
-    }
-}
 
 /* Touch device optimizations */
 @media (hover: none) {
@@ -911,4 +900,57 @@
     .user-menu-dropdown {
         animation-duration: 0.01ms !important;
     }
+}
+
+.hamburger-button {
+    color: var(--color-text, #111827);
+}
+
+.dark .hamburger-button {
+    color: var(--color-text, #f3f4f6);
+}
+
+/* 2) Fix RTL scoping + remove stray brace — replace your unscoped block with: */
+[dir="rtl"] .navbar-action-button svg,
+[dir="rtl"] .dropdown-item svg,
+[dir="rtl"] .dropdown-item .icon-left {
+    margin-right: 0;
+    margin-left: 0.75rem;
+}
+
+[dir="rtl"] .user-name-display {
+    margin-right: 0;
+    margin-left: 0.75rem;
+}
+
+[dir="rtl"] .user-menu-dropdown {
+    right: auto;
+    left: 0;
+    transform-origin: top left;
+}
+
+    [dir="rtl"] .user-menu-dropdown::before {
+        right: auto;
+        left: 1rem;
+    }
+
+[dir="rtl"] .dropdown-content {
+    transform-origin: top left;
+}
+
+[dir="rtl"] .notification-badge {
+    right: auto;
+    left: 0.125rem;
+}
+
+[dir="rtl"] .hamburger-active .hamburger-line:nth-child(1) {
+    transform: translateY(7px) rotate(-45deg);
+}
+
+[dir="rtl"] .hamburger-active .hamburger-line:nth-child(2) {
+    transform: translateX(10px);
+}
+
+[dir="rtl"] .hamburger-active .hamburger-line:nth-child(3) {
+    transform: translateY(-7px) rotate(45deg);
 }
