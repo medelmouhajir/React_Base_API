@@ -84,7 +84,7 @@ const Dashboard = () => {
                     .reduce((sum, invoice) => sum + (invoice.totalAmount || 0), 0);
 
                 // Get recent reservations (last 5)
-                const sortedReservations = reservationsData
+                const sortedReservations = reservationsData.filter(res => res.status === 'Ongoing' || res.status === 'Reserved')
                     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                     .slice(0, 5);
 

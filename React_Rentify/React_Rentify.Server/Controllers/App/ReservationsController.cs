@@ -1288,7 +1288,8 @@ namespace React_Rentify.Server.Controllers.App
                         Id = r.Invoice.Id,
                         InvoiceNumber = r.Invoice.Id.ToString(),
                         TotalAmount = r.Invoice.Amount,
-                        IssuedOn = r.Invoice.IssuedAt
+                        IssuedOn = r.Invoice.IssuedAt,
+                        IsPaid = r.Invoice.IsPaid
                     }
             };
         }
@@ -1361,6 +1362,8 @@ namespace React_Rentify.Server.Controllers.App
             public string InvoiceNumber { get; set; }
             public decimal TotalAmount { get; set; }
             public DateTime IssuedOn { get; set; }
+
+            public bool IsPaid { get; set; }
         }
 
         /// <summary>

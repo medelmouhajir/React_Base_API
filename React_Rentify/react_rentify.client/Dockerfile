@@ -38,10 +38,15 @@ COPY --chown=nextjs:nodejs package*.json ./
 
 # Install dependencies including dev dependencies
 RUN npm install
-RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs react-leaflet@^4.0.0
+RUN npm install react-router-dom axios react-i18next i18next i18next-browser-languagedetector react-toastify hammerjs react-leaflet@^4.0.0 vite-plugin-pwa@^0.21.1
 
 # Copy source code and change ownership
 COPY --chown=nextjs:nodejs . .
+
+
+# Create directories that PWA plugin will need and set permissions
+RUN mkdir -p /app/dev-dist /app/dist /app/.vite && \
+    chown -R nextjs:nodejs /app/dev-dist /app/dist /app/.vite
 
 # Fix permissions for vite and all node_modules binaries
 RUN chmod +x node_modules/.bin/*

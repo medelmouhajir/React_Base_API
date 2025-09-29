@@ -225,7 +225,7 @@ const ReservationsList = () => {
                                 </option>
                                 {customers.map((c) => (
                                     <option key={c.id} value={c.id}>
-                                        {c.name}
+                                        {c.fullName}
                                     </option>
                                 ))}
                             </select>
@@ -265,7 +265,7 @@ const ReservationsList = () => {
                                 </option>
                                 {statuses.map((s) => (
                                     <option key={s} value={s}>
-                                        {t('reservation.status.') + s.toLowerCase()}
+                                        {t('reservation.status.') + s}
                                     </option>
                                 ))}
                             </select>

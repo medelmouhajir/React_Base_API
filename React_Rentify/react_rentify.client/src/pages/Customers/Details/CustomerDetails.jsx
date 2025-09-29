@@ -294,15 +294,15 @@ const CustomerDetails = () => {
                                         </p>
                                     </div>
                                     <div className="cd-resv-meta">
-                                        <span className={`cd-resv-status ${r.isPaid ? 'paid' : 'unpaid'}`}>
-                                            {r.isPaid ? t('customerDetails.paid') : t('customerDetails.unpaid')}
+                                        <span className={`cd-resv-status ${r.invoice && r.invoice.isPaid ? 'paid' : 'unpaid'}`}>
+                                            {r.invoice && r.invoice.isPaid ? t('customerDetails.paid') : t('customerDetails.unpaid')}
                                         </span>
-                                        {r.totalAmount && (
+                                        {r.agreedPrice && (
                                             <span className="cd-resv-amount">
                                                 {new Intl.NumberFormat('en-US', {
                                                     style: 'currency',
-                                                    currency: 'USD'
-                                                }).format(r.totalAmount)}
+                                                    currency: 'MAD'
+                                                }).format(r.finalPrice ?? r.agreedPrice)}
                                             </span>
                                         )}
                                     </div>
