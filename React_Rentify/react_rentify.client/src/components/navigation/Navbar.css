@@ -78,7 +78,6 @@
    ======================================== */
 .hamburger-button {
     position: relative;
-    width: 2.5rem;
     height: 2.5rem;
     border: none;
     background: transparent;
@@ -88,6 +87,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: 0 0 2.5rem;
 }
 
     .hamburger-button:hover {
@@ -99,7 +99,7 @@
 }
 
 .hamburger-lines {
-    width: 1.25rem;
+    width: 20px;
     height: 1rem;
     position: relative;
     display: flex;
