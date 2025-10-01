@@ -306,6 +306,33 @@
       "YearValue": "Année",
       "yearLabel": "Année",
       "yearPlaceholder": "Entrez l'année"
+    },
+    "upload": {
+      "title": "Télécharger les Filtres",
+      "subtitle": "Importer des fabricants et des modèles depuis un fichier JSON",
+      "instructionsTitle": "Instructions",
+      "instructionsIntro": "Téléchargez un fichier JSON contenant des fabricants et leurs modèles. Le fichier doit suivre ce format :",
+      "instruction1": "Chaque fabricant doit avoir un 'id', un 'name' et un tableau 'models'",
+      "instruction2": "Chaque modèle doit avoir un 'id' et un 'name'",
+      "instruction3": "Les IDs seront automatiquement convertis en minuscules",
+      "instruction4": "Les fabricants et modèles existants seront ignorés",
+      "uploadTitle": "Télécharger le Fichier",
+      "dragDropText": "Glissez-déposez votre fichier JSON ici",
+      "orClickToSelect": "ou cliquez pour sélectionner depuis votre appareil",
+      "jsonOnly": "Fichiers JSON uniquement (max 5Mo)",
+      "uploadButton": "Télécharger les Filtres",
+      "uploading": "Téléchargement...",
+      "noFileSelected": "Veuillez sélectionner un fichier à télécharger",
+      "invalidFileType": "Type de fichier invalide. Veuillez sélectionner un fichier JSON",
+      "fileTooLarge": "Le fichier est trop volumineux. La taille maximale est de 5Mo",
+      "invalidJson": "Format JSON invalide. Veuillez vérifier votre fichier",
+      "invalidJsonStructure": "Structure JSON invalide. Le fichier doit contenir un tableau de fabricants",
+      "uploadFailed": "Échec du téléchargement. Veuillez réessayer",
+      "fileReadError": "Erreur lors de la lecture du fichier. Veuillez réessayer",
+      "uploadSuccess": "Téléchargement terminé avec succès !",
+      "manufacturersAdded": "Fabricants ajoutés",
+      "modelsAdded": "Modèles ajoutés",
+      "skipped": "Ignorés (existent déjà)"
     }
   },
   "maintenance": {
@@ -1183,7 +1210,10 @@
       "creditCard": "Carte de crédit",
       "bankTransfer": "Virement bancaire",
       "other": "Autre",
-      "card": "Carte"
+      "card": "Carte",
+      "transfer": "Virement",
+      "check": "Chèque",
+      "mobile": "Portefeuille mobile"
     },
     "add": {
       "title": "Ajouter un paiement",
@@ -1191,13 +1221,27 @@
       "amountHint": "Entrez le montant à payer (ne dépassant pas le solde restant).",
       "transactionIdPlaceholder": "Entrez l'ID de la transaction",
       "transactionIdHint": "Optionnel, si disponible.",
-      "submit": "Soumettre le paiement"
+      "submit": "Soumettre le paiement",
+      "subtitle": "Enregistrer un nouveau paiement pour cette facture",
+      "invoiceSummary": "Récapitulatif de la facture",
+      "paidAmount": "Montant payé",
+      "balanceDue": "Solde dû",
+      "paymentDetails": "Détails du paiement",
+      "fullyPaid": "Cette facture a été entièrement réglée.",
+      "fetchError": "Échec du chargement des détails de la facture.",
+      "submitError": "Échec de l'ajout du paiement. Veuillez réessayer."
     },
     "fields": {
       "amount": "Montant",
       "method": "Méthode",
       "transactionId": "ID de la transaction",
-      "paidAt": "Date du paiement"
+      "paidAt": "Date du paiement",
+      "transactionIdPlaceholder": "Optionnel"
+    },
+    "validation": {
+      "amount": "Le montant doit être supérieur à 0",
+      "method": "Le mode de paiement est requis",
+      "paidAt": "La date de paiement est requise"
     }
   },
   "validation": {
@@ -1379,6 +1423,13 @@
     "demo": {
       "subject": "Demande d'abonnement d'essai",
       "message": "J'aimerais avoir une période d'essai pour essayer votre solution"
+    },
+    "fields": {
+      "name": "Nom",
+      "object": "Objet",
+      "phone": "Téléphone",
+      "status": "Statut",
+      "date": "Date"
     }
   },
   "blacklistCheck": {
@@ -2344,6 +2395,75 @@
       "decline": "Refuser",
       "close": "Fermer",
       "scrollToTop": "Haut de page"
+    }
+  },
+  "agencies": {
+    "quickSetup": {
+      "title": "Configuration Rapide d'Agence",
+      "subtitle": "Créez une nouvelle agence avec compte propriétaire en seulement 2 étapes",
+      "perMonth": "/ mois",
+      "ownerNote": "Le compte propriétaire sera créé automatiquement et aura un accès complet pour gérer l'agence.",
+      "steps": {
+        "agencyInfo": "Informations de l'Agence",
+        "ownerInfo": "Compte Propriétaire"
+      },
+      "fields": {
+        "agencyName": "Nom de l'Agence",
+        "agencyAddress": "Adresse de l'Agence",
+        "agencyEmail": "Email de l'Agence",
+        "primaryPhone": "Téléphone Principal",
+        "secondaryPhone": "Téléphone Secondaire (Optionnel)",
+        "subscriptionPlan": "Plan d'Abonnement",
+        "ownerName": "Nom Complet du Propriétaire",
+        "password": "Mot de Passe",
+        "confirmPassword": "Confirmer le Mot de Passe"
+      },
+      "placeholders": {
+        "agencyName": "Entrez le nom de l'agence",
+        "agencyAddress": "Entrez l'adresse complète",
+        "agencyEmail": "agence@exemple.com",
+        "phone": "+212 600 000 000",
+        "phoneOptional": "+212 600 000 000 (optionnel)",
+        "selectPlan": "Sélectionnez un plan d'abonnement",
+        "ownerName": "Entrez le nom complet du propriétaire",
+        "password": "Entrez un mot de passe fort",
+        "confirmPassword": "Ressaisissez le mot de passe"
+      },
+      "validation": {
+        "agencyNameRequired": "Le nom de l'agence est requis",
+        "agencyAddressRequired": "L'adresse de l'agence est requise",
+        "agencyEmailRequired": "L'email de l'agence est requis",
+        "invalidEmail": "Veuillez entrer une adresse email valide",
+        "phoneRequired": "Le téléphone principal est requis",
+        "planRequired": "Veuillez sélectionner un plan d'abonnement",
+        "ownerNameRequired": "Le nom du propriétaire est requis",
+        "passwordRequired": "Le mot de passe est requis",
+        "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+        "passwordMismatch": "Les mots de passe ne correspondent pas"
+      },
+      "password": {
+        "veryWeak": "Très Faible",
+        "weak": "Faible",
+        "fair": "Moyen",
+        "good": "Bon",
+        "strong": "Fort"
+      },
+      "buttons": {
+        "back": "Retour",
+        "next": "Suivant",
+        "create": "Créer l'Agence",
+        "creating": "Création..."
+      },
+      "errors": {
+        "loadPlans": "Échec du chargement des plans d'abonnement",
+        "emailExists": "Cet email est déjà enregistré",
+        "createFailed": "Échec de la création de l'agence. Veuillez réessayer."
+      },
+      "success": {
+        "title": "Agence Créée avec Succès !",
+        "message": "L'agence et le compte propriétaire ont été créés. Redirection...",
+        "created": "L'agence a été créée avec succès"
+      }
     }
   }
 }

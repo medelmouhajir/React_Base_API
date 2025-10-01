@@ -14,6 +14,7 @@
     <Folder Include="src\pages\Agencies\Details\" />
     <Folder Include="src\pages\Agencies\Create\" />
     <Folder Include="src\pages\Agencies\List\" />
+    <Folder Include="src\pages\Agencies\QuickSetup\" />
     <Folder Include="src\pages\Agencies\Stuff\" />
     <Folder Include="src\pages\Auth\ThanksPage\" />
     <Folder Include="src\pages\Cars\Add\" />
@@ -30,6 +31,7 @@
     <Folder Include="src\pages\Filters\CarModels\" />
     <Folder Include="src\pages\Filters\Manufacturer\" />
     <Folder Include="src\pages\Filters\CarYear\" />
+    <Folder Include="src\pages\Filters\Upload\" />
     <Folder Include="src\pages\Gadgets\BlacklistChecks\" />
     <Folder Include="src\pages\Gadgets\Home\" />
     <Folder Include="src\pages\Gadgets\CarChecks\" />
@@ -41,6 +43,7 @@
     <Folder Include="src\pages\Invoices\Add\" />
     <Folder Include="src\pages\Invoices\List\" />
     <Folder Include="src\pages\Invoices\Details\" />
+    <Folder Include="src\pages\Invoices\AddPayment\" />
     <Folder Include="src\pages\Invoices\Print\" />
     <Folder Include="src\pages\Landing\FloatingButtons\" />
     <Folder Include="src\pages\Landing\UseTerms\" />

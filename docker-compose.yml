@@ -263,8 +263,8 @@
       context: ./db-backup
     container_name: db-backup
     restart: unless-stopped
-    ports:
-      - "55555:55555"   # Host → Container
+    # ports:
+    #   - "55555:55555"   # Host → Container
     environment:
       PGHOST: db
       PGPORT: "5432"

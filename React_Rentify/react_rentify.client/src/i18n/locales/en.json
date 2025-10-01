@@ -319,6 +319,33 @@
       "YearValue": "Year",
       "yearLabel": "Year",
       "yearPlaceholder": "Enter year"
+    },
+    "upload": {
+      "title": "Upload Filters",
+      "subtitle": "Import manufacturers and models from JSON file",
+      "instructionsTitle": "Instructions",
+      "instructionsIntro": "Upload a JSON file containing manufacturers and their models. The file should follow this format:",
+      "instruction1": "Each manufacturer must have an 'id', 'name', and 'models' array",
+      "instruction2": "Each model must have an 'id' and 'name'",
+      "instruction3": "IDs will be automatically converted to lowercase",
+      "instruction4": "Existing manufacturers and models will be skipped",
+      "uploadTitle": "Upload File",
+      "dragDropText": "Drag and drop your JSON file here",
+      "orClickToSelect": "or click to select from your device",
+      "jsonOnly": "JSON files only (max 5MB)",
+      "uploadButton": "Upload Filters",
+      "uploading": "Uploading...",
+      "noFileSelected": "Please select a file to upload",
+      "invalidFileType": "Invalid file type. Please select a JSON file",
+      "fileTooLarge": "File is too large. Maximum size is 5MB",
+      "invalidJson": "Invalid JSON format. Please check your file",
+      "invalidJsonStructure": "Invalid JSON structure. File must contain an array of manufacturers",
+      "uploadFailed": "Upload failed. Please try again",
+      "fileReadError": "Error reading file. Please try again",
+      "uploadSuccess": "Upload completed successfully!",
+      "manufacturersAdded": "Manufacturers added",
+      "modelsAdded": "Models added",
+      "skipped": "Skipped (already exists)"
     }
   },
   "maintenance": {
@@ -1202,7 +1229,10 @@
       "creditCard": "Credit Card",
       "bankTransfer": "Bank Transfer",
       "other": "Other",
-      "card": "Card"
+      "card": "Card",
+      "transfer": "Transfer",
+      "check": "Check",
+      "mobile": "Mobile"
     },
     "add": {
       "title": "Add Payment",
@@ -1210,13 +1240,28 @@
       "amountHint": "Enter the amount to pay (cannot exceed remaining balance).",
       "transactionIdPlaceholder": "Enter transaction ID",
       "transactionIdHint": "Optional, if available.",
-      "submit": "Submit Payment"
+      "submit": "Submit Payment",
+      "invoiceSummary": "Invoice Summary",
+      "paidAmount": "Paid Amount",
+      "balanceDue": "Balance Due",
+      "paymentDetails": "Payment Details",
+      "balanceDueHint": "Remaining balance",
+      "fullyPaid": "This invoice has been fully paid.",
+      "fetchError": "Failed to load invoice details.",
+      "submitError": "Failed to add payment. Please try again.",
+      "subtitle": "Record a new payment for this invoice"
     },
     "fields": {
       "amount": "Amount",
       "method": "Method",
       "transactionId": "Transaction ID",
-      "paidAt": "Paid At"
+      "paidAt": "Paid At",
+      "transactionIdPlaceholder": "Optional"
+    },
+    "validation": {
+      "amount": "Amount must be greater than 0",
+      "method": "Payment method is required",
+      "paidAt": "Payment date is required"
     }
   },
   "validation": {
@@ -1406,6 +1451,13 @@
     "demo": {
       "subject": "Trial subscription request",
       "message": "I would like to have a trial period to try your solution"
+    },
+    "fields": {
+      "name": "Name",
+      "object": "Object",
+      "phone": "Phone",
+      "status": "Status",
+      "date": "Date"
     }
   },
   "blacklistCheck": {
@@ -2409,6 +2461,75 @@
       "decline": "Decline",
       "close": "Close",
       "scrollToTop": "Scroll to Top"
+    }
+  },
+  "agencies": {
+    "quickSetup": {
+      "title": "Quick Agency Setup",
+      "subtitle": "Create a new agency with owner account in just 2 easy steps",
+      "perMonth": "/ month",
+      "ownerNote": "The owner account will be created automatically and will have full access to manage the agency.",
+      "steps": {
+        "agencyInfo": "Agency Information",
+        "ownerInfo": "Owner Account"
+      },
+      "fields": {
+        "agencyName": "Agency Name",
+        "agencyAddress": "Agency Address",
+        "agencyEmail": "Agency Email",
+        "primaryPhone": "Primary Phone",
+        "secondaryPhone": "Secondary Phone (Optional)",
+        "subscriptionPlan": "Subscription Plan",
+        "ownerName": "Owner Full Name",
+        "password": "Password",
+        "confirmPassword": "Confirm Password"
+      },
+      "placeholders": {
+        "agencyName": "Enter agency name",
+        "agencyAddress": "Enter full address",
+        "agencyEmail": "agency@example.com",
+        "phone": "+212 600 000 000",
+        "phoneOptional": "+212 600 000 000 (optional)",
+        "selectPlan": "Select a subscription plan",
+        "ownerName": "Enter owner full name",
+        "password": "Enter a strong password",
+        "confirmPassword": "Re-enter password"
+      },
+      "validation": {
+        "agencyNameRequired": "Agency name is required",
+        "agencyAddressRequired": "Agency address is required",
+        "agencyEmailRequired": "Agency email is required",
+        "invalidEmail": "Please enter a valid email address",
+        "phoneRequired": "Primary phone is required",
+        "planRequired": "Please select a subscription plan",
+        "ownerNameRequired": "Owner name is required",
+        "passwordRequired": "Password is required",
+        "passwordTooShort": "Password must be at least 6 characters",
+        "passwordMismatch": "Passwords do not match"
+      },
+      "password": {
+        "veryWeak": "Very Weak",
+        "weak": "Weak",
+        "fair": "Fair",
+        "good": "Good",
+        "strong": "Strong"
+      },
+      "buttons": {
+        "back": "Back",
+        "next": "Next",
+        "create": "Create Agency",
+        "creating": "Creating..."
+      },
+      "errors": {
+        "loadPlans": "Failed to load subscription plans",
+        "emailExists": "This email is already registered",
+        "createFailed": "Failed to create agency. Please try again."
+      },
+      "success": {
+        "title": "Agency Created Successfully!",
+        "message": "The agency and owner account have been created. Redirecting...",
+        "created": "Agency has been successfully created"
+      }
     }
   }
 }

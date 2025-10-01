@@ -99,6 +99,8 @@ namespace React_Rentify.Server.Controllers.App
                     PhoneTwo = dto.AgencyPhoneTwo,
                     Conditions = "و انا الموقع أسفله، أصرح أنني تسلمت مكتريا السيارة أعلاه، أعيدها على الحالة التي بقيت عليها طبقا لما هو مذكور من الشروط أسفله، \r\nخالبة، و التي استعملت عليها كاملة، و التي بإمكاني جيدا، و تسلمتها بكل الوثائق التي تخصها، و في حالة ضياع \r\nالكراء المذكور أعلاه.\r\n",
                     CurrentSubscription = sub,
+                    LogoUrl = "",
+                    
                 };
 
                 _context.Set<Agency>().Add(agency);

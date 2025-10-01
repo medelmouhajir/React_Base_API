@@ -318,6 +318,33 @@
       "YearValue": "السنة",
       "yearLabel": "السنة",
       "yearPlaceholder": "أدخل السنة"
+    },
+    "upload": {
+      "title": "تحميل الفلاتر",
+      "subtitle": "استيراد الشركات المصنعة والموديلات من ملف JSON",
+      "instructionsTitle": "التعليمات",
+      "instructionsIntro": "قم بتحميل ملف JSON يحتوي على الشركات المصنعة وموديلاتها. يجب أن يتبع الملف هذا التنسيق:",
+      "instruction1": "يجب أن يحتوي كل مصنع على 'id' و 'name' ومصفوفة 'models'",
+      "instruction2": "يجب أن يحتوي كل موديل على 'id' و 'name'",
+      "instruction3": "سيتم تحويل المعرفات تلقائيًا إلى أحرف صغيرة",
+      "instruction4": "سيتم تجاهل الشركات المصنعة والموديلات الموجودة",
+      "uploadTitle": "تحميل الملف",
+      "dragDropText": "اسحب وأفلت ملف JSON الخاص بك هنا",
+      "orClickToSelect": "أو انقر للاختيار من جهازك",
+      "jsonOnly": "ملفات JSON فقط (الحد الأقصى 5 ميجابايت)",
+      "uploadButton": "تحميل الفلاتر",
+      "uploading": "جارٍ التحميل...",
+      "noFileSelected": "الرجاء تحديد ملف للتحميل",
+      "invalidFileType": "نوع ملف غير صالح. الرجاء تحديد ملف JSON",
+      "fileTooLarge": "الملف كبير جدًا. الحد الأقصى للحجم هو 5 ميجابايت",
+      "invalidJson": "تنسيق JSON غير صالح. يرجى التحقق من ملفك",
+      "invalidJsonStructure": "بنية JSON غير صالحة. يجب أن يحتوي الملف على مصفوفة من الشركات المصنعة",
+      "uploadFailed": "فشل التحميل. يرجى المحاولة مرة أخرى",
+      "fileReadError": "خطأ في قراءة الملف. يرجى المحاولة مرة أخرى",
+      "uploadSuccess": "اكتمل التحميل بنجاح!",
+      "manufacturersAdded": "الشركات المضافة",
+      "modelsAdded": "الموديلات المضافة",
+      "skipped": "تم التجاهل (موجود بالفعل)"
     }
   },
   "maintenance": {
@@ -1195,7 +1222,10 @@
       "creditCard": "بطاقة ائتمان",
       "bankTransfer": "تحويل بنكي",
       "other": "أخرى",
-      "card": "بطاقة"
+      "card": "بطاقة",
+      "transfer": "تحويل",
+      "check": "شيك",
+      "mobile": "محفظة رقمية"
     },
     "add": {
       "title": "إضافة دفعة",
@@ -1203,13 +1233,28 @@
       "amountHint": "أدخل المبلغ للدفع (لا يتجاوز الرصيد المتبقي).",
       "transactionIdPlaceholder": "أدخل معرّف المعاملة",
       "transactionIdHint": "اختياري، إذا كان متوفرًا.",
-      "submit": "إرسال الدفعة"
+      "submit": "إرسال الدفعة",
+      "subtitle": "تسجيل دفعة جديدة لهذه الفاتورة",
+      "invoiceSummary": "ملخص الفاتورة",
+      "paidAmount": "المبلغ المدفوع",
+      "balanceDue": "الرصيد المستحق",
+      "paymentDetails": "تفاصيل الدفعة",
+      "balanceDueHint": "الرصيد المتبقي",
+      "fullyPaid": "تم سداد هذه الفاتورة بالكامل.",
+      "fetchError": "تعذّر تحميل تفاصيل الفاتورة.",
+      "submitError": "تعذّر إضافة الدفعة. حاول مرة أخرى."
     },
     "fields": {
       "amount": "المبلغ",
       "method": "الطريقة",
       "transactionId": "معرّف المعاملة",
-      "paidAt": "تاريخ الدفع"
+      "paidAt": "تاريخ الدفع",
+      "transactionIdPlaceholder": "اختياري"
+    },
+    "validation": {
+      "amount": "يجب أن يكون المبلغ أكبر من 0",
+      "method": "طريقة الدفع مطلوبة",
+      "paidAt": "تاريخ الدفع مطلوب"
     }
   },
   "validation": {
@@ -1399,6 +1444,13 @@
     "demo": {
       "subject": "طلب اشتراك تجريبي",
       "message": "أرغب في الحصول على فترة تجريبية لتجربة الحل الخاص بك"
+    },
+    "fields": {
+      "name": "الاسم",
+      "object": "الموضوع",
+      "phone": "الهاتف",
+      "status": "الحالة",
+      "date": "التاريخ"
     }
   },
   "blacklistCheck": {
@@ -2364,6 +2416,75 @@
       "decline": "رفض",
       "close": "إغلاق",
       "scrollToTop": "العودة للأعلى"
+    }
+  },
+  "agencies": {
+    "quickSetup": {
+      "title": "إعداد سريع للوكالة",
+      "subtitle": "أنشئ وكالة جديدة مع حساب المالك في خطوتين سهلتين فقط",
+      "perMonth": "/ شهر",
+      "ownerNote": "سيتم إنشاء حساب المالك تلقائيًا وسيكون له وصول كامل لإدارة الوكالة.",
+      "steps": {
+        "agencyInfo": "معلومات الوكالة",
+        "ownerInfo": "حساب المالك"
+      },
+      "fields": {
+        "agencyName": "اسم الوكالة",
+        "agencyAddress": "عنوان الوكالة",
+        "agencyEmail": "البريد الإلكتروني للوكالة",
+        "primaryPhone": "الهاتف الأساسي",
+        "secondaryPhone": "الهاتف الثانوي (اختياري)",
+        "subscriptionPlan": "خطة الاشتراك",
+        "ownerName": "الاسم الكامل للمالك",
+        "password": "كلمة المرور",
+        "confirmPassword": "تأكيد كلمة المرور"
+      },
+      "placeholders": {
+        "agencyName": "أدخل اسم الوكالة",
+        "agencyAddress": "أدخل العنوان الكامل",
+        "agencyEmail": "agency@example.com",
+        "phone": "0600 000 000+212",
+        "phoneOptional": "0600 000 000+212 (اختياري)",
+        "selectPlan": "اختر خطة اشتراك",
+        "ownerName": "أدخل الاسم الكامل للمالك",
+        "password": "أدخل كلمة مرور قوية",
+        "confirmPassword": "أعد إدخال كلمة المرور"
+      },
+      "validation": {
+        "agencyNameRequired": "اسم الوكالة مطلوب",
+        "agencyAddressRequired": "عنوان الوكالة مطلوب",
+        "agencyEmailRequired": "البريد الإلكتروني للوكالة مطلوب",
+        "invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صالح",
+        "phoneRequired": "الهاتف الأساسي مطلوب",
+        "planRequired": "يرجى اختيار خطة اشتراك",
+        "ownerNameRequired": "اسم المالك مطلوب",
+        "passwordRequired": "كلمة المرور مطلوبة",
+        "passwordTooShort": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+        "passwordMismatch": "كلمات المرور غير متطابقة"
+      },
+      "password": {
+        "veryWeak": "ضعيفة جداً",
+        "weak": "ضعيفة",
+        "fair": "متوسطة",
+        "good": "جيدة",
+        "strong": "قوية"
+      },
+      "buttons": {
+        "back": "رجوع",
+        "next": "التالي",
+        "create": "إنشاء الوكالة",
+        "creating": "جاري الإنشاء..."
+      },
+      "errors": {
+        "loadPlans": "فشل تحميل خطط الاشتراك",
+        "emailExists": "هذا البريد الإلكتروني مسجل بالفعل",
+        "createFailed": "فشل إنشاء الوكالة. يرجى المحاولة مرة أخرى."
+      },
+      "success": {
+        "title": "تم إنشاء الوكالة بنجاح!",
+        "message": "تم إنشاء الوكالة وحساب المالك. جاري التحويل...",
+        "created": "تم إنشاء الوكالة بنجاح"
+      }
     }
   }
 }

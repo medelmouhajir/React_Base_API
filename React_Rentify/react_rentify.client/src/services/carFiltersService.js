@@ -98,6 +98,21 @@ export const carFiltersService = {
             console.error(`❌ Error removing car year with ID ${id}:`, error);
             throw error;
         }
+    },
+
+    /**
+     * Upload filters from JSON file
+     * @param {Array} filtersData - Array of manufacturers with models
+     * @returns {Promise<Object>} - Upload result with statistics
+     */
+    async uploadFilters(filtersData) {
+        try {
+            const response = await apiClient.post('/carfilters/upload', filtersData);
+            return response.data;
+        } catch (error) {
+            console.error('❌ Error uploading filters:', error);
+            throw error;
+        }
     }
 };
 

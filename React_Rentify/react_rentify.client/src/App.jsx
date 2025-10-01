@@ -49,12 +49,14 @@ const AgencyCreate = lazy(() => import('./pages/Agencies/Create/AgencyCreate'));
 const AgencyDetails = lazy(() => import('./pages/Agencies/Details/AgencyDetails'));
 const AgenciesList = lazy(() => import('./pages/Agencies/List/AgenciesList'));
 const AgencyStuff = lazy(() => import('./pages/Agencies/Stuff/AgencyStuff'));
+const QuickNewAgencySetup = lazy(() => import('./pages/Agencies/QuickSetup/QuickNewAgencySetup'));
 
 
 const Filters = lazy(() => import('./pages/Filters/Filters'));
 const Manufacturer = lazy(() => import('./pages/Filters/Manufacturer/Manufacturer'));
 const Models = lazy(() => import('./pages/Filters/CarModels/Models'));
 const CarYear = lazy(() => import('./pages/Filters/CarYear/CarYear'));
+const UploadFilters = lazy(() => import('./pages/Filters/Upload/UploadFilters'));
 
 
 // Child routes for Cars
@@ -86,6 +88,7 @@ const AddServiceAlert = lazy(() => import('./pages/ServiceAlerts/Add/AddServiceA
 const AddInvoice = lazy(() => import('./pages/Invoices/Add/AddInvoice'));
 const InvoiceDetails = lazy(() => import('./pages/Invoices/Details/InvoiceDetails'));
 const InvoicePrint = lazy(() => import('./pages/Invoices/Print/InvoicePrint'));
+const AddPayment = lazy(() => import('./pages/Invoices/AddPayment/AddPayment'));
 
 
 //// Child route for Settings
@@ -196,12 +199,14 @@ function App() {
                                 <Route path="/agencies/create" element={<AgencyCreate />} />
                                 <Route path="/agencies/:id" element={<AgencyDetails />} />
                                 <Route path="/agencies/:id/staff" element={<AgencyStuff />} />
+                                <Route path="/agencies/quick" element={<QuickNewAgencySetup />} />
 
 
                                 <Route path="/filters" element={<Filters />} />
                                 <Route path="/filters/manufacturer" element={<Manufacturer />} />
                                 <Route path="/filters/models" element={<Models />} />
                                 <Route path="/filters/caryear" element={<CarYear />} />
+                                <Route path="/filters/upload" element={<UploadFilters />} />
 
 
                                 <Route path="/gps/cars" element={<SetCarGps />} />
@@ -240,6 +245,7 @@ function App() {
                                 <Route path="/invoices/add" element={<AddInvoice />} />
                                 <Route path="/invoices/:id" element={<InvoiceDetails />} />
                                 <Route path="/invoices/:id/print" element={<InvoicePrint />} />
+                                <Route path="/invoices/:id/add-payment" element={<AddPayment />} />
 
 
                                 {/* Tickets */}

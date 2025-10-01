@@ -354,6 +354,153 @@ namespace React_Rentify.Server.Controllers
             _logger.LogInformation("Removed car year {YearId}", id);
             return NoContent();
         }
+
+
+        /// <summary>
+        /// POST: api/CarFilters/upload
+        /// Uploads manufacturers and models from JSON file
+        /// </summary>
+        [HttpPost("upload")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UploadFiltersJson([FromBody] List<UploadManufacturerDto> uploadData)
+        {
+            _logger.LogInformation("Uploading filters from JSON");
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid upload data received");
+                return BadRequest(ModelState);
+            }
+
+            if (uploadData == null || !uploadData.Any())
+            {
+                _logger.LogWarning("Empty upload data received");
+                return BadRequest(new { message = "No data provided for upload." });
+            }
+
+            var result = new UploadResultDto
+            {
+                ManufacturersAdded = 0,
+                ModelsAdded = 0,
+                Skipped = 0,
+                Errors = new List<string>()
+            };
+
+            foreach (var manufacturerDto in uploadData)
+            {
+                try
+                {
+                    // Validate manufacturer data
+                    if (string.IsNullOrWhiteSpace(manufacturerDto.Id) ||
+                        string.IsNullOrWhiteSpace(manufacturerDto.Name))
+                    {
+                        result.Errors.Add($"Invalid manufacturer data: missing id or name");
+                        result.Skipped++;
+                        continue;
+                    }
+
+                    // Check if manufacturer exists
+                    var manufacturerId = manufacturerDto.Id.ToLower().Trim();
+                    var existingManufacturer = await _context.Set<Manufacturer>()
+                        .Include(m => m.Car_Models)
+                        .FirstOrDefaultAsync(m => m.Id == manufacturerId);
+
+                    Manufacturer manufacturer;
+                    bool manufacturerAdded = false;
+
+                    if (existingManufacturer == null)
+                    {
+                        // Create new manufacturer
+                        manufacturer = new Manufacturer
+                        {
+                            Id = manufacturerId,
+                            Name = manufacturerDto.Name.Trim(),
+                            Car_Models = new List<Car_Model>()
+                        };
+
+                        _context.Set<Manufacturer>().Add(manufacturer);
+                        result.ManufacturersAdded++;
+                        manufacturerAdded = true;
+
+                        _logger.LogInformation("Adding new manufacturer: {ManufacturerName}", manufacturer.Name);
+                    }
+                    else
+                    {
+                        manufacturer = existingManufacturer;
+                        _logger.LogInformation("Manufacturer {ManufacturerName} already exists, checking models", manufacturer.Name);
+                    }
+
+                    // Process models
+                    if (manufacturerDto.Models != null && manufacturerDto.Models.Any())
+                    {
+                        foreach (var modelDto in manufacturerDto.Models)
+                        {
+                            try
+                            {
+                                // Validate model data
+                                if (string.IsNullOrWhiteSpace(modelDto.Id) ||
+                                    string.IsNullOrWhiteSpace(modelDto.Name))
+                                {
+                                    result.Errors.Add($"Invalid model data for manufacturer {manufacturerDto.Name}: missing id or name");
+                                    result.Skipped++;
+                                    continue;
+                                }
+
+                                var modelId = modelDto.Id.ToLower().Trim();
+
+                                // Check if model already exists
+                                var existingModel = await _context.Set<Car_Model>()
+                                    .FirstOrDefaultAsync(m => m.Id == modelId ||
+                                        (m.Name == modelDto.Name.Trim() && m.ManufacturerId == manufacturerId));
+
+                                if (existingModel == null)
+                                {
+                                    // Create new model
+                                    var carModel = new Car_Model
+                                    {
+                                        Id = modelId,
+                                        Name = modelDto.Name.Trim(),
+                                        ManufacturerId = manufacturerId
+                                    };
+
+                                    _context.Set<Car_Model>().Add(carModel);
+                                    result.ModelsAdded++;
+
+                                    _logger.LogInformation("Adding new model: {ModelName} for manufacturer {ManufacturerName}",
+                                        carModel.Name, manufacturer.Name);
+                                }
+                                else
+                                {
+                                    result.Skipped++;
+                                    _logger.LogDebug("Model {ModelName} already exists, skipping", modelDto.Name);
+                                }
+                            }
+                            catch (Exception modelEx)
+                            {
+                                _logger.LogError(modelEx, "Error processing model {ModelName}", modelDto.Name);
+                                result.Errors.Add($"Error adding model {modelDto.Name}: {modelEx.Message}");
+                                result.Skipped++;
+                            }
+                        }
+                    }
+
+                    // Save changes after processing each manufacturer
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error processing manufacturer {ManufacturerName}", manufacturerDto.Name);
+                    result.Errors.Add($"Error adding manufacturer {manufacturerDto.Name}: {ex.Message}");
+                    result.Skipped++;
+                }
+            }
+
+            _logger.LogInformation(
+                "Upload completed: {ManufacturersAdded} manufacturers, {ModelsAdded} models added, {Skipped} skipped",
+                result.ManufacturersAdded, result.ModelsAdded, result.Skipped);
+
+            return Ok(result);
+        }
     }
 
     #region DTOs
@@ -394,5 +541,25 @@ namespace React_Rentify.Server.Controllers
         public int YearValue { get; set; }
     }
 
+    public class UploadManufacturerDto
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public List<UploadModelDto> Models { get; set; }
+    }
+
+    public class UploadModelDto
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    public class UploadResultDto
+    {
+        public int ManufacturersAdded { get; set; }
+        public int ModelsAdded { get; set; }
+        public int Skipped { get; set; }
+        public List<string> Errors { get; set; }
+    }
     #endregion
 }

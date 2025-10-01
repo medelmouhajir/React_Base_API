@@ -42,6 +42,14 @@ const Filters = () => {
             icon: '📅',
             color: 'tertiary'
         },
+        {
+            key: 'upload',
+            title: t('filters.upload.title'),
+            description: t('filters.upload.subtitle'),
+            route: '/filters/upload',
+            icon: '🗂',
+            color: 'tertiary'
+        },
     ];
 
     const handleNavigate = (route) => {

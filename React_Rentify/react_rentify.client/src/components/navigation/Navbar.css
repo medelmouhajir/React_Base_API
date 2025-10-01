@@ -408,7 +408,8 @@
    ======================================== */
 .navbar-user-menu {
     position: relative;
-    margin-left: 0.75rem;
+    margin-inline-start: 0.75rem;
+    margin-inline-end: 0;
     display: flex;
     align-items: center;
 }
@@ -492,9 +493,10 @@
    ======================================== */
 .user-menu-dropdown {
     position: absolute;
-    right: 0;
+    inset-inline-end: 0;
+    inset-inline-start: auto;
     top: calc(100% + 0.5rem);
-    width: 14rem;
+    width: min(16rem, calc(100vw - 2rem));
     border-radius: 0.5rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     background-color: var(--color-card, #ffffff);
@@ -699,20 +701,20 @@
 }
 
 /* Dropdown positioning */
-.user-menu-dropdown {
-    right: auto;
-    left: 0;
+[dir="rtl"] .user-menu-dropdown {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
     transform-origin: top left;
 }
 
     /* Dropdown triangle position */
-    .user-menu-dropdown::before {
-        right: auto;
-        left: 1rem;
+    [dir="rtl"] .user-menu-dropdown::before {
+        inset-inline-start: 1rem;
+        inset-inline-end: auto;
     }
 
 /* Animation origin for RTL */
-.dropdown-content {
+[dir="rtl"] .dropdown-content {
     transform-origin: top left;
 }
 
@@ -756,9 +758,10 @@
 /* User Menu Dropdown Styling */
 .user-menu-dropdown {
     position: absolute;
-    right: 0;
+    inset-inline-end: 0;
+    inset-inline-start: auto;
     top: calc(100% + 0.5rem);
-    width: 16rem;
+    width: min(16rem, calc(100vw - 2rem));
     border-radius: 0.5rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     background-color: var(--color-card, #ffffff);
@@ -773,13 +776,14 @@
 .user-menu-dropdown::before {
     content: '';
     position: absolute;
-    right: 1rem;
+    inset-inline-end: 1rem;
+    inset-inline-start: auto;
     top: -0.5rem;
     width: 1rem;
     height: 1rem;
     background-color: var(--color-card, #ffffff);
-    border-left: 1px solid var(--color-border, #e2e8f0);
-    border-top: 1px solid var(--color-border, #e2e8f0);
+    border-inline-start: 1px solid var(--color-border, #e2e8f0);
+    border-block-start: 1px solid var(--color-border, #e2e8f0);
     transform: rotate(45deg);
     z-index: -1;
 }
@@ -828,7 +832,8 @@
 .user-menu-dropdown .icon-left {
     width: 1.25rem;
     height: 1.25rem;
-    margin-right: 0.75rem;
+    margin-inline-end: 0.75rem;
+    margin-inline-start: 0;
     color: var(--color-text-muted, #64748b);
     flex-shrink: 0;
 }
@@ -850,14 +855,14 @@
 
 /* RTL Support */
 [dir="rtl"] .user-menu-dropdown {
-    right: auto;
-    left: 0;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
     transform-origin: top left;
 }
 
     [dir="rtl"] .user-menu-dropdown::before {
-        right: auto;
-        left: 1rem;
+        inset-inline-start: 1rem;
+        inset-inline-end: auto;
     }
 
     [dir="rtl"] .user-menu-dropdown svg,
@@ -914,24 +919,24 @@
 [dir="rtl"] .navbar-action-button svg,
 [dir="rtl"] .dropdown-item svg,
 [dir="rtl"] .dropdown-item .icon-left {
-    margin-right: 0;
-    margin-left: 0.75rem;
+    margin-inline-start: 0.75rem;
+    margin-inline-end: 0;
 }
 
 [dir="rtl"] .user-name-display {
-    margin-right: 0;
-    margin-left: 0.75rem;
+    margin-inline-start: 0.75rem;
+    margin-inline-end: 0;
 }
 
 [dir="rtl"] .user-menu-dropdown {
-    right: auto;
-    left: 0;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
     transform-origin: top left;
 }
 
     [dir="rtl"] .user-menu-dropdown::before {
-        right: auto;
-        left: 1rem;
+        inset-inline-start: 1rem;
+        inset-inline-end: auto;
     }
 
 [dir="rtl"] .dropdown-content {
@@ -939,8 +944,8 @@
 }
 
 [dir="rtl"] .notification-badge {
-    right: auto;
-    left: 0.125rem;
+    inset-inline-start: 0.125rem;
+    inset-inline-end: auto;
 }
 
 [dir="rtl"] .hamburger-active .hamburger-line:nth-child(1) {

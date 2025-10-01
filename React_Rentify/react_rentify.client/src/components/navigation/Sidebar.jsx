@@ -115,10 +115,15 @@ const icons = {
 
 // Dummy shortcuts data
 const shortcuts = [
-    { id: 'add-car', label: 'Add Car', icon: icons.cars, action: () => window.location.href = '/cars/add' },
+    { id: 'add-car', label: 'car.list.addCar', icon: icons.cars, action: () => window.location.href = '/cars/add' },
     { id: 'new-reservation', label: 'dashboard.newReservation', icon: icons.reservations, action: () => window.location.href = '/reservations/add' },
     { id: 'new-customer', label: 'customer.add.title', icon: icons.customers, action: () => window.location.href = '/customers/add' },
     { id: 'idscanner', label: 'gadgets.identity.name', icon: icons.idScanner, action: () => window.location.href = '/gadgets/identity' },
+];
+
+const shortcuts_Admin = [
+    { id: 'add-agency', label: 'agency.list.createAgency', icon: icons.reservations, action: () => window.location.href = '/agencies/create' },
+    { id: 'quick-agency', label: 'agencies.quickSetup.title', icon: icons.idScanner, action: () => window.location.href = '/agencies/quick' },
 ];
 
 const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
@@ -141,6 +146,8 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
 
     // Build menu items based on role
     const [menuItems, setMenuItems] = useState([]);
+    const [shorcutItems, setShorcutItems] = useState([]);
+
     useEffect(() => {
         const adminItems = [
             { id: 'dashboard', label: t('sidebar.dashboard'), icon: icons.dashboard, path: '/dashboard' },
@@ -175,10 +182,12 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
             switch (user.role) {
                 case 'Admin':
                     setMenuItems(adminItems);
+                    setShorcutItems(shortcuts_Admin);
                     break;
                 case 'Owner':
                 case 'Manager':
                     setMenuItems(managerItems);
+                    setShorcutItems(shortcuts);
                     break;
                 case 'Customer':
                     setMenuItems(customerItems);
@@ -277,9 +286,8 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
 
                     {/* Shortcuts Section */}
                     <div className="shortcuts-section">
-                        <h3 className="section-title">{t('sidebar.shortcuts')}</h3>
                         <div className="shortcuts-grid">
-                            {shortcuts.map((shortcut) => (
+                            {shorcutItems.map((shortcut) => (
                                 <button
                                     key={shortcut.id}
                                     className="shortcut-item"
