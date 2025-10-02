@@ -61,6 +61,7 @@
     <Folder Include="src\pages\Reservations\Contract\" />
     <Folder Include="src\pages\ServiceAlerts\Add\" />
     <Folder Include="src\pages\Settings\Agency\" />
+    <Folder Include="src\pages\Settings\Notifications\" />
     <Folder Include="src\pages\Subscriptions\List\" />
     <Folder Include="src\pages\Subscriptions\Agency\" />
     <Folder Include="src\pages\Tickets\List\" />

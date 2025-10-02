@@ -41,6 +41,16 @@ const GadgetsHome = () => {
             category: 'customer',
             available: true,
         },
+        {
+            id: 'notifications',
+            name: t('gadgets.notifications.name'),
+            description: t('gadgets.notifications.description'),
+            icon: '🔔',
+            url: 'settings/notifications',
+            category: 'system',
+            available: true,
+            comingSoon: false
+        },
         // Mockup gadgets - to be implemented
         {
             id: 'reports',
@@ -49,16 +59,6 @@ const GadgetsHome = () => {
             icon: '📋',
             url: 'gadgets/reports',
             category: 'reports',
-            available: false,
-            comingSoon: true
-        },
-        {
-            id: 'notifications',
-            name: t('gadgets.notifications.name'),
-            description: t('gadgets.notifications.description'),
-            icon: '🔔',
-            url: 'gadgets/notifications',
-            category: 'system',
             available: false,
             comingSoon: true
         }

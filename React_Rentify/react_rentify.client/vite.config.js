@@ -121,6 +121,10 @@ const pwaConfig = {
     workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
+            {
+                urlPattern: /^https:\/\/.*\/api\/notifications.*/i,
+                handler: 'NetworkOnly' // CHANGED: Never cache notifications
+            },
             // Cache API calls
             {
                 urlPattern: /^https:\/\/.*\/api\/.*/i,
@@ -161,6 +165,9 @@ const pwaConfig = {
         skipWaiting: true,
         clientsClaim: true
     },
+    strategies: 'injectManifest',
+    srcDir: 'public',
+    filename: 'sw.js',
     devOptions: {
         enabled: true,
         type: 'module'
@@ -179,7 +186,7 @@ export default defineConfig({
         }
     },
     optimizeDeps: {
-        include: ['react-toastify']
+        include: ['react-toastify', '@microsoft/signalr']
     },
     build: {
         outDir: 'dist',
@@ -187,7 +194,8 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks: {
-                    vendor: ['react', 'react-dom']
+                    vendor: ['react', 'react-dom'],
+                    signalr: ['@microsoft/signalr']
                 }
             }
         }
@@ -198,9 +206,11 @@ export default defineConfig({
         port: parseInt(process.env.DEV_SERVER_PORT || '54350'),
         ...(isDocker ? {} : {
             proxy: {
-                '^/weatherforecast': {
-                    target,
-                    secure: false
+                '^/hubs/notifications': {
+                    target: target.replace('https', 'wss').replace('http', 'ws'),
+                    ws: true,
+                    secure: false,
+                    changeOrigin: true
                 }
             },
             ...(Object.keys(httpsConfig).length > 0 ? { https: httpsConfig } : {})

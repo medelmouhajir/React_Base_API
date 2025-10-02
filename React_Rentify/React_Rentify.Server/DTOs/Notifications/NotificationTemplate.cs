@@ -18,8 +18,8 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Reservation,
                 Severity = NotificationSeverity.Warning,
-                Title = "New Reservation Pending",
-                Message = $"Reservation for {carPlate} by {customerName} requires approval",
+                Title = "newReservationPending",
+                Message = $"N : {carPlate} => {customerName}",
                 Icon = "clock",
                 ActionUrl = "/reservations"
             };
@@ -28,8 +28,8 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Reservation,
                 Severity = NotificationSeverity.Info,
-                Title = "Reservation Approved",
-                Message = $"Reservation for {carPlate} starting {startDate:MMM dd} has been approved",
+                Title = "reservationApproved",
+                Message = $"N: {carPlate} => {startDate:MMM dd}",
                 Icon = "check-circle",
                 ActionUrl = "/reservations"
             };
@@ -38,8 +38,8 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Reservation,
                 Severity = NotificationSeverity.Critical,
-                Title = "Overdue Return",
-                Message = $"{carPlate} is {hoursOverdue}h overdue - Customer: {customerName}",
+                Title = "overdueReturn",
+                Message = $"{carPlate} => {hoursOverdue}h => {customerName}",
                 Icon = "alert-triangle",
                 ActionUrl = "/reservations"
             };
@@ -48,8 +48,8 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Reservation,
                 Severity = NotificationSeverity.Info,
-                Title = "Upcoming Pickup",
-                Message = $"{customerName} picking up {carPlate} at {pickupTime:HH:mm}",
+                Title = "upcomingPickup",
+                Message = $"{customerName} => {carPlate} => {pickupTime:HH:mm}",
                 Icon = "calendar",
                 ActionUrl = "/reservations",
                 ExpiresAt = pickupTime.AddHours(2)
@@ -59,8 +59,8 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Reservation,
                 Severity = NotificationSeverity.Info,
-                Title = "Upcoming Return",
-                Message = $"{carPlate} due for return at {returnTime:HH:mm}",
+                Title = "upcomingReturn",
+                Message = $"{carPlate} => {returnTime:HH:mm}",
                 Icon = "calendar",
                 ActionUrl = "/reservations",
                 ExpiresAt = returnTime.AddHours(2)
@@ -77,8 +77,8 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.GPS,
                 Severity = NotificationSeverity.Critical,
-                Title = "Geofence Violation",
-                Message = $"{carPlate} left allowed zone - Current: {location}",
+                Title = "geofenceViolation",
+                Message = $"{carPlate} => {location}",
                 Icon = "map-pin",
                 ActionUrl = "/gps/cars"
             };
@@ -87,8 +87,8 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.GPS,
                 Severity = NotificationSeverity.Warning,
-                Title = "Speed Violation",
-                Message = $"{carPlate} exceeding speed limit: {speed:F0} km/h (limit: {limit:F0})",
+                Title = "speedViolation",
+                Message = $"{carPlate} => {speed:F0} km/h (limit: {limit:F0})",
                 Icon = "zap",
                 ActionUrl = "/gps/cars"
             };
@@ -134,7 +134,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Maintenance,
                 Severity = NotificationSeverity.Info,
-                Title = "Service Due Soon",
+                Title = "serviceDueSoon",
                 Message = $"{carPlate} {serviceType} due in {daysUntil} days",
                 Icon = "tool",
                 ActionUrl = "/service-alerts"
@@ -144,7 +144,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Maintenance,
                 Severity = NotificationSeverity.Critical,
-                Title = "Service Overdue",
+                Title = "serviceOverdue",
                 Message = $"{carPlate} {serviceType} overdue by {daysOverdue} days",
                 Icon = "alert-circle",
                 ActionUrl = "/service-alerts"
@@ -154,7 +154,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Maintenance,
                 Severity = NotificationSeverity.Warning,
-                Title = "Mileage Threshold",
+                Title = "mileageThreshold",
                 Message = $"{carPlate} reached {currentKm:N0} km (threshold: {thresholdKm:N0})",
                 Icon = "activity",
                 ActionUrl = "/service-alerts"
@@ -164,7 +164,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Maintenance,
                 Severity = NotificationSeverity.Info,
-                Title = "Maintenance Completed",
+                Title = "maintenanceCompleted",
                 Message = $"{carPlate} {serviceType} has been completed",
                 Icon = "check",
                 ActionUrl = "/maintenances"

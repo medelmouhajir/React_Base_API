@@ -136,6 +136,7 @@ namespace React_Rentify.Server.BackgroundServices
                     .Include(r => r.Car)
                     .ThenInclude(c => c.Car_Model)
                     .Include(r => r.Reservation_Customers)
+                    .ThenInclude(x=> x.Customer)
                     .Where(r => r.Status == "Ongoing" &&
                                r.EndDate < DateTime.UtcNow)
                     .ToListAsync(stoppingToken);

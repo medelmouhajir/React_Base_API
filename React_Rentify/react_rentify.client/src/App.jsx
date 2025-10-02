@@ -1,6 +1,7 @@
 // src/App.jsx
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,6 +11,10 @@ import './App.css';
 // Contexts
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
+
+
+// Notifications
+import { NotificationProvider } from './contexts/NotificationContext';
 
 // Layouts
 import LandingLayout from './layouts/LandingLayout';
@@ -93,6 +98,7 @@ const AddPayment = lazy(() => import('./pages/Invoices/AddPayment/AddPayment'));
 
 //// Child route for Settings
 const AgencySettings = lazy(() => import('./pages/Settings/Agency/AgencySettings'));
+const NotificationPreferences = lazy(() => import('./pages/Settings/Notifications/NotificationPreferences'));
 
 
 //// Child route for Tickets
@@ -138,6 +144,7 @@ const SubscriptionAgency = lazy(() => import('./pages/Subscriptions/Agency/Subsc
 
 const ThemedToastContainer = () => {
     const { isDarkMode } = useTheme();
+    const { i18n } = useTranslation(); 
 
     return (
         <ToastContainer
@@ -146,11 +153,13 @@ const ThemedToastContainer = () => {
             hideProgressBar={false}
             newestOnTop
             closeOnClick
+            rtl={i18n.language === 'ar'}
             rtl={false}
             pauseOnFocusLoss
             draggable
             pauseOnHover
             theme={isDarkMode ? 'dark' : 'light'}
+            style={{ zIndex: 9999 }}
         />
     );
 };
@@ -162,140 +171,143 @@ function App() {
         <Router>
             <AuthProvider>
                 <ThemeProvider>
-                    <Suspense fallback={<LoadingScreen />}>
-                        <Routes>
-                            <Route path="/login" element={<Login />} />
-                            {/* Public routes */}
-                            <Route element={<LandingLayout />}>
-                                <Route path="/" element={<LandingPage />} />
-                                <Route path="/privacy" element={<PrivacyPolicy />} />
-                                <Route path="/terms" element={<UseTerms />} />
-                                <Route path="/forgot-password" element={<ForgotPassword />} />
-                                <Route path="/tickets/thanks" element={<ThanksPage />} />
-                            </Route>
+                    <NotificationProvider>
+                        <Suspense fallback={<LoadingScreen />}>
+                            <Routes>
+                                <Route path="/login" element={<Login />} />
+                                {/* Public routes */}
+                                <Route element={<LandingLayout />}>
+                                    <Route path="/" element={<LandingPage />} />
+                                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                                    <Route path="/terms" element={<UseTerms />} />
+                                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                                    <Route path="/tickets/thanks" element={<ThanksPage />} />
+                                </Route>
 
-                            {/* GPS Route - Independent (no MainLayout) */}
-                            <Route
-                                path="/gps"
-                                element={
-                                    <ProtectedRoute>
-                                        <GpsHome />
-                                    </ProtectedRoute>
-                                }
-                            />
+                                {/* GPS Route - Independent (no MainLayout) */}
+                                <Route
+                                    path="/gps"
+                                    element={
+                                        <ProtectedRoute>
+                                            <GpsHome />
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                            {/* Protected routes */}
-                            <Route
-                                element={
-                                    <ProtectedRoute>
-                                        <MainLayout />
-                                    </ProtectedRoute>
-                                }
-                            >
-                                <Route path="/dashboard" element={<RoleBasedDashboard />} />
-                                <Route path="/client" element={<RoleBasedDashboard />} />
+                                {/* Protected routes */}
+                                <Route
+                                    element={
+                                        <ProtectedRoute>
+                                            <MainLayout />
+                                        </ProtectedRoute>
+                                    }
+                                >
+                                    <Route path="/dashboard" element={<RoleBasedDashboard />} />
+                                    <Route path="/client" element={<RoleBasedDashboard />} />
 
-                                <Route path="/agencies" element={<AgenciesList />} />
-                                <Route path="/agencies/create" element={<AgencyCreate />} />
-                                <Route path="/agencies/:id" element={<AgencyDetails />} />
-                                <Route path="/agencies/:id/staff" element={<AgencyStuff />} />
-                                <Route path="/agencies/quick" element={<QuickNewAgencySetup />} />
-
-
-                                <Route path="/filters" element={<Filters />} />
-                                <Route path="/filters/manufacturer" element={<Manufacturer />} />
-                                <Route path="/filters/models" element={<Models />} />
-                                <Route path="/filters/caryear" element={<CarYear />} />
-                                <Route path="/filters/upload" element={<UploadFilters />} />
+                                    <Route path="/agencies" element={<AgenciesList />} />
+                                    <Route path="/agencies/create" element={<AgencyCreate />} />
+                                    <Route path="/agencies/:id" element={<AgencyDetails />} />
+                                    <Route path="/agencies/:id/staff" element={<AgencyStuff />} />
+                                    <Route path="/agencies/quick" element={<QuickNewAgencySetup />} />
 
 
-                                <Route path="/gps/cars" element={<SetCarGps />} />
-
-                                {/* Cars */}
-                                <Route path="/cars" element={<CarsList />} />
-                                <Route path="/cars/:id" element={<CarDetails />} />
-                                <Route path="/cars/add" element={<AddCar />} />
-                                <Route path="/cars/:id/edit" element={<EditCar />} />
-
-                                {/* Customers */}
-                                <Route path="/customers" element={<CustomersList />} />
-                                <Route path="/customers/:id" element={<CustomerDetails />} />
-                                <Route path="/customers/add" element={<AddCustomer />} />
-                                <Route path="/customers/:id/edit" element={<CustomerEdit />} />
-
-                                {/* Reservations */}
-                                <Route path="/reservations" element={<ReservationsList />} />
-                                <Route path="/reservations/:id" element={<ReservationDetails />} />
-                                <Route path="/reservations/add" element={<ReservationAdd />} />
-                                <Route path="/reservations/:id/contract" element={<Contract />} />
-                                {/*<Route path="/reservations/:id/edit" element={<ReservationForm />} />*/}
-
-                                {/* maintenances */}
-                                <Route path="/maintenances" element={<MaintenancesList />} />
-                                <Route path="/maintenances/:id" element={<MaintenanceDetails />} />
-                                <Route path="/maintenances/add" element={<AddMaintenance />} />
-                                <Route path="/maintenances/:id/edit" element={<EditMaintenance />} />
-
-                                {/* service alerts */}
-                                <Route path="/service-alerts" element={<ServiceAlertsList />} />
-                                <Route path="/service-alerts/add" element={<AddServiceAlert />} />
-
-                                {/* Invoices */}
-                                <Route path="/invoices" element={<InvoicesList />} />
-                                <Route path="/invoices/add" element={<AddInvoice />} />
-                                <Route path="/invoices/:id" element={<InvoiceDetails />} />
-                                <Route path="/invoices/:id/print" element={<InvoicePrint />} />
-                                <Route path="/invoices/:id/add-payment" element={<AddPayment />} />
+                                    <Route path="/filters" element={<Filters />} />
+                                    <Route path="/filters/manufacturer" element={<Manufacturer />} />
+                                    <Route path="/filters/models" element={<Models />} />
+                                    <Route path="/filters/caryear" element={<CarYear />} />
+                                    <Route path="/filters/upload" element={<UploadFilters />} />
 
 
-                                {/* Tickets */}
-                                <Route path="/tickets" element={<TicketsList />} />
-                                <Route path="/tickets/:id" element={<TicketDetails />} />
+                                    <Route path="/gps/cars" element={<SetCarGps />} />
 
-                                {/* Reports */}
-                                <Route path="/reports" element={<ReportsHome />} />
-                                <Route path="/reports/cars/revenue" element={<CarRevenue />} />
-                                <Route path="/reports/cars/maintenance" element={<CarMaintenance />} />
-                                <Route path="/reports/agency/financial" element={<AgencyFinancial />} />
-                                <Route path="/reports/agency/customers" element={<AgencyCustomers />} />
-                                <Route path="/reports/financial/expense-analysis" element={<FinancialExpenses />} />
-                                <Route path="/reports/reservations/occupancy" element={<ReservationsOccupancy />} />
-                                <Route path="/reports/financial/cash-flow" element={<FinancialCashFlow />} />
+                                    {/* Cars */}
+                                    <Route path="/cars" element={<CarsList />} />
+                                    <Route path="/cars/:id" element={<CarDetails />} />
+                                    <Route path="/cars/add" element={<AddCar />} />
+                                    <Route path="/cars/:id/edit" element={<EditCar />} />
 
-                                {/* Expenses */}
-                                <Route path="/expenses" element={<ExpenseList />} />
-                                <Route path="/expenses/:id" element={<ExpenseDetails />} />
-                                <Route path="/expenses/add" element={<ExpenseAdd />} />
+                                    {/* Customers */}
+                                    <Route path="/customers" element={<CustomersList />} />
+                                    <Route path="/customers/:id" element={<CustomerDetails />} />
+                                    <Route path="/customers/add" element={<AddCustomer />} />
+                                    <Route path="/customers/:id/edit" element={<CustomerEdit />} />
 
-                                {/* Gadgets */}
-                                <Route path="/gadgets" element={<GadgetsHome />} />
-                                <Route path="/gadgets/blacklist" element={<BlacklistCheck />} />
-                                <Route path="/gadgets/carcheck" element={<CarCheck />} />
-                                <Route path="/gadgets/identity" element={<IdentityReader />} />
+                                    {/* Reservations */}
+                                    <Route path="/reservations" element={<ReservationsList />} />
+                                    <Route path="/reservations/:id" element={<ReservationDetails />} />
+                                    <Route path="/reservations/add" element={<ReservationAdd />} />
+                                    <Route path="/reservations/:id/contract" element={<Contract />} />
+                                    {/*<Route path="/reservations/:id/edit" element={<ReservationForm />} />*/}
 
-                                {/* Settings */}
-                                <Route path="/settings/agency" element={<AgencySettings />} />
-                                <Route path="/settings" element={<SettingsHome />} />
+                                    {/* maintenances */}
+                                    <Route path="/maintenances" element={<MaintenancesList />} />
+                                    <Route path="/maintenances/:id" element={<MaintenanceDetails />} />
+                                    <Route path="/maintenances/add" element={<AddMaintenance />} />
+                                    <Route path="/maintenances/:id/edit" element={<EditMaintenance />} />
 
-                                {/* User Routes */}
-                                <Route path="/profile" element={<Profile />} />
+                                    {/* service alerts */}
+                                    <Route path="/service-alerts" element={<ServiceAlertsList />} />
+                                    <Route path="/service-alerts/add" element={<AddServiceAlert />} />
 
-                                {/* Search */}
-                                <Route path="/search" element={<SearchPage />} />
+                                    {/* Invoices */}
+                                    <Route path="/invoices" element={<InvoicesList />} />
+                                    <Route path="/invoices/add" element={<AddInvoice />} />
+                                    <Route path="/invoices/:id" element={<InvoiceDetails />} />
+                                    <Route path="/invoices/:id/print" element={<InvoicePrint />} />
+                                    <Route path="/invoices/:id/add-payment" element={<AddPayment />} />
 
-                                {/* Subscriptions */}
-                                <Route path="/subscriptions" element={<SubscriptionsList />} />
-                                <Route path="/agencies/:id/subscription" element={<SubscriptionAgency />} />
-                            </Route>
 
-                            {/* 404 and redirects */}
-                            <Route path="/404" element={<NotFound />} />
-                            <Route path="*" element={<Navigate to="/404" replace />} />
-                        </Routes>
-                    </Suspense>
+                                    {/* Tickets */}
+                                    <Route path="/tickets" element={<TicketsList />} />
+                                    <Route path="/tickets/:id" element={<TicketDetails />} />
 
-                    {/* Toast notifications */}
-                    <ThemedToastContainer />
+                                    {/* Reports */}
+                                    <Route path="/reports" element={<ReportsHome />} />
+                                    <Route path="/reports/cars/revenue" element={<CarRevenue />} />
+                                    <Route path="/reports/cars/maintenance" element={<CarMaintenance />} />
+                                    <Route path="/reports/agency/financial" element={<AgencyFinancial />} />
+                                    <Route path="/reports/agency/customers" element={<AgencyCustomers />} />
+                                    <Route path="/reports/financial/expense-analysis" element={<FinancialExpenses />} />
+                                    <Route path="/reports/reservations/occupancy" element={<ReservationsOccupancy />} />
+                                    <Route path="/reports/financial/cash-flow" element={<FinancialCashFlow />} />
+
+                                    {/* Expenses */}
+                                    <Route path="/expenses" element={<ExpenseList />} />
+                                    <Route path="/expenses/:id" element={<ExpenseDetails />} />
+                                    <Route path="/expenses/add" element={<ExpenseAdd />} />
+
+                                    {/* Gadgets */}
+                                    <Route path="/gadgets" element={<GadgetsHome />} />
+                                    <Route path="/gadgets/blacklist" element={<BlacklistCheck />} />
+                                    <Route path="/gadgets/carcheck" element={<CarCheck />} />
+                                    <Route path="/gadgets/identity" element={<IdentityReader />} />
+
+                                    {/* Settings */}
+                                    <Route path="/settings" element={<SettingsHome />} />
+                                    <Route path="/settings/agency" element={<AgencySettings />} />
+                                    <Route path="/settings/notifications" element={<NotificationPreferences />} />
+
+                                    {/* User Routes */}
+                                    <Route path="/profile" element={<Profile />} />
+
+                                    {/* Search */}
+                                    <Route path="/search" element={<SearchPage />} />
+
+                                    {/* Subscriptions */}
+                                    <Route path="/subscriptions" element={<SubscriptionsList />} />
+                                    <Route path="/agencies/:id/subscription" element={<SubscriptionAgency />} />
+                                </Route>
+
+                                {/* 404 and redirects */}
+                                <Route path="/404" element={<NotFound />} />
+                                <Route path="*" element={<Navigate to="/404" replace />} />
+                            </Routes>
+                        </Suspense>
+                        {/* Toast notifications */}
+                        <ThemedToastContainer />
+                    </NotificationProvider>
+
 
                 </ThemeProvider>
             </AuthProvider>
