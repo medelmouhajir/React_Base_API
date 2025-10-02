@@ -9,6 +9,7 @@ using React_Rentify.Server.Models.Expenses;
 using React_Rentify.Server.Models.Filters.Cars;
 using React_Rentify.Server.Models.Invoices;
 using React_Rentify.Server.Models.Maintenances;
+using React_Rentify.Server.Models.Notifications;
 using React_Rentify.Server.Models.Reservations;
 using React_Rentify.Server.Models.Subscriptions;
 using React_Rentify.Server.Models.Tickets;
@@ -90,5 +91,11 @@ namespace React_Rentify.Server.Data
         public DbSet<AgencySubscription> AgencySubscriptions { get; set; }
         public DbSet<SubscriptionInvoice> SubscriptionInvoices { get; set; }
         public DbSet<SubscriptionUsage> SubscriptionUsages { get; set; }
+
+
+        //Notifications
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<NotificationPreference> NotificationPreferences { get; set; }
+        public DbSet<PushSubscription> PushSubscriptions { get; set; }
     }
 }

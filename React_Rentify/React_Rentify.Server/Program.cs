@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using React_Rentify.Server.Controllers.GPS.Services;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Extensions;
+using React_Rentify.Server.Hubs;
 using React_Rentify.Server.Models.Users;
 using React_Rentify.Server.Services;
 using System.Text;
@@ -86,6 +87,20 @@ namespace React_Rentify.Server
             // Register HttpClient for API calls
             builder.Services.AddHttpClient();
 
+
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            // Register SignalR
+            builder.Services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+                options.KeepAliveInterval = TimeSpan.FromSeconds(30);
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+                options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+            });
+
+            // Add HttpContextAccessor for accessing user information
+            builder.Services.AddHttpContextAccessor();
+
             var app = builder.Build();
 
 
@@ -146,6 +161,7 @@ namespace React_Rentify.Server
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapHub<NotificationHub>("/hubs/notifications");
 
             app.MapControllers();
 
