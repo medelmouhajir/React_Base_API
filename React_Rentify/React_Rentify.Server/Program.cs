@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using React_Rentify.Server.BackgroundServices;
 using React_Rentify.Server.Controllers.GPS.Services;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Extensions;
 using React_Rentify.Server.Hubs;
 using React_Rentify.Server.Models.Users;
 using React_Rentify.Server.Services;
+using React_Rentify.Server.Services.Notifications;
 using System.Text;
 
 namespace React_Rentify.Server
@@ -89,6 +91,7 @@ namespace React_Rentify.Server
 
 
             builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IWebPushService, WebPushService>();
             // Register SignalR
             builder.Services.AddSignalR(options =>
             {
@@ -100,6 +103,9 @@ namespace React_Rentify.Server
 
             // Add HttpContextAccessor for accessing user information
             builder.Services.AddHttpContextAccessor();
+
+
+            builder.Services.AddHostedService<NotificationCheckerService>();
 
             var app = builder.Build();
 
