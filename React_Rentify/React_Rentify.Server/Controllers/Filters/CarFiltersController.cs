@@ -356,27 +356,15 @@ namespace React_Rentify.Server.Controllers
         }
 
 
-        /// <summary>
-        /// POST: api/CarFilters/upload
-        /// Uploads manufacturers and models from JSON file
-        /// </summary>
         [HttpPost("upload")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UploadFiltersJson([FromBody] List<UploadManufacturerDto> uploadData)
         {
             _logger.LogInformation("Uploading filters from JSON");
 
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Invalid upload data received");
-                return BadRequest(ModelState);
-            }
-
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             if (uploadData == null || !uploadData.Any())
-            {
-                _logger.LogWarning("Empty upload data received");
                 return BadRequest(new { message = "No data provided for upload." });
-            }
 
             var result = new UploadResultDto
             {
@@ -386,94 +374,115 @@ namespace React_Rentify.Server.Controllers
                 Errors = new List<string>()
             };
 
+            // Deduplicate within this request (avoid re-adding the same key twice)
+            var seenManufacturerIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var seenModelIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var manufacturerDto in uploadData)
             {
                 try
                 {
-                    // Validate manufacturer data
-                    if (string.IsNullOrWhiteSpace(manufacturerDto.Id) ||
-                        string.IsNullOrWhiteSpace(manufacturerDto.Name))
+                    if (string.IsNullOrWhiteSpace(manufacturerDto.Id) || string.IsNullOrWhiteSpace(manufacturerDto.Name))
                     {
-                        result.Errors.Add($"Invalid manufacturer data: missing id or name");
+                        result.Errors.Add("Invalid manufacturer data: missing id or name");
                         result.Skipped++;
                         continue;
                     }
 
-                    // Check if manufacturer exists
-                    var manufacturerId = manufacturerDto.Id.ToLower().Trim();
+                    var manufacturerId = manufacturerDto.Id.Trim().ToLowerInvariant();
+
+                    // Skip if this request already handled the same manufacturer id
+                    if (!seenManufacturerIds.Add(manufacturerId))
+                    {
+                        _logger.LogDebug("Duplicate manufacturer id {ManufacturerId} in payload, skipping.", manufacturerId);
+                        result.Skipped++;
+                        continue;
+                    }
+
+                    // Load manufacturer WITHOUT tracking
                     var existingManufacturer = await _context.Set<Manufacturer>()
-                        .Include(m => m.Car_Models)
+                        .AsNoTracking()
                         .FirstOrDefaultAsync(m => m.Id == manufacturerId);
 
-                    Manufacturer manufacturer;
                     bool manufacturerAdded = false;
 
                     if (existingManufacturer == null)
                     {
-                        // Create new manufacturer
-                        manufacturer = new Manufacturer
+                        // Create new manufacturer (tracked)
+                        var manufacturer = new Manufacturer
                         {
                             Id = manufacturerId,
-                            Name = manufacturerDto.Name.Trim(),
-                            Car_Models = new List<Car_Model>()
+                            Name = manufacturerDto.Name.Trim()
                         };
 
                         _context.Set<Manufacturer>().Add(manufacturer);
-                        result.ManufacturersAdded++;
                         manufacturerAdded = true;
 
                         _logger.LogInformation("Adding new manufacturer: {ManufacturerName}", manufacturer.Name);
                     }
                     else
                     {
-                        manufacturer = existingManufacturer;
-                        _logger.LogInformation("Manufacturer {ManufacturerName} already exists, checking models", manufacturer.Name);
+                        _logger.LogInformation("Manufacturer {ManufacturerName} exists; will only add missing models.", existingManufacturer.Name);
                     }
 
-                    // Process models
+                    int modelsAddedForThisManufacturer = 0;
+
                     if (manufacturerDto.Models != null && manufacturerDto.Models.Any())
                     {
                         foreach (var modelDto in manufacturerDto.Models)
                         {
                             try
                             {
-                                // Validate model data
-                                if (string.IsNullOrWhiteSpace(modelDto.Id) ||
-                                    string.IsNullOrWhiteSpace(modelDto.Name))
+                                if (string.IsNullOrWhiteSpace(modelDto.Id) || string.IsNullOrWhiteSpace(modelDto.Name))
                                 {
                                     result.Errors.Add($"Invalid model data for manufacturer {manufacturerDto.Name}: missing id or name");
                                     result.Skipped++;
                                     continue;
                                 }
 
-                                var modelId = modelDto.Id.ToLower().Trim();
+                                var modelId = modelDto.Id.Trim().ToLowerInvariant();
+                                var modelName = modelDto.Name.Trim();
 
-                                // Check if model already exists
-                                var existingModel = await _context.Set<Car_Model>()
-                                    .FirstOrDefaultAsync(m => m.Id == modelId ||
-                                        (m.Name == modelDto.Name.Trim() && m.ManufacturerId == manufacturerId));
-
-                                if (existingModel == null)
+                                // First: prevent duplicates in THIS request
+                                if (!seenModelIds.Add(modelId))
                                 {
-                                    // Create new model
-                                    var carModel = new Car_Model
-                                    {
-                                        Id = modelId,
-                                        Name = modelDto.Name.Trim(),
-                                        ManufacturerId = manufacturerId
-                                    };
-
-                                    _context.Set<Car_Model>().Add(carModel);
-                                    result.ModelsAdded++;
-
-                                    _logger.LogInformation("Adding new model: {ModelName} for manufacturer {ManufacturerName}",
-                                        carModel.Name, manufacturer.Name);
-                                }
-                                else
-                                {
+                                    _logger.LogDebug("Model id {ModelId} already processed in this request, skipping.", modelId);
                                     result.Skipped++;
-                                    _logger.LogDebug("Model {ModelName} already exists, skipping", modelDto.Name);
+                                    continue;
                                 }
+
+                                // Second: if the model is already tracked locally, skip
+                                var localTracked = _context.Set<Car_Model>().Local.FirstOrDefault(x => x.Id == modelId);
+                                if (localTracked != null)
+                                {
+                                    _logger.LogDebug("Model {ModelId} already tracked locally, skipping.", modelId);
+                                    result.Skipped++;
+                                    continue;
+                                }
+
+                                // Third: check database WITHOUT tracking
+                                var existsInDb = await _context.Set<Car_Model>()
+                                    .AsNoTracking()
+                                    .AnyAsync(m => m.Id == modelId
+                                                || (m.Name == modelName && m.ManufacturerId == manufacturerId));
+
+                                if (existsInDb)
+                                {
+                                    _logger.LogDebug("Model {ModelName} already exists in DB for manufacturer {ManufacturerId}, skipping.", modelName, manufacturerId);
+                                    result.Skipped++;
+                                    continue;
+                                }
+
+                                // Safe to add (tracked)
+                                _context.Set<Car_Model>().Add(new Car_Model
+                                {
+                                    Id = modelId,
+                                    Name = modelName,
+                                    ManufacturerId = manufacturerId
+                                });
+
+                                modelsAddedForThisManufacturer++;
+                                _logger.LogInformation("Adding new model: {ModelName} for manufacturer {ManufacturerId}", modelName, manufacturerId);
                             }
                             catch (Exception modelEx)
                             {
@@ -484,14 +493,23 @@ namespace React_Rentify.Server.Controllers
                         }
                     }
 
-                    // Save changes after processing each manufacturer
                     await _context.SaveChangesAsync();
+
+                    if (manufacturerAdded) result.ManufacturersAdded++;
+                    result.ModelsAdded += modelsAddedForThisManufacturer;
+
+                    _logger.LogInformation("Saved manufacturer {ManufacturerId} with {ModelCount} new models",
+                        manufacturerId, modelsAddedForThisManufacturer);
+
+                    // Optional: clear tracker to avoid collisions in next loop iteration
+                    _context.ChangeTracker.Clear();
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error processing manufacturer {ManufacturerName}", manufacturerDto.Name);
                     result.Errors.Add($"Error adding manufacturer {manufacturerDto.Name}: {ex.Message}");
                     result.Skipped++;
+                    _context.ChangeTracker.Clear(); // recover if the tracker is in a bad state
                 }
             }
 
@@ -501,6 +519,7 @@ namespace React_Rentify.Server.Controllers
 
             return Ok(result);
         }
+
     }
 
     #region DTOs
