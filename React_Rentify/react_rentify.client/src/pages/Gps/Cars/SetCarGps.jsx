@@ -80,7 +80,7 @@ const SetCarGps = () => {
         try {
             const updateData = {
                 deviceSerialNumber: deviceInput.trim() || null,
-                isTrackingActive: trackingEnabled && deviceInput.trim()
+                isTrackingActive: trackingEnabled
             };
 
             console.log('🔧 Updating GPS config for car:', selectedCar.id, updateData);

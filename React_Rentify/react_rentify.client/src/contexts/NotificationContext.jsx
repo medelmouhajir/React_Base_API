@@ -199,9 +199,10 @@ export const NotificationProvider = ({ children }) => {
         await markAsRead(notification.id);
 
         // Navigate based on notification type
-        const data = notification.data ? JSON.parse(notification.data) : {};
-        if (data.url) {
-            window.location.href = data.url;
+        //const data = notification.actionUrl ? JSON.parse(notification.data) : {};
+
+        if (notification.actionUrl) {
+            window.location.href = notification.actionUrl;
         }
 
         setIsDrawerOpen(false);

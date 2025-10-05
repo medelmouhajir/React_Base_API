@@ -97,7 +97,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.GPS,
                 Severity = NotificationSeverity.Critical,
-                Title = "Unauthorized Movement",
+                Title = "unauthorizedMovement",
                 Message = $"{carPlate} is moving without an active reservation",
                 Icon = "alert-octagon",
                 ActionUrl = "/gps/cars"
@@ -107,7 +107,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.GPS,
                 Severity = NotificationSeverity.Warning,
-                Title = "GPS Device Offline",
+                Title = "gpsDeviceOffline",
                 Message = $"{carPlate} GPS device ({serialNumber}) offline for {hoursOffline}h",
                 Icon = "wifi-off",
                 ActionUrl = "/gps/devices"
@@ -117,7 +117,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.GPS,
                 Severity = NotificationSeverity.Warning,
-                Title = "Low GPS Battery",
+                Title = "lowGPSBattery",
                 Message = $"{carPlate} GPS device battery at {batteryPercent}%",
                 Icon = "battery",
                 ActionUrl = "/gps/devices"
@@ -181,7 +181,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.System,
                 Severity = NotificationSeverity.Warning,
-                Title = "Low Fleet Availability",
+                Title = "lowFleetAvailability",
                 Message = $"Only {availableCount} of {totalCount} cars available ({percentage:F0}%)",
                 Icon = "alert-triangle",
                 ActionUrl = "/dashboard"
@@ -191,7 +191,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.System,
                 Severity = NotificationSeverity.Warning,
-                Title = "Subscription Expiring",
+                Title = "subscriptionExpiring",
                 Message = $"{agencyName} subscription expires in {daysRemaining} days",
                 Icon = "calendar",
                 ActionUrl = "/subscriptions"
@@ -201,7 +201,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.System,
                 Severity = NotificationSeverity.Info,
-                Title = "Backup Completed",
+                Title = "backupCompleted",
                 Message = $"Daily backup completed at {backupTime:HH:mm}",
                 Icon = "database",
                 ActionUrl = null,
@@ -212,7 +212,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.System,
                 Severity = NotificationSeverity.Critical,
-                Title = "Backup Failed",
+                Title = "backupFailed",
                 Message = $"Daily backup failed: {reason}",
                 Icon = "x-circle",
                 ActionUrl = null
@@ -293,7 +293,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Ticket,
                 Severity = NotificationSeverity.Info,
-                Title = "Ticket Assigned",
+                Title = "ticketAssigned",
                 Message = $"Ticket #{ticketId} assigned to you: {title}",
                 Icon = "inbox",
                 ActionUrl = $"/tickets/{ticketId}"
@@ -303,7 +303,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Ticket,
                 Severity = NotificationSeverity.Info,
-                Title = "Ticket Updated",
+                Title = "ticketUpdated",
                 Message = $"Ticket #{ticketId} status: {oldStatus} → {newStatus}",
                 Icon = "file-text",
                 ActionUrl = $"/tickets/{ticketId}"
@@ -367,7 +367,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Invoice,
                 Severity = NotificationSeverity.Info,
-                Title = "Invoice Generated",
+                Title = "invoiceGenerated",
                 Message = $"Invoice #{invoiceNumber} for {customerName}: ${amount:N2}",
                 Icon = "file",
                 ActionUrl = "/invoices"
@@ -377,7 +377,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Invoice,
                 Severity = NotificationSeverity.Info,
-                Title = "Invoice Paid",
+                Title = "invoicePaid",
                 Message = $"Invoice #{invoiceNumber} paid: ${amount:N2}",
                 Icon = "check-circle",
                 ActionUrl = "/invoices"
@@ -387,7 +387,7 @@ namespace React_Rentify.Server.DTOs.Notifications
             {
                 Type = NotificationType.Invoice,
                 Severity = NotificationSeverity.Warning,
-                Title = "Invoice Overdue",
+                Title = "invoiceOverdue",
                 Message = $"Invoice #{invoiceNumber} for {customerName} overdue by {daysOverdue} days",
                 Icon = "alert-circle",
                 ActionUrl = "/invoices"

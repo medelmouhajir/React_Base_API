@@ -31,7 +31,12 @@ const carAttachmentService = {
         try {
             const response = await apiClient.post(
                 `/cars/${carId}/attachments`,
-                attachmentData
+                attachmentData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
             );
             return response.data;
         } catch (error) {

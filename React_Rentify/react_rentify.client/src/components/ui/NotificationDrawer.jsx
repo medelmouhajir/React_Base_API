@@ -155,7 +155,7 @@ const NotificationDrawer = () => {
                                             </span>
                                         </div>
 
-                                        <h3 className="notification-title">{notification.title}</h3>
+                                        <h3 className="notification-title">{t('notifications.alerts.' + notification.title)}</h3>
                                         <p className="notification-message">{notification.message}</p>
 
                                         {!notification.isRead && (

@@ -5,8 +5,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Rentify_GPS_Service_Worker.Data;
 using Rentify_GPS_Service_Worker.Models;
+using Rentify_GPS_Service_Worker.Models.Alerts;
 using Rentify_GPS_Service_Worker.Protocols;
 using Rentify_GPS_Service_Worker.Protocols.Teltonika;
+using Rentify_GPS_Service_Worker.Services;
 using System.Buffers.Binary;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
@@ -26,23 +28,33 @@ namespace Rentify_GPS_Service_Worker
 
         private readonly ILogger<Worker> _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly int _listenPort;
+        //private readonly int _listenPort;
+        private readonly int _udpListenPort;
+        private readonly int _tcpListenPort;
         private readonly string _serverIp;
         private Socket? _udpSocket;
         private TcpListener? _tcpListener;
         private CancellationTokenSource? _internalCts;
         private readonly ConcurrentDictionary<string, TcpClient> _connectedClients = new();
 
+        private readonly ConcurrentDictionary<string, string> _imeiToClientId = new();
+
+        private readonly ISpeedLimitService speedLimitService;
+
         public Worker(
             ILogger<Worker> logger,
             IServiceProvider serviceProvider,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ISpeedLimitService speedLimitService)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
 
-            _listenPort = configuration.GetValue<int>("GpsListener:Port");
+            //_listenPort = configuration.GetValue<int>("GpsListener:Port");
+            _udpListenPort = configuration.GetValue<int>("GpsListener:UdpPort", 8888);
+            _tcpListenPort = configuration.GetValue<int>("GpsListener:TcpPort", 8889);
             _serverIp = "0.0.0.0";
+            this.speedLimitService = speedLimitService;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -65,8 +77,8 @@ namespace Rentify_GPS_Service_Worker
                     _udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                     IPAddress bindAddress = _serverIp == "0.0.0.0" ? IPAddress.Any : IPAddress.Parse(_serverIp);
 
-                    _udpSocket.Bind(new IPEndPoint(bindAddress, _listenPort));
-                    _logger.LogInformation("UDP GPS Listener started. Listening on {IP}:{Port}", bindAddress, _listenPort);
+                    _udpSocket.Bind(new IPEndPoint(bindAddress, _udpListenPort));
+                    _logger.LogInformation("UDP GPS Listener started. Listening on {IP}:{Port}", bindAddress, _udpListenPort);
 
                     var buffer = new byte[65535];
                     EndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
@@ -121,10 +133,10 @@ namespace Rentify_GPS_Service_Worker
                 try
                 {
                     IPAddress bindAddress = _serverIp == "0.0.0.0" ? IPAddress.Any : IPAddress.Parse(_serverIp);
-                    _tcpListener = new TcpListener(bindAddress, _listenPort);
+                    _tcpListener = new TcpListener(bindAddress, _tcpListenPort);
                     _tcpListener.Start();
 
-                    _logger.LogInformation("TCP GPS Listener started. Listening on {IP}:{Port}", bindAddress, _listenPort);
+                    _logger.LogInformation("TCP GPS Listener started. Listening on {IP}:{Port}", bindAddress, _tcpListenPort);
 
                     while (!token.IsCancellationRequested)
                     {
@@ -195,6 +207,7 @@ namespace Rentify_GPS_Service_Worker
             }, token);
         }
 
+
         private async Task HandleTcpClientAsync(TcpClient client, string clientId, CancellationToken token)
         {
             try
@@ -203,102 +216,160 @@ namespace Rentify_GPS_Service_Worker
                 {
                     using var stream = client.GetStream();
 
+                    // Set timeouts BEFORE handshake
+                    client.ReceiveTimeout = 60000; // 60 seconds
+                    client.SendTimeout = 10000;    // 10 seconds
+
+                    // Perform handshake
                     var imei = await PerformTcpHandshakeAsync(stream, clientId, token);
                     if (string.IsNullOrWhiteSpace(imei))
                     {
-                        _logger.LogWarning("TCP client {ClientId} closed because IMEI could not be determined", clientId);
+                        _logger.LogWarning("TCP client {ClientId} failed handshake", clientId);
                         return;
                     }
 
-                    client.ReceiveTimeout = 30000;
+                    // IMPORTANT: Register client by IMEI for command sending
+                    _imeiToClientId[imei] = clientId;
+                    _logger.LogInformation("Registered IMEI {IMEI} for client {ClientId}", imei, clientId);
 
-                    var buffer = new byte[4096];
+                    // Increase buffer size for TCP
+                    var buffer = new byte[8192]; // Increased from 4096
                     var connectionBuffer = new List<byte>();
 
                     while (!token.IsCancellationRequested && client.Connected)
                     {
-                        int bytesRead = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length), token);
-                        if (bytesRead == 0)
+                        try
                         {
-                            _logger.LogInformation("TCP client disconnected: {ClientId}", clientId);
-                            break;
-                        }
-
-                        // append only the bytes we actually read
-                        for (int i = 0; i < bytesRead; i++)
-                            connectionBuffer.Add(buffer[i]);
-
-                        while (TryExtractTeltonikaFrame(connectionBuffer, out var frame))
-                        {
-                            if (!TeltonikaAvlDecoder.TryParsePacket(frame, out var packet, out var error))
+                            int bytesRead = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length), token);
+                            if (bytesRead == 0)
                             {
-                                _logger.LogWarning("Failed to parse Teltonika packet from {ClientId}: {Error}", clientId, error);
-                                _logger.LogInformation(frame.ToString());
-                                await SendTeltonikaAckAsync(stream, 0, token);
-                                connectionBuffer.Clear();
-                                return;
+                                _logger.LogInformation("TCP client {IMEI} disconnected gracefully", imei);
+                                break;
                             }
 
-                            int saved = await PersistTeltonikaRecordsAsync(packet, imei, "TCP", clientId, token);
-                            await SendTeltonikaAckAsync(stream, packet.RecordCount, token);
+                            _logger.LogDebug("TCP: Received {Bytes} bytes from {IMEI}", bytesRead, imei);
+
+                            // Append bytes to connection buffer
+                            for (int i = 0; i < bytesRead; i++)
+                                connectionBuffer.Add(buffer[i]);
+
+                            // Extract and process frames
+                            while (TryExtractTeltonikaFrame(connectionBuffer, out var frame))
+                            {
+                                _logger.LogDebug("TCP: Extracted frame of {Size} bytes from {IMEI}",
+                                    frame.Length, imei);
+
+                                if (!TeltonikaAvlDecoder.TryParsePacket(frame, out var packet, out var error))
+                                {
+                                    _logger.LogWarning(
+                                        "TCP: Failed to parse packet from {IMEI}: {Error}. Frame size: {Size}",
+                                        imei, error, frame.Length);
+
+                                    // Log first 32 bytes for debugging
+                                    var preview = BitConverter.ToString(frame.Take(32).ToArray());
+                                    _logger.LogDebug("TCP: Frame preview: {Preview}", preview);
+
+                                    await SendTeltonikaAckAsync(stream, 0, token);
+                                    continue; // Don't clear buffer, try to continue
+                                }
+
+                                _logger.LogInformation(
+                                    "TCP: Successfully parsed {Records} records from {IMEI}",
+                                    packet.RecordCount, imei);
+
+                                int saved = await PersistTeltonikaRecordsAsync(
+                                    packet, imei, "TCP", clientId, token);
+
+                                await SendTeltonikaAckAsync(stream, packet.RecordCount, token);
+
+                                _logger.LogDebug("TCP: Sent ACK for {Records} records to {IMEI}",
+                                    packet.RecordCount, imei);
+                            }
+                        }
+                        catch (IOException ioEx)
+                        {
+                            _logger.LogInformation(ioEx, "TCP: IO error with {IMEI}", imei);
+                            break;
                         }
                     }
                 }
             }
-            catch (IOException ioEx)
-            {
-                _logger.LogInformation(ioEx, "TCP client {ClientId} disconnected", clientId);
-            }
             catch (OperationCanceledException)
             {
-                // normal shutdown
+                _logger.LogInformation("TCP: Client {ClientId} cancelled", clientId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error handling TCP client {ClientId}", clientId);
+                _logger.LogError(ex, "TCP: Error handling client {ClientId}", clientId);
             }
             finally
             {
                 _connectedClients.TryRemove(clientId, out _);
+
+                // Clean up IMEI mapping
+                var imeiToRemove = _imeiToClientId
+                    .FirstOrDefault(kvp => kvp.Value == clientId).Key;
+                if (!string.IsNullOrEmpty(imeiToRemove))
+                {
+                    _imeiToClientId.TryRemove(imeiToRemove, out _);
+                    _logger.LogInformation("TCP: Unregistered IMEI {IMEI}", imeiToRemove);
+                }
             }
         }
 
-
-        private async Task<string?> PerformTcpHandshakeAsync(NetworkStream stream, string clientId, CancellationToken token)
+        private async Task<string?> PerformTcpHandshakeAsync( NetworkStream stream, string clientId, CancellationToken token)
         {
-            var lengthBuffer = new byte[2];
-            if (!await ReadExactAsync(stream, lengthBuffer, token))
+            try
             {
-                _logger.LogWarning("TCP client {ClientId} closed before sending IMEI length", clientId);
+                // Read IMEI length (2 bytes, big-endian)
+                var lengthBuffer = new byte[2];
+                if (!await ReadExactAsync(stream, lengthBuffer, token))
+                {
+                    _logger.LogWarning("TCP: Client {ClientId} closed before IMEI length", clientId);
+                    return null;
+                }
+
+                ushort imeiLength = BinaryPrimitives.ReadUInt16BigEndian(lengthBuffer);
+                _logger.LogDebug("TCP: Client {ClientId} IMEI length: {Length}", clientId, imeiLength);
+
+                if (imeiLength == 0 || imeiLength > 64)
+                {
+                    _logger.LogWarning("TCP: Invalid IMEI length {Length} from {ClientId}",
+                        imeiLength, clientId);
+                    return null;
+                }
+
+                // Read IMEI
+                var imeiBuffer = new byte[imeiLength];
+                if (!await ReadExactAsync(stream, imeiBuffer, token))
+                {
+                    _logger.LogWarning("TCP: Client {ClientId} closed before IMEI payload", clientId);
+                    return null;
+                }
+
+                string imei = Encoding.ASCII.GetString(imeiBuffer).Trim('\0', ' ');
+                _logger.LogDebug("TCP: Received IMEI: {IMEI} from {ClientId}", imei, clientId);
+
+                if (string.IsNullOrEmpty(imei))
+                {
+                    _logger.LogWarning("TCP: Empty IMEI from {ClientId}", clientId);
+                    return null;
+                }
+
+                // Send handshake response (0x01)
+                await stream.WriteAsync(TcpHandshakeResponse, token);
+                await stream.FlushAsync(token);
+
+                _logger.LogInformation("TCP: Handshake complete for IMEI {IMEI} ({ClientId})",
+                    imei, clientId);
+
+                return imei;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "TCP: Handshake error for {ClientId}", clientId);
                 return null;
             }
-
-            ushort imeiLength = BinaryPrimitives.ReadUInt16BigEndian(lengthBuffer);
-            if (imeiLength == 0 || imeiLength > 64)
-            {
-                _logger.LogWarning("TCP client {ClientId} provided invalid IMEI length {Length}", clientId, imeiLength);
-                return null;
-            }
-
-            var imeiBuffer = new byte[imeiLength];
-            if (!await ReadExactAsync(stream, imeiBuffer, token))
-            {
-                _logger.LogWarning("TCP client {ClientId} closed before sending IMEI payload", clientId);
-                return null;
-            }
-
-            string imei = Encoding.ASCII.GetString(imeiBuffer).Trim('\0', ' ');
-            if (imei.Length == 0)
-            {
-                _logger.LogWarning("TCP client {ClientId} sent empty IMEI", clientId);
-                return null;
-            }
-
-            await stream.WriteAsync(TcpHandshakeResponse, token);
-            await stream.FlushAsync(token);
-
-            _logger.LogInformation("TCP client {ClientId} identified as IMEI {IMEI}", clientId, imei);
-            return imei;
         }
 
 
@@ -456,12 +527,7 @@ namespace Rentify_GPS_Service_Worker
                    longitude >= -180 && longitude <= 180;
         }
 
-        private static bool TryParseTeltonikaUdpEnvelope(
-    byte[] datagram,
-    out byte seqId,
-    out string imei,
-    out byte[] avlPayload,
-    out string? error)
+        private static bool TryParseTeltonikaUdpEnvelope( byte[] datagram, out byte seqId, out string imei, out byte[] avlPayload, out string? error)
         {
             seqId = 0;
             imei = string.Empty;
@@ -532,8 +598,6 @@ namespace Rentify_GPS_Service_Worker
             avlPayload = datagram.Skip(idx).ToArray();
             return true;
         }
-
-
 
         private async Task<int> PersistTeltonikaRecordsAsync(TeltonikaAvlPacket packet, string deviceSerial, string protocol, string clientId, CancellationToken token)
         {
@@ -731,15 +795,8 @@ namespace Rentify_GPS_Service_Worker
             }
         }
 
-        private static async Task SendTeltonikaAckAsync(NetworkStream stream, int recordCount, CancellationToken token)
-        {
-            var ack = new byte[4];
-            BinaryPrimitives.WriteInt32BigEndian(ack, recordCount);
-            await stream.WriteAsync(ack, token);
-            await stream.FlushAsync(token);
-        }
-
-        private static async Task<bool> ReadExactAsync(NetworkStream stream, Memory<byte> buffer, CancellationToken token)
+        private static async Task<bool> ReadExactAsync(
+            NetworkStream stream, Memory<byte> buffer, CancellationToken token)
         {
             int totalRead = 0;
             while (totalRead < buffer.Length)
@@ -747,14 +804,13 @@ namespace Rentify_GPS_Service_Worker
                 int read = await stream.ReadAsync(buffer.Slice(totalRead), token);
                 if (read == 0)
                 {
-                    return false;
+                    return false; // Connection closed
                 }
-
                 totalRead += read;
             }
-
             return true;
         }
+
 
         private static bool TryExtractTeltonikaFrame(List<byte> buffer, out byte[] frame)
         {
@@ -767,28 +823,45 @@ namespace Rentify_GPS_Service_Worker
 
             var span = CollectionsMarshal.AsSpan(buffer);
 
+            // Check for preamble (4 zero bytes)
             if (span[0] != 0 || span[1] != 0 || span[2] != 0 || span[3] != 0)
             {
+                // Invalid preamble, skip one byte and retry
                 buffer.RemoveAt(0);
                 return false;
             }
 
+            // Read data length (4 bytes, big-endian)
             int dataLength = BinaryPrimitives.ReadInt32BigEndian(span.Slice(4, 4));
-            if (dataLength <= 0)
+
+            if (dataLength <= 0 || dataLength > 10000) // Sanity check
             {
                 buffer.RemoveAt(0);
                 return false;
             }
 
+            // Total frame: 4 (preamble) + 4 (length) + dataLength + 4 (CRC)
             int totalLength = 8 + dataLength + 4;
-            if (span.Length < totalLength)
+
+            if (buffer.Count < totalLength)
             {
-                return false;
+                return false; // Not enough data yet
             }
 
+            // Extract complete frame
             frame = span.Slice(0, totalLength).ToArray();
             buffer.RemoveRange(0, totalLength);
+
             return true;
+        }
+
+        private static async Task SendTeltonikaAckAsync(
+            NetworkStream stream, int recordCount, CancellationToken token)
+        {
+            var ack = new byte[4];
+            BinaryPrimitives.WriteInt32BigEndian(ack, recordCount);
+            await stream.WriteAsync(ack, token);
+            await stream.FlushAsync(token);
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
@@ -842,6 +915,17 @@ namespace Rentify_GPS_Service_Worker
             }
 
             locationRecord.Gps_DeviceId = device.Id;
+
+            try
+            {
+                // ✅ NEW: Check speed limit and detect speeding
+                await CheckAndRecordSpeedingAsync(db, speedLimitService, locationRecord, device, token);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("error in speed: " + e.Message);
+            }
+
 
             db.Location_Records.Add(locationRecord);
             await db.SaveChangesAsync(token);
@@ -990,6 +1074,110 @@ namespace Rentify_GPS_Service_Worker
             }
         }
 
+
+        /// <summary>
+        /// Check if vehicle is speeding and create alert if necessary
+        /// </summary>
+        private async Task CheckAndRecordSpeedingAsync(
+            MainDbContext db,
+            ISpeedLimitService speedLimitService,
+            Location_Record locationRecord,
+            Gps_Device device,
+            CancellationToken token)
+        {
+            try
+            {
+                // Only check if vehicle is actually moving (speed > 5 km/h)
+                if (locationRecord.SpeedKmh <= 5)
+                    return;
+
+                // Fetch speed limit from OpenStreetMap
+                var speedLimit = await speedLimitService.GetSpeedLimitAsync(
+                    locationRecord.Latitude,
+                    locationRecord.Longitude,
+                    token);
+
+                // If no speed limit found, skip
+                if (!speedLimit.HasValue)
+                {
+                    _logger.LogDebug(
+                        "No speed limit data found for ({Lat},{Lon})",
+                        locationRecord.Latitude,
+                        locationRecord.Longitude);
+                    return;
+                }
+
+                // Add tolerance margin (e.g., 5 km/h or 10% of limit, whichever is greater)
+                var toleranceMargin = Math.Max(5, speedLimit.Value * 0.1);
+                var effectiveLimit = speedLimit.Value + toleranceMargin;
+
+                // Check if speeding
+                if (locationRecord.SpeedKmh > effectiveLimit)
+                {
+                    var exceedBy = locationRecord.SpeedKmh - speedLimit.Value;
+                    var exceedByPercentage = (exceedBy / speedLimit.Value) * 100;
+                    var severity = DetermineSpeedingSeverity(exceedBy);
+
+                    // Create speeding alert
+                    var speedingAlert = new Speeding_Alert
+                    {
+                        Id = Guid.NewGuid(),
+                        Gps_DeviceId = device.Id,
+                        DeviceSerialNumber = device.DeviceSerialNumber,
+                        Timestamp = locationRecord.Timestamp,
+                        Latitude = locationRecord.Latitude,
+                        Longitude = locationRecord.Longitude,
+                        ActualSpeedKmh = locationRecord.SpeedKmh,
+                        SpeedLimitKmh = speedLimit.Value,
+                        ExceededByKmh = exceedBy,
+                        ExceededByPercentage = exceedByPercentage,
+                        Severity = severity,
+                        IsAcknowledged = false,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    db.Speeding_Alerts.Add(speedingAlert);
+
+                    // Log speeding incident
+                    _logger.LogWarning(
+                        "⚠️ SPEEDING DETECTED [{Severity}]: Device {Device} exceeded speed limit by {ExceedBy:F1} km/h ({Percentage:F1}%) " +
+                        "- Speed: {ActualSpeed:F1} km/h, Limit: {SpeedLimit} km/h at ({Lat},{Lon})",
+                        severity,
+                        device.DeviceSerialNumber,
+                        exceedBy,
+                        exceedByPercentage,
+                        locationRecord.SpeedKmh,
+                        speedLimit.Value,
+                        locationRecord.Latitude,
+                        locationRecord.Longitude);
+
+                    // Save the alert immediately
+                    await db.SaveChangesAsync(token);
+
+                    // Optional: Trigger real-time notification (implement later)
+                    // await SendSpeedingNotificationAsync(speedingAlert);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Don't fail the entire location save if speed check fails
+                _logger.LogError(ex, "Error checking speed limit for device {Device}", device.DeviceSerialNumber);
+            }
+        }
+
+        /// <summary>
+        /// Determine severity based on how much over the speed limit
+        /// </summary>
+        private SpeedingSeverity DetermineSpeedingSeverity(double exceedByKmh)
+        {
+            return exceedByKmh switch
+            {
+                <= 10 => SpeedingSeverity.Low,
+                <= 20 => SpeedingSeverity.Medium,
+                <= 30 => SpeedingSeverity.High,
+                _ => SpeedingSeverity.Critical
+            };
+        }
     }
 
     public static class TaskExtensions

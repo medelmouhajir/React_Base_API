@@ -1,0 +1,279 @@
+
+.speeding-alerts-container {
+    padding: 2rem;
+    max-width: 95%;
+    margin: 0 auto;
+}
+
+    .speeding-alerts-container h1 {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        color: #333;
+    }
+
+/* Statistics Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+    .stat-card.warning {
+        background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+        color: white;
+    }
+
+    .stat-card h3 {
+        font-size: 0.9rem;
+        margin: 0 0 0.5rem 0;
+        opacity: 0.8;
+    }
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+/* Filters Section */
+.filters-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+    .filters-section input,
+    .filters-section select {
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .filters-section button {
+        padding: 0.75rem 1.5rem;
+        background: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+        .filters-section button:hover {
+            background: #357abd;
+        }
+
+/* Alerts Table */
+.alerts-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    margin-bottom: 2rem;
+}
+
+.alerts-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .alerts-table thead {
+        background: #f8f9fa;
+    }
+
+    .alerts-table th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .alerts-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .alerts-table tr:hover {
+        background: #f8f9fa;
+    }
+
+    .alerts-table tr.acknowledged {
+        opacity: 0.6;
+    }
+
+/* Severity Badge */
+.severity-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+/* Device Info */
+.device-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+    .device-info strong {
+        font-size: 0.95rem;
+    }
+
+    .device-info small {
+        color: #666;
+        font-size: 0.85rem;
+    }
+
+/* Speed Columns */
+.speed-actual {
+    font-weight: bold;
+    color: #f44336;
+    font-size: 1.1rem;
+}
+
+.speed-limit {
+    color: #4caf50;
+    font-weight: 600;
+}
+
+.exceeded {
+    color: #ff5722;
+    font-weight: bold;
+}
+
+    .exceeded small {
+        display: block;
+        color: #666;
+        font-size: 0.85rem;
+    }
+
+/* Buttons */
+.btn-map {
+    padding: 0.5rem 1rem;
+    background: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+    .btn-map:hover {
+        background: #3367d6;
+    }
+
+.btn-acknowledge {
+    padding: 0.5rem 1rem;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+    .btn-acknowledge:hover {
+        background: #45a049;
+    }
+
+/* Status Badges */
+.status-acknowledged {
+    color: #4caf50;
+    font-weight: 600;
+}
+
+.status-pending {
+    color: #ff9800;
+    font-weight: 600;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+    .pagination button {
+        padding: 0.75rem 1.5rem;
+        background: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+        .pagination button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .pagination button:not(:disabled):hover {
+            background: #357abd;
+        }
+
+    .pagination span {
+        font-weight: 500;
+        color: #333;
+    }
+
+/* Loading State */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .speeding-alerts-container {
+        padding: 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filters-section {
+        flex-direction: column;
+    }
+
+        .filters-section input,
+        .filters-section select {
+            width: 100%;
+        }
+
+    .alerts-table {
+        font-size: 0.85rem;
+    }
+
+        .alerts-table th,
+        .alerts-table td {
+            padding: 0.5rem;
+        }
+}

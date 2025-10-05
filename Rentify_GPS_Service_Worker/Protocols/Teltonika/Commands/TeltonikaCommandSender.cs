@@ -9,23 +9,29 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika.Commands
     {
         private readonly ILogger<TeltonikaCommandSender> _logger;
         private readonly ConcurrentDictionary<string, TcpClient> _connectedClients;
+        private readonly ConcurrentDictionary<string, string> _imeiToClientId;
 
-        public TeltonikaCommandSender(ILogger<TeltonikaCommandSender> logger, ConcurrentDictionary<string, TcpClient> connectedClients)
+        public TeltonikaCommandSender(
+            ILogger<TeltonikaCommandSender> logger,
+            ConcurrentDictionary<string, TcpClient> connectedClients,
+            ConcurrentDictionary<string, string> imeiToClientId)
         {
             _logger = logger;
             _connectedClients = connectedClients;
+            _imeiToClientId = imeiToClientId;
         }
 
-        // Main method to control ignition remotely
-        public async Task<bool> ControlIgnitionAsync(string deviceImei, bool turnOn, CancellationToken cancellationToken = default)
+        public async Task<bool> ControlIgnitionAsync(
+            string deviceImei, bool turnOn, CancellationToken cancellationToken = default)
         {
             try
             {
-                // For FMC920, ignition control is typically done through digital output 1 (DOUT1)
-                // Command: setdigout 1 1 (turn on) or setdigout 1 0 (turn off)
+                // FMC920 ignition control via DOUT1
                 string command = $"setdigout 1 {(turnOn ? "1" : "0")}";
 
-                _logger.LogInformation("Sending ignition control command to device {IMEI}: {Command}", deviceImei, command);
+                _logger.LogInformation(
+                    "Sending ignition control to device {IMEI}: {Command}",
+                    deviceImei, command);
 
                 return await SendCommandAsync(deviceImei, command, cancellationToken);
             }
@@ -36,43 +42,37 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika.Commands
             }
         }
 
-        // Alternative method using SMS-style commands
-        public async Task<bool> ControlIgnitionViaSmsCommandAsync(string deviceImei, bool turnOn, CancellationToken cancellationToken = default)
+        private async Task<bool> SendCommandAsync(
+            string deviceImei, string command, CancellationToken cancellationToken)
         {
-            try
-            {
-                // FMC920 SMS command format for digital output control
-                string command = turnOn ? "DOUT1:1" : "DOUT1:0";
-
-                _logger.LogInformation("Sending SMS-style ignition control to device {IMEI}: {Command}", deviceImei, command);
-
-                return await SendCommandAsync(deviceImei, command, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to send SMS-style ignition control for device {IMEI}", deviceImei);
-                return false;
-            }
-        }
-
-        private async Task<bool> SendCommandAsync(string deviceImei, string command, CancellationToken cancellationToken)
-        {
-            if (!_connectedClients.TryGetValue(deviceImei, out var tcpClient))
+            // Get clientId from IMEI
+            if (!_imeiToClientId.TryGetValue(deviceImei, out var clientId))
             {
                 _logger.LogWarning("Device {IMEI} is not currently connected", deviceImei);
+                return false;
+            }
+
+            // Get TCP client
+            if (!_connectedClients.TryGetValue(clientId, out var tcpClient))
+            {
+                _logger.LogWarning(
+                    "Device {IMEI} client {ClientId} not found in connections",
+                    deviceImei, clientId);
+                _imeiToClientId.TryRemove(deviceImei, out _);
                 return false;
             }
 
             if (!tcpClient.Connected)
             {
                 _logger.LogWarning("Device {IMEI} TCP connection is not active", deviceImei);
-                _connectedClients.TryRemove(deviceImei, out _);
+                _connectedClients.TryRemove(clientId, out _);
+                _imeiToClientId.TryRemove(deviceImei, out _);
                 return false;
             }
 
             try
             {
-                // Encode command using Codec 12 (command codec)
+                // Encode command using Codec 12
                 byte[] commandPacket = EncodeCodec12Command(command);
 
                 var stream = tcpClient.GetStream();
@@ -83,169 +83,129 @@ namespace Rentify_GPS_Service_Worker.Protocols.Teltonika.Commands
 
                 // Wait for response with timeout
                 var response = await ReadCommandResponseAsync(stream, cancellationToken);
+
                 if (response != null)
                 {
-                    _logger.LogInformation("Received response from device {IMEI}: {Response}", deviceImei, response);
-                    return response.Contains("OK") || response.Contains("1"); // Success indicators
+                    _logger.LogInformation(
+                        "Received response from device {IMEI}: {Response}",
+                        deviceImei, BitConverter.ToString(response));
+                    return true;
                 }
-
-                return true; // Command sent successfully, no response expected
+                else
+                {
+                    _logger.LogWarning("No response received from device {IMEI}", deviceImei);
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send command to device {IMEI}", deviceImei);
+                _logger.LogError(ex, "Error sending command to device {IMEI}", deviceImei);
                 return false;
             }
         }
 
         private byte[] EncodeCodec12Command(string command)
         {
-            // Codec 12 packet structure:
-            // 4 bytes: 00 00 00 00 (preamble)
-            // 4 bytes: data length
-            // 1 byte: codec ID (0x0C for Codec 12)
-            // 1 byte: command quantity (0x01)
-            // 1 byte: command type (0x05 for command)
-            // 4 bytes: command size
-            // N bytes: command text
-            // 1 byte: command quantity again (0x01)
-            // 4 bytes: CRC-16
+            // Codec 12 format:
+            // Preamble: 4 bytes (0x00000000)
+            // Data Length: 4 bytes
+            // Codec ID: 1 byte (0x0C for Codec 12)
+            // Quantity 1: 1 byte (number of commands)
+            // Command: variable
+            // Quantity 2: 1 byte (same as Quantity 1)
+            // CRC: 4 bytes
 
-            byte[] commandBytes = Encoding.UTF8.GetBytes(command);
-            int dataLength = 1 + 1 + 1 + 4 + commandBytes.Length + 1; // codec + qty + type + size + command + qty
-            int totalLength = 8 + dataLength + 4; // preamble + data + crc
+            byte[] commandBytes = Encoding.ASCII.GetBytes(command);
+            int commandLength = commandBytes.Length;
+
+            // Command structure: Type(1) + Length(4) + Command
+            int commandStructSize = 1 + 4 + commandLength;
+
+            // Data payload: CodecID(1) + Qty1(1) + Command + Qty2(1)
+            int dataLength = 1 + 1 + commandStructSize + 1;
+
+            // Total packet: Preamble(4) + DataLen(4) + Data + CRC(4)
+            int totalLength = 4 + 4 + dataLength + 4;
 
             byte[] packet = new byte[totalLength];
-            int offset = 0;
+            int idx = 0;
 
-            // Preamble (4 bytes of zeros)
-            offset += 4;
+            // Preamble (4 zero bytes)
+            idx += 4;
 
-            // Data length
-            BinaryPrimitives.WriteInt32BigEndian(packet.AsSpan(offset), dataLength);
-            offset += 4;
+            // Data Length
+            BinaryPrimitives.WriteInt32BigEndian(packet.AsSpan(idx, 4), dataLength);
+            idx += 4;
 
             // Codec ID (0x0C for Codec 12)
-            packet[offset++] = 0x0C;
+            packet[idx++] = 0x0C;
 
-            // Command quantity
-            packet[offset++] = 0x01;
+            // Quantity 1
+            packet[idx++] = 0x01;
 
-            // Command type (0x05 for command)
-            packet[offset++] = 0x05;
+            // Command Type (0x05 for text command)
+            packet[idx++] = 0x05;
 
-            // Command size
-            BinaryPrimitives.WriteInt32BigEndian(packet.AsSpan(offset), commandBytes.Length);
-            offset += 4;
+            // Command Length
+            BinaryPrimitives.WriteInt32BigEndian(packet.AsSpan(idx, 4), commandLength);
+            idx += 4;
 
-            // Command text
-            commandBytes.CopyTo(packet, offset);
-            offset += commandBytes.Length;
+            // Command bytes
+            Buffer.BlockCopy(commandBytes, 0, packet, idx, commandLength);
+            idx += commandLength;
 
-            // Command quantity again
-            packet[offset++] = 0x01;
+            // Quantity 2
+            packet[idx++] = 0x01;
 
-            // Calculate CRC-16 for the data part (excluding preamble and CRC itself)
-            ushort crc = CalculateCrc16(packet.AsSpan(8, dataLength));
-            BinaryPrimitives.WriteUInt16BigEndian(packet.AsSpan(offset), crc);
-            // Note: Last 2 bytes are padded as zeros for the full 4-byte CRC field
+            // Calculate CRC-16 for data portion (from Codec ID to end of data)
+            ushort crc = CalculateCrc16(packet, 8, dataLength);
+            BinaryPrimitives.WriteUInt32BigEndian(packet.AsSpan(idx, 4), crc);
 
             return packet;
         }
 
-        private async Task<string?> ReadCommandResponseAsync(NetworkStream stream, CancellationToken cancellationToken)
+        private async Task<byte[]?> ReadCommandResponseAsync(
+            NetworkStream stream, CancellationToken cancellationToken)
         {
             try
             {
-                // Set a reasonable timeout for command response
-                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                using var combinedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCts.Token);
+                // Set read timeout
+                using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+                    cancellationToken, timeoutCts.Token);
 
                 byte[] buffer = new byte[1024];
-                int bytesRead = await stream.ReadAsync(buffer, combinedCts.Token);
+                int bytesRead = await stream.ReadAsync(buffer, linkedCts.Token);
 
                 if (bytesRead > 0)
                 {
-                    // Try to parse Codec 12 response
-                    if (TryParseCodec12Response(buffer.AsSpan(0, bytesRead), out string? response))
-                    {
-                        return response;
-                    }
+                    byte[] response = new byte[bytesRead];
+                    Buffer.BlockCopy(buffer, 0, response, 0, bytesRead);
+                    return response;
                 }
 
                 return null;
             }
             catch (OperationCanceledException)
             {
-                _logger.LogWarning("Command response timeout");
-                return null;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error reading command response");
                 return null;
             }
         }
 
-        private bool TryParseCodec12Response(ReadOnlySpan<byte> data, out string? response)
+        private ushort CalculateCrc16(byte[] data, int offset, int length)
         {
-            response = null;
-
-            try
-            {
-                if (data.Length < 12) return false; // Minimum packet size
-
-                // Skip preamble (4 bytes)
-                int offset = 4;
-
-                // Read data length
-                int dataLength = BinaryPrimitives.ReadInt32BigEndian(data.Slice(offset));
-                offset += 4;
-
-                // Check codec ID
-                if (data[offset] != 0x0C) return false; // Not Codec 12
-                offset++;
-
-                // Read response quantity
-                byte responseQty = data[offset++];
-                if (responseQty == 0) return true; // No response
-
-                // Read response type
-                byte responseType = data[offset++];
-
-                // Read response size
-                int responseSize = BinaryPrimitives.ReadInt32BigEndian(data.Slice(offset));
-                offset += 4;
-
-                if (offset + responseSize > data.Length) return false;
-
-                // Extract response text
-                response = Encoding.UTF8.GetString(data.Slice(offset, responseSize));
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private ushort CalculateCrc16(ReadOnlySpan<byte> data)
-        {
-            const ushort polynomial = 0xA001; // CRC-16-IBM polynomial
             ushort crc = 0;
-
-            foreach (byte b in data)
+            for (int i = offset; i < offset + length; i++)
             {
-                crc ^= b;
-                for (int i = 0; i < 8; i++)
+                crc ^= (ushort)(data[i] << 8);
+                for (int j = 0; j < 8; j++)
                 {
-                    if ((crc & 1) != 0)
-                        crc = (ushort)((crc >> 1) ^ polynomial);
+                    if ((crc & 0x8000) != 0)
+                        crc = (ushort)((crc << 1) ^ 0x1021);
                     else
-                        crc >>= 1;
+                        crc <<= 1;
                 }
             }
-
             return crc;
         }
     }

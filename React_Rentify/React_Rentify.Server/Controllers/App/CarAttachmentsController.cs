@@ -114,7 +114,7 @@ namespace React_Rentify.Server.Controllers.App
         /// Adds a new attachment to a car.
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> AddAttachment(Guid carId, [FromBody] CreateCar_AttachmentDto dto)
+        public async Task<IActionResult> AddAttachment(Guid carId, [FromForm] CreateCar_AttachmentDto dto)
         {
             _logger.LogInformation("Adding attachment to car {CarId}", carId);
 
@@ -137,12 +137,33 @@ namespace React_Rentify.Server.Controllers.App
             if (!await _authService.HasAccessToAgencyAsync(car.AgencyId))
                 return Unauthorized();
 
+            // Create folder for this car if it doesn't exist
+            var carFolder = Path.Combine(_uploadsFolder, carId.ToString());
+            if (!Directory.Exists(carFolder))
+            {
+                Directory.CreateDirectory(carFolder);
+            }
+
+            // Sanitize filename and generate unique name
+            var fileName = Path.GetFileName(dto.File.FileName);
+            var safeFileName = string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
+            var uniqueFileName = $"{DateTime.UtcNow.Ticks}_{safeFileName}";
+            var filePath = Path.Combine(carFolder, uniqueFileName);
+
+            // Save the file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await dto.File.CopyToAsync(stream);
+            }
+
+            var relativePath = $"/uploads/cars/{carId}/{uniqueFileName}";
+
             var attachment = new Car_Attachment
             {
                 Id = Guid.NewGuid(),
                 CarId = carId,
                 FileName = dto.FileName,
-                FilePath = dto.FilePath,
+                FilePath = relativePath,
                 UploadedAt = DateTime.UtcNow
             };
 
@@ -302,7 +323,7 @@ namespace React_Rentify.Server.Controllers.App
     public class CreateCar_AttachmentDto
     {
         public string FileName { get; set; }
-        public string FilePath { get; set; }
+        public IFormFile File { get; set; }
     }
 
     #endregion

@@ -138,7 +138,7 @@ const CarDetails = () => {
             formData.append('file', fileToUpload);
             formData.append('fileName', fileToUpload.name);
 
-            await carAttachmentService.uploadAttachment(id, formData);
+            await carAttachmentService.addAttachment(id, formData);
 
             // Refresh attachments
             const updatedCar = await carService.getById(id);

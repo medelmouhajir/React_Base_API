@@ -2531,5 +2531,44 @@
         "created": "Agency has been successfully created"
       }
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "emptyNotifications": "You're all caught up!",
+    "emptyNotificationsMessage": "No notifications to show right now.",
+    "loadMore": "Load more",
+    "times": {
+      "justNow": "Just now",
+      "minAgo": "min ago",
+      "hoursAgo": " h ago",
+      "dayAgo": " d ago"
+    },
+    "alerts": {
+      "newReservationPending": "New Reservation Pending",
+      "reservationApproved": "Reservation Approved",
+      "overdueReturn": "Overdue Vehicle Return",
+      "upcomingPickup": "Upcoming Pickup Reminder",
+      "upcomingReturn": "Upcoming Return Reminder",
+      "geofenceViolation": "Geofence Violation Detected",
+      "speedViolation": "Speed Limit Exceeded",
+      "unauthorizedMovement": "Unauthorized Vehicle Movement",
+      "gpsDeviceOffline": "GPS Device Offline",
+      "lowGPSBattery": "Low GPS Device Battery",
+      "serviceDueSoon": "Service Due Soon",
+      "serviceOverdue": "Service Overdue",
+      "mileageThreshold": "Mileage Threshold Reached",
+      "maintenanceCompleted": "Maintenance Completed",
+      "lowFleetAvailability": "Low Fleet Availability",
+      "subscriptionExpiring": "Subscription Expiring Soon",
+      "backupCompleted": "Backup Completed Successfully",
+      "backupFailed": "Backup Failed",
+      "ticketAssigned": "Support Ticket Assigned",
+      "ticketUpdated": "Support Ticket Updated",
+      "invoiceGenerated": "Invoice Generated",
+      "invoicePaid": "Invoice Paid",
+      "invoiceOverdue": "Invoice Overdue"
+    }
   }
 }

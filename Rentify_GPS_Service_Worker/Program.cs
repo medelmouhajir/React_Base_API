@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,9 +18,19 @@ namespace Rentify_GPS_Service_Worker
             builder.Services.AddDbContext<MainDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+            // ✅ NEW: Register Memory Cache for speed limit caching
+            builder.Services.AddMemoryCache();
+
+            // ✅ NEW: Or if you prefer to register it as scoped
+            builder.Services.AddScoped<ISpeedLimitService, OpenStreetMapSpeedLimitService>();
+
+
             // 2. Register Worker as a hosted service
             //builder.Services.AddHostedService<Worker>();
 
+            // 3. Register command processing (if you're using it)
+            builder.Services.AddCommandProcessing();
 
             var host = builder.Build();
             host.Run();

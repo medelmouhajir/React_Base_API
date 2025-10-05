@@ -417,5 +417,7 @@ namespace React_Rentify.Server.BackgroundServices
                 _logger.LogError(ex, "Error checking subscription expiration");
             }
         }
+
+
     }
 }

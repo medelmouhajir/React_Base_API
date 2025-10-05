@@ -2486,5 +2486,44 @@
         "created": "تم إنشاء الوكالة بنجاح"
       }
     }
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllAsRead": "تحديد الكل كمقروء",
+    "markAsRead": "تحديد كمقروء",
+    "emptyNotifications": "لا يوجد شيء جديد!",
+    "emptyNotificationsMessage": "لا توجد إشعارات للعرض حاليًا.",
+    "loadMore": "تحميل المزيد",
+    "times": {
+      "justNow": "الآن",
+      "minAgo": " دقيقة مضت",
+      "hoursAgo": " ساعة مضت",
+      "dayAgo": " يومًا مضى"
+    },
+    "alerts": {
+      "newReservationPending": "حجز جديد قيد الانتظار",
+      "reservationApproved": "تمت الموافقة على الحجز",
+      "overdueReturn": "تأخر في إرجاع السيارة",
+      "upcomingPickup": "تذكير بالاستلام القادم",
+      "upcomingReturn": "تذكير بالإرجاع القادم",
+      "geofenceViolation": "تم اكتشاف خرق للمنطقة الجغرافية",
+      "speedViolation": "تجاوز حد السرعة",
+      "unauthorizedMovement": "تحرك غير مصرح به للمركبة",
+      "gpsDeviceOffline": "جهاز GPS غير متصل",
+      "lowGPSBattery": "بطارية جهاز GPS منخفضة",
+      "serviceDueSoon": "خدمة الصيانة مستحقة قريبًا",
+      "serviceOverdue": "خدمة الصيانة متأخرة",
+      "mileageThreshold": "تم الوصول إلى حد الكيلومترات",
+      "maintenanceCompleted": "تم إكمال الصيانة",
+      "lowFleetAvailability": "توفر محدود في الأسطول",
+      "subscriptionExpiring": "الاشتراك سينتهي قريبًا",
+      "backupCompleted": "اكتملت النسخة الاحتياطية بنجاح",
+      "backupFailed": "فشل النسخ الاحتياطي",
+      "ticketAssigned": "تم تعيين تذكرة الدعم",
+      "ticketUpdated": "تم تحديث تذكرة الدعم",
+      "invoiceGenerated": "تم إنشاء الفاتورة",
+      "invoicePaid": "تم دفع الفاتورة",
+      "invoiceOverdue": "فاتورة متأخرة"
+    }
   }
 }

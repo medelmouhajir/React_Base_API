@@ -76,6 +76,7 @@ export const gpsService = {
     },
 
     async updateCarGps(carId, gpsData) {
+        console.warn(gpsData);
         try {
             const response = await apiClient.put(`/gps/cars/${carId}`, gpsData);
             return response.data;

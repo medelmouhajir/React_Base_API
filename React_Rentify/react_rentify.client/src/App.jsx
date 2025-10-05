@@ -134,6 +134,7 @@ const IdentityReader = lazy(() => import('./pages/Gadgets/IdentityReaders/Identi
 //// Child route for GPS
 const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
 const SetCarGps = lazy(() => import('./pages/Gps/Cars/SetCarGps'));
+const SpeedingAlertsPage = lazy(() => import('./pages/Gps/Alerts/Speeding/SpeedingAlertsPage'));
 
 //// Other standalone pages
 const SearchPage = lazy(() => import('./pages/Search/SearchPage'));
@@ -220,6 +221,7 @@ function App() {
 
 
                                     <Route path="/gps/cars" element={<SetCarGps />} />
+                                    <Route path="/gps/alerts/speeding" element={<SpeedingAlertsPage />} />
 
                                     {/* Cars */}
                                     <Route path="/cars" element={<CarsList />} />

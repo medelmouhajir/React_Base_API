@@ -2465,5 +2465,44 @@
         "created": "L'agence a été créée avec succès"
       }
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllAsRead": "Tout marquer comme lu",
+    "markAsRead": "Marquer comme lu",
+    "emptyNotifications": "Tout est à jour !",
+    "emptyNotificationsMessage": "Aucune notification pour le moment.",
+    "loadMore": "Charger plus",
+    "times": {
+      "justNow": "À l’instant",
+      "minAgo": " min",
+      "hoursAgo": " h",
+      "dayAgo": " j"
+    },
+    "alerts": {
+      "newReservationPending": "Nouvelle réservation en attente",
+      "reservationApproved": "Réservation approuvée",
+      "overdueReturn": "Retour de véhicule en retard",
+      "upcomingPickup": "Rappel de prise en charge à venir",
+      "upcomingReturn": "Rappel de retour à venir",
+      "geofenceViolation": "Violation de géorepérage détectée",
+      "speedViolation": "Dépassement de la limite de vitesse",
+      "unauthorizedMovement": "Mouvement non autorisé du véhicule",
+      "gpsDeviceOffline": "Appareil GPS hors ligne",
+      "lowGPSBattery": "Batterie faible de l'appareil GPS",
+      "serviceDueSoon": "Entretien bientôt dû",
+      "serviceOverdue": "Entretien en retard",
+      "mileageThreshold": "Seuil de kilométrage atteint",
+      "maintenanceCompleted": "Entretien terminé",
+      "lowFleetAvailability": "Faible disponibilité de la flotte",
+      "subscriptionExpiring": "Abonnement bientôt expiré",
+      "backupCompleted": "Sauvegarde terminée avec succès",
+      "backupFailed": "Échec de la sauvegarde",
+      "ticketAssigned": "Ticket de support attribué",
+      "ticketUpdated": "Ticket de support mis à jour",
+      "invoiceGenerated": "Facture générée",
+      "invoicePaid": "Facture payée",
+      "invoiceOverdue": "Facture en retard"
+    }
   }
 }
