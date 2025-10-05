@@ -136,8 +136,8 @@ const CarDetails = () => {
         try {
             const formData = new FormData();
             // Match the DTO property names exactly
-            formData.append('File', fileToUpload);
-            formData.append('FileName', fileToUpload.name);
+            formData.append('file', fileToUpload);
+            formData.append('fileName', fileToUpload.name);
 
             await carAttachmentService.addAttachment(id, formData);
 
