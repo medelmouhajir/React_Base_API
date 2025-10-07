@@ -118,7 +118,8 @@
     "optional": "Optional",
     "next": "Next",
     "previous": "Previous",
-    "add": "Add"
+    "add": "Add",
+    "continue": "Continue"
   },
   "landing": {
     "features": "Features",
@@ -2582,6 +2583,55 @@
       "yesterday": "Yesterday",
       "thisWeek": "This week",
       "earlier": "Earlier"
+    }
+  },
+  "accidents": {
+    "accidentDate": "Accident date",
+    "notes": "Notes",
+    "expertFullname": "Expert's full name",
+    "expertPhone": "Expert's phone",
+    "add": {
+      "steps": {
+        "dateAndCar": "Date & Car",
+        "reservation": "Reservation",
+        "details": "Details"
+      },
+      "selectDateAndCar": "Select date and car",
+      "selectDateAndCarDescription": "Choose when the accident occurred and which car was involved.",
+      "handleOngoingReservation": "Handle ongoing reservation",
+      "reservationFoundDescription": "This car has an ongoing reservation during the selected date. Choose how to proceed.",
+      "ongoingReservation": "Ongoing reservation",
+      "whatToDo": "What would you like to do?",
+      "actions": {
+        "completeReservation": "Complete reservation",
+        "completeDescription": "Mark the reservation as completed and return the car before adding the accident.",
+        "doNothing": "Do nothing",
+        "nothingDescription": "Keep the reservation as is and continue to add the accident.",
+        "changeCar": "Change car for reservation",
+        "changeCarDescription": "Move the reservation to another available car, then continue."
+      },
+      "selectNewCar": "Select a new car",
+      "accidentDetails": "Accident details",
+      "fillDetailsDescription": "Provide details about the accident and (optionally) expert information.",
+      "notesPlaceholder": "Describe what happened...",
+      "expertNamePlaceholder": "Enter expert's full name (optional)",
+      "expertPhonePlaceholder": "Enter expert's phone (optional)",
+      "createAccident": "Create accident",
+      "reservationCarChanged": "Reservation car changed successfully.",
+      "success": "Accident created successfully.",
+      "validation": {
+        "accidentDateRequired": "Accident date is required.",
+        "carRequired": "Please select a car.",
+        "notesRequired": "Notes are required.",
+        "fixErrors": "Please fix the errors and try again."
+      },
+      "errors": {
+        "loadCars": "Failed to load cars.",
+        "checkReservations": "Failed to check reservations.",
+        "loadAvailableCars": "Failed to load available cars.",
+        "changeReservationCar": "Failed to change reservation car.",
+        "create": "Failed to create accident."
+      }
     }
   }
 }

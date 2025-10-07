@@ -118,7 +118,8 @@
     "optional": "Facultatif",
     "next": "Suivant",
     "previous": "Précédent",
-    "add": "Ajouter"
+    "add": "Ajouter",
+    "continue": "Continuer"
   },
   "landing": {
     "features": "Fonctionnalités",
@@ -2516,6 +2517,55 @@
       "yesterday": "Hier",
       "thisWeek": "Cette semaine",
       "earlier": "Plus tôt"
+    }
+  },
+  "accidents": {
+    "accidentDate": "Date de l'accident",
+    "notes": "Notes",
+    "expertFullname": "Nom complet de l'expert",
+    "expertPhone": "Téléphone de l'expert",
+    "add": {
+      "steps": {
+        "dateAndCar": "Date & Véhicule",
+        "reservation": "Réservation",
+        "details": "Détails"
+      },
+      "selectDateAndCar": "Sélectionnez la date et le véhicule",
+      "selectDateAndCarDescription": "Choisissez quand l'accident a eu lieu et le véhicule concerné.",
+      "handleOngoingReservation": "Gérer la réservation en cours",
+      "reservationFoundDescription": "Ce véhicule a une réservation en cours à la date choisie. Choisissez comment procéder.",
+      "ongoingReservation": "Réservation en cours",
+      "whatToDo": "Que souhaitez-vous faire ?",
+      "actions": {
+        "completeReservation": "Terminer la réservation",
+        "completeDescription": "Marquer la réservation comme terminée et restituer le véhicule avant d'ajouter l'accident.",
+        "doNothing": "Ne rien faire",
+        "nothingDescription": "Conserver la réservation telle quelle et continuer l'ajout de l'accident.",
+        "changeCar": "Changer le véhicule de la réservation",
+        "changeCarDescription": "Déplacer la réservation vers un autre véhicule disponible, puis continuer."
+      },
+      "selectNewCar": "Sélectionner un nouveau véhicule",
+      "accidentDetails": "Détails de l'accident",
+      "fillDetailsDescription": "Fournissez les détails de l'accident et, si besoin, les informations de l'expert.",
+      "notesPlaceholder": "Décrivez ce qui s'est passé...",
+      "expertNamePlaceholder": "Saisir le nom complet de l'expert (facultatif)",
+      "expertPhonePlaceholder": "Saisir le téléphone de l'expert (facultatif)",
+      "createAccident": "Créer l'accident",
+      "reservationCarChanged": "Véhicule de la réservation changé avec succès.",
+      "success": "Accident créé avec succès.",
+      "validation": {
+        "accidentDateRequired": "La date de l'accident est requise.",
+        "carRequired": "Veuillez sélectionner un véhicule.",
+        "notesRequired": "Les notes sont requises.",
+        "fixErrors": "Veuillez corriger les erreurs puis réessayer."
+      },
+      "errors": {
+        "loadCars": "Échec du chargement des véhicules.",
+        "checkReservations": "Échec de la vérification des réservations.",
+        "loadAvailableCars": "Échec du chargement des véhicules disponibles.",
+        "changeReservationCar": "Échec du changement de véhicule de la réservation.",
+        "create": "Échec de la création de l'accident."
+      }
     }
   }
 }

@@ -11,6 +11,7 @@
   <ItemGroup>
     <Folder Include="src\components\Loading\" />
     <Folder Include="src\components\InstallButton\" />
+    <Folder Include="src\pages\Accidents\Add\" />
     <Folder Include="src\pages\Agencies\Details\" />
     <Folder Include="src\pages\Agencies\Create\" />
     <Folder Include="src\pages\Agencies\List\" />

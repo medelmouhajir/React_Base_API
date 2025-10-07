@@ -118,7 +118,8 @@
     "optional": "اختياري",
     "next": "التالي",
     "previous": "السابق",
-    "add": "إضافة"
+    "add": "إضافة",
+    "continue": "متابعة"
   },
   "landing": {
     "features": "الميزات",
@@ -2537,6 +2538,55 @@
       "yesterday": "أمس",
       "thisWeek": "هذا الأسبوع",
       "earlier": "سابقاً"
+    }
+  },
+  "accidents": {
+    "accidentDate": "تاريخ الحادث",
+    "notes": "ملاحظات",
+    "expertFullname": "الخبير (الاسم الكامل)",
+    "expertPhone": "هاتف الخبير",
+    "add": {
+      "steps": {
+        "dateAndCar": "التاريخ والسيارة",
+        "reservation": "الحجز",
+        "details": "التفاصيل"
+      },
+      "selectDateAndCar": "اختر التاريخ والسيارة",
+      "selectDateAndCarDescription": "حدد وقت وقوع الحادث والسيارة المعنية.",
+      "handleOngoingReservation": "التعامل مع حجز جارٍ",
+      "reservationFoundDescription": "هذه السيارة لديها حجز جارٍ خلال التاريخ المحدد. اختر طريقة المتابعة.",
+      "ongoingReservation": "حجز جارٍ",
+      "whatToDo": "ماذا تود أن تفعل؟",
+      "actions": {
+        "completeReservation": "إنهاء الحجز",
+        "completeDescription": "وَسِّم الحجز كمكتمل وأعد السيارة قبل إضافة الحادث.",
+        "doNothing": "عدم القيام بأي شيء",
+        "nothingDescription": "أبقِ الحجز كما هو ثم تابع إضافة الحادث.",
+        "changeCar": "تغيير سيارة الحجز",
+        "changeCarDescription": "انقل الحجز إلى سيارة أخرى متاحة ثم تابع."
+      },
+      "selectNewCar": "اختر سيارة جديدة",
+      "accidentDetails": "تفاصيل الحادث",
+      "fillDetailsDescription": "أدخل تفاصيل الحادث ومعلومات الخبير (اختياري).",
+      "notesPlaceholder": "صف ما حدث...",
+      "expertNamePlaceholder": "أدخل الاسم الكامل للخبير (اختياري)",
+      "expertPhonePlaceholder": "أدخل هاتف الخبير (اختياري)",
+      "createAccident": "إنشاء حادث",
+      "reservationCarChanged": "تم تغيير سيارة الحجز بنجاح.",
+      "success": "تم إنشاء الحادث بنجاح.",
+      "validation": {
+        "accidentDateRequired": "تاريخ الحادث مطلوب.",
+        "carRequired": "يرجى اختيار سيارة.",
+        "notesRequired": "الملاحظات مطلوبة.",
+        "fixErrors": "يرجى تصحيح الأخطاء والمحاولة مرة أخرى."
+      },
+      "errors": {
+        "loadCars": "فشل تحميل السيارات.",
+        "checkReservations": "فشل التحقق من الحجوزات.",
+        "loadAvailableCars": "فشل تحميل السيارات المتاحة.",
+        "changeReservationCar": "فشل تغيير سيارة الحجز.",
+        "create": "فشل إنشاء الحادث."
+      }
     }
   }
 }

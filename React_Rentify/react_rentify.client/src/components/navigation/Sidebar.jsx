@@ -111,6 +111,23 @@ const icons = {
             <path strokeLinecap="round" strokeWidth="2" d="M13 12h3M13 15h3" />
         </svg>
     ),
+    carAccident: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            {/* Car body */}
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M3 13l1.5-4.5A2 2 0 0 1 6.4 7h7.2a2 2 0 0 1 1.9 1.5L17 13H3z" />
+            {/* Wheels */}
+            <circle cx="6.5" cy="16.5" r="1.5" strokeWidth="2" />
+            <circle cx="15.5" cy="16.5" r="1.5" strokeWidth="2" />
+            {/* Crash impact lines */}
+            <path strokeLinecap="round" strokeWidth="2"
+                d="M18 10l2-1M19 8l2-2M18 6l1-2" />
+            {/* Smoke or spark effect */}
+            <path strokeLinecap="round" strokeWidth="2"
+                d="M19.5 11.5c.5.5 1 1.5.5 2.5" />
+        </svg>
+    ),
+
 };
 
 // Dummy shortcuts data
@@ -166,6 +183,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
             { id: 'maintenance', label: t('sidebar.maintenances'), icon: icons.maintenance, path: '/maintenances' },
             { id: 'serviceAlerts', label: t('sidebar.serviceAlerts'), icon: icons.serviceAlerts, path: '/service-alerts' },
             { id: 'invoices', label: t('sidebar.invoices'), icon: icons.invoices, path: '/invoices' },
+            { id: 'accidents', label: t('sidebar.accidents'), icon: icons.carAccident, path: '/accidents' },
             { id: 'gadgets', label: t('sidebar.gadgets'), icon: icons.gadgets, path: '/gadgets' },
             { id: 'reports', label: t('sidebar.reports'), icon: icons.reports, path: '/reports' },
             { id: 'gps', label: t('sidebar.gpsTracking'), icon: icons.gps, path: '/gps' },

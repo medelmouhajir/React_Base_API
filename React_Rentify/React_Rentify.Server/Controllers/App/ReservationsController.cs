@@ -694,11 +694,12 @@ namespace React_Rentify.Server.Controllers.App
                 .Include(x=> x.Car_Model)
                 .ThenInclude(x=> x.Manufacturer)
                 .Include(x=> x.Car_Year)
+                .Include(x=> x.Car_Images)
                 .Where(c => !busyCarIds.Contains(c.Id) && c.AgencyId == car.AgencyId)
                 .ToListAsync();
 
             // Map to lightweight DTO
-            var result = availableCars.Select(c => new Car
+            var result = availableCars.Select(c => new
             {
                 Id = c.Id,
                 AgencyId = c.AgencyId,
@@ -726,6 +727,7 @@ namespace React_Rentify.Server.Controllers.App
                 IsAvailable = c.IsAvailable,
                 LicensePlate = c.LicensePlate,
                 Status = c.Status,
+                ImageUrl = c.Car_Images.FirstOrDefault(x=> x.IsMainImage)
                 // add any other fields you need
             });
 
