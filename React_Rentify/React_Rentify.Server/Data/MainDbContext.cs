@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using React_Rentify.Server.Models.Accidents;
 using React_Rentify.Server.Models.Agencies;
 using React_Rentify.Server.Models.Alerts;
 using React_Rentify.Server.Models.Blacklists;
@@ -66,7 +67,9 @@ namespace React_Rentify.Server.Data
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Maintenance_Record> MaintenanceRecords { get; set; }
-        public DbSet<Blacklist_Entry> Blacklist { get; set; }
+        public DbSet<Accident> Accidents { get; set; }
+        public DbSet<Accident_Expense> Accident_Expenses { get; set; }
+        public DbSet<Accident_Refund> Accident_Refunds { get; set; }
 
         // ----- New additions -----
         public DbSet<Service_Alert> ServiceAlerts { get; set; }

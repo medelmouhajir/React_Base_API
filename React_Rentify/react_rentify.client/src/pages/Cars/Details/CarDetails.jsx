@@ -128,18 +128,17 @@ const CarDetails = () => {
     };
 
     const handleFileUpload = async () => {
-        if (!fileToUpload) return;
+        if (!fileToUpload) {
+            setFileError(t('attachment.noFileSelected') || 'No file selected');
+            return;
+        }
 
         setUploadingFile(true);
         setFileError(null);
 
         try {
-            const formData = new FormData();
-            // Match the DTO property names exactly
-            formData.append('file', fileToUpload);
-            formData.append('fileName', fileToUpload.name);
-
-            await carAttachmentService.addAttachment(id, formData);
+            // Use uploadFile instead of addAttachment
+            await carAttachmentService.uploadFile(id, fileToUpload);
 
             // Refresh attachments
             const updatedCar = await carService.getById(id);

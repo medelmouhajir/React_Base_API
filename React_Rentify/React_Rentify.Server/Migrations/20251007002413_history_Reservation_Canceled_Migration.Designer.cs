@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using React_Rentify.Server.Data;
@@ -11,9 +12,11 @@ using React_Rentify.Server.Data;
 namespace React_Rentify.Server.Migrations
 {
     [DbContext(typeof(MainDbContext))]
-    partial class MainDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251007002413_history_Reservation_Canceled_Migration")]
+    partial class history_Reservation_Canceled_Migration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,114 +157,6 @@ namespace React_Rentify.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("React_Rentify.Server.Models.Accidents.Accident", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("AccidentDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("AgencyId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("CarId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedByUserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ExpertFullname")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ExpertPhone")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("ReservationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AgencyId");
-
-                    b.HasIndex("CarId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("ReservationId");
-
-                    b.ToTable("Accidents");
-                });
-
-            modelBuilder.Entity("React_Rentify.Server.Models.Accidents.Accident_Expense", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AccidentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FilePath")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccidentId");
-
-                    b.ToTable("Accident_Expenses");
-                });
-
-            modelBuilder.Entity("React_Rentify.Server.Models.Accidents.Accident_Refund", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AccidentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("Amount")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FilePath")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccidentId");
-
-                    b.ToTable("Accident_Refunds");
-                });
-
             modelBuilder.Entity("React_Rentify.Server.Models.Agencies.Agency", b =>
                 {
                     b.Property<Guid>("Id")
@@ -367,6 +262,42 @@ namespace React_Rentify.Server.Migrations
                     b.ToTable("ServiceAlerts");
                 });
 
+            modelBuilder.Entity("React_Rentify.Server.Models.Blacklists.Blacklist_Entry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DateAdded")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LicenseNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NationalId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PassportId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ReportedByAgencyId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReportedByAgencyId");
+
+                    b.ToTable("Blacklist");
+                });
+
             modelBuilder.Entity("React_Rentify.Server.Models.Cars.Car", b =>
                 {
                     b.Property<Guid>("Id")
@@ -375,15 +306,6 @@ namespace React_Rentify.Server.Migrations
 
                     b.Property<Guid>("AgencyId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("AssuranceEndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("AssuranceName")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("AssuranceStartDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Car_ModelId")
                         .IsRequired()
@@ -430,12 +352,6 @@ namespace React_Rentify.Server.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("TechnicalVisitEndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("TechnicalVisitStartDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -1535,59 +1451,6 @@ namespace React_Rentify.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("React_Rentify.Server.Models.Accidents.Accident", b =>
-                {
-                    b.HasOne("React_Rentify.Server.Models.Agencies.Agency", "Agency")
-                        .WithMany()
-                        .HasForeignKey("AgencyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("React_Rentify.Server.Models.Cars.Car", "Car")
-                        .WithMany()
-                        .HasForeignKey("CarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("React_Rentify.Server.Models.Users.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId");
-
-                    b.HasOne("React_Rentify.Server.Models.Reservations.Reservation", "Reservation")
-                        .WithMany()
-                        .HasForeignKey("ReservationId");
-
-                    b.Navigation("Agency");
-
-                    b.Navigation("Car");
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("Reservation");
-                });
-
-            modelBuilder.Entity("React_Rentify.Server.Models.Accidents.Accident_Expense", b =>
-                {
-                    b.HasOne("React_Rentify.Server.Models.Accidents.Accident", "Accident")
-                        .WithMany("Accident_Expenses")
-                        .HasForeignKey("AccidentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Accident");
-                });
-
-            modelBuilder.Entity("React_Rentify.Server.Models.Accidents.Accident_Refund", b =>
-                {
-                    b.HasOne("React_Rentify.Server.Models.Accidents.Accident", "Accident")
-                        .WithMany("Accident_Refunds")
-                        .HasForeignKey("AccidentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Accident");
-                });
-
             modelBuilder.Entity("React_Rentify.Server.Models.Agencies.Agency_Attachment", b =>
                 {
                     b.HasOne("React_Rentify.Server.Models.Agencies.Agency", "Agency")
@@ -1610,6 +1473,17 @@ namespace React_Rentify.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Car");
+                });
+
+            modelBuilder.Entity("React_Rentify.Server.Models.Blacklists.Blacklist_Entry", b =>
+                {
+                    b.HasOne("React_Rentify.Server.Models.Agencies.Agency", "ReportedByAgency")
+                        .WithMany()
+                        .HasForeignKey("ReportedByAgencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ReportedByAgency");
                 });
 
             modelBuilder.Entity("React_Rentify.Server.Models.Cars.Car", b =>
@@ -1933,13 +1807,6 @@ namespace React_Rentify.Server.Migrations
                         .HasForeignKey("AgencyId");
 
                     b.Navigation("Agency");
-                });
-
-            modelBuilder.Entity("React_Rentify.Server.Models.Accidents.Accident", b =>
-                {
-                    b.Navigation("Accident_Expenses");
-
-                    b.Navigation("Accident_Refunds");
                 });
 
             modelBuilder.Entity("React_Rentify.Server.Models.Agencies.Agency", b =>

@@ -77,9 +77,12 @@ namespace React_Rentify.Server.Controllers.App
                     .ThenInclude(x => x.Customer)
                     .Include(x=> x.CreatedByUser)
                     .Include(r => r.Invoice)
+                    .Include(x=> x.Car)
+                    .ThenInclude(x=> x.Car_Images)
                     .Where(x => x.Id == id)
                     .Select(x => new
                     {
+                        x.Id,
                         AgencyId = x.AgencyId,
                         CarId = x.CarId,
                         ActualStartTime = x.ActualStartTime,
@@ -121,7 +124,7 @@ namespace React_Rentify.Server.Controllers.App
                                 Email = c.Customer.Email,
                             }
                         ),
-                        Car = new Car
+                        Car = new
                         {
                             Id = x.CarId,
                             LicensePlate = x.Car.LicensePlate,
@@ -136,14 +139,51 @@ namespace React_Rentify.Server.Controllers.App
                                 }
                             },
                             CurrentKM = x.Car.CurrentKM,
-                            LastKmUpdate = x.Car.LastKmUpdate
+                            LastKmUpdate = x.Car.LastKmUpdate,
+                            ImageUrl = x.Car.Car_Images.FirstOrDefault(c=> c.IsMainImage)
                         },
                         CreatedBy = x.CreatedByUser == null ? null : new
                         {
                             x.CreatedByUser.Id,
                             x.CreatedByUser.FullName,
                             x.CreatedByUser.Picture
-                        }
+                        },
+                        UpdatedBy = x.LastUpdateByUser == null ? null : new
+                        {
+                            x.LastUpdateByUser.Id,
+                            x.LastUpdateByUser.FullName,
+                            x.LastUpdateByUser.Picture
+                        },
+                        DelivredBy = x.DelivredByUser == null ? null : new
+                        {
+                            x.DelivredByUser.Id,
+                            x.DelivredByUser.FullName,
+                            x.DelivredByUser.Picture
+                        },
+                        ReturnedBy = x.ReturnedToUser == null ? null : new
+                        {
+                            x.ReturnedToUser.Id,
+                            x.ReturnedToUser.FullName,
+                            x.ReturnedToUser.Picture
+                        },
+                        InvoicedBy = x.InvoicedByUser == null ? null : new
+                        {
+                            x.InvoicedByUser.Id,
+                            x.InvoicedByUser.FullName,
+                            x.InvoicedByUser.Picture
+                        },
+                        CanceledBy = x.CanceledByUser == null ? null : new
+                        {
+                            x.CanceledByUser.Id,
+                            x.CanceledByUser.FullName,
+                            x.CanceledByUser.Picture
+                        },
+                        x.CreatedAt,
+                        x.LastUpdateAt,
+                        x.DelivredAt,
+                        x.ReturnedAt,
+                        x.InvoicedAt,
+                        x.CanceledAt
                     })
                     .FirstOrDefaultAsync();
 
@@ -305,7 +345,8 @@ namespace React_Rentify.Server.Controllers.App
                 AgreedPrice = dto.AgreedPrice,
                 PickupLocation = dto.PickupLocation,
                 DropoffLocation = dto.DropoffLocation,
-                CreatedByUserId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                CreatedByUserId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.Set<Reservation>().Add(reservation);
@@ -422,6 +463,9 @@ namespace React_Rentify.Server.Controllers.App
             existing.FuelLevelEnd = dto.FuelLevelEnd;
             existing.PickupLocation = dto.PickupLocation;
             existing.DropoffLocation = dto.DropoffLocation;
+
+            existing.LastUpdateByUserId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            existing.LastUpdateAt = DateTime.UtcNow;
 
             _context.Entry(existing).State = EntityState.Modified;
 
@@ -837,6 +881,9 @@ namespace React_Rentify.Server.Controllers.App
             reservation.Car.CurrentKM = dto.OdometerStart;
             reservation.Car.LastKmUpdate = DateTime.UtcNow;
 
+            reservation.DelivredByUserId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            reservation.DelivredAt = DateTime.UtcNow;
+
             _context.Entry(reservation).State = EntityState.Modified;
 
             _context.Entry(reservation.Car).State = EntityState.Modified;
@@ -890,6 +937,9 @@ namespace React_Rentify.Server.Controllers.App
             reservation.Car.Status = "Available";
             reservation.Car.CurrentKM = dto.OdometerEnd;
             reservation.Car.LastKmUpdate = DateTime.UtcNow;
+
+            reservation.ReturnedToUserId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            reservation.ReturnedAt = DateTime.UtcNow;
 
             _context.Entry(reservation).State = EntityState.Modified;
 

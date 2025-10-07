@@ -2569,6 +2569,19 @@
       "invoiceGenerated": "Invoice Generated",
       "invoicePaid": "Invoice Paid",
       "invoiceOverdue": "Invoice Overdue"
+    },
+    "tabs": {
+      "all": "All",
+      "unread": "Unread",
+      "reservation": "Reservation",
+      "gps": "GPS",
+      "maintenance": "Maintenance"
+    },
+    "groups": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "thisWeek": "This week",
+      "earlier": "Earlier"
     }
   }
 }

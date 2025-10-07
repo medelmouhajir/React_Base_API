@@ -57,6 +57,7 @@
     <Folder Include="src\pages\Reports\Agency\" />
     <Folder Include="src\pages\Reports\Financial\" />
     <Folder Include="src\pages\Reservations\Add\" />
+    <Folder Include="src\pages\Reservations\Details\Componentss\" />
     <Folder Include="src\pages\Reservations\Edit\" />
     <Folder Include="src\pages\Reservations\List\" />
     <Folder Include="src\pages\Reservations\Contract\" />

@@ -82,6 +82,16 @@ namespace React_Rentify.Server.Models.Cars
         public Engine_Type Engine_Type { get; set; } = Engine_Type.DIESEL;
 
 
+        // === Legal Documents ===
+        // Assurance
+        public string? AssuranceName { get; set; }
+        public DateTime? AssuranceStartDate { get; set; }
+        public DateTime? AssuranceEndDate { get; set; }
+        // Technical Visit
+        public DateTime? TechnicalVisitStartDate { get; set; }
+        public DateTime? TechnicalVisitEndDate { get; set; }
+
+
         // === Navigation ===
         public virtual ICollection<Reservation>? Reservations { get; set; }
         public virtual ICollection<Maintenance_Record>? MaintenanceRecords { get; set; }

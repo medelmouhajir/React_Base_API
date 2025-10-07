@@ -2503,6 +2503,19 @@
       "invoiceGenerated": "Facture générée",
       "invoicePaid": "Facture payée",
       "invoiceOverdue": "Facture en retard"
+    },
+    "tabs": {
+      "all": "Toutes",
+      "unread": "Non lues",
+      "reservation": "Réservations",
+      "gps": "GPS",
+      "maintenance": "Maintenance"
+    },
+    "groups": {
+      "today": "Aujourd’hui",
+      "yesterday": "Hier",
+      "thisWeek": "Cette semaine",
+      "earlier": "Plus tôt"
     }
   }
 }

@@ -19,32 +19,31 @@ const CustomersList = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [sortConfig, setSortConfig] = useState({ key: 'fullName', direction: 'ascending' });
-    const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'table'
-    const [showFilters, setShowFilters] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
-    // Filter states
     const [statusFilter, setStatusFilter] = useState('all');
+    const [showFilterSheet, setShowFilterSheet] = useState(false);
     const [sortBy, setSortBy] = useState('fullName');
+    const [selectedCustomers, setSelectedCustomers] = useState(new Set());
+    const [isSelectionMode, setIsSelectionMode] = useState(false);
+    const [showDeleteToast, setShowDeleteToast] = useState(false);
+    const [deletedCustomer, setDeletedCustomer] = useState(null);
 
-    // Handle window resize for mobile detection
+    // Handle window resize
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
         };
-
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Fetch customers on mount or when agencyId changes
+    // Fetch customers
     useEffect(() => {
         fetchCustomers();
     }, [agencyId]);
 
     const fetchCustomers = async () => {
         if (!agencyId) return;
-
         setIsLoading(true);
         setError(null);
 
@@ -52,43 +51,72 @@ const CustomersList = () => {
             const data = await customerService.getByAgencyId(agencyId);
             setCustomers(data || []);
         } catch (err) {
-            console.error('❌ Error fetching customers:', err);
+            console.error('Error fetching customers:', err);
             setError(t('customer.list.error', 'Failed to load customers'));
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Enhanced delete handler with better UX
+    // Get initials for avatar
+    const getInitials = (name) => {
+        if (!name) return '?';
+        const names = name.trim().split(' ');
+        if (names.length >= 2) {
+            return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+        }
+        return name.substring(0, 2).toUpperCase();
+    };
+
+    // Get avatar color based on name
+    const getAvatarColor = (name) => {
+        if (!name) return '#6366f1';
+        const colors = [
+            '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e',
+            '#f59e0b', '#10b981', '#06b6d4', '#3b82f6'
+        ];
+        const index = name.charCodeAt(0) % colors.length;
+        return colors[index];
+    };
+
+    // Enhanced delete handler with undo
     const handleDelete = async (customer, e) => {
-        e.stopPropagation();
+        if (e) e.stopPropagation();
 
-        const confirmMessage = t('customer.list.confirmDelete',
-            `Are you sure you want to delete ${customer.fullName}? This action cannot be undone.`);
+        setDeletedCustomer(customer);
+        setCustomers(prev => prev.filter(c => c.id !== customer.id));
+        setShowDeleteToast(true);
 
-        if (!window.confirm(confirmMessage)) return;
+        setTimeout(() => {
+            if (deletedCustomer?.id === customer.id) {
+                customerService.delete(customer.id).catch(err => {
+                    console.error('Error deleting customer:', err);
+                    setCustomers(prev => [...prev, customer]);
+                });
+                setShowDeleteToast(false);
+                setDeletedCustomer(null);
+            }
+        }, 5000);
+    };
 
-        try {
-            await customerService.delete(customer.id);
-            setCustomers(prev => prev.filter(c => c.id !== customer.id));
-        } catch (err) {
-            console.error('❌ Error deleting customer:', err);
-            alert(t('customer.list.deleteError', 'Failed to delete customer'));
+    // Undo delete
+    const handleUndoDelete = () => {
+        if (deletedCustomer) {
+            setCustomers(prev => [...prev, deletedCustomer]);
+            setShowDeleteToast(false);
+            setDeletedCustomer(null);
         }
     };
 
-    // Enhanced filtering and sorting
+    // Filtering and sorting
     const filteredAndSortedCustomers = useMemo(() => {
         let filtered = customers.filter(customer => {
-            // Search filter
             const searchTermLower = searchTerm.toLowerCase();
             const matchesSearch = !searchTerm ||
                 customer.fullName?.toLowerCase().includes(searchTermLower) ||
                 customer.email?.toLowerCase().includes(searchTermLower) ||
-                customer.phoneNumber?.toLowerCase().includes(searchTermLower) ||
-                customer.licenseNumber?.toLowerCase().includes(searchTermLower);
+                customer.phoneNumber?.toLowerCase().includes(searchTermLower);
 
-            // Status filter
             const matchesStatus = statusFilter === 'all' ||
                 (statusFilter === 'blacklisted' && customer.isBlacklisted) ||
                 (statusFilter === 'active' && !customer.isBlacklisted);
@@ -96,7 +124,6 @@ const CustomersList = () => {
             return matchesSearch && matchesStatus;
         });
 
-        // Sort filtered results
         filtered.sort((a, b) => {
             const aValue = a[sortBy] || '';
             const bValue = b[sortBy] || '';
@@ -107,421 +134,327 @@ const CustomersList = () => {
                     : bValue.localeCompare(aValue);
             }
 
-            if (sortConfig.direction === 'ascending') {
-                return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-            } else {
-                return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-            }
+            return sortConfig.direction === 'ascending'
+                ? (aValue < bValue ? -1 : 1)
+                : (aValue > bValue ? -1 : 1);
         });
 
         return filtered;
     }, [customers, searchTerm, statusFilter, sortBy, sortConfig.direction]);
 
-    // Handle sorting
-    const handleSort = (key) => {
-        setSortConfig(prev => ({
-            key,
-            direction: prev.key === key && prev.direction === 'ascending' ? 'descending' : 'ascending'
-        }));
-        setSortBy(key);
-    };
+    // Quick filter
+    const QuickFilter = ({ label, value, count }) => (
+        <button
+            className={`quick-filter-chip ${statusFilter === value ? 'active' : ''}`}
+            onClick={() => setStatusFilter(value)}
+        >
+            {label}
+            <span className="chip-count">{count}</span>
+        </button>
+    );
 
-    // Handle customer card click
-    const handleCustomerClick = (customerId) => {
-        navigate(`/customers/${customerId}`);
-    };
+    // Statistics
+    const totalCustomers = customers.length;
+    const blacklistedCount = customers.filter(c => c.isBlacklisted).length;
+    const activeCount = totalCustomers - blacklistedCount;
 
-    // Format date helper
-    const formatDate = (dateString) => {
-        if (!dateString) return '—';
-        try {
-            return new Date(dateString).toLocaleDateString();
-        } catch {
-            return '—';
-        }
-    };
-
-    // Handle view mode toggle
-    const toggleViewMode = () => {
-        setViewMode(prev => prev === 'cards' ? 'table' : 'cards');
-    };
-
-    // Loading state
+    // Loading skeleton
     if (isLoading) {
         return (
-            <div className={`customerlist-container ${isDarkMode ? 'dark' : ''}`}>
-                <div className="customerlist-loading">
-                    <div className="loading-spinner"></div>
-                    <p>{t('common.loading', 'Loading')}...</p>
+            <div className={`customers-modern-container ${isDarkMode ? 'dark' : ''}`}>
+                <div className="skeleton-loader">
+                    {[...Array(6)].map((_, i) => (
+                        <div key={i} className="skeleton-card">
+                            <div className="skeleton-avatar"></div>
+                            <div className="skeleton-content">
+                                <div className="skeleton-line"></div>
+                                <div className="skeleton-line short"></div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         );
     }
 
-    // Statistics
-    const totalCustomers = customers.length;
-    const blacklistedCustomers = customers.filter(c => c.isBlacklisted).length;
-    const filteredCount = filteredAndSortedCustomers.length;
-
     return (
-        <div className={`customerlist-container ${isDarkMode ? 'dark' : ''}`}>
-            {/* Header Section */}
-            <div className="customerlist-header">
-                <div className="header-main">
-                    <h1 className="customerlist-title">
-                        {t('customer.list.title', 'Customers')}
-                    </h1>
-                    <div className="header-stats">
-                        <span className="stat-item">
-                            <span className="stat-label">{t('customer.list.total', 'Total')}:</span>
-                            <span className="stat-value">{totalCustomers}</span>
-                        </span>
-                        {blacklistedCustomers > 0 && (
-                            <span className="stat-item blacklisted">
-                                <span className="stat-label">{t('customer.list.blacklisted', 'Blacklisted')}:</span>
-                                <span className="stat-value">{blacklistedCustomers}</span>
-                            </span>
-                        )}
-                        {filteredCount !== totalCustomers && (
-                            <span className="stat-item filtered">
-                                <span className="stat-label">{t('customer.list.showing', 'Showing')}:</span>
-                                <span className="stat-value">{filteredCount}</span>
-                            </span>
-                        )}
-                    </div>
+        <div className={`customers-modern-container ${isDarkMode ? 'dark' : ''}`}>
+            {/* Hero Header with Gradient */}
+            <div className="hero-header">
+                <div className="hero-content">
+                    <div className="hero-icon">👥</div>
+                    <h1 className="hero-title">{t('customer.list.title', 'Customers')}</h1>
+                    <p className="hero-subtitle">
+                        {t('customer.list.subtitle', 'Manage your customer relationships')}
+                    </p>
                 </div>
 
-                <div className="header-actions">
-                    <button
-                        className="btn-add"
-                        onClick={() => navigate('/customers/add')}
-                        aria-label={t('customer.list.addNew', 'Add New Customer')}
-                    >
-                        <span className="btn-icon">+</span>
-                        <span className="btn-text">{t('customer.list.addNew', 'Add Customer')}</span>
-                    </button>
+                {/* Stats Cards */}
+                <div className="stats-grid">
+                    <div className="stat-card primary">
+                        <div className="stat-icon">📊</div>
+                        <div className="stat-info">
+                            <span className="stat-label">{t('customer.list.total', 'Total')}</span>
+                            <span className="stat-value">{totalCustomers}</span>
+                        </div>
+                    </div>
+                    <div className="stat-card success">
+                        <div className="stat-icon">✓</div>
+                        <div className="stat-info">
+                            <span className="stat-label">{t('customer.list.active', 'Active')}</span>
+                            <span className="stat-value">{activeCount}</span>
+                        </div>
+                    </div>
+                    {blacklistedCount > 0 && (
+                        <div className="stat-card danger">
+                            <div className="stat-icon">⚠</div>
+                            <div className="stat-info">
+                                <span className="stat-label">{t('customer.list.blacklisted', 'Blacklisted')}</span>
+                                <span className="stat-value">{blacklistedCount}</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
             {/* Error Display */}
             {error && (
-                <div className="customerlist-error" role="alert">
+                <div className="error-banner">
                     <span className="error-icon">⚠️</span>
-                    <span className="error-message">{error}</span>
-                    <button
-                        className="error-retry"
-                        onClick={fetchCustomers}
-                        aria-label={t('common.retry', 'Retry')}
-                    >
+                    <span>{error}</span>
+                    <button onClick={fetchCustomers} className="error-retry-btn">
                         {t('common.retry', 'Retry')}
                     </button>
                 </div>
             )}
 
-            {/* Search and Filter Section */}
-            <div className="customerlist-controls">
-                <div className="search-customers-section">
-                    <div className="search-customers-input-wrapper">
-                        <input
-                            type="text"
-                            className="search-customers-input"
-                            placeholder={t('customer.list.searchPlaceholder', 'Search customers by name, email, phone...')}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            aria-label={t('customer.list.searchPlaceholder', 'Search customers')}
-                        />
-                        <span className="search-customers-icon">🔍</span>
-                    </div>
-
-                    <div className="control-buttons">
-                        <button
-                            className={`filter-customers-toggle ${showFilters ? 'active' : ''}`}
-                            onClick={() => setShowFilters(!showFilters)}
-                            aria-label={t('customer.list.toggleFilters', 'Toggle Filters')}
-                        >
-                            <span className="filter-customers-icon">⚙️</span>
-                            <span className="filter-customers-text">{t('customer.list.filters', 'Filters')}</span>
+            {/* Search Bar */}
+            <div className="search-bar-container">
+                <div className="search-customers-input-wrapper">
+                    <svg className="search-customers-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input
+                        type="search"
+                        className="search-customers-input"
+                        placeholder={t('customer.list.searchPlaceholder', 'Search by name, email, or phone...')}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    {searchTerm && (
+                        <button className="customers-clear-search" onClick={() => setSearchTerm('')}>
+                            ✕
                         </button>
-
-                        {!isMobile && (
-                            <button
-                                className={`view-customers-toggle ${viewMode}`}
-                                onClick={toggleViewMode}
-                                aria-label={t('customer.list.toggleView', 'Toggle View Mode')}
-                                title={viewMode === 'cards' ? t('customer.list.tableView', 'Table View') : t('customer.list.cardView', 'Card View')}
-                            >
-                                <span className="view-customers-icon">
-                                    {viewMode === 'cards' ? '☰' : '▦'}
-                                </span>
-                            </button>
-                        )}
-                    </div>
+                    )}
                 </div>
 
-                {/* Expandable Filters */}
-                {showFilters && (
-                    <div className="filters-section">
-                        <div className="filter-customers-grid">
-                            <div className="filter-customers-group">
-                                <label className="filter-customers-label">
-                                    {t('customer.list.filterByStatus', 'Status')}
-                                </label>
-                                <select
-                                    className="filter-customers-select"
-                                    value={statusFilter}
-                                    onChange={(e) => setStatusFilter(e.target.value)}
-                                >
-                                    <option value="all">{t('customer.list.allCustomers', 'All Customers')}</option>
-                                    <option value="active">{t('customer.list.activeOnly', 'Active Only')}</option>
-                                    <option value="blacklisted">{t('customer.list.blacklistedOnly', 'Blacklisted Only')}</option>
-                                </select>
-                            </div>
-
-                            <div className="filter-customers-group">
-                                <label className="filter-customers-label">
-                                    {t('customer.list.sortBy', 'Sort By')}
-                                </label>
-                                <select
-                                    className="filter-customers-select"
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                >
-                                    <option value="fullName">{t('customer.fields.fullName', 'Full Name')}</option>
-                                    <option value="email">{t('customer.fields.email', 'Email')}</option>
-                                    <option value="phoneNumber">{t('customer.fields.phoneNumber', 'Phone Number')}</option>
-                                    <option value="dateOfBirth">{t('customer.fields.dateOfBirth', 'Date of Birth')}</option>
-                                </select>
-                            </div>
-
-                            <div className="filter-customers-group">
-                                <label className="filter-customers-label">
-                                    {t('customer.list.sortOrder', 'Order')}
-                                </label>
-                                <select
-                                    className="filter-customers-select"
-                                    value={sortConfig.direction}
-                                    onChange={(e) => setSortConfig(prev => ({ ...prev, direction: e.target.value }))}
-                                >
-                                    <option value="ascending">{t('customer.list.ascending', 'A-Z / Low-High')}</option>
-                                    <option value="descending">{t('customer.list.descending', 'Z-A / High-Low')}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                <button
+                    className="filter-btn"
+                    onClick={() => setShowFilterSheet(!showFilterSheet)}
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 6h18M7 12h10M11 18h2" />
+                    </svg>
+                </button>
             </div>
 
-            {/* Results Section */}
-            <div className="customerlist-results">
+            {/* Quick Filter Chips */}
+            <div className="quick-filters">
+                <QuickFilter label={t('customer.list.all', 'All')} value="all" count={totalCustomers} />
+                <QuickFilter label={t('customer.list.active', 'Active')} value="active" count={activeCount} />
+                <QuickFilter label={t('customer.list.blacklisted', 'Blacklisted')} value="blacklisted" count={blacklistedCount} />
+            </div>
+
+            {/* Filter Bottom Sheet (Mobile) */}
+            {showFilterSheet && (
+                <div className="bottom-sheet-overlay" onClick={() => setShowFilterSheet(false)}>
+                    <div className="bottom-sheet" onClick={(e) => e.stopPropagation()}>
+                        <div className="sheet-handle"></div>
+                        <h3 className="sheet-title">{t('customer.list.filters', 'Filters & Sorting')}</h3>
+
+                        <div className="sheet-content">
+                            <div className="filter-group">
+                                <label>{t('customer.list.sortBy', 'Sort By')}</label>
+                                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                                    <option value="fullName">{t('customer.fields.fullName', 'Name')}</option>
+                                    <option value="email">{t('customer.fields.email', 'Email')}</option>
+                                    <option value="phoneNumber">{t('customer.fields.phoneNumber', 'Phone')}</option>
+                                </select>
+                            </div>
+
+                            <div className="filter-group">
+                                <label>{t('customer.list.sortOrder', 'Order')}</label>
+                                <div className="toggle-buttons">
+                                    <button
+                                        className={sortConfig.direction === 'ascending' ? 'active' : ''}
+                                        onClick={() => setSortConfig(prev => ({ ...prev, direction: 'ascending' }))}
+                                    >
+                                        ↑ A-Z
+                                    </button>
+                                    <button
+                                        className={sortConfig.direction === 'descending' ? 'active' : ''}
+                                        onClick={() => setSortConfig(prev => ({ ...prev, direction: 'descending' }))}
+                                    >
+                                        ↓ Z-A
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            className="sheet-close-btn"
+                            onClick={() => setShowFilterSheet(false)}
+                        >
+                            {t('common.apply', 'Apply')}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Customer List */}
+            <div className="customers-list">
                 {filteredAndSortedCustomers.length === 0 ? (
-                    <div className="customerlist-empty">
-                        <div className="empty-icon">👥</div>
+                    <div className="empty-state">
+                        <div className="empty-illustration">
+                            <svg viewBox="0 0 200 200" fill="none">
+                                <circle cx="100" cy="100" r="80" stroke="currentColor" strokeWidth="2" opacity="0.1" />
+                                <path d="M100 60 L100 100 L130 130" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                            </svg>
+                        </div>
                         <h3 className="empty-title">
                             {searchTerm || statusFilter !== 'all'
-                                ? t('customer.list.noResults', 'No customers match your criteria')
+                                ? t('customer.list.noResults', 'No customers found')
                                 : t('customer.list.noCustomers', 'No customers yet')
                             }
                         </h3>
                         <p className="empty-description">
                             {searchTerm || statusFilter !== 'all'
-                                ? t('customer.list.tryDifferentSearch', 'Try adjusting your search or filters')
-                                : t('customer.list.addFirstCustomer', 'Add your first customer to get started')
+                                ? t('customer.list.tryDifferent', 'Try adjusting your search or filters')
+                                : t('customer.list.getStarted', 'Add your first customer to get started')
                             }
                         </p>
                         {!searchTerm && statusFilter === 'all' && (
-                            <button
-                                className="btn-add-empty"
-                                onClick={() => navigate('/customers/add')}
-                            >
-                                {t('customer.list.addFirst', 'Add First Customer')}
+                            <button className="btn-primary" onClick={() => navigate('/customers/add')}>
+                                + {t('customer.list.addFirst', 'Add First Customer')}
                             </button>
                         )}
                     </div>
                 ) : (
                     <>
-                        {/* Table View - Desktop */}
-                        {viewMode === 'table' && !isMobile && (
-                            <div className="customerlist-table-container">
-                                <table className="customerlist-table">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                className={`sortable ${sortBy === 'fullName' ? `sorted-${sortConfig.direction}` : ''}`}
-                                                onClick={() => handleSort('fullName')}
-                                            >
-                                                {t('customer.fields.fullName', 'Full Name')}
-                                                <span className="sort-indicator"></span>
-                                            </th>
-                                            <th
-                                                className={`sortable ${sortBy === 'email' ? `sorted-${sortConfig.direction}` : ''}`}
-                                                onClick={() => handleSort('email')}
-                                            >
-                                                {t('customer.fields.email', 'Email')}
-                                                <span className="sort-indicator"></span>
-                                            </th>
-                                            <th
-                                                className={`sortable ${sortBy === 'phoneNumber' ? `sorted-${sortConfig.direction}` : ''}`}
-                                                onClick={() => handleSort('phoneNumber')}
-                                            >
-                                                {t('customer.fields.phoneNumber', 'Phone')}
-                                                <span className="sort-indicator"></span>
-                                            </th>
-                                            <th>{t('car.fields.status', 'Status')}</th>
-                                            <th className="actions-header">{t('common.actions', 'Actions')}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {filteredAndSortedCustomers.map((customer) => (
-                                            <tr
-                                                key={customer.id}
-                                                onClick={() => handleCustomerClick(customer.id)}
-                                                className="table-row"
-                                            >
-                                                <td className="customer-name-cell">
-                                                    {customer.fullName}
-                                                    {customer.isBlacklisted && (
-                                                        <span className="blacklist-badge">⚠️</span>
-                                                    )}
-                                                </td>
-                                                <td>{customer.email || '—'}</td>
-                                                <td>{customer.phoneNumber || '—'}</td>
-                                                <td>
-                                                    <span className={`status-badge ${customer.isBlacklisted ? 'blacklisted' : 'active'}`}>
-                                                        {customer.isBlacklisted
-                                                            ? t('customer.status.blacklisted', 'Blacklisted')
-                                                            : t('customer.status.active', 'Active')
-                                                        }
-                                                    </span>
-                                                </td>
-                                                <td className="table-actions">
-                                                    <div className="action-buttons">
-                                                        <Link
-                                                            to={`/customers/${customer.id}/edit`}
-                                                            className="btn-table-action edit"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            title={t('common.edit', 'Edit')}
-                                                        >
-                                                            ✏️
-                                                        </Link>
-                                                        <button
-                                                            onClick={(e) => handleDelete(customer, e)}
-                                                            className="btn-table-action delete"
-                                                            title={t('common.delete', 'Delete')}
-                                                        >
-                                                            🗑️
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
+                        {filteredAndSortedCustomers.map((customer) => (
+                            <div
+                                key={customer.id}
+                                className={`customer-card-modern ${customer.isBlacklisted ? 'blacklisted' : ''}`}
+                                onClick={() => navigate(`/customers/${customer.id}`)}
+                            >
+                                {/* Status Bar */}
+                                <div className={`status-bar ${customer.isBlacklisted ? 'red' : 'green'}`}></div>
 
-                        {/* Card View - Mobile and Desktop */}
-                        {(viewMode === 'cards' || isMobile) && (
-                            <div className="customerlist-cards">
-                                {filteredAndSortedCustomers.map((customer) => (
-                                    <div
-                                        key={customer.id}
-                                        className={`customer-card ${customer.isBlacklisted ? 'blacklisted' : ''}`}
-                                        onClick={() => handleCustomerClick(customer.id)}
-                                    >
-                                        <div className="customer-card-header">
-                                            <div className="customer-name-section">
-                                                <h3 className="customer-name">
-                                                    {customer.fullName}
-                                                    {customer.isBlacklisted && (
-                                                        <span className="blacklist-indicator" title={t('customer.status.blacklisted', 'Blacklisted')}>
-                                                            ⚠️
-                                                        </span>
-                                                    )}
-                                                </h3>
-                                                <span className={`status-badge ${customer.isBlacklisted ? 'blacklisted' : 'active'}`}>
-                                                    {customer.isBlacklisted
-                                                        ? t('customer.status.blacklisted', 'Blacklisted')
-                                                        : t('customer.status.active', 'Active')
-                                                    }
-                                                </span>
-                                            </div>
-                                        </div>
+                                {/* Avatar */}
+                                <div
+                                    className="customer-avatar"
+                                    style={{ backgroundColor: getAvatarColor(customer.fullName) }}
+                                >
+                                    {getInitials(customer.fullName)}
+                                </div>
 
-                                        <div className="customer-card-content">
-                                            <div className="customer-info">
-                                                {customer.phoneNumber && (
-                                                    <div className="info-item">
-                                                        <span className="info-label">
-                                                            📞 {t('customer.fields.phoneNumber', 'Phone')}:
-                                                        </span>
-                                                        <span className="info-value">
-                                                            <a href={`tel:${customer.phoneNumber}`} onClick={(e) => e.stopPropagation()}>
-                                                                {customer.phoneNumber}
-                                                            </a>
-                                                        </span>
-                                                    </div>
-                                                )}
-
-                                                {customer.email && (
-                                                    <div className="info-item">
-                                                        <span className="info-label">
-                                                            ✉️ {t('customer.fields.email', 'Email')}:
-                                                        </span>
-                                                        <span className="info-value">
-                                                            <a href={`mailto:${customer.email}`} onClick={(e) => e.stopPropagation()}>
-                                                                {customer.email}
-                                                            </a>
-                                                        </span>
-                                                    </div>
-                                                )}
-
-                                                {customer.licenseNumber && (
-                                                    <div className="info-item">
-                                                        <span className="info-label">
-                                                            🆔 {t('customer.fields.licenseNumber', 'License')}:
-                                                        </span>
-                                                        <span className="info-value">{customer.licenseNumber}</span>
-                                                    </div>
-                                                )}
-
-                                                <div className="info-item">
-                                                    <span className="info-label">
-                                                        🎂 {t('customer.fields.dateOfBirth', 'Date of Birth')}:
-                                                    </span>
-                                                    <span className="info-value">{formatDate(customer.dateOfBirth)}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="customer-card-actions">
-                                            <Link
-                                                to={`/customers/${customer.id}`}
-                                                className="btn-action primary"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                {t('common.details', 'Details')}
-                                            </Link>
-                                            <Link
-                                                to={`/customers/${customer.id}/edit`}
-                                                className="btn-action secondary"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                {t('common.edit', 'Edit')}
-                                            </Link>
-                                            <button
-                                                onClick={(e) => handleDelete(customer, e)}
-                                                className="btn-action danger"
-                                            >
-                                                {t('common.delete', 'Delete')}
-                                            </button>
-                                        </div>
+                                {/* Content */}
+                                <div className="customer-content">
+                                    <div className="customer-header-row">
+                                        <h3 className="customer-name">{customer.fullName}</h3>
+                                        {customer.isBlacklisted && (
+                                            <span className="badge-warning">⚠ Blacklisted</span>
+                                        )}
                                     </div>
-                                ))}
+
+                                    <div className="customer-info">
+                                        {customer.email && (
+                                            <div className="info-item">
+                                                <svg className="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <rect x="3" y="5" width="18" height="14" rx="2" />
+                                                    <path d="m3 7 9 6 9-6" />
+                                                </svg>
+                                                <span>{customer.email}</span>
+                                            </div>
+                                        )}
+                                        {customer.phoneNumber && (
+                                            <div className="info-item">
+                                                <svg className="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                                </svg>
+                                                <span>{customer.phoneNumber}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="customer-actions">
+                                    <button
+                                        className="action-btn-icon"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/customers/${customer.id}/edit`);
+                                        }}
+                                        title={t('common.edit', 'Edit')}
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                        </svg>
+                                    </button>
+                                    <button
+                                        className="action-btn-icon danger"
+                                        onClick={(e) => handleDelete(customer, e)}
+                                        title={t('common.delete', 'Delete')}
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
-                        )}
+                        ))}
                     </>
                 )}
             </div>
+
+            {/* Floating Action Button (Mobile) */}
+            {isMobile && (
+                <button
+                    className="fab"
+                    onClick={() => navigate('/customers/add')}
+                    aria-label={t('customer.list.addNew', 'Add Customer')}
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                </button>
+            )}
+
+            {/* Desktop Add Button */}
+            {!isMobile && (
+                <button
+                    className="btn-add-desktop"
+                    onClick={() => navigate('/customers/add')}
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    <span>{t('customer.list.addNew', 'Add Customer')}</span>
+                </button>
+            )}
+
+            {/* Undo Toast */}
+            {showDeleteToast && (
+                <div className="toast-notification">
+                    <span>{t('customer.list.deleted', 'Customer deleted')}</span>
+                    <button className="toast-undo" onClick={handleUndoDelete}>
+                        {t('common.undo', 'Undo')}
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

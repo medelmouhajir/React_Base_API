@@ -10,6 +10,7 @@ using React_Rentify.Server.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace React_Rentify.Server.Controllers
@@ -257,16 +258,20 @@ namespace React_Rentify.Server.Controllers
                 Payments = new List<Payment>()
             };
 
+
+            reservationExists.InvoicedByUserId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            reservationExists.InvoicedAt = DateTime.UtcNow;
+
             try
             {
+                _context.Entry(reservationExists).State = EntityState.Modified;
                 _context.Set<Invoice>().Add(invoice);
                 await _context.SaveChangesAsync();
             }
             catch (Exception e)
             {
 
-            }
-            ;
+            };
 
             _logger.LogInformation("Created invoice {InvoiceId}", invoice.Id);
 

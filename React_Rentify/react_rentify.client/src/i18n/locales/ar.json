@@ -2524,6 +2524,19 @@
       "invoiceGenerated": "تم إنشاء الفاتورة",
       "invoicePaid": "تم دفع الفاتورة",
       "invoiceOverdue": "فاتورة متأخرة"
+    },
+    "tabs": {
+      "all": "الكل",
+      "unread": "غير مقروء",
+      "reservation": "الحجوزات",
+      "gps": "GPS",
+      "maintenance": "الصيانة"
+    },
+    "groups": {
+      "today": "اليوم",
+      "yesterday": "أمس",
+      "thisWeek": "هذا الأسبوع",
+      "earlier": "سابقاً"
     }
   }
 }
