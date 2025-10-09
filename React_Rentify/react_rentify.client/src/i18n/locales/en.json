@@ -2632,6 +2632,124 @@
         "changeReservationCar": "Failed to change reservation car.",
         "create": "Failed to create accident."
       }
+    },
+    "status": {
+      "created": "Created",
+      "maintenance": "In maintenance",
+      "completed": "Completed"
+    },
+    "list": {
+      "title": "Accidents",
+      "subtitle": "{{filtered}} of {{total}} shown",
+      "loading": "Loading accidents...",
+      "retry": "Retry",
+      "addNew": "Add accident",
+      "addFirst": "Add your first accident",
+      "unknownCar": "Unknown car",
+      "search": {
+        "placeholder": "Search notes, expert, or license plate..."
+      },
+      "filters": {
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "sortBy": "Sort by"
+      },
+      "sort": {
+        "date": "Date",
+        "car": "Car",
+        "status": "Status",
+        "cost": "Net cost",
+        "ascending": "Ascending",
+        "descending": "Descending"
+      },
+      "resultsFound": "{{count}} result(s)",
+      "clearFilters": "Clear filters",
+      "noResults": "No results",
+      "noResults.message": "Try changing your filters or search terms.",
+      "empty": {
+        "title": "No accidents yet",
+        "message": "Create your first accident record to get started."
+      },
+      "totalExpenses": "Total expenses",
+      "totalRefunds": "Total refunds",
+      "netCost": "Net cost",
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "confirmDelete": "Are you sure you want to delete this accident?",
+      "deleteSuccess": "Accident deleted successfully",
+      "error": {
+        "title": "Something went wrong",
+        "fetch": "Failed to load accidents",
+        "delete": "Failed to delete the accident"
+      }
+    },
+    "details": {
+      "loadError": "Failed to load accident data",
+      "updateSuccess": "Accident updated successfully",
+      "updateError": "Failed to update accident",
+      "fillAllFields": "Please fill in all required fields",
+      "expenseAdded": "Expense added",
+      "expenseError": "Failed to add expense",
+      "refundAdded": "Refund added",
+      "refundError": "Failed to add refund",
+      "confirmDeleteExpense": "Delete this expense?",
+      "expenseDeleted": "Expense deleted",
+      "deleteExpenseError": "Failed to delete expense",
+      "confirmDeleteRefund": "Delete this refund?",
+      "refundDeleted": "Refund deleted",
+      "deleteRefundError": "Failed to delete refund",
+
+      "loading": "Loading...",
+      "error": "An error occurred",
+      "backToList": "Back to list",
+      "back": "Back",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "save": "Save",
+      "title": "Accident details",
+
+      "accidentInfo": "Accident information",
+      "accidentDate": "Accident date",
+      "status": "Status",
+      "notes": "Notes",
+
+      "carInfo": "Car information",
+
+      "expertInfo": "Technical expert",
+      "expertName": "Expert name",
+      "expertNamePlaceholder": "Expert's full name",
+      "notAssigned": "Not assigned",
+      "expertPhone": "Expert phone",
+      "expertPhonePlaceholder": "Phone number",
+      "notProvided": "Not provided",
+
+      "financialSummary": "Financial summary",
+      "totalExpenses": "Total expenses",
+      "totalRefunds": "Total refunds",
+      "netCost": "Net cost",
+
+      "expenses": "Expenses",
+      "addExpense": "Add expense",
+      "deleteExpense": "Delete expense",
+      "noExpenses": "No expenses",
+
+      "refunds": "Refunds",
+      "addRefund": "Add refund",
+      "deleteRefund": "Delete refund",
+      "noRefunds": "No refunds",
+
+      "expenseName": "Expense name",
+      "expenseNamePlaceholder": "e.g., Parts, labor...",
+      "expenseAmount": "Expense amount",
+      "attachFile": "Attach file",
+      "optional": "optional",
+
+      "refundName": "Refund name",
+      "refundNamePlaceholder": "e.g., Insurance, third party...",
+      "refundAmount": "Refund amount"
     }
   }
 }

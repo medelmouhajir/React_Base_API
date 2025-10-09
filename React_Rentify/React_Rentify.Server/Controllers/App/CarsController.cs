@@ -412,11 +412,16 @@ namespace React_Rentify.Server.Controllers
                 IsAvailable = true,
                 Status = "Available",
                 DailyRate = dto.DailyRate,
-                HourlyRate = dto.HourlyRate,
                 IsTrackingActive = false,
                 Car_Attachments = new List<Car_Attachment>(),
                 Gear_Type = dto.Gear_Type,
                 Engine_Type = dto.Engine_Type,
+                AssuranceName = dto.AssuranceName,
+                AssuranceEndDate = dto.AssuranceEndDate,
+                AssuranceStartDate = dto.AssuranceStartDate,
+                TechnicalVisitEndDate = dto.TechnicalVisitEndDate,
+                TechnicalVisitStartDate = dto.TechnicalVisitStartDate,
+                CurrentKM = dto.CurrentKM
             };
 
             _context.Set<Car>().Add(car);
@@ -832,13 +837,24 @@ namespace React_Rentify.Server.Controllers
         public string LicensePlate { get; set; }
         public string Color { get; set; }
         public decimal DailyRate { get; set; }
-        public decimal? HourlyRate { get; set; }
+
 
 
         public Gear_type Gear_Type { get; set; }
         public Engine_Type Engine_Type { get; set; }
 
         public List<CarImageDTO>? Images { get; set; }
+
+        public int CurrentKM { get; set; } = 0;
+
+        // === Legal Documents ===
+        // Assurance
+        public string? AssuranceName { get; set; }
+        public DateTime? AssuranceStartDate { get; set; }
+        public DateTime? AssuranceEndDate { get; set; }
+        // Technical Visit
+        public DateTime? TechnicalVisitStartDate { get; set; }
+        public DateTime? TechnicalVisitEndDate { get; set; }
     }
 
     public class CarImageDTO

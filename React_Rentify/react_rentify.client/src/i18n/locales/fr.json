@@ -2566,6 +2566,124 @@
         "changeReservationCar": "Échec du changement de véhicule de la réservation.",
         "create": "Échec de la création de l'accident."
       }
+    },
+    "status": {
+      "created": "Créé",
+      "maintenance": "En maintenance",
+      "completed": "Clôturé"
+    },
+    "list": {
+      "title": "Accidents",
+      "subtitle": "{{filtered}} sur {{total}} affichés",
+      "loading": "Chargement des accidents...",
+      "retry": "Réessayer",
+      "addNew": "Ajouter un accident",
+      "addFirst": "Ajouter votre premier accident",
+      "unknownCar": "Véhicule inconnu",
+      "search": {
+        "placeholder": "Rechercher notes, expert ou immatriculation..."
+      },
+      "filters": {
+        "status": "Statut",
+        "allStatuses": "Tous les statuts",
+        "sortBy": "Trier par"
+      },
+      "sort": {
+        "date": "Date",
+        "car": "Véhicule",
+        "status": "Statut",
+        "cost": "Coût net",
+        "ascending": "Croissant",
+        "descending": "Décroissant"
+      },
+      "resultsFound": "{{count}} résultat(s)",
+      "clearFilters": "Effacer les filtres",
+      "noResults": "Aucun résultat",
+      "noResults.message": "Essayez de modifier les filtres ou les termes de recherche.",
+      "empty": {
+        "title": "Aucun accident pour l’instant",
+        "message": "Créez votre premier enregistrement d’accident pour commencer."
+      },
+      "totalExpenses": "Dépenses totales",
+      "totalRefunds": "Remboursements totaux",
+      "netCost": "Coût net",
+      "actions": {
+        "view": "Voir",
+        "edit": "Modifier",
+        "delete": "Supprimer"
+      },
+      "confirmDelete": "Voulez-vous vraiment supprimer cet accident ?",
+      "deleteSuccess": "Accident supprimé avec succès",
+      "error": {
+        "title": "Une erreur est survenue",
+        "fetch": "Échec du chargement des accidents",
+        "delete": "Échec de la suppression de l’accident"
+      }
+    },
+    "details": {
+      "loadError": "Erreur lors du chargement des données de l'accident",
+      "updateSuccess": "Mise à jour effectuée avec succès",
+      "updateError": "Échec de la mise à jour",
+      "fillAllFields": "Veuillez remplir tous les champs requis",
+      "expenseAdded": "Dépense ajoutée",
+      "expenseError": "Échec de l'ajout de la dépense",
+      "refundAdded": "Remboursement ajouté",
+      "refundError": "Échec de l'ajout du remboursement",
+      "confirmDeleteExpense": "Supprimer cette dépense ?",
+      "expenseDeleted": "Dépense supprimée",
+      "deleteExpenseError": "Échec de la suppression de la dépense",
+      "confirmDeleteRefund": "Supprimer ce remboursement ?",
+      "refundDeleted": "Remboursement supprimé",
+      "deleteRefundError": "Échec de la suppression du remboursement",
+
+      "loading": "Chargement...",
+      "error": "Une erreur s'est produite",
+      "backToList": "Retour à la liste",
+      "back": "Retour",
+      "edit": "Modifier",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "title": "Détails de l'accident",
+
+      "accidentInfo": "Informations sur l'accident",
+      "accidentDate": "Date de l'accident",
+      "status": "Statut",
+      "notes": "Notes",
+
+      "carInfo": "Informations sur le véhicule",
+
+      "expertInfo": "Expert technique",
+      "expertName": "Nom de l'expert",
+      "expertNamePlaceholder": "Nom complet de l'expert",
+      "notAssigned": "Non affecté",
+      "expertPhone": "Téléphone de l'expert",
+      "expertPhonePlaceholder": "Numéro de téléphone",
+      "notProvided": "Non renseigné",
+
+      "financialSummary": "Résumé financier",
+      "totalExpenses": "Total des dépenses",
+      "totalRefunds": "Total des remboursements",
+      "netCost": "Coût net",
+
+      "expenses": "Dépenses",
+      "addExpense": "Ajouter une dépense",
+      "deleteExpense": "Supprimer la dépense",
+      "noExpenses": "Aucune dépense",
+
+      "refunds": "Remboursements",
+      "addRefund": "Ajouter un remboursement",
+      "deleteRefund": "Supprimer le remboursement",
+      "noRefunds": "Aucun remboursement",
+
+      "expenseName": "Intitulé de la dépense",
+      "expenseNamePlaceholder": "Ex. pièces, main-d'œuvre...",
+      "expenseAmount": "Montant de la dépense",
+      "attachFile": "Joindre un fichier",
+      "optional": "optionnel",
+
+      "refundName": "Intitulé du remboursement",
+      "refundNamePlaceholder": "Ex. assurance, tiers...",
+      "refundAmount": "Montant du remboursement"
     }
   }
 }

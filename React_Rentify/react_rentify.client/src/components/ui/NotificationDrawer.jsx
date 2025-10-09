@@ -47,8 +47,6 @@ const NotificationDrawer = () => {
         return () => listElement.removeEventListener('scroll', handleScroll);
     }, []);
 
-    console.warn(notifications);
-
     // Close on escape key
     useEffect(() => {
         const handleEscape = (e) => {

@@ -1,0 +1,986 @@
+/* src/pages/Accidents/List/AccidentsList.css */
+
+/* ========================================
+   CSS Variables & Theme Support
+   ======================================== */
+.accidents-list-container {
+    /* Light theme variables */
+    --al-bg-primary: var(--color-bg, #f8fafc);
+    --al-bg-secondary: var(--color-bg-subtle, #f1f5f9);
+    --al-card-bg: var(--color-card, #ffffff);
+    --al-text-primary: var(--color-text, #1e293b);
+    --al-text-secondary: var(--color-text-muted, #64748b);
+    --al-border-color: var(--color-border, #e2e8f0);
+    --al-shadow: var(--color-shadow, rgba(0, 0, 0, 0.1));
+    --al-shadow-strong: var(--color-shadow-strong, rgba(0, 0, 0, 0.16));
+    /* Accent colors */
+    --al-primary: var(--color-primary-600, #0284c7);
+    --al-primary-hover: var(--color-primary-700, #0369a1);
+    --al-success: #10b981;
+    --al-success-hover: #059669;
+    --al-warning: #f59e0b;
+    --al-warning-hover: #d97706;
+    --al-danger: #ef4444;
+    --al-danger-hover: #dc2626;
+    /* Status colors */
+    --al-status-created: #3b82f6;
+    --al-status-maintenance: #f59e0b;
+    --al-status-completed: #10b981;
+    /* Cost colors */
+    --al-cost-positive: #ef4444;
+    --al-cost-negative: #10b981;
+    --al-cost-expenses: #f59e0b;
+    --al-cost-refunds: #10b981;
+    /* Spacing */
+    --al-spacing-xs: 0.25rem;
+    --al-spacing-sm: 0.5rem;
+    --al-spacing-md: 1rem;
+    --al-spacing-lg: 1.5rem;
+    --al-spacing-xl: 2rem;
+    --al-spacing-2xl: 2.5rem;
+    /* Border radius */
+    --al-radius-sm: 0.375rem;
+    --al-radius-md: 0.5rem;
+    --al-radius-lg: 0.75rem;
+    --al-radius-xl: 1rem;
+    /* Transitions */
+    --al-transition-fast: var(--transition-fast, 150ms cubic-bezier(0.4, 0, 0.2, 1));
+    --al-transition-normal: var(--transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
+    --al-transition-slow: var(--transition-slow, 350ms cubic-bezier(0.4, 0, 0.2, 1));
+    /* Typography */
+    --al-font-family: var(--font-family, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+}
+
+/* Dark mode theme overrides */
+.dark .accidents-list-container {
+    --al-bg-primary: var(--color-bg, #0f172a);
+    --al-bg-secondary: var(--color-bg-subtle, #1e293b);
+    --al-card-bg: var(--color-card, #1e293b);
+    --al-text-primary: var(--color-text, #f1f5f9);
+    --al-text-secondary: var(--color-text-muted, #94a3b8);
+    --al-border-color: var(--color-border, #334155);
+    --al-shadow: var(--color-shadow, rgba(0, 0, 0, 0.4));
+    --al-shadow-strong: var(--color-shadow-strong, rgba(0, 0, 0, 0.5));
+}
+
+/* ========================================
+   Main Container
+   ======================================== */
+.accidents-list-container {
+    font-family: var(--al-font-family);
+    max-width: 95%;
+    margin: 0 auto;
+    padding: var(--al-spacing-md);
+    background-color: transparent;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--al-spacing-lg);
+}
+
+/* ========================================
+   Header Section
+   ======================================== */
+.al-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--al-spacing-md);
+    margin-bottom: var(--al-spacing-lg);
+}
+
+.al-title-section {
+    text-align: center;
+}
+
+.al-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--al-spacing-sm);
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--al-text-primary);
+    margin: 0 0 var(--al-spacing-sm) 0;
+    line-height: 1.2;
+}
+
+.al-title-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 2px 4px var(--al-shadow));
+}
+
+.al-subtitle {
+    font-size: 0.95rem;
+    color: var(--al-text-secondary);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.al-add-btn {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--al-spacing-sm);
+    min-height: 48px;
+    border-radius: var(--al-radius-lg);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    transform: translateY(0);
+    transition: all var(--al-transition-normal);
+}
+
+    .al-add-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4);
+    }
+
+    .al-add-btn:active {
+        transform: translateY(0);
+    }
+
+.al-btn-icon {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+/* ========================================
+   Filters Section
+   ======================================== */
+.al-filters {
+    background: var(--al-card-bg);
+    border-radius: var(--al-radius-lg);
+    padding: var(--al-spacing-lg);
+    box-shadow: 0 2px 8px var(--al-shadow);
+    border: 1px solid var(--al-border-color);
+    display: flex;
+    flex-direction: column;
+    gap: var(--al-spacing-md);
+}
+
+.al-search-container {
+    width: 100%;
+}
+
+.al-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.al-search-icon {
+    position: absolute;
+    left: var(--al-spacing-md);
+    font-size: 1.1rem;
+    color: var(--al-text-secondary);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.al-search-input {
+    width: 100%;
+    padding: var(--al-spacing-md) var(--al-spacing-xl) var(--al-spacing-md) 2.75rem;
+    border: 2px solid var(--al-border-color);
+    border-radius: var(--al-radius-lg);
+    background: var(--al-card-bg);
+    color: var(--al-text-primary);
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: all var(--al-transition-fast);
+    outline: none;
+}
+
+    .al-search-input:focus {
+        border-color: var(--al-primary);
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    .al-search-input::placeholder {
+        color: var(--al-text-secondary);
+        opacity: 0.8;
+    }
+
+.al-search-clear {
+    position: absolute;
+    right: var(--al-spacing-md);
+    background: none;
+    border: none;
+    color: var(--al-text-secondary);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: var(--al-spacing-xs);
+    transition: color var(--al-transition-fast);
+}
+
+    .al-search-clear:hover {
+        color: var(--al-danger);
+    }
+
+.al-filter-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--al-spacing-md);
+    align-items: stretch;
+}
+
+.al-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--al-spacing-xs);
+    flex: 1;
+}
+
+.al-filter-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--al-text-primary);
+    margin-bottom: var(--al-spacing-xs);
+}
+
+.al-filter-select {
+    padding: var(--al-spacing-sm) var(--al-spacing-md);
+    border: 1px solid var(--al-border-color);
+    border-radius: var(--al-radius-md);
+    background: var(--al-card-bg);
+    color: var(--al-text-primary);
+    font-size: 0.875rem;
+    transition: all var(--al-transition-fast);
+    cursor: pointer;
+    outline: none;
+}
+
+    .al-filter-select:focus {
+        border-color: var(--al-primary);
+        box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.1);
+    }
+
+.al-sort-order-btn {
+    background: var(--al-card-bg);
+    border: 1px solid var(--al-border-color);
+    border-radius: var(--al-radius-md);
+    padding: var(--al-spacing-sm);
+    color: var(--al-text-secondary);
+    cursor: pointer;
+    transition: all var(--al-transition-fast);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    align-self: flex-end;
+}
+
+    .al-sort-order-btn:hover {
+        border-color: var(--al-primary);
+        color: var(--al-primary);
+        transform: scale(1.05);
+    }
+
+/* ========================================
+   Results Summary
+   ======================================== */
+.al-results-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--al-spacing-md);
+    padding: var(--al-spacing-sm) var(--al-spacing-md);
+    background: var(--al-bg-secondary);
+    border-radius: var(--al-radius-md);
+    border: 1px solid var(--al-border-color);
+}
+
+.al-results-text {
+    font-size: 0.875rem;
+    color: var(--al-text-secondary);
+    font-weight: 500;
+}
+
+.al-clear-filters {
+    background: none;
+    border: 1px solid var(--al-primary);
+    color: var(--al-primary);
+    padding: var(--al-spacing-xs) var(--al-spacing-sm);
+    border-radius: var(--al-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--al-transition-fast);
+}
+
+    .al-clear-filters:hover {
+        background: var(--al-primary);
+        color: white;
+    }
+
+/* ========================================
+   Content Area
+   ======================================== */
+.al-content {
+    flex: 1;
+}
+
+/* ========================================
+   Loading State
+   ======================================== */
+.al-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--al-spacing-2xl);
+    text-align: center;
+    min-height: 300px;
+}
+
+.al-loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--al-border-color);
+    border-top: 4px solid var(--al-primary);
+    border-radius: 50%;
+    animation: al-spin 1s linear infinite;
+    margin-bottom: var(--al-spacing-md);
+}
+
+@keyframes al-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.al-loading p {
+    color: var(--al-text-secondary);
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* ========================================
+   Error State
+   ======================================== */
+.al-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--al-spacing-2xl);
+    text-align: center;
+    min-height: 300px;
+    background: var(--al-card-bg);
+    border-radius: var(--al-radius-lg);
+    border: 1px solid var(--al-border-color);
+}
+
+.al-error-icon {
+    font-size: 3rem;
+    margin-bottom: var(--al-spacing-md);
+}
+
+.al-error h3 {
+    color: var(--al-text-primary);
+    font-size: 1.25rem;
+    margin-bottom: var(--al-spacing-sm);
+}
+
+.al-error p {
+    color: var(--al-text-secondary);
+    margin-bottom: var(--al-spacing-lg);
+    max-width: 400px;
+}
+
+/* ========================================
+   Empty State
+   ======================================== */
+.al-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--al-spacing-2xl);
+    text-align: center;
+    background: var(--al-card-bg);
+    border-radius: var(--al-radius-lg);
+    border: 2px dashed var(--al-border-color);
+    min-height: 350px;
+}
+
+.al-empty-icon {
+    font-size: 4rem;
+    margin-bottom: var(--al-spacing-lg);
+    opacity: 0.6;
+}
+
+.al-empty-title {
+    color: var(--al-text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--al-spacing-sm);
+}
+
+.al-empty-message {
+    color: var(--al-text-secondary);
+    font-size: 1rem;
+    margin-bottom: var(--al-spacing-lg);
+    max-width: 400px;
+    line-height: 1.6;
+}
+
+/* ========================================
+   Accidents Grid
+   ======================================== */
+.al-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--al-spacing-lg);
+    width: 100%;
+}
+
+/* ========================================
+   Accident Card
+   ======================================== */
+.al-card {
+    background: var(--al-card-bg);
+    border-radius: var(--al-radius-lg);
+    border: 1px solid var(--al-border-color);
+    padding: var(--al-spacing-lg);
+    box-shadow: 0 2px 8px var(--al-shadow);
+    cursor: pointer;
+    transition: all var(--al-transition-normal);
+    display: flex;
+    flex-direction: column;
+    gap: var(--al-spacing-md);
+    position: relative;
+    overflow: hidden;
+}
+
+    .al-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--al-primary), var(--al-primary-hover));
+        opacity: 0;
+        transition: opacity var(--al-transition-normal);
+    }
+
+    .al-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px var(--al-shadow-strong);
+        border-color: var(--al-primary);
+    }
+
+        .al-card:hover::before {
+            opacity: 1;
+        }
+
+    .al-card:active {
+        transform: translateY(-2px);
+    }
+
+/* ========================================
+   Card Header
+   ======================================== */
+.al-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--al-spacing-sm);
+    margin-bottom: var(--al-spacing-sm);
+}
+
+.al-card-date {
+    display: flex;
+    align-items: center;
+    gap: var(--al-spacing-xs);
+    color: var(--al-text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.al-date-icon {
+    font-size: 1rem;
+}
+
+.al-date-text {
+    font-weight: 600;
+}
+
+/* ========================================
+   Status Badge
+   ======================================== */
+.al-status-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--al-spacing-xs);
+    padding: var(--al-spacing-xs) var(--al-spacing-sm);
+    border-radius: var(--al-radius-lg);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.al-status-created {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--al-status-created);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.al-status-maintenance {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--al-status-maintenance);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.al-status-completed {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--al-status-completed);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.al-status-icon {
+    font-size: 0.875rem;
+}
+
+/* ========================================
+   Car Information
+   ======================================== */
+.al-card-car {
+    margin-bottom: var(--al-spacing-sm);
+}
+
+.al-car-info {
+    display: flex;
+    align-items: center;
+    gap: var(--al-spacing-sm);
+}
+
+.al-car-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.al-car-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--al-spacing-xs);
+    min-width: 0;
+}
+
+.al-car-plate {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--al-text-primary);
+    font-family: 'Courier New', monospace;
+    background: var(--al-bg-secondary);
+    padding: var(--al-spacing-xs) var(--al-spacing-sm);
+    border-radius: var(--al-radius-sm);
+    display: inline-block;
+    border: 2px solid var(--al-border-color);
+}
+
+.al-car-model {
+    font-size: 0.875rem;
+    color: var(--al-text-secondary);
+    font-weight: 500;
+}
+
+/* ========================================
+   Notes Section
+   ======================================== */
+.al-card-notes {
+    margin-bottom: var(--al-spacing-sm);
+}
+
+.al-notes-text {
+    color: var(--al-text-primary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin: 0;
+    padding: var(--al-spacing-sm) var(--al-spacing-md);
+    background: var(--al-bg-secondary);
+    border-radius: var(--al-radius-md);
+    border-left: 4px solid var(--al-primary);
+    font-style: italic;
+}
+
+/* ========================================
+   Expert Information
+   ======================================== */
+.al-card-expert {
+    display: flex;
+    align-items: center;
+    gap: var(--al-spacing-sm);
+    padding: var(--al-spacing-sm) var(--al-spacing-md);
+    background: var(--al-bg-secondary);
+    border-radius: var(--al-radius-md);
+    border: 1px solid var(--al-border-color);
+    margin-bottom: var(--al-spacing-sm);
+}
+
+.al-expert-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.al-expert-name {
+    font-weight: 600;
+    color: var(--al-text-primary);
+    font-size: 0.875rem;
+}
+
+.al-expert-phone {
+    font-size: 0.75rem;
+    color: var(--al-text-secondary);
+    margin-left: auto;
+}
+
+/* ========================================
+   Cost Information
+   ======================================== */
+.al-card-cost {
+    background: var(--al-bg-secondary);
+    border-radius: var(--al-radius-md);
+    padding: var(--al-spacing-md);
+    border: 1px solid var(--al-border-color);
+    margin-bottom: var(--al-spacing-sm);
+}
+
+.al-cost-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--al-spacing-xs);
+}
+
+    .al-cost-row:last-child {
+        margin-bottom: 0;
+    }
+
+.al-cost-label {
+    font-size: 0.875rem;
+    color: var(--al-text-secondary);
+    font-weight: 500;
+}
+
+.al-cost-value {
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.al-cost-expenses {
+    color: var(--al-cost-expenses);
+}
+
+.al-cost-refunds {
+    color: var(--al-cost-refunds);
+}
+
+.al-cost-net {
+    border-top: 1px solid var(--al-border-color);
+    padding-top: var(--al-spacing-sm);
+    margin-top: var(--al-spacing-sm);
+}
+
+    .al-cost-net .al-cost-label {
+        font-weight: 600;
+        color: var(--al-text-primary);
+    }
+
+.al-cost-positive {
+    color: var(--al-cost-positive);
+}
+
+.al-cost-negative {
+    color: var(--al-cost-negative);
+}
+
+.al-cost-net .al-cost-value {
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+/* ========================================
+   Card Actions
+   ======================================== */
+.al-card-actions {
+    display: flex;
+    gap: var(--al-spacing-xs);
+    margin-top: auto;
+    padding-top: var(--al-spacing-sm);
+    border-top: 1px solid var(--al-border-color);
+}
+
+.al-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--al-spacing-xs);
+    padding: var(--al-spacing-sm);
+    border: 1px solid var(--al-border-color);
+    border-radius: var(--al-radius-md);
+    background: var(--al-card-bg);
+    color: var(--al-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--al-transition-fast);
+    text-decoration: none;
+    min-height: 40px;
+}
+
+    .al-action-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px var(--al-shadow);
+    }
+
+.al-action-view:hover {
+    border-color: var(--al-primary);
+    background: var(--al-primary);
+    color: white;
+}
+
+.al-action-edit:hover {
+    border-color: var(--al-warning);
+    background: var(--al-warning);
+    color: white;
+}
+
+.al-action-delete:hover {
+    border-color: var(--al-danger);
+    background: var(--al-danger);
+    color: white;
+}
+
+.al-action-icon {
+    font-size: 0.875rem;
+}
+
+.al-action-text {
+    display: none;
+}
+
+/* ========================================
+   Button Styles
+   ======================================== */
+.al-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--al-spacing-sm) var(--al-spacing-lg);
+    border: none;
+    border-radius: var(--al-radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--al-transition-fast);
+    outline: none;
+    min-height: 44px;
+}
+
+.al-btn-primary {
+    background: var(--al-primary);
+    color: white;
+}
+
+    .al-btn-primary:hover {
+        background: var(--al-primary-hover);
+    }
+
+    .al-btn-primary:focus {
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.3);
+    }
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+/* Small tablets and large phones */
+@media (min-width: 480px) {
+    .accidents-list-container {
+        padding: var(--al-spacing-lg);
+    }
+
+    .al-search-input {
+        font-size: 1rem;
+    }
+
+    .al-filter-row {
+        flex-direction: row;
+        align-items: flex-end;
+    }
+
+    .al-filter-group {
+        flex: 1;
+    }
+
+    .al-sort-order-btn {
+        align-self: flex-end;
+        flex-shrink: 0;
+        width: 48px;
+    }
+
+    .al-action-text {
+        display: inline;
+    }
+
+    .al-action-btn {
+        font-size: 0.8rem;
+    }
+}
+
+/* Tablets */
+@media (min-width: 768px) {
+    .accidents-list-container {
+        padding: var(--al-spacing-xl);
+    }
+
+    .al-header {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
+
+    .al-title-section {
+        text-align: left;
+        flex: 1;
+    }
+
+    .al-add-btn {
+        align-self: flex-end;
+        flex-shrink: 0;
+    }
+
+    .al-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--al-spacing-xl);
+    }
+
+    .al-filters {
+        padding: var(--al-spacing-xl);
+    }
+
+    .al-filter-row {
+        gap: var(--al-spacing-lg);
+    }
+
+    .al-search-container {
+        max-width: none;
+    }
+
+    .al-action-btn {
+        font-size: 0.875rem;
+        padding: var(--al-spacing-sm) var(--al-spacing-md);
+    }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+    .accidents-list-container {
+        max-width: 1200px;
+        padding: var(--al-spacing-2xl);
+    }
+
+    .al-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .al-title {
+        font-size: 2.25rem;
+    }
+
+    .al-card {
+        padding: var(--al-spacing-xl);
+    }
+}
+
+/* Large desktop */
+@media (min-width: 1280px) {
+    .accidents-list-container {
+        max-width: 1400px;
+    }
+
+    .al-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ========================================
+   Touch Optimizations
+   ======================================== */
+@media (hover: none) and (pointer: coarse) {
+    .al-btn {
+        min-height: 48px;
+        padding: var(--al-spacing-md) var(--al-spacing-lg);
+    }
+
+    .al-action-btn {
+        min-height: 44px;
+        padding: var(--al-spacing-sm) var(--al-spacing-md);
+    }
+
+    .al-card:hover {
+        transform: none;
+    }
+
+    .al-card:active {
+        transform: scale(0.98);
+        transition: transform 0.1s;
+    }
+
+    .al-filter-select,
+    .al-search-input {
+        min-height: 44px;
+    }
+}
+
+/* ========================================
+   High DPI Displays
+   ======================================== */
+@media (min-resolution: 2dppx) {
+    .al-card {
+        border-width: 0.5px;
+    }
+
+    .al-status-badge {
+        border-width: 0.5px;
+    }
+}
+
+/* ========================================
+   Accessibility & Motion
+   ======================================== */
+.al-btn:focus-visible,
+.al-action-btn:focus-visible,
+.al-search-input:focus-visible,
+.al-filter-select:focus-visible,
+.al-sort-order-btn:focus-visible {
+    outline: 2px solid var(--al-primary);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .al-card:hover {
+        transform: none;
+    }
+
+    .al-loading-spinner {
+        animation: none;
+    }
+}

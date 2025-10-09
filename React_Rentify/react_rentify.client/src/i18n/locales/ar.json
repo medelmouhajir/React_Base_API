@@ -2587,6 +2587,124 @@
         "changeReservationCar": "فشل تغيير سيارة الحجز.",
         "create": "فشل إنشاء الحادث."
       }
+    },
+    "status": {
+      "created": "تم الإنشاء",
+      "maintenance": "قيد الصيانة",
+      "completed": "مكتمل"
+    },
+    "list": {
+      "title": "الحوادث",
+      "subtitle": "عرض {{filtered}} من {{total}}",
+      "loading": "جارٍ تحميل الحوادث...",
+      "retry": "إعادة المحاولة",
+      "addNew": "إضافة حادث",
+      "addFirst": "أضف أول حادث",
+      "unknownCar": "سيارة غير معروفة",
+      "search": {
+        "placeholder": "ابحث في الملاحظات أو الخبير أو لوحة الترخيص..."
+      },
+      "filters": {
+        "status": "الحالة",
+        "allStatuses": "كل الحالات",
+        "sortBy": "ترتيب حسب"
+      },
+      "sort": {
+        "date": "التاريخ",
+        "car": "السيارة",
+        "status": "الحالة",
+        "cost": "التكلفة الصافية",
+        "ascending": "تصاعدي",
+        "descending": "تنازلي"
+      },
+      "resultsFound": "{{count}} نتيجة",
+      "clearFilters": "مسح عوامل التصفية",
+      "noResults": "لا توجد نتائج",
+      "noResults.message": "جرّب تغيير عوامل التصفية أو كلمات البحث.",
+      "empty": {
+        "title": "لا توجد حوادث بعد",
+        "message": "أنشئ أول سجل حادث للبدء."
+      },
+      "totalExpenses": "إجمالي المصاريف",
+      "totalRefunds": "إجمالي التعويضات",
+      "netCost": "التكلفة الصافية",
+      "actions": {
+        "view": "عرض",
+        "edit": "تعديل",
+        "delete": "حذف"
+      },
+      "confirmDelete": "هل أنت متأكد من حذف هذا الحادث؟",
+      "deleteSuccess": "تم حذف الحادث بنجاح",
+      "error": {
+        "title": "حدث خطأ ما",
+        "fetch": "فشل تحميل الحوادث",
+        "delete": "تعذر حذف الحادث"
+      }
+    },
+    "details": {
+      "loadError": "حدث خطأ أثناء تحميل بيانات الحادث",
+      "updateSuccess": "تم تحديث الحادث بنجاح",
+      "updateError": "فشلت عملية التحديث",
+      "fillAllFields": "يرجى ملء جميع الحقول المطلوبة",
+      "expenseAdded": "تمت إضافة المصروف",
+      "expenseError": "تعذر إضافة المصروف",
+      "refundAdded": "تمت إضافة التعويض",
+      "refundError": "تعذر إضافة التعويض",
+      "confirmDeleteExpense": "هل تريد حذف هذا المصروف؟",
+      "expenseDeleted": "تم حذف المصروف",
+      "deleteExpenseError": "تعذر حذف المصروف",
+      "confirmDeleteRefund": "هل تريد حذف هذا التعويض؟",
+      "refundDeleted": "تم حذف التعويض",
+      "deleteRefundError": "تعذر حذف التعويض",
+
+      "loading": "جارٍ التحميل...",
+      "error": "حدث خطأ",
+      "backToList": "الرجوع إلى القائمة",
+      "back": "رجوع",
+      "edit": "تعديل",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "title": "تفاصيل الحادث",
+
+      "accidentInfo": "معلومات الحادث",
+      "accidentDate": "تاريخ الحادث",
+      "status": "الحالة",
+      "notes": "ملاحظات",
+
+      "carInfo": "معلومات السيارة",
+
+      "expertInfo": "الخبير التقني",
+      "expertName": "اسم الخبير",
+      "expertNamePlaceholder": "الاسم الكامل للخبير",
+      "notAssigned": "غير مخصص",
+      "expertPhone": "هاتف الخبير",
+      "expertPhonePlaceholder": "رقم الهاتف",
+      "notProvided": "غير متوفر",
+
+      "financialSummary": "الملخص المالي",
+      "totalExpenses": "إجمالي المصروفات",
+      "totalRefunds": "إجمالي التعويضات",
+      "netCost": "التكلفة الصافية",
+
+      "expenses": "المصروفات",
+      "addExpense": "إضافة مصروف",
+      "deleteExpense": "حذف المصروف",
+      "noExpenses": "لا توجد مصروفات",
+
+      "refunds": "التعويضات",
+      "addRefund": "إضافة تعويض",
+      "deleteRefund": "حذف التعويض",
+      "noRefunds": "لا توجد تعويضات",
+
+      "expenseName": "اسم المصروف",
+      "expenseNamePlaceholder": "مثال: قطع غيار، أجور...",
+      "expenseAmount": "مبلغ المصروف",
+      "attachFile": "إرفاق ملف",
+      "optional": "اختياري",
+
+      "refundName": "اسم التعويض",
+      "refundNamePlaceholder": "مثال: تأمين، طرف ثالث...",
+      "refundAmount": "مبلغ التعويض"
     }
   }
 }

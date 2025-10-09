@@ -125,7 +125,9 @@ const ExpenseAdd = lazy(() => import('./pages/Expenses/Add/ExpenseAdd'));
 
 
 //// Child route for Accidents
+const AccidentsList = lazy(() => import('./pages/Accidents/List/AccidentsList'));
 const AddAccident = lazy(() => import('./pages/Accidents/Add/AddAccident'));
+const AccidentDetails = lazy(() => import('./pages/Accidents/Details/AccidentDetails'));
 
 //// Child route for Gadgets
 const GadgetsHome = lazy(() => import('./pages/Gadgets/Home/GadgetsHome'));
@@ -269,6 +271,8 @@ function App() {
 
 
                                     {/* Accidents */}
+                                    <Route path="/accidents" element={<AccidentsList />} />
+                                    <Route path="/accidents/:id" element={<AccidentDetails />} />
                                     <Route path="/accidents/add" element={<AddAccident />} />
 
                                     {/* Reports */}

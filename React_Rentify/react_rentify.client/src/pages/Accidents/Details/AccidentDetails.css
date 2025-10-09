@@ -1,0 +1,951 @@
+/* src/pages/Accidents/Details/AccidentDetails.css */
+
+/* ========================================
+   CSS Variables & Theme Support
+   ======================================== */
+.accident-details-container {
+    /* Light theme variables */
+    --ad-bg-primary: var(--color-bg, #f8fafc);
+    --ad-bg-secondary: var(--color-bg-subtle, #f1f5f9);
+    --ad-card-bg: var(--color-card, #ffffff);
+    --ad-text-primary: var(--color-text, #1e293b);
+    --ad-text-secondary: var(--color-text-muted, #64748b);
+    --ad-border-color: var(--color-border, #e2e8f0);
+    --ad-shadow: var(--color-shadow, rgba(0, 0, 0, 0.1));
+    --ad-shadow-strong: var(--color-shadow-strong, rgba(0, 0, 0, 0.16));
+    /* Accent colors */
+    --ad-primary: var(--color-primary-600, #0284c7);
+    --ad-primary-hover: var(--color-primary-700, #0369a1);
+    --ad-success: #10b981;
+    --ad-success-hover: #059669;
+    --ad-warning: #f59e0b;
+    --ad-warning-hover: #d97706;
+    --ad-danger: #ef4444;
+    --ad-danger-hover: #dc2626;
+    /* Status-specific colors */
+    --ad-status-created: #3b82f6;
+    --ad-status-maintenance: #f59e0b;
+    --ad-status-completed: #10b981;
+    --ad-status-unknown: #6b7280;
+    /* Spacing & layout */
+    --ad-spacing-xs: 0.25rem;
+    --ad-spacing-sm: 0.5rem;
+    --ad-spacing-md: 1rem;
+    --ad-spacing-lg: 1.5rem;
+    --ad-spacing-xl: 2rem;
+    --ad-spacing-2xl: 2.5rem;
+    /* Border radius */
+    --ad-radius-sm: 0.375rem;
+    --ad-radius-md: 0.5rem;
+    --ad-radius-lg: 0.75rem;
+    --ad-radius-xl: 1rem;
+    /* Transitions */
+    --ad-transition-fast: var(--transition-fast, 150ms cubic-bezier(0.4, 0, 0.2, 1));
+    --ad-transition-normal: var(--transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
+    --ad-transition-slow: var(--transition-slow, 350ms cubic-bezier(0.4, 0, 0.2, 1));
+    /* Font settings */
+    --ad-font-family: var(--font-family, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+}
+
+/* Dark mode theme overrides */
+.dark .accident-details-container {
+    --ad-bg-primary: var(--color-bg, #0f172a);
+    --ad-bg-secondary: var(--color-bg-subtle, #1e293b);
+    --ad-card-bg: var(--color-card, #1e293b);
+    --ad-text-primary: var(--color-text, #f1f5f9);
+    --ad-text-secondary: var(--color-text-muted, #94a3b8);
+    --ad-border-color: var(--color-border, #334155);
+    --ad-shadow: var(--color-shadow, rgba(0, 0, 0, 0.4));
+    --ad-shadow-strong: var(--color-shadow-strong, rgba(0, 0, 0, 0.5));
+}
+
+/* ========================================
+   Main Container & Layout
+   ======================================== */
+.accident-details-container {
+    max-width: 95%;
+    margin: 0 auto;
+    padding: var(--ad-spacing-lg);
+    background-color: transparent;
+    font-family: var(--ad-font-family);
+    color: var(--ad-text-primary);
+    min-height: 100vh;
+}
+
+/* ========================================
+   Header Section
+   ======================================== */
+.ad-header {
+    background: var(--ad-card-bg);
+    border-radius: var(--ad-radius-lg);
+    padding: var(--ad-spacing-lg);
+    margin-bottom: var(--ad-spacing-xl);
+    box-shadow: 0 1px 3px var(--ad-shadow), 0 1px 2px -1px var(--ad-shadow);
+    border: 1px solid var(--ad-border-color);
+}
+
+.ad-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--ad-spacing-lg);
+}
+
+.ad-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ad-spacing-sm);
+    padding: var(--ad-spacing-sm) var(--ad-spacing-md);
+    background: transparent;
+    border: 1px solid var(--ad-border-color);
+    border-radius: var(--ad-radius-md);
+    color: var(--ad-text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--ad-transition-fast);
+    min-height: 44px;
+}
+
+    .ad-back-btn:hover {
+        background: var(--ad-bg-secondary);
+        color: var(--ad-text-primary);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px var(--ad-shadow);
+    }
+
+.ad-header-actions {
+    display: flex;
+    gap: var(--ad-spacing-sm);
+}
+
+.ad-edit-actions {
+    display: flex;
+    gap: var(--ad-spacing-sm);
+}
+
+.ad-header-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ad-spacing-md);
+}
+
+.ad-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ad-text-primary);
+    margin: 0;
+}
+
+/* ========================================
+   Status Badges
+   ======================================== */
+.ad-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--ad-spacing-sm) var(--ad-spacing-md);
+    border-radius: var(--ad-radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ad-status-created {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--ad-status-created);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.ad-status-maintenance {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--ad-status-maintenance);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.ad-status-completed {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--ad-status-completed);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.ad-status-unknown {
+    background: rgba(107, 114, 128, 0.1);
+    color: var(--ad-status-unknown);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+/* ========================================
+   Content Sections
+   ======================================== */
+.ad-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ad-spacing-xl);
+}
+
+.ad-section {
+    background: var(--ad-card-bg);
+    border-radius: var(--ad-radius-lg);
+    padding: var(--ad-spacing-lg);
+    box-shadow: 0 1px 3px var(--ad-shadow), 0 1px 2px -1px var(--ad-shadow);
+    border: 1px solid var(--ad-border-color);
+    transition: box-shadow var(--ad-transition-normal);
+}
+
+    .ad-section:hover {
+        box-shadow: 0 4px 6px -1px var(--ad-shadow), 0 2px 4px -2px var(--ad-shadow);
+    }
+
+.ad-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--ad-spacing-lg);
+    flex-wrap: wrap;
+    gap: var(--ad-spacing-md);
+}
+
+.ad-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ad-text-primary);
+    margin: 0;
+}
+
+/* ========================================
+   Info Grid
+   ======================================== */
+.ad-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--ad-spacing-lg);
+}
+
+.ad-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ad-spacing-sm);
+}
+
+.ad-info-full-width {
+    grid-column: 1 / -1;
+}
+
+.ad-info-item label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ad-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ad-info-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ad-text-primary);
+    padding: var(--ad-spacing-sm) 0;
+}
+
+/* ========================================
+   Car Information
+   ======================================== */
+.ad-car-info {
+    display: flex;
+    align-items: center;
+    gap: var(--ad-spacing-lg);
+}
+
+.ad-car-details {
+    flex: 1;
+}
+
+.ad-car-plate {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ad-primary);
+    margin: 0 0 var(--ad-spacing-sm) 0;
+}
+
+.ad-car-model {
+    font-size: 1rem;
+    color: var(--ad-text-secondary);
+    margin: 0;
+}
+
+/* ========================================
+   Financial Summary
+   ======================================== */
+.ad-financial-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--ad-spacing-lg);
+}
+
+.ad-financial-item {
+    background: var(--ad-bg-secondary);
+    border-radius: var(--ad-radius-md);
+    padding: var(--ad-spacing-lg);
+    text-align: center;
+    border: 1px solid var(--ad-border-color);
+}
+
+.ad-financial-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ad-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--ad-spacing-sm);
+}
+
+.ad-financial-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ad-text-primary);
+}
+
+.ad-expenses .ad-financial-value {
+    color: var(--ad-danger);
+}
+
+.ad-refunds .ad-financial-value {
+    color: var(--ad-success);
+}
+
+.ad-net-cost {
+    background: linear-gradient(135deg, var(--ad-primary) 0%, var(--ad-primary-hover) 100%);
+    color: white;
+}
+
+    .ad-net-cost .ad-financial-label,
+    .ad-net-cost .ad-financial-value {
+        color: white;
+    }
+
+/* ========================================
+   Form Elements
+   ======================================== */
+.ad-input {
+    width: 100%;
+    padding: var(--ad-spacing-md);
+    border: 1px solid var(--ad-border-color);
+    border-radius: var(--ad-radius-md);
+    background: var(--ad-card-bg);
+    color: var(--ad-text-primary);
+    font-size: 1rem;
+    font-family: var(--ad-font-family);
+    transition: all var(--ad-transition-fast);
+    min-height: 44px;
+}
+
+    .ad-input:focus {
+        outline: none;
+        border-color: var(--ad-primary);
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+.ad-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+.ad-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ad-spacing-sm);
+    padding: var(--ad-spacing-md) var(--ad-spacing-lg);
+    border: none;
+    border-radius: var(--ad-radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--ad-transition-fast);
+    min-height: 44px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .ad-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+.ad-btn-primary {
+    background: var(--ad-primary);
+    color: white;
+}
+
+    .ad-btn-primary:hover:not(:disabled) {
+        background: var(--ad-primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(2, 132, 199, 0.3);
+    }
+
+.ad-btn-secondary {
+    background: transparent;
+    color: var(--ad-text-primary);
+    border: 1px solid var(--ad-border-color);
+}
+
+    .ad-btn-secondary:hover:not(:disabled) {
+        background: var(--ad-bg-secondary);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px var(--ad-shadow);
+    }
+
+.ad-btn-success {
+    background: var(--ad-success);
+    color: white;
+}
+
+    .ad-btn-success:hover:not(:disabled) {
+        background: var(--ad-success-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    }
+
+.ad-btn-danger {
+    background: var(--ad-danger);
+    color: white;
+}
+
+    .ad-btn-danger:hover:not(:disabled) {
+        background: var(--ad-danger-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+
+.ad-btn-sm {
+    padding: var(--ad-spacing-sm) var(--ad-spacing-md);
+    font-size: 0.75rem;
+    min-height: 36px;
+}
+
+.ad-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: var(--ad-radius-md);
+    background: transparent;
+    color: var(--ad-text-secondary);
+    cursor: pointer;
+    transition: all var(--ad-transition-fast);
+}
+
+    .ad-btn-icon:hover {
+        background: var(--ad-bg-secondary);
+        transform: scale(1.05);
+    }
+
+    .ad-btn-icon.ad-btn-danger {
+        color: var(--ad-danger);
+    }
+
+        .ad-btn-icon.ad-btn-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--ad-danger-hover);
+        }
+
+/* ========================================
+   Icons
+   ======================================== */
+.ad-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+}
+
+.ad-icon-sm {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
+
+/* ========================================
+   File Indicators
+   ======================================== */
+.ad-file-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ad-spacing-xs);
+    margin-left: var(--ad-spacing-sm);
+    font-size: 0.75rem;
+    color: var(--ad-primary);
+    font-weight: 500;
+}
+
+.ad-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--ad-spacing-xs);
+}
+
+/* ========================================
+   Lists
+   ======================================== */
+.ad-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ad-spacing-sm);
+}
+
+.ad-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--ad-spacing-lg);
+    background: var(--ad-bg-secondary);
+    border-radius: var(--ad-radius-md);
+    border: 1px solid var(--ad-border-color);
+    transition: all var(--ad-transition-fast);
+}
+
+    .ad-list-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px var(--ad-shadow);
+    }
+
+.ad-list-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.ad-list-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ad-text-primary);
+    margin: 0 0 var(--ad-spacing-xs) 0;
+    word-break: break-word;
+}
+
+.ad-list-meta {
+    font-size: 0.875rem;
+    color: var(--ad-text-secondary);
+    margin: 0;
+}
+
+.ad-list-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ad-spacing-md);
+    flex-shrink: 0;
+}
+
+.ad-list-amount {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ad-danger);
+    white-space: nowrap;
+}
+
+.ad-refund-amount {
+    color: var(--ad-success) !important;
+}
+
+/* ========================================
+   Empty States
+   ======================================== */
+.ad-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ad-spacing-2xl);
+    text-align: center;
+    color: var(--ad-text-secondary);
+}
+
+.ad-empty-icon {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: var(--ad-spacing-md);
+    opacity: 0.5;
+}
+
+.ad-empty p {
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* ========================================
+   Loading & Error States
+   ======================================== */
+.ad-loading, .ad-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    padding: var(--ad-spacing-2xl);
+}
+
+.ad-loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--ad-border-color);
+    border-top: 3px solid var(--ad-primary);
+    border-radius: 50%;
+    animation: ad-spin 1s linear infinite;
+    margin-bottom: var(--ad-spacing-md);
+}
+
+.ad-btn-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: ad-spin 1s linear infinite;
+}
+
+@keyframes ad-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========================================
+   Modal System
+   ======================================== */
+.ad-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--ad-spacing-lg);
+    backdrop-filter: blur(4px);
+}
+
+.ad-modal {
+    background: var(--ad-card-bg);
+    border-radius: var(--ad-radius-lg);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid var(--ad-border-color);
+}
+
+.ad-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--ad-spacing-lg);
+    border-bottom: 1px solid var(--ad-border-color);
+}
+
+    .ad-modal-header h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--ad-text-primary);
+        margin: 0;
+    }
+
+.ad-modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: transparent;
+    color: var(--ad-text-secondary);
+    border-radius: var(--ad-radius-md);
+    cursor: pointer;
+    transition: all var(--ad-transition-fast);
+}
+
+    .ad-modal-close:hover {
+        background: var(--ad-bg-secondary);
+        color: var(--ad-text-primary);
+    }
+
+.ad-modal-content {
+    padding: var(--ad-spacing-lg);
+}
+
+.ad-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--ad-spacing-sm);
+    padding: var(--ad-spacing-lg);
+    border-top: 1px solid var(--ad-border-color);
+}
+
+.ad-form-group {
+    margin-bottom: var(--ad-spacing-lg);
+}
+
+    .ad-form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .ad-form-group label {
+        display: block;
+        margin-bottom: var(--ad-spacing-sm);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--ad-text-secondary);
+    }
+
+/* ========================================
+   Mobile Responsive Design
+   ======================================== */
+
+/* Large mobile adjustments */
+@media (max-width: 768px) {
+    .accident-details-container {
+        padding: var(--ad-spacing-md);
+        max-width: 100%;
+    }
+
+    .ad-header, .ad-section {
+        padding: var(--ad-spacing-md);
+    }
+
+    .ad-header-top {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--ad-spacing-md);
+    }
+
+    .ad-header-actions {
+        justify-content: center;
+    }
+
+    .ad-header-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--ad-spacing-sm);
+    }
+
+    .ad-title {
+        font-size: 1.5rem;
+    }
+
+    .ad-info-grid {
+        grid-template-columns: 1fr;
+        gap: var(--ad-spacing-md);
+    }
+
+    .ad-financial-summary {
+        grid-template-columns: 1fr;
+        gap: var(--ad-spacing-md);
+    }
+
+    .ad-section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--ad-spacing-sm);
+    }
+
+    .ad-list-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--ad-spacing-md);
+    }
+
+    .ad-list-actions {
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--ad-spacing-sm);
+    }
+
+    .ad-action-buttons {
+        flex-wrap: wrap;
+        gap: var(--ad-spacing-sm);
+    }
+
+    /* Stack action buttons vertically on mobile for better touch targets */
+    .ad-list-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ad-list-amount {
+        text-align: center;
+        padding: var(--ad-spacing-sm);
+        background: var(--ad-bg-secondary);
+        border-radius: var(--ad-radius-sm);
+        margin-bottom: var(--ad-spacing-sm);
+    }
+
+    .ad-action-buttons {
+        justify-content: center;
+    }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+    .accident-details-container {
+        padding: var(--ad-spacing-sm);
+    }
+
+    .ad-header, .ad-section {
+        padding: var(--ad-spacing-sm);
+    }
+
+    .ad-title {
+        font-size: 1.25rem;
+    }
+
+    .ad-btn {
+        padding: var(--ad-spacing-sm) var(--ad-spacing-md);
+        font-size: 0.75rem;
+    }
+
+    .ad-edit-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .ad-modal {
+        margin: var(--ad-spacing-sm);
+        max-width: calc(100% - 2rem);
+    }
+
+    .ad-modal-actions {
+        flex-direction: column;
+    }
+
+    .ad-financial-item {
+        padding: var(--ad-spacing-md);
+    }
+
+    .ad-financial-value {
+        font-size: 1.25rem;
+    }
+}
+
+/* Extra small mobile adjustments */
+@media (max-width: 320px) {
+    .ad-btn {
+        padding: var(--ad-spacing-xs) var(--ad-spacing-sm);
+        min-height: 40px;
+    }
+
+    .ad-input {
+        padding: var(--ad-spacing-sm);
+        min-height: 40px;
+    }
+
+    .ad-back-btn {
+        min-height: 40px;
+        padding: var(--ad-spacing-xs) var(--ad-spacing-sm);
+    }
+}
+
+/* ========================================
+   Touch Optimizations
+   ======================================== */
+@media (hover: none) and (pointer: coarse) {
+    .ad-btn, .ad-back-btn, .ad-btn-icon {
+        min-height: 48px;
+    }
+
+    .ad-input {
+        min-height: 48px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .ad-list-item {
+        padding: var(--ad-spacing-lg);
+    }
+
+    /* Enhanced touch feedback */
+    .ad-btn:active {
+        transform: scale(0.98);
+    }
+
+    .ad-list-item:active {
+        transform: scale(0.98);
+    }
+}
+
+/* ========================================
+   High DPI and Accessibility
+   ======================================== */
+@media (min-resolution: 2dppx) {
+    .ad-icon {
+        stroke-width: 1.5;
+    }
+}
+
+/* Focus styles for better accessibility */
+.ad-btn:focus-visible,
+.ad-input:focus-visible,
+.ad-back-btn:focus-visible,
+.ad-btn-icon:focus-visible {
+    outline: 2px solid var(--ad-primary);
+    outline-offset: 2px;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .ad-loading-spinner,
+    .ad-btn-spinner {
+        animation: none;
+    }
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+@media print {
+    .accident-details-container {
+        background: white;
+        color: black;
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .ad-header-actions,
+    .ad-btn,
+    .ad-modal-overlay {
+        display: none !important;
+    }
+
+    .ad-section {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+        margin-bottom: 1rem;
+    }
+
+    .ad-list-item {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
