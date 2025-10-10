@@ -181,7 +181,7 @@ const CarDetails = () => {
     const getStatusColor = (status) => {
         switch (status?.toLowerCase()) {
             case 'available': return 'var(--status-available)';
-            case 'unavailable': return 'var(--status-unavailable)';
+            case 'rented': return 'var(--status-unavailable)';
             case 'maintenance': return 'var(--status-maintenance)';
             case 'retired': return 'var(--status-retired)';
             default: return 'var(--text-muted)';
@@ -256,7 +256,7 @@ const CarDetails = () => {
 
                 <div className="header-actions">
                     <Link
-                        to={`/cars/edit/${id}`}
+                        to={`/cars/${id}/edit`}
                         className="edit-button"
                         aria-label={t('car.edit') || 'Edit car'}
                     >
@@ -297,7 +297,7 @@ const CarDetails = () => {
                             className={`status-indicator ${car.isAvailable ? 'available' : 'unavailable'}`}
                             style={{ backgroundColor: getStatusColor(car.status) }}
                         ></span>
-                        {car.isAvailable ? (t('car.available') || 'Available') : (t('car.unavailable') || 'Unavailable')}
+                        {t('car.status.' + car.status.toLowerCase())}
                     </div>
                 </div>
             </div>
@@ -388,7 +388,7 @@ const CarDetails = () => {
                                     </div>
                                     {car.deviceSerialNumber && (
                                         <div className="detail-row">
-                                            <span className="label">{t('car.tracking') || 'GPS Tracking'}</span>
+                                            <span className="label">{t('carDetails.tracking') || 'GPS Tracking'}</span>
                                             <span className={`value tracking ${car.isTrackingActive ? 'active' : 'inactive'}`}>
                                                 {car.isTrackingActive ? 'Active' : 'Inactive'}
                                             </span>
@@ -410,7 +410,7 @@ const CarDetails = () => {
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                                         </svg>
-                                        {t('car.insurance') || 'Insurance'}
+                                        {t('car.add.insurance') || 'Insurance'}
                                     </h3>
                                     <button
                                         className="edit-doc-button"
@@ -424,15 +424,15 @@ const CarDetails = () => {
                                 </div>
                                 <div className="document-content">
                                     <div className="document-field">
-                                        <span className="label">{t('car.insurance.company') || 'Insurance Company'}</span>
+                                        <span className="label">{t('car.add.insuranceName') || 'Insurance Company'}</span>
                                         <span className="value">{car.assuranceName || 'Not specified'}</span>
                                     </div>
                                     <div className="document-field">
-                                        <span className="label">{t('car.insurance.startDate') || 'Start Date'}</span>
+                                        <span className="label">{t('car.add.insuranceStartDate') || 'Start Date'}</span>
                                         <span className="value">{formatDate(car.assuranceStartDate)}</span>
                                     </div>
                                     <div className="document-field">
-                                        <span className="label">{t('car.insurance.endDate') || 'End Date'}</span>
+                                        <span className="label">{t('car.add.insuranceEndDate') || 'End Date'}</span>
                                         <span className={`value ${isExpired(car.assuranceEndDate) ? 'expired' : ''}`}>
                                             {formatDate(car.assuranceEndDate)}
                                             {car.assuranceEndDate && (
@@ -460,7 +460,7 @@ const CarDetails = () => {
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                                         </svg>
-                                        {t('car.technicalVisit') || 'Technical Visit'}
+                                        {t('car.add.technicalVisit') || 'Technical Visit'}
                                     </h3>
                                     <button
                                         className="edit-doc-button"
@@ -474,11 +474,11 @@ const CarDetails = () => {
                                 </div>
                                 <div className="document-content">
                                     <div className="document-field">
-                                        <span className="label">{t('car.technicalVisit.startDate') || 'Start Date'}</span>
+                                        <span className="label">{t('car.add.technicalVisitStartDate') || 'Start Date'}</span>
                                         <span className="value">{formatDate(car.technicalVisitStartDate)}</span>
                                     </div>
                                     <div className="document-field">
-                                        <span className="label">{t('car.technicalVisit.endDate') || 'End Date'}</span>
+                                        <span className="label">{t('car.add.technicalVisitEndDate') || 'End Date'}</span>
                                         <span className={`value ${isExpired(car.technicalVisitEndDate) ? 'expired' : ''}`}>
                                             {formatDate(car.technicalVisitEndDate)}
                                             {car.technicalVisitEndDate && (
