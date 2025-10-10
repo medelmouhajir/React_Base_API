@@ -151,7 +151,12 @@ namespace React_Rentify.Server.Controllers
                     Path = x.Path,
                 }).ToList(),
                 Engine = car.Engine_Type.ToString(),
-                Gear = car.Gear_Type.ToString()
+                Gear = car.Gear_Type.ToString(),
+                AssuranceEndDate = car.AssuranceEndDate,
+                AssuranceName = car.AssuranceName,
+                AssuranceStartDate = car.AssuranceStartDate,
+                TechnicalVisitEndDate = car.TechnicalVisitEndDate,
+                TechnicalVisitStartDate = car.TechnicalVisitStartDate
             };
 
             _logger.LogInformation("Retrieved car {CarId}", id);
@@ -814,6 +819,15 @@ namespace React_Rentify.Server.Controllers
         public DateTime? LastKmUpdate { get; set; }
 
         public List<Car_Details_Image_DTO>? Images { get; set; }
+
+        // === Legal Documents ===
+        // Assurance
+        public string? AssuranceName { get; set; }
+        public DateTime? AssuranceStartDate { get; set; }
+        public DateTime? AssuranceEndDate { get; set; }
+        // Technical Visit
+        public DateTime? TechnicalVisitStartDate { get; set; }
+        public DateTime? TechnicalVisitEndDate { get; set; }
     }
 
     public class Car_Details_Image_DTO
