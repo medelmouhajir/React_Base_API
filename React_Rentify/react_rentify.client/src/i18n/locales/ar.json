@@ -1175,7 +1175,25 @@
       "createCar": "إنشاء مركبة",
       "invalidImageFormat": "الرجاء اختيار صور بصيغة JPEG أو PNG أو WebP فقط",
       "imageTooLarge": "يجب أن يكون حجم الصورة أقل من 5 ميغابايت",
-      "fetchError": "فشل تحميل بيانات النموذج. يرجى التحديث والمحاولة مرة أخرى."
+      "fetchError": "فشل تحميل بيانات النموذج. يرجى التحديث والمحاولة مرة أخرى.",
+      "step": {
+        "vehicle": "المركبة",
+        "vehicleDesc": "اختر الشركة المصنّعة والطراز والسنة.",
+        "details": "التفاصيل",
+        "detailsDesc": "أدخل رقم اللوحة واللون والسعر والعداد.",
+        "images": "الصور",
+        "imagesDesc": "ارفع الصور واختر صورة رئيسية.",
+        "legal": "المستندات القانونية",
+        "legalDesc": "أضف تواريخ التأمين والفحص التقني (اختياري)."
+      },
+      "insurance": "التأمين",
+      "insuranceName": "شركة التأمين",
+      "insuranceNamePlaceholder": "اسم الشركة (مثال: وفا للتأمين)",
+      "insuranceStartDate": "تاريخ بداية التأمين",
+      "insuranceEndDate": "تاريخ نهاية التأمين",
+      "technicalVisit": "الفحص التقني",
+      "technicalVisitStartDate": "تاريخ بداية الفحص",
+      "technicalVisitEndDate": "تاريخ نهاية الفحص"
     },
     "gearType": {
       "manual": "يدوي",

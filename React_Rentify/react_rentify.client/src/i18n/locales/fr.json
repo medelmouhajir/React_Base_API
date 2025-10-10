@@ -1163,7 +1163,25 @@
       "createCar": "Créer le Véhicule",
       "invalidImageFormat": "Veuillez sélectionner uniquement des images JPEG, PNG ou WebP",
       "imageTooLarge": "La taille du fichier image doit être inférieure à 5MB",
-      "fetchError": "Échec du chargement des données du formulaire. Veuillez actualiser et réessayer."
+      "fetchError": "Échec du chargement des données du formulaire. Veuillez actualiser et réessayer.",
+      "step": {
+        "vehicle": "Véhicule",
+        "vehicleDesc": "Choisissez le constructeur, le modèle et l’année.",
+        "details": "Détails",
+        "detailsDesc": "Saisissez l’immatriculation, la couleur, le tarif et le kilométrage.",
+        "images": "Images",
+        "imagesDesc": "Importez des images et choisissez une image principale.",
+        "legal": "Légal",
+        "legalDesc": "Ajoutez les dates d’assurance et de visite technique (optionnel)."
+      },
+      "insurance": "Assurance",
+      "insuranceName": "Compagnie d’assurance",
+      "insuranceNamePlaceholder": "Nom de la compagnie (ex. : Wafa Assurance)",
+      "insuranceStartDate": "Date de début d’assurance",
+      "insuranceEndDate": "Date de fin d’assurance",
+      "technicalVisit": "Visite technique",
+      "technicalVisitStartDate": "Date de début de visite",
+      "technicalVisitEndDate": "Date de fin de visite"
     },
     "gearType": {
       "manual": "Manuelle",

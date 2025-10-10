@@ -1052,7 +1052,8 @@
       "dailyRate": "Enter daily rate",
       "hourlyRate": "Enter hourly rate",
       "deviceSerialNumber": "Enter device serial number",
-      "selectColor": "Select color"
+      "selectColor": "Select color",
+      "selectManufacturer": "Select manufacturer"
     },
     "fuelLevels": {
       "full": "Full",
@@ -1182,7 +1183,25 @@
       "createCar": "Create Vehicle",
       "invalidImageFormat": "Please select only JPEG, PNG, or WebP images",
       "imageTooLarge": "Image file size must be less than 5MB",
-      "fetchError": "Failed to load form data. Please refresh and try again."
+      "fetchError": "Failed to load form data. Please refresh and try again.",
+      "step": {
+        "vehicle": "Vehicle",
+        "vehicleDesc": "Choose the manufacturer, model, and year.",
+        "details": "Details",
+        "detailsDesc": "Enter license plate, color, pricing, and mileage.",
+        "images": "Images",
+        "imagesDesc": "Upload images and choose a main image.",
+        "legal": "Legal",
+        "legalDesc": "Add optional insurance and technical inspection dates."
+      },
+      "insurance": "Insurance",
+      "insuranceName": "Insurance company",
+      "insuranceNamePlaceholder": "Company name (e.g., Wafa Assurance)",
+      "insuranceStartDate": "Insurance start date",
+      "insuranceEndDate": "Insurance end date",
+      "technicalVisit": "Technical inspection",
+      "technicalVisitStartDate": "Inspection start date",
+      "technicalVisitEndDate": "Inspection end date"
     },
     "gearType": {
       "manual": "Manual",
