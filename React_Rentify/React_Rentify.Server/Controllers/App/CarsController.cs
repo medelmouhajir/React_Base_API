@@ -193,6 +193,7 @@ namespace React_Rentify.Server.Controllers
                 .Include(x=> x.Car_Model)
                 .ThenInclude(x => x.Manufacturer)
                 .Include(x=> x.Car_Year)
+                .Include(x=> x.Car_Images)
                 .ToListAsync();
 
             var dtoList = cars.Select(c => new CarDto
@@ -223,7 +224,17 @@ namespace React_Rentify.Server.Controllers
                     Manufacturer = c.Car_Model.Manufacturer.Name,
                     Model = c.Car_Model.Name,
                     Year = c.Car_Year.YearValue
-                }
+                },
+                AssuranceName = c.AssuranceName,
+                AssuranceStartDate = c.AssuranceStartDate,
+                AssuranceEndDate = c.AssuranceEndDate,
+                TechnicalVisitStartDate = c.TechnicalVisitStartDate,
+                TechnicalVisitEndDate = c.TechnicalVisitEndDate,
+                Images = c.Car_Images.Select(x=> new Car_Details_Image_DTO
+                {
+                    IsMainImage = x.IsMainImage,
+                    Path = x.Path
+                }).ToList()
             }).ToList();
 
             _logger.LogInformation("Retrieved {Count} cars for Agency {AgencyId}", dtoList.Count, agencyId);

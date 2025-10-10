@@ -134,6 +134,7 @@ const GadgetsHome = lazy(() => import('./pages/Gadgets/Home/GadgetsHome'));
 const BlacklistCheck = lazy(() => import('./pages/Gadgets/BlacklistChecks/BlacklistCheck'));
 const CarCheck = lazy(() => import('./pages/Gadgets/CarChecks/CarCheck'));
 const IdentityReader = lazy(() => import('./pages/Gadgets/IdentityReaders/IdentityReader'));
+const CarLegalDocuments = lazy(() => import('./pages/Gadgets/CarLegal/CarLegalDocuments'));
 
 
 //// Child route for GPS
@@ -295,6 +296,7 @@ function App() {
                                     <Route path="/gadgets/blacklist" element={<BlacklistCheck />} />
                                     <Route path="/gadgets/carcheck" element={<CarCheck />} />
                                     <Route path="/gadgets/identity" element={<IdentityReader />} />
+                                    <Route path="/gadgets/carLegal" element={<CarLegalDocuments />} />
 
                                     {/* Settings */}
                                     <Route path="/settings" element={<SettingsHome />} />

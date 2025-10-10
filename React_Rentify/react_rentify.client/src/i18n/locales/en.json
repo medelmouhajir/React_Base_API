@@ -1127,7 +1127,25 @@
       "available": "Available",
       "rented": "Rented",
       "maintenance": "Maintenance",
-      "retired": "Retired"
+      "retired": "Retired",
+      "expired": "Expired",
+      "expiring_soon": "Expiring soon",
+      "valid": "Valid",
+      "not_set": "Not set"
+    },
+    "legalDocuments": {
+      "title": "Car Legal Documents",
+      "details": "Legal Document Details",
+      "subtitle": "Manage insurance and technical visit information for your fleet"
+    },
+    "insurance": {
+      "update": "Update Insurance Information",
+      "updateSuccess": "Insurance information updated successfully",
+      "namePlaceholder": "Enter insurance company name"
+    },
+    "technicalVisit": {
+      "update": "Update Technical Visit Information",
+      "updateSuccess": "Technical visit information updated successfully"
     },
     "tabs": {
       "info": "Info",

@@ -1106,7 +1106,25 @@
       "available": "Disponible",
       "rented": "Loué",
       "maintenance": "Entretien",
-      "retired": "Hors service"
+      "retired": "Hors service",
+      "expired": "Expiré",
+      "expiring_soon": "Expire bientôt",
+      "valid": "Valide",
+      "not_set": "Non défini"
+    },
+    "legalDocuments": {
+      "title": "Documents légaux du véhicule",
+      "details": "Détails des documents légaux",
+      "subtitle": "Gérez les informations d’assurance et de visite technique de votre flotte"
+    },
+    "insurance": {
+      "update": "Mettre à jour les informations d’assurance",
+      "updateSuccess": "Informations d’assurance mises à jour avec succès",
+      "namePlaceholder": "Saisir le nom de la compagnie d’assurance"
+    },
+    "technicalVisit": {
+      "update": "Mettre à jour les informations de la visite technique",
+      "updateSuccess": "Informations de visite technique mises à jour avec succès"
     },
     "tabs": {
       "info": "Informations",

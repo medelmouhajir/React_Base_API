@@ -51,16 +51,15 @@ const GadgetsHome = () => {
             available: true,
             comingSoon: false
         },
-        // Mockup gadgets - to be implemented
         {
-            id: 'reports',
-            name: t('gadgets.reports.name'),
-            description: t('gadgets.reports.description'),
+            id: 'legals',
+            name: t('gadgets.legals.name'),
+            description: t('gadgets.legals.description'),
             icon: '📋',
-            url: 'gadgets/reports',
+            url: 'gadgets/carLegal',
             category: 'reports',
-            available: false,
-            comingSoon: true
+            available: true,
+            comingSoon: false
         }
     ];
 

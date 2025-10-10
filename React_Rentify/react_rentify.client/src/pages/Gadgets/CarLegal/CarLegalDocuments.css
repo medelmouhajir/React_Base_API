@@ -1,0 +1,933 @@
+/* src/pages/Gadgets/CarLegal/CarLegalDocuments.css */
+
+/*====================================
+  Theme Variables & Base Styles
+====================================*/
+:root {
+    /* Modern color palette */
+    --legal-primary: #0ea5e9;
+    --legal-primary-dark: #0284c7;
+    --legal-primary-light: #7dd3fc;
+    --legal-primary-bg: #f0f9ff;
+    /* Status colors */
+    --status-valid: #10b981;
+    --status-valid-bg: rgba(16, 185, 129, 0.1);
+    --status-warning: #f59e0b;
+    --status-warning-bg: rgba(245, 158, 11, 0.1);
+    --status-expired: #ef4444;
+    --status-expired-bg: rgba(239, 68, 68, 0.1);
+    --status-not-set: #6b7280;
+    --status-not-set-bg: rgba(107, 114, 128, 0.1);
+    /* Modern spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    /* Border radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    /* Typography */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+}
+
+/*====================================
+  Container & Layout
+====================================*/
+.car-legal-container {
+    min-height: 100vh;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+    padding: var(--spacing-md);
+}
+
+    .car-legal-container.dark {
+        --status-valid-bg: rgba(16, 185, 129, 0.15);
+        --status-warning-bg: rgba(245, 158, 11, 0.15);
+        --status-expired-bg: rgba(239, 68, 68, 0.15);
+        --status-not-set-bg: rgba(107, 114, 128, 0.15);
+    }
+
+/*====================================
+  Page Header
+====================================*/
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+    .back-button:hover {
+        background-color: var(--color-bg-subtle);
+        color: var(--color-text);
+        transform: translateX(-2px);
+    }
+
+.header-content {
+    flex: 1;
+    min-width: 0;
+}
+
+    .header-content h1 {
+        font-size: var(--font-size-3xl);
+        font-weight: 700;
+        margin: 0 0 var(--spacing-xs) 0;
+        color: var(--color-text);
+        line-height: 1.2;
+    }
+
+.header-subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/*====================================
+  Alert Messages
+====================================*/
+.alert {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-lg);
+    font-weight: 500;
+    animation: slideInDown var(--transition-normal);
+}
+
+.alert-success {
+    background-color: var(--status-valid-bg);
+    color: var(--status-valid);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.alert-error {
+    background-color: var(--status-expired-bg);
+    color: var(--status-expired);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/*====================================
+  Loading State
+====================================*/
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    gap: var(--spacing-lg);
+    color: var(--color-text-muted);
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid var(--color-border);
+    border-top: 3px solid var(--legal-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+    .loading-spinner.small {
+        width: 1rem;
+        height: 1rem;
+        border-width: 2px;
+    }
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/*====================================
+  Cars Grid (List View)
+====================================*/
+.cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-xl);
+    padding: var(--spacing-md) 0;
+}
+
+.car-card {
+    position: relative;
+    background: var(--color-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid var(--color-border);
+}
+
+    .car-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--legal-primary-light);
+    }
+
+    .car-card:active {
+        transform: translateY(-2px);
+    }
+
+.alert-badge {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    background: var(--status-expired);
+    color: white;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    z-index: 2;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.car-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+    background: var(--color-bg-subtle);
+}
+
+    .car-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform var(--transition-slow);
+    }
+
+.car-card:hover .car-image img {
+    transform: scale(1.05);
+}
+
+.car-image-placeholder,
+.car-main-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--color-text-muted);
+    background: var(--color-bg-subtle);
+}
+
+.car-info {
+    padding: var(--spacing-lg);
+}
+
+.car-header {
+    margin-bottom: var(--spacing-md);
+}
+
+.car-title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    margin: 0 0 var(--spacing-xs) 0;
+    color: var(--color-text);
+    line-height: 1.3;
+}
+
+.car-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.license-plate {
+    background: var(--legal-primary-bg);
+    color: var(--legal-primary-dark);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.car-year {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
+.legal-status {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.status-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.car-action {
+    position: absolute;
+    top: 50%;
+    right: var(--spacing-lg);
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    transition: all var(--transition-fast);
+    opacity: 0;
+}
+
+.car-card:hover .car-action {
+    opacity: 1;
+    color: var(--legal-primary);
+    transform: translateY(-50%) translateX(4px);
+}
+
+/*====================================
+  Status Badges
+====================================*/
+.status-badge {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.status-valid {
+    background: var(--status-valid-bg);
+    color: var(--status-valid);
+}
+
+.status-warning {
+    background: var(--status-warning-bg);
+    color: var(--status-warning);
+}
+
+.status-expired {
+    background: var(--status-expired-bg);
+    color: var(--status-expired);
+}
+
+.status-not-set {
+    background: var(--status-not-set-bg);
+    color: var(--status-not-set);
+}
+
+/*====================================
+  Empty State
+====================================*/
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-2xl);
+    color: var(--color-text-muted);
+    grid-column: 1 / -1;
+}
+
+    .empty-state svg {
+        margin-bottom: var(--spacing-lg);
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        font-size: var(--font-size-xl);
+        font-weight: 600;
+        margin-bottom: var(--spacing-sm);
+        color: var(--color-text);
+    }
+
+    .empty-state p {
+        font-size: var(--font-size-base);
+        max-width: 400px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+/*====================================
+  Car Details View
+====================================*/
+.car-details {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.car-details-header {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl);
+    padding: var(--spacing-xl);
+    background: var(--color-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+}
+
+.car-main-image {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    height: 200px;
+    background: var(--color-bg-subtle);
+}
+
+    .car-main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.car-details-info h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    margin: 0 0 var(--spacing-lg) 0;
+    color: var(--color-text);
+    line-height: 1.2;
+}
+
+.car-details-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.detail-item {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+    .detail-item strong {
+        color: var(--color-text);
+        font-weight: 600;
+    }
+
+/*====================================
+  Legal Documents Section
+====================================*/
+.legal-documents {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.document-section {
+    background: var(--color-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+    .document-section:hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+.document-card {
+    padding: var(--spacing-xl);
+}
+
+.document-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.document-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+    .document-title svg {
+        color: var(--legal-primary);
+    }
+
+    .document-title h3 {
+        font-size: var(--font-size-xl);
+        font-weight: 600;
+        margin: 0;
+        color: var(--color-text);
+    }
+
+.document-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.document-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+    .document-field label {
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .document-field span {
+        font-size: var(--font-size-base);
+        color: var(--color-text);
+        font-weight: 500;
+    }
+
+.field-with-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/*====================================
+  Buttons
+====================================*/
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    border: none;
+    line-height: 1.5;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--legal-primary) 0%, var(--legal-primary-dark) 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+.btn-secondary {
+    background: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+}
+
+    .btn-secondary:hover {
+        background: var(--color-bg-subtle);
+        color: var(--color-text);
+    }
+
+/*====================================
+  Modal
+====================================*/
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--spacing-md);
+    animation: fadeIn var(--transition-normal);
+}
+
+.modal {
+    background: var(--color-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: slideInUp var(--transition-normal);
+    border: 1px solid var(--color-border);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-xl);
+    border-bottom: 1px solid var(--color-border);
+}
+
+    .modal-header h3 {
+        font-size: var(--font-size-xl);
+        font-weight: 600;
+        margin: 0;
+        color: var(--color-text);
+    }
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+    .modal-close:hover {
+        background: var(--color-bg-subtle);
+        color: var(--color-text);
+    }
+
+.modal-form {
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+    .form-group label {
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        color: var(--color-text);
+    }
+
+    .form-group input {
+        padding: var(--spacing-sm) var(--spacing-md);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-base);
+        background: var(--color-card);
+        color: var(--color-text);
+        transition: all var(--transition-fast);
+    }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--legal-primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+.modal-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: flex-end;
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+}
+
+/*====================================
+  Mobile Responsiveness
+====================================*/
+@media (max-width: 768px) {
+    .car-legal-container {
+        padding: var(--spacing-sm);
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .header-content h1 {
+        font-size: var(--font-size-2xl);
+    }
+
+    .cars-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .car-card {
+        border-radius: var(--radius-lg);
+    }
+
+    .car-details-header {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+        padding: var(--spacing-lg);
+    }
+
+    .car-main-image {
+        height: 250px;
+    }
+
+    .document-card {
+        padding: var(--spacing-lg);
+    }
+
+    .document-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .field-with-status {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+
+    .modal {
+        margin: var(--spacing-md);
+        max-width: none;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .status-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+
+    .car-action {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .car-legal-container {
+        padding: var(--spacing-xs);
+    }
+
+    .page-header {
+        margin-bottom: var(--spacing-md);
+        padding-bottom: var(--spacing-md);
+    }
+
+    .header-content h1 {
+        font-size: var(--font-size-xl);
+    }
+
+    .car-image {
+        height: 180px;
+    }
+
+    .car-main-image {
+        height: 200px;
+    }
+
+    .car-info {
+        padding: var(--spacing-md);
+    }
+
+    .document-card {
+        padding: var(--spacing-md);
+    }
+
+    .modal-backdrop {
+        padding: var(--spacing-xs);
+    }
+}
+
+/*====================================
+  Dark Mode Adjustments
+====================================*/
+.dark .modal-backdrop {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.dark .btn-primary {
+    box-shadow: 0 2px 4px rgba(14, 165, 233, 0.4);
+}
+
+    .dark .btn-primary:hover {
+        box-shadow: 0 4px 8px rgba(14, 165, 233, 0.5);
+    }
+
+.dark .car-card:hover {
+    border-color: var(--legal-primary);
+}
+
+.dark .loading-spinner {
+    border-color: var(--color-border);
+    border-top-color: var(--legal-primary);
+}
+
+/*====================================
+  Touch Enhancements for Mobile
+====================================*/
+@media (hover: none) and (pointer: coarse) {
+    .car-card {
+        transform: none;
+    }
+
+        .car-card:active {
+            transform: scale(0.98);
+            transition: transform 0.1s;
+        }
+
+    .btn:active {
+        transform: scale(0.95);
+    }
+
+    .back-button:active {
+        transform: scale(0.95);
+    }
+}
+
+/*====================================
+  High Contrast Mode Support
+====================================*/
+@media (prefers-contrast: high) {
+    .status-badge {
+        border: 2px solid currentColor;
+    }
+
+    .car-card {
+        border-width: 2px;
+    }
+
+    .btn {
+        border-width: 2px;
+    }
+}
+
+/*====================================
+  Reduced Motion Support
+====================================*/
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .car-card:hover {
+        transform: none;
+    }
+
+    .btn-primary:hover {
+        transform: none;
+    }
+}

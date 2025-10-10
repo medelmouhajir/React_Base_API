@@ -39,6 +39,7 @@
     <Folder Include="src\pages\Gadgets\Home\" />
     <Folder Include="src\pages\Gadgets\CarChecks\" />
     <Folder Include="src\pages\Gadgets\IdentityReaders\" />
+    <Folder Include="src\pages\Gadgets\CarLegal\" />
     <Folder Include="src\pages\Gps\Alerts\Speeding\" />
     <Folder Include="src\pages\Gps\Home\" />
     <Folder Include="src\pages\Gps\Cars\" />
