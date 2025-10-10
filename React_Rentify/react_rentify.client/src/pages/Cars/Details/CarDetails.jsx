@@ -24,13 +24,27 @@ const CarDetails = () => {
     // UI states
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activeTab, setActiveTab] = useState('info');
+    const [activeTab, setActiveTab] = useState('overview');
     const [showAttachmentModal, setShowAttachmentModal] = useState(false);
     const [uploadingFile, setUploadingFile] = useState(false);
     const [fileError, setFileError] = useState(null);
-    const [touchStartX, setTouchStartX] = useState(null);
-    const [touchStartY, setTouchStartY] = useState(null);
-    const [isSwiping, setIsSwiping] = useState(false);
+
+    // Edit modals
+    const [showInsuranceModal, setShowInsuranceModal] = useState(false);
+    const [showTechnicalVisitModal, setShowTechnicalVisitModal] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    // Forms for editing
+    const [insuranceForm, setInsuranceForm] = useState({
+        assuranceName: '',
+        assuranceStartDate: '',
+        assuranceEndDate: ''
+    });
+
+    const [technicalVisitForm, setTechnicalVisitForm] = useState({
+        technicalVisitStartDate: '',
+        technicalVisitEndDate: ''
+    });
 
     // For attachment upload
     const [fileToUpload, setFileToUpload] = useState(null);
@@ -48,19 +62,30 @@ const CarDetails = () => {
                 const carData = await carService.getById(id);
                 setCar(carData);
 
-                // Set main picture from images array
-                const mainPicture = carData.images && carData.images.length > 0
-                    ? carData.images.find(img => img.isMainImage) || carData.images[0]
-                    : null;
+                // Initialize forms with existing data
+                setInsuranceForm({
+                    assuranceName: carData.assuranceName || '',
+                    assuranceStartDate: carData.assuranceStartDate ?
+                        new Date(carData.assuranceStartDate).toISOString().split('T')[0] : '',
+                    assuranceEndDate: carData.assuranceEndDate ?
+                        new Date(carData.assuranceEndDate).toISOString().split('T')[0] : ''
+                });
 
-                // Set attachments
-                setAttachments(carData.attachments || []);
+                setTechnicalVisitForm({
+                    technicalVisitStartDate: carData.technicalVisitStartDate ?
+                        new Date(carData.technicalVisitStartDate).toISOString().split('T')[0] : '',
+                    technicalVisitEndDate: carData.technicalVisitEndDate ?
+                        new Date(carData.technicalVisitEndDate).toISOString().split('T')[0] : ''
+                });
 
-                console.log('Car data loaded:', carData);
+                // Fetch attachments
+                if (carData.attachments) {
+                    setAttachments(carData.attachments);
+                }
 
             } catch (err) {
                 console.error('Error fetching car data:', err);
-                setError(t('car.details.loadError') || 'Failed to load car details');
+                setError(err.message || 'Failed to fetch car details');
             } finally {
                 setIsLoading(false);
             }
@@ -69,311 +94,145 @@ const CarDetails = () => {
         if (id) {
             fetchCarData();
         }
-    }, [id, t]);
+    }, [id]);
 
-    // Handle tab switching with swipe support
+    // Tab change handler
     const handleTabChange = (tab) => {
         setActiveTab(tab);
     };
 
-    // Touch handlers for mobile swipe navigation
-    const handleTouchStart = (e) => {
-        setTouchStartX(e.touches[0].clientX);
-        setTouchStartY(e.touches[0].clientY);
-        setIsSwiping(false);
-    };
+    // Insurance update handler
+    const handleInsuranceUpdate = async (e) => {
+        e.preventDefault();
+        setIsUpdating(true);
 
-    const handleTouchMove = (e) => {
-        if (!touchStartX || !touchStartY) return;
+        try {
+            await carService.updateInsurance(id, insuranceForm);
 
-        const currentX = e.touches[0].clientX;
-        const currentY = e.touches[0].clientY;
-        const diffX = touchStartX - currentX;
-        const diffY = touchStartY - currentY;
+            // Refresh car data
+            const updatedCar = await carService.getById(id);
+            setCar(updatedCar);
 
-        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-            setIsSwiping(true);
+            setShowInsuranceModal(false);
+
+            // Show success message
+            console.log('Insurance information updated successfully');
+        } catch (error) {
+            console.error('Error updating insurance:', error);
+            setError('Failed to update insurance information');
+        } finally {
+            setIsUpdating(false);
         }
     };
 
-    const handleTouchEnd = (e) => {
-        if (!touchStartX || !isSwiping) return;
+    // Technical visit update handler
+    const handleTechnicalVisitUpdate = async (e) => {
+        e.preventDefault();
+        setIsUpdating(true);
 
-        const endX = e.changedTouches[0].clientX;
-        const diffX = touchStartX - endX;
+        try {
+            await carService.updateTechnicalVisit(id, technicalVisitForm);
 
-        const tabs = ['info', 'attachments'];
-        const currentIndex = tabs.indexOf(activeTab);
+            // Refresh car data
+            const updatedCar = await carService.getById(id);
+            setCar(updatedCar);
 
-        if (diffX > 50 && currentIndex < tabs.length - 1) {
-            // Swipe left - next tab
-            setActiveTab(tabs[currentIndex + 1]);
-        } else if (diffX < -50 && currentIndex > 0) {
-            // Swipe right - previous tab
-            setActiveTab(tabs[currentIndex - 1]);
-        }
+            setShowTechnicalVisitModal(false);
 
-        setTouchStartX(null);
-        setTouchStartY(null);
-        setIsSwiping(false);
-    };
-
-    // File upload handlers
-    const handleFileSelect = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setFileToUpload(file);
-            setShowAttachmentModal(true);
+            // Show success message
+            console.log('Technical visit information updated successfully');
+        } catch (error) {
+            console.error('Error updating technical visit:', error);
+            setError('Failed to update technical visit information');
+        } finally {
+            setIsUpdating(false);
         }
     };
 
+    // File upload handler
     const handleFileUpload = async () => {
-        if (!fileToUpload) {
-            setFileError(t('attachment.noFileSelected') || 'No file selected');
-            return;
-        }
+        if (!fileToUpload) return;
 
         setUploadingFile(true);
         setFileError(null);
 
         try {
-            // Use uploadFile instead of addAttachment
             await carAttachmentService.uploadFile(id, fileToUpload);
 
             // Refresh attachments
-            const updatedCar = await carService.getById(id);
-            setAttachments(updatedCar.attachments || []);
+            const carData = await carService.getById(id);
+            setAttachments(carData.attachments || []);
 
-            setShowAttachmentModal(false);
             setFileToUpload(null);
-        } catch (err) {
-            console.error('Error uploading file:', err);
-            setFileError(t('attachment.uploadError') || 'Failed to upload file');
+            setShowAttachmentModal(false);
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            setFileError('Failed to upload file');
         } finally {
             setUploadingFile(false);
         }
     };
 
-    // Navigation functions
-    const handleCreateReservation = () => {
-        navigate(`/reservations/add?carId=${id}`);
+    // Get status color
+    const getStatusColor = (status) => {
+        switch (status?.toLowerCase()) {
+            case 'available': return 'var(--status-available)';
+            case 'unavailable': return 'var(--status-unavailable)';
+            case 'maintenance': return 'var(--status-maintenance)';
+            case 'retired': return 'var(--status-retired)';
+            default: return 'var(--text-muted)';
+        }
     };
 
-    const handleDummyAction1 = () => {
-        console.log('Dummy action 1');
-        // Placeholder for future functionality
+    // Format date
+    const formatDate = (dateString) => {
+        if (!dateString) return 'Not set';
+        return new Date(dateString).toLocaleDateString();
     };
 
-    const handleDummyAction2 = () => {
-        console.log('Dummy action 2');
-        // Placeholder for future functionality
+    // Check if document is expired
+    const isExpired = (endDate) => {
+        if (!endDate) return false;
+        return new Date(endDate) < new Date();
     };
 
-    // Render functions
-    const renderCarInfo = () => {
-        const mainPicture = car?.images?.find(img => img.isMainImage) || car?.images?.[0];
-
-        return (
-            <div className="car-info-section">
-                <div className="car-hero">
-                    <div className="car-image-container">
-                        {!mainPicture ? (
-                            <div className="car-placeholder">
-                                <div className="car-placeholder-content">
-                                    <div className="car-placeholder-icon">🚗</div>
-                                    <p>{t('car.details.noImage') || 'No image available'}</p>
-                                </div>
-                            </div>
-                        ) : (
-                            <img
-                                src={apiUrl + mainPicture.path}
-                                alt={`${car?.fields?.manufacturer} ${car?.fields?.model}`}
-                                className="car-image"
-                            />
-                        )}
-                    </div>
-                    <div className="car-hero-content">
-                        <h1 className="car-title">
-                            {car?.fields?.manufacturer} {car?.fields?.model}
-                        </h1>
-                        <p className="car-year">{car?.fields?.year}</p>
-                        <div className="car-status-badge-container">
-                            <span className={`status-badge ${car?.status?.toLowerCase() || 'unknown'}`}>
-                                {t(`car.status.${car?.status?.toLowerCase() || 'unknown'}`) || car?.status || 'Unknown'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="car-details-grid">
-                    <div className="detail-card">
-                        <h3>{t('car.details.basic') || 'Basic Information'}</h3>
-                        <div className="detail-row">
-                            <span className="label">{t('car.licensePlate') || 'License Plate'}</span>
-                            <span className="value">{car?.licensePlate || 'N/A'}</span>
-                        </div>
-                        <div className="detail-row">
-                            <span className="label">{t('car.currentKm') || 'Current Km'}</span>
-                            <span className="value">{car?.currentKM || 'N/A'}</span>
-                        </div>
-                        <div className="detail-row">
-                            <span className="label">{t('car.color') || 'Color'}</span>
-                            <span className="value color-value">
-                                <div
-                                    className="color-dot"
-                                    style={{ backgroundColor: car?.color || '#ccc' }}
-                                ></div>
-                                {car?.color || 'N/A'}
-                            </span>
-                        </div>
-                        <div className="detail-row">
-                            <span className="label">{t('car.fields.engineType') || 'Engine'}</span>
-                            <span className="value">{car?.engine || 'N/A'}</span>
-                        </div>
-                        <div className="detail-row">
-                            <span className="label">{t('car.fields.gearType') || 'Transmission'}</span>
-                            <span className="value">{car?.gear || 'N/A'}</span>
-                        </div>
-                    </div>
-
-                    <div className="detail-card">
-                        <h3>{t('car.details.pricing') || 'Pricing & Availability'}</h3>
-                        <div className="detail-row">
-                            <span className="label">{t('car.dailyRate') || 'Daily Rate'}</span>
-                            <span className="value price">${car?.dailyRate || 'N/A'}</span>
-                        </div>
-                        <div className="detail-row">
-                            <span className="label">{t('car.hourlyRate') || 'Hourly Rate'}</span>
-                            <span className="value price">${car?.hourlyRate || 'N/A'}</span>
-                        </div>
-                        <div className="detail-row">
-                            <span className="label">{t('car.availability') || 'Availability'}</span>
-                            <span className={`availability-badge ${car?.isAvailable ? 'available' : 'unavailable'}`}>
-                                {car?.isAvailable
-                                    ? (t('car.available') || 'Available')
-                                    : (t('car.unavailable') || 'Unavailable')
-                                }
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="detail-card">
-                        <h3>{t('car.details.tracking') || 'Tracking & Device'}</h3>
-                        <div className="detail-row">
-                            <span className="label">{t('car.deviceSerial') || 'Device Serial'}</span>
-                            <span className="value">{car?.deviceSerialNumber || 'N/A'}</span>
-                        </div>
-                        <div className="detail-row">
-                            <span className="label">{t('car.trackingStatus') || 'Tracking Status'}</span>
-                            <span className={`value tracking ${car?.isTrackingActive ? 'active' : 'inactive'}`}>
-                                {car?.isTrackingActive
-                                    ? (t('car.tracking.active') || 'Active')
-                                    : (t('car.tracking.inactive') || 'Inactive')
-                                }
-                            </span>
-                        </div>
-                        {car?.lastKmUpdate && (
-                            <div className="detail-row">
-                                <span className="label">{t('car.lastKmUpdate') || 'Last KM Update'}</span>
-                                <span className="value">
-                                    {new Date(car.lastKmUpdate).toLocaleDateString()}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        );
+    // Get days until expiration
+    const getDaysUntilExpiration = (endDate) => {
+        if (!endDate) return null;
+        const today = new Date();
+        const expiry = new Date(endDate);
+        const diffTime = expiry - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
     };
-
-    const renderAttachments = () => (
-        <div className="attachments-section">
-            <div className="attachments-header">
-                <h3>{t('car.tabs.attachments') || 'Attachments'}</h3>
-                <button
-                    className="add-button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadingFile}
-                >
-                    {t('attachment.add') || 'Add Attachment'}
-                </button>
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    onChange={handleFileSelect}
-                    style={{ display: 'none' }}
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
-                />
-            </div>
-
-            {attachments.length === 0 ? (
-                <div className="no-attachments">
-                    <p>{t('car.noAttachments') || 'No attachments available'}</p>
-                </div>
-            ) : (
-                <div className="attachments-list">
-                    {attachments.map((attachment) => (
-                        <div key={attachment.id} className="attachment-card">
-                            <div className="attachment-info">
-                                <h4 className="attachment-name">{attachment.fileName}</h4>
-                                <p className="attachment-date">
-                                    {t('attachment.uploadedOn') || 'Uploaded on'}: {' '}
-                                    {new Date(attachment.uploadedAt).toLocaleDateString()}
-                                </p>
-                            </div>
-                            <div className="attachment-actions">
-                                <a
-                                    href={`${apiUrl}${attachment.filePath}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="attachment-download"
-                                >
-                                    {t('attachment.download') || 'Download'}
-                                </a>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
 
     if (isLoading) {
         return (
             <div className={`car-details-container ${isDarkMode ? 'dark' : ''}`}>
                 <div className="loading-state">
-                    <div className="spinner"></div>
+                    <div className="loading-spinner"></div>
                     <p>{t('common.loading') || 'Loading...'}</p>
                 </div>
             </div>
         );
     }
 
-    if (error) {
+    if (error || !car) {
         return (
             <div className={`car-details-container ${isDarkMode ? 'dark' : ''}`}>
                 <div className="error-state">
-                    <h2>{t('common.error') || 'Error'}</h2>
-                    <p>{error}</p>
+                    <div className="error-icon">⚠️</div>
+                    <h2>{error || (t('car.notFound') || 'Car not found')}</h2>
                     <button
-                        className="retry-button"
-                        onClick={() => window.location.reload()}
+                        className="back-button-primary"
+                        onClick={() => navigate('/cars')}
                     >
-                        {t('common.retry') || 'Retry'}
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    if (!car) {
-        return (
-            <div className={`car-details-container ${isDarkMode ? 'dark' : ''}`}>
-                <div className="not-found-state">
-                    <h2>{t('car.notFound') || 'Car not found'}</h2>
-                    <Link to="/cars" className="back-link">
                         {t('common.goBack') || 'Go back to cars list'}
-                    </Link>
+                    </button>
                 </div>
             </div>
         );
@@ -381,126 +240,529 @@ const CarDetails = () => {
 
     return (
         <div className={`car-details-container ${isDarkMode ? 'dark' : ''}`}>
-            {/* Page Header */}
+            {/* Header */}
             <div className="page-header">
                 <button
                     className="back-button"
                     onClick={() => navigate('/cars')}
                     aria-label={t('common.goBack') || 'Go back'}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="m12 19-7-7 7-7" />
                         <path d="M19 12H5" />
                     </svg>
                     {t('common.back') || 'Back'}
                 </button>
 
-                <Link
-                    to={`/cars/edit/${id}`}
-                    className="edit-button"
-                    aria-label={t('car.edit') || 'Edit car'}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                    </svg>
-                    {t('common.edit') || 'Edit'}
-                </Link>
+                <div className="header-actions">
+                    <Link
+                        to={`/cars/edit/${id}`}
+                        className="edit-button"
+                        aria-label={t('car.edit') || 'Edit car'}
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                        </svg>
+                        {t('common.edit') || 'Edit'}
+                    </Link>
+                </div>
+            </div>
+
+            {/* Car Hero Section */}
+            <div className="car-hero">
+                <div className="car-image-container">
+                    {car.images && car.images.length > 0 ? (
+                        <img
+                            src={apiUrl + (car.images.find(img => img.isMainImage)?.path || car.images[0]?.path)}
+                            alt={`${car.fields?.manufacturer} ${car.fields?.model}`}
+                            className="car-image"
+                        />
+                    ) : (
+                        <div className="car-placeholder">
+                            <div className="car-placeholder-content">
+                                <div className="car-placeholder-icon">🚗</div>
+                                <p>{t('car.noImage') || 'No image available'}</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                <div className="car-hero-content">
+                    <h1 className="car-title">
+                        {car.fields?.manufacturer} {car.fields?.model}
+                    </h1>
+                    <p className="car-year">{car.fields?.year}</p>
+                    <div className="car-status-badge">
+                        <span
+                            className={`status-indicator ${car.isAvailable ? 'available' : 'unavailable'}`}
+                            style={{ backgroundColor: getStatusColor(car.status) }}
+                        ></span>
+                        {car.isAvailable ? (t('car.available') || 'Available') : (t('car.unavailable') || 'Unavailable')}
+                    </div>
+                </div>
             </div>
 
             {/* Mobile Tab Navigation */}
             <div className="mobile-tabs">
                 <button
-                    className={`tab-button ${activeTab === 'info' ? 'active' : ''}`}
-                    onClick={() => handleTabChange('info')}
+                    className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+                    onClick={() => handleTabChange('overview')}
                 >
-                    {t('car.details.info') || 'Information'}
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4" />
+                        <path d="M9 11V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v7" />
+                    </svg>
+                    {t('car.tabs.info') || 'Overview'}
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'documents' ? 'active' : ''}`}
+                    onClick={() => handleTabChange('documents')}
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14,2 14,8 20,8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10,9 9,9 8,9" />
+                    </svg>
+                    {t('car.tabs.maintenance') || 'Documents'}
                 </button>
                 <button
                     className={`tab-button ${activeTab === 'attachments' ? 'active' : ''}`}
                     onClick={() => handleTabChange('attachments')}
                 >
-                    {t('car.details.attachments') || 'Attachments'}
-                </button>
-            </div>
-
-            {/* Content with touch support */}
-            <div
-                className="tab-content"
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-            >
-                {activeTab === 'info' && renderCarInfo()}
-                {activeTab === 'attachments' && renderAttachments()}
-            </div>
-
-            {/* Action Buttons Panel */}
-            <div className="actions-panel">
-                <button
-                    className="action-button primary"
-                    onClick={handleCreateReservation}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-                        <line x1="16" x2="16" y1="2" y2="6" />
-                        <line x1="8" x2="8" y1="2" y2="6" />
-                        <line x1="3" x2="21" y1="10" y2="10" />
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
                     </svg>
-                    {t('car.actions.addReservation') || 'Create Reservation'}
-                </button>
-
-                <button
-                    className="action-button secondary"
-                    onClick={handleDummyAction1}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 2v20m9-9H3" />
-                    </svg>
-                    {t('action.pl1') || 'Action 1'}
+                    {t('car.tabs.attachments') || 'Attachments'}
                 </button>
             </div>
 
-            {/* Upload Modal */}
-            {showAttachmentModal && (
-                <div className="upload-modal-overlay" onClick={() => setShowAttachmentModal(false)}>
-                    <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="upload-modal-header">
-                            <h3>{t('attachment.upload') || 'Upload Attachment'}</h3>
+            {/* Tab Content */}
+            <div className="tab-content">
+                {activeTab === 'overview' && (
+                    <div className="overview-section">
+                        <div className="details-grid">
+                            <div className="detail-card">
+                                <h3>{t('car.details.basic') || 'Basic Information'}</h3>
+                                <div className="detail-rows">
+                                    <div className="detail-row">
+                                        <span className="label">{t('car.licensePlate') || 'License Plate'}</span>
+                                        <span className="value">{car.licensePlate || 'N/A'}</span>
+                                    </div>
+                                    <div className="detail-row">
+                                        <span className="label">{t('car.currentKm') || 'Current KM'}</span>
+                                        <span className="value">{car.currentKM?.toLocaleString() || 'N/A'} km</span>
+                                    </div>
+                                    <div className="detail-row">
+                                        <span className="label">{t('car.color') || 'Color'}</span>
+                                        <span className="value color-value">
+                                            <div
+                                                className="color-dot"
+                                                style={{ backgroundColor: car.color || '#ccc' }}
+                                            ></div>
+                                            {car.color || 'N/A'}
+                                        </span>
+                                    </div>
+                                    <div className="detail-row">
+                                        <span className="label">{t('car.fields.engineType') || 'Engine'}</span>
+                                        <span className="value">{car.engine || 'N/A'}</span>
+                                    </div>
+                                    <div className="detail-row">
+                                        <span className="label">{t('car.fields.gearType') || 'Transmission'}</span>
+                                        <span className="value">{car.gear || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="detail-card">
+                                <h3>{t('car.details.pricing') || 'Pricing & Status'}</h3>
+                                <div className="detail-rows">
+                                    <div className="detail-row">
+                                        <span className="label">{t('car.dailyRate') || 'Daily Rate'}</span>
+                                        <span className="value price">{car.dailyRate || 'N/A'} {t('common.currency')}</span>
+                                    </div>
+                                    <div className="detail-row">
+                                        <span className="label">{t('car.fields.status') || 'Status'}</span>
+                                        <span className="value">{car.status || 'N/A'}</span>
+                                    </div>
+                                    {car.deviceSerialNumber && (
+                                        <div className="detail-row">
+                                            <span className="label">{t('car.tracking') || 'GPS Tracking'}</span>
+                                            <span className={`value tracking ${car.isTrackingActive ? 'active' : 'inactive'}`}>
+                                                {car.isTrackingActive ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'documents' && (
+                    <div className="documents-section">
+                        <div className="documents-grid">
+                            {/* Insurance Card */}
+                            <div className="document-card">
+                                <div className="document-header">
+                                    <h3>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                        </svg>
+                                        {t('car.insurance') || 'Insurance'}
+                                    </h3>
+                                    <button
+                                        className="edit-doc-button"
+                                        onClick={() => setShowInsuranceModal(true)}
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                        </svg>
+                                        {t('common.edit') || 'Edit'}
+                                    </button>
+                                </div>
+                                <div className="document-content">
+                                    <div className="document-field">
+                                        <span className="label">{t('car.insurance.company') || 'Insurance Company'}</span>
+                                        <span className="value">{car.assuranceName || 'Not specified'}</span>
+                                    </div>
+                                    <div className="document-field">
+                                        <span className="label">{t('car.insurance.startDate') || 'Start Date'}</span>
+                                        <span className="value">{formatDate(car.assuranceStartDate)}</span>
+                                    </div>
+                                    <div className="document-field">
+                                        <span className="label">{t('car.insurance.endDate') || 'End Date'}</span>
+                                        <span className={`value ${isExpired(car.assuranceEndDate) ? 'expired' : ''}`}>
+                                            {formatDate(car.assuranceEndDate)}
+                                            {car.assuranceEndDate && (
+                                                <span className="expiry-info">
+                                                    {isExpired(car.assuranceEndDate) ?
+                                                        ' (Expired)' :
+                                                        ` (${getDaysUntilExpiration(car.assuranceEndDate)} days left)`
+                                                    }
+                                                </span>
+                                            )}
+                                        </span>
+                                    </div>
+                                </div>
+                                {isExpired(car.assuranceEndDate) && (
+                                    <div className="document-warning">
+                                        ⚠️ Insurance has expired
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Technical Visit Card */}
+                            <div className="document-card">
+                                <div className="document-header">
+                                    <h3>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                                        </svg>
+                                        {t('car.technicalVisit') || 'Technical Visit'}
+                                    </h3>
+                                    <button
+                                        className="edit-doc-button"
+                                        onClick={() => setShowTechnicalVisitModal(true)}
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                        </svg>
+                                        {t('common.edit') || 'Edit'}
+                                    </button>
+                                </div>
+                                <div className="document-content">
+                                    <div className="document-field">
+                                        <span className="label">{t('car.technicalVisit.startDate') || 'Start Date'}</span>
+                                        <span className="value">{formatDate(car.technicalVisitStartDate)}</span>
+                                    </div>
+                                    <div className="document-field">
+                                        <span className="label">{t('car.technicalVisit.endDate') || 'End Date'}</span>
+                                        <span className={`value ${isExpired(car.technicalVisitEndDate) ? 'expired' : ''}`}>
+                                            {formatDate(car.technicalVisitEndDate)}
+                                            {car.technicalVisitEndDate && (
+                                                <span className="expiry-info">
+                                                    {isExpired(car.technicalVisitEndDate) ?
+                                                        ' (Expired)' :
+                                                        ` (${getDaysUntilExpiration(car.technicalVisitEndDate)} days left)`
+                                                    }
+                                                </span>
+                                            )}
+                                        </span>
+                                    </div>
+                                </div>
+                                {isExpired(car.technicalVisitEndDate) && (
+                                    <div className="document-warning">
+                                        ⚠️ Technical visit has expired
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'attachments' && (
+                    <div className="attachments-section">
+                        <div className="attachments-header">
+                            <h3>{t('car.attachments.title') || 'Attachments'}</h3>
                             <button
-                                className="upload-modal-close"
-                                onClick={() => setShowAttachmentModal(false)}
+                                className="add-button"
+                                onClick={() => setShowAttachmentModal(true)}
                             >
-                                ✕
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                {t('attachment.add') || 'Add Attachment'}
                             </button>
                         </div>
-                        <div className="upload-modal-content">
-                            {fileToUpload && (
-                                <div className="upload-file-info">
-                                    <p><strong>{t('attachment.selectedFile') || 'Selected file'}:</strong> {fileToUpload.name}</p>
-                                    <p><strong>{t('attachment.fileSize') || 'Size'}:</strong> {(fileToUpload.size / 1024 / 1024).toFixed(2)} MB</p>
-                                </div>
-                            )}
-                            {fileError && (
-                                <div className="upload-error">
-                                    {fileError}
-                                </div>
-                            )}
-                            <div className="upload-modal-actions">
+
+                        {attachments && attachments.length > 0 ? (
+                            <div className="attachments-grid">
+                                {attachments.map((attachment) => (
+                                    <div key={attachment.id} className="attachment-item">
+                                        <div className="attachment-icon">📎</div>
+                                        <div className="attachment-info">
+                                            <h4>{attachment.fileName}</h4>
+                                            <p>{new Date(attachment.uploadedAt).toLocaleDateString()}</p>
+                                        </div>
+                                        <a
+                                            href={`${apiUrl}${attachment.filePath}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="attachment-download"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="7,10 12,15 17,10"></polyline>
+                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="empty-state">
+                                <div className="empty-icon">📎</div>
+                                <h4>{t('car.attachments.noFiles') || 'No attachments'}</h4>
+                                <p>{t('car.attachments.addFirstFile') || 'Upload documents related to this car'}</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {/* Insurance Modal */}
+            {showInsuranceModal && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <div className="modal-header">
+                            <h3>{t('car.insurance.update') || 'Update Insurance Information'}</h3>
+                            <button
+                                className="modal-close"
+                                onClick={() => setShowInsuranceModal(false)}
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <form onSubmit={handleInsuranceUpdate} className="modal-form">
+                            <div className="form-group">
+                                <label htmlFor="assuranceName">{t('car.insurance.company') || 'Insurance Company'}</label>
+                                <input
+                                    type="text"
+                                    id="assuranceName"
+                                    value={insuranceForm.assuranceName}
+                                    onChange={(e) => setInsuranceForm(prev => ({
+                                        ...prev,
+                                        assuranceName: e.target.value
+                                    }))}
+                                    placeholder="Enter insurance company name"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="assuranceStartDate">{t('car.insurance.startDate') || 'Start Date'}</label>
+                                <input
+                                    type="date"
+                                    id="assuranceStartDate"
+                                    value={insuranceForm.assuranceStartDate}
+                                    onChange={(e) => setInsuranceForm(prev => ({
+                                        ...prev,
+                                        assuranceStartDate: e.target.value
+                                    }))}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="assuranceEndDate">{t('car.insurance.endDate') || 'End Date'}</label>
+                                <input
+                                    type="date"
+                                    id="assuranceEndDate"
+                                    value={insuranceForm.assuranceEndDate}
+                                    onChange={(e) => setInsuranceForm(prev => ({
+                                        ...prev,
+                                        assuranceEndDate: e.target.value
+                                    }))}
+                                />
+                            </div>
+                            <div className="modal-actions">
                                 <button
-                                    className="upload-cancel-button"
-                                    onClick={() => setShowAttachmentModal(false)}
-                                    disabled={uploadingFile}
+                                    type="button"
+                                    className="button-secondary"
+                                    onClick={() => setShowInsuranceModal(false)}
                                 >
                                     {t('common.cancel') || 'Cancel'}
                                 </button>
                                 <button
-                                    className="upload-confirm-button"
-                                    onClick={handleFileUpload}
-                                    disabled={uploadingFile || !fileToUpload}
+                                    type="submit"
+                                    className="button-primary"
+                                    disabled={isUpdating}
                                 >
-                                    {uploadingFile
-                                        ? (t('attachment.uploading') || 'Uploading...')
-                                        : (t('attachment.upload') || 'Upload')
+                                    {isUpdating ?
+                                        (t('common.updating') || 'Updating...') :
+                                        (t('common.update') || 'Update')
+                                    }
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Technical Visit Modal */}
+            {showTechnicalVisitModal && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <div className="modal-header">
+                            <h3>{t('car.technicalVisit.update') || 'Update Technical Visit Information'}</h3>
+                            <button
+                                className="modal-close"
+                                onClick={() => setShowTechnicalVisitModal(false)}
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <form onSubmit={handleTechnicalVisitUpdate} className="modal-form">
+                            <div className="form-group">
+                                <label htmlFor="technicalVisitStartDate">{t('car.technicalVisit.startDate') || 'Start Date'}</label>
+                                <input
+                                    type="date"
+                                    id="technicalVisitStartDate"
+                                    value={technicalVisitForm.technicalVisitStartDate}
+                                    onChange={(e) => setTechnicalVisitForm(prev => ({
+                                        ...prev,
+                                        technicalVisitStartDate: e.target.value
+                                    }))}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="technicalVisitEndDate">{t('car.technicalVisit.endDate') || 'End Date'}</label>
+                                <input
+                                    type="date"
+                                    id="technicalVisitEndDate"
+                                    value={technicalVisitForm.technicalVisitEndDate}
+                                    onChange={(e) => setTechnicalVisitForm(prev => ({
+                                        ...prev,
+                                        technicalVisitEndDate: e.target.value
+                                    }))}
+                                />
+                            </div>
+                            <div className="modal-actions">
+                                <button
+                                    type="button"
+                                    className="button-secondary"
+                                    onClick={() => setShowTechnicalVisitModal(false)}
+                                >
+                                    {t('common.cancel') || 'Cancel'}
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="button-primary"
+                                    disabled={isUpdating}
+                                >
+                                    {isUpdating ?
+                                        (t('common.updating') || 'Updating...') :
+                                        (t('common.update') || 'Update')
+                                    }
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Attachment Upload Modal */}
+            {showAttachmentModal && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <div className="modal-header">
+                            <h3>{t('attachment.upload') || 'Upload Attachment'}</h3>
+                            <button
+                                className="modal-close"
+                                onClick={() => setShowAttachmentModal(false)}
+                            >
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="modal-content">
+                            <div className="file-upload-area">
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={(e) => setFileToUpload(e.target.files[0])}
+                                    className="file-input"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                />
+                                <div className="file-upload-content">
+                                    <div className="upload-icon">📁</div>
+                                    <p>{t('attachment.selectFile') || 'Select a file to upload'}</p>
+                                    <small>{t('attachment.supportedFormats') || 'Supported: PDF, DOC, DOCX, JPG, PNG'}</small>
+                                </div>
+                            </div>
+
+                            {fileToUpload && (
+                                <div className="selected-file">
+                                    <span>📎 {fileToUpload.name}</span>
+                                    <button
+                                        onClick={() => setFileToUpload(null)}
+                                        className="remove-file"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            )}
+
+                            {fileError && (
+                                <div className="error-message">
+                                    {fileError}
+                                </div>
+                            )}
+
+                            <div className="modal-actions">
+                                <button
+                                    type="button"
+                                    className="button-secondary"
+                                    onClick={() => setShowAttachmentModal(false)}
+                                >
+                                    {t('common.cancel') || 'Cancel'}
+                                </button>
+                                <button
+                                    type="button"
+                                    className="button-primary"
+                                    onClick={handleFileUpload}
+                                    disabled={!fileToUpload || uploadingFile}
+                                >
+                                    {uploadingFile ?
+                                        (t('attachment.uploading') || 'Uploading...') :
+                                        (t('attachment.upload') || 'Upload')
                                     }
                                 </button>
                             </div>

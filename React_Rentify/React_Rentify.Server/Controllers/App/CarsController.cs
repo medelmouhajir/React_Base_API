@@ -12,6 +12,7 @@ using React_Rentify.Server.Models.Reservations;
 using React_Rentify.Server.Services;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
@@ -791,6 +792,128 @@ namespace React_Rentify.Server.Controllers
 
             return CreatedAtAction(nameof(GetCarById), new { id = car.Id }, attachmentDto);
         }
+
+
+        /// <summary>
+        /// PUT: api/Cars/{id}/insurance
+        /// Updates insurance information for a specific car
+        /// </summary>
+        [HttpPut("{id:guid}/insurance")]
+        public async Task<IActionResult> UpdateCarInsurance(Guid id, [FromBody] UpdateCarInsuranceDto dto)
+        {
+            _logger.LogInformation("Updating insurance information for car {CarId}", id);
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid UpdateCarInsuranceDto received for car {CarId}", id);
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var existingCar = await _context.Set<Car>()
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (existingCar == null)
+                {
+                    _logger.LogWarning("Car with Id {CarId} not found", id);
+                    return NotFound(new { message = $"Car with Id '{id}' not found." });
+                }
+
+                // Check agency authorization
+                if (!await _authService.HasAccessToAgencyAsync(existingCar.AgencyId))
+                {
+                    _logger.LogWarning("Unauthorized access attempt to car {CarId} from agency {AgencyId}", id, existingCar.AgencyId);
+                    return Unauthorized();
+                }
+
+                // Validate dates if provided
+                if (dto.AssuranceStartDate.HasValue && dto.AssuranceEndDate.HasValue)
+                {
+                    if (dto.AssuranceStartDate.Value >= dto.AssuranceEndDate.Value)
+                    {
+                        return BadRequest(new { message = "Insurance start date must be before end date." });
+                    }
+                }
+
+                // Update insurance fields
+                existingCar.AssuranceName = dto.AssuranceName;
+                existingCar.AssuranceStartDate = dto.AssuranceStartDate.HasValue ? dto.AssuranceStartDate.Value.ToUniversalTime() : dto.AssuranceStartDate;
+                existingCar.AssuranceEndDate = dto.AssuranceEndDate.HasValue ? dto.AssuranceEndDate.Value.ToUniversalTime() : dto.AssuranceEndDate;
+
+                _context.Entry(existingCar).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Successfully updated insurance information for car {CarId}", id);
+
+                return Ok(new { message = "Insurance information updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating insurance information for car {CarId}", id);
+                return StatusCode(500, new { message = "An error occurred while updating insurance information." });
+            }
+        }
+
+        /// <summary>
+        /// PUT: api/Cars/{id}/technical-visit
+        /// Updates technical visit information for a specific car
+        /// </summary>
+        [HttpPut("{id:guid}/technical-visit")]
+        public async Task<IActionResult> UpdateCarTechnicalVisit(Guid id, [FromBody] UpdateCarTechnicalVisitDto dto)
+        {
+            _logger.LogInformation("Updating technical visit information for car {CarId}", id);
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid UpdateCarTechnicalVisitDto received for car {CarId}", id);
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var existingCar = await _context.Set<Car>()
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (existingCar == null)
+                {
+                    _logger.LogWarning("Car with Id {CarId} not found", id);
+                    return NotFound(new { message = $"Car with Id '{id}' not found." });
+                }
+
+                // Check agency authorization
+                if (!await _authService.HasAccessToAgencyAsync(existingCar.AgencyId))
+                {
+                    _logger.LogWarning("Unauthorized access attempt to car {CarId} from agency {AgencyId}", id, existingCar.AgencyId);
+                    return Unauthorized();
+                }
+
+                // Validate dates if provided
+                if (dto.TechnicalVisitStartDate.HasValue && dto.TechnicalVisitEndDate.HasValue)
+                {
+                    if (dto.TechnicalVisitStartDate.Value >= dto.TechnicalVisitEndDate.Value)
+                    {
+                        return BadRequest(new { message = "Technical visit start date must be before end date." });
+                    }
+                }
+
+                // Update technical visit fields
+                existingCar.TechnicalVisitStartDate = dto.TechnicalVisitStartDate.HasValue ? dto.TechnicalVisitStartDate.Value.ToUniversalTime() : dto.TechnicalVisitStartDate;
+                existingCar.TechnicalVisitEndDate = dto.TechnicalVisitEndDate.HasValue ? dto.TechnicalVisitEndDate.Value.ToUniversalTime() : dto.TechnicalVisitEndDate;
+
+                _context.Entry(existingCar).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Successfully updated technical visit information for car {CarId}", id);
+
+                return Ok(new { message = "Technical visit information updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating technical visit information for car {CarId}", id);
+                return StatusCode(500, new { message = "An error occurred while updating technical visit information." });
+            }
+        }
     }
 
     #region DTOs
@@ -912,5 +1035,31 @@ namespace React_Rentify.Server.Controllers
         public string FilePath { get; set; }
     }
 
+    /// <summary>
+    /// DTO for updating car insurance information
+    /// </summary>
+    public class UpdateCarInsuranceDto
+    {
+        [StringLength(200)]
+        public string? AssuranceName { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime? AssuranceStartDate { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime? AssuranceEndDate { get; set; }
+    }
+
+    /// <summary>
+    /// DTO for updating car technical visit information
+    /// </summary>
+    public class UpdateCarTechnicalVisitDto
+    {
+        [DataType(DataType.Date)]
+        public DateTime? TechnicalVisitStartDate { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime? TechnicalVisitEndDate { get; set; }
+    }
     #endregion
 }
