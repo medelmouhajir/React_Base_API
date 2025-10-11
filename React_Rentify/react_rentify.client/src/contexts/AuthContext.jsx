@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
     // Add a method for Google authentication
     const loginWithGoogle = () => {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5229';
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5249';
         const redirectUri = encodeURIComponent(window.location.origin);
 
         // Redirect to backend endpoint that starts Google OAuth flow

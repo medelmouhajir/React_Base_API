@@ -80,18 +80,15 @@ namespace React_Rentify.Server.Services
             // Send real-time notification
             await SendRealtimeNotificationAsync(notificationDto);
 
-            // Send push notification if user is offline
-            _ = Task.Run(async () =>
+            // Send push notification (non-blocking behavior handled within the method)
+            try
             {
-                try
-                {
-                    await SendPushNotificationAsync(notificationDto);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to send push notification for {NotificationId}", notification.Id);
-                }
-            });
+                await SendPushNotificationAsync(notificationDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send push notification for {NotificationId}", notification.Id);
+            }
 
             _logger.LogInformation("Notification {NotificationId} created successfully", notification.Id);
             return notificationDto;

@@ -69,6 +69,7 @@ namespace React_Rentify.Server.BackgroundServices
         {
             using var scope = _serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<MainDbContext>();
+            var gpsContext = scope.ServiceProvider.GetRequiredService<GpsDbContext>();
             var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
 
             var now = DateTime.UtcNow;
@@ -90,7 +91,7 @@ namespace React_Rentify.Server.BackgroundServices
             // Check GPS device status (every 15 minutes)
             if ((now - _lastGPSCheck).TotalMinutes >= 15)
             {
-                await CheckGPSDeviceStatusAsync(context, notificationService, stoppingToken);
+                await CheckGPSDeviceStatusAsync(context, gpsContext, notificationService, stoppingToken);
                 _lastGPSCheck = now;
             }
 
@@ -256,6 +257,7 @@ namespace React_Rentify.Server.BackgroundServices
         /// </summary>
         private async Task CheckGPSDeviceStatusAsync(
             MainDbContext context,
+            GpsDbContext gpsContext,
             INotificationService notificationService,
             CancellationToken stoppingToken)
         {
@@ -277,7 +279,7 @@ namespace React_Rentify.Server.BackgroundServices
                     if (stoppingToken.IsCancellationRequested) break;
 
                     // Check if device has sent data in the last hour
-                    var hasRecentData = await context.Set<Location_Record>()
+                    var hasRecentData = await gpsContext.Location_Records
                         .AnyAsync(r => r.DeviceSerialNumber == car.DeviceSerialNumber &&
                                       r.Timestamp >= oneHourAgo,
                                  stoppingToken);
