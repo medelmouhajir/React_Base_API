@@ -169,6 +169,8 @@ namespace React_Rentify.Server
 
             app.MapHub<NotificationHub>("/hubs/notifications");
 
+            app.MapHub<GpsHub>("/hubs/gps");
+
             app.MapControllers();
 
             app.MapFallbackToFile("/index.html");
