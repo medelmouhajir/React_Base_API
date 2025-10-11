@@ -1369,7 +1369,8 @@
     "expenses": "Expenses",
     "serviceAlerts": "Alerts",
     "subscriptions": "Subscriptions",
-    "tickets": "Tickets"
+    "tickets": "Tickets",
+    "accidents": "Accidents"
   },
   "profile": {
     "myProfile": "My Profile",

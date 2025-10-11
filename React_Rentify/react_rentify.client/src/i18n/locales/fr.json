@@ -1348,7 +1348,8 @@
     "expenses": "Dépenses",
     "serviceAlerts": "Alertes",
     "subscriptions": "Abonnements",
-    "tickets": "Tickets"
+    "tickets": "Tickets",
+    "accidents": "Accidents"
   },
   "profile": {
     "myProfile": "Mon profil",

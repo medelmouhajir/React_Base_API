@@ -1361,7 +1361,8 @@
     "expenses": "النفقات",
     "serviceAlerts": "التنبيهات",
     "subscriptions": "الاشتراكات",
-    "tickets": "التذاكر"
+    "tickets": "التذاكر",
+    "accidents": "الحوادث"
   },
   "profile": {
     "myProfile": "ملفي الشخصي",
