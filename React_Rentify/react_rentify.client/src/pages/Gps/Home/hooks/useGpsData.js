@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import gpsService from '../../../../services/gpsService';
 
-
 const getBatteryStatus = (voltage) => {
     if (voltage === null || voltage === undefined) return 'unknown';
     if (voltage > 12.5) return 'good';
@@ -63,6 +62,8 @@ const useGpsData = (agencyId) => {
     const [lastUpdateTime, setLastUpdateTime] = useState(null);
     const intervalRef = useRef(null);
     const signalRConnectionRef = useRef(null);
+    const isSignalRConnectingRef = useRef(false);
+    const shouldStartFallbackRef = useRef(true);
     const vehiclesRef = useRef([]);
 
     // Fetch vehicles for agency
@@ -149,7 +150,35 @@ const useGpsData = (agencyId) => {
         }
     }, []);
 
+    const stopSignalRConnection = useCallback((connectionOverride, options = {}) => {
+        const { startFallback = true } = options;
+        const connectionToStop = connectionOverride ?? signalRConnectionRef.current;
+        if (!connectionToStop) return;
 
+        if (signalRConnectionRef.current === connectionToStop) {
+            signalRConnectionRef.current = null;
+        }
+
+        isSignalRConnectingRef.current = false;
+        shouldStartFallbackRef.current = startFallback;
+
+        if (
+            connectionToStop.state === signalR.HubConnectionState.Disconnected ||
+            connectionToStop.state === signalR.HubConnectionState.Disconnecting
+        ) {
+            return;
+        }
+
+        connectionToStop.stop().catch((stopError) => {
+            if (stopError?.name === 'AbortError') {
+                console.info('GPS SignalR stop aborted: connection was already closing.');
+            } else {
+                console.warn('Failed to stop GPS SignalR connection:', stopError);
+            }
+        });
+    }, []);
+
+    // Handle vehicle alerts
     const handleVehicleAlert = useCallback((alertData) => {
         // This could integrate with a notification system
         console.log('Vehicle alert:', alertData);
@@ -160,13 +189,13 @@ const useGpsData = (agencyId) => {
     const updateSingleVehicle = useCallback((vehicleId, update) => {
         setVehicles(prev => prev.map(vehicle => {
             if (vehicle.id !== vehicleId) return vehicle;
-
             return formatVehicleUpdate(vehicle, update);
         }));
     }, []);
 
+    // SignalR connection for real-time updates (preferred)
     const initializeSignalR = useCallback(() => {
-        if (!agencyId || signalRConnectionRef.current) return;
+        if (!agencyId || signalRConnectionRef.current || isSignalRConnectingRef.current) return;
 
         const token = localStorage.getItem('authToken');
         if (!token) {
@@ -231,11 +260,20 @@ const useGpsData = (agencyId) => {
 
         connection.onclose((error) => {
             console.warn('GPS SignalR connection closed:', error);
-            signalRConnectionRef.current = null;
-            startRealTimeUpdates();
+            if (signalRConnectionRef.current === connection) {
+                signalRConnectionRef.current = null;
+            }
+            const shouldStartFallback = shouldStartFallbackRef.current;
+            shouldStartFallbackRef.current = true;
+            isSignalRConnectingRef.current = false;
+            if (shouldStartFallback) {
+                startRealTimeUpdates();
+            }
         });
 
         signalRConnectionRef.current = connection;
+        isSignalRConnectingRef.current = true;
+        shouldStartFallbackRef.current = true;
 
         connection.start()
             .then(async () => {
@@ -243,28 +281,44 @@ const useGpsData = (agencyId) => {
                 setError(null);
                 stopRealTimeUpdates();
                 await connection.invoke('JoinAgencyGroup', agencyId);
+                isSignalRConnectingRef.current = false;
             })
             .catch((error) => {
-                console.error('Failed to start GPS SignalR connection:', error);
-                signalRConnectionRef.current = null;
-                startRealTimeUpdates();
+                isSignalRConnectingRef.current = false;
+                const isAbortError =
+                    error?.name === 'AbortError' ||
+                    (typeof error?.message === 'string' &&
+                        error.message.toLowerCase().includes('stopped during negotiation'));
+
+                if (isAbortError) {
+                    console.info('GPS SignalR start was aborted before completion.');
+                } else {
+                    console.error('Failed to start GPS SignalR connection:', error);
+                }
+
+                stopSignalRConnection(connection, { startFallback: !isAbortError });
+
+                if (!isAbortError) {
+                    startRealTimeUpdates();
+                }
             });
-    }, [agencyId, startRealTimeUpdates, stopRealTimeUpdates, updateSingleVehicle, handleVehicleAlert]);
+    }, [agencyId, handleVehicleAlert, startRealTimeUpdates, stopRealTimeUpdates, stopSignalRConnection, updateSingleVehicle]);
 
     // Refresh vehicles manually
     const refreshVehicles = useCallback(() => {
         fetchVehicles();
     }, [fetchVehicles]);
 
-
-
     // Effects
+    useEffect(() => {
+        vehiclesRef.current = vehicles;
+    }, [vehicles]);
+
     useEffect(() => {
         fetchVehicles();
     }, [fetchVehicles]);
 
     useEffect(() => {
-
         if (!agencyId) return undefined;
 
         if (import.meta.env.VITE_API_URL) {
@@ -275,23 +329,17 @@ const useGpsData = (agencyId) => {
 
         return () => {
             stopRealTimeUpdates();
-            if (signalRConnectionRef.current) {
-                signalRConnectionRef.current.stop();
-                signalRConnectionRef.current = null;
-            }
+            stopSignalRConnection(undefined, { startFallback: false });
         };
-    }, [agencyId, initializeSignalR, startRealTimeUpdates, stopRealTimeUpdates]);
+    }, [agencyId, initializeSignalR, startRealTimeUpdates, stopRealTimeUpdates, stopSignalRConnection]);
 
     // Cleanup on unmount
     useEffect(() => {
         return () => {
             stopRealTimeUpdates();
-            if (signalRConnectionRef.current) {
-                signalRConnectionRef.current.stop();
-                signalRConnectionRef.current = null;
-            }
+            stopSignalRConnection(undefined, { startFallback: false });
         };
-    }, [stopRealTimeUpdates]);
+    }, [stopRealTimeUpdates, stopSignalRConnection]);
 
     return {
         vehicles,
