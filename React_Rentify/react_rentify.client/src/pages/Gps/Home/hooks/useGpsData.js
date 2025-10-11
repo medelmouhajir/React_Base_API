@@ -112,7 +112,7 @@ const useGpsData = (agencyId) => {
         if (!agencyId || wsRef.current) return;
 
         try {
-            const wsUrl = `${process.env.REACT_APP_WS_BASE_URL}/gps/${agencyId}`;
+            const wsUrl = `${import.meta.env.VITE_API_URL}/gps/${agencyId}`;
             wsRef.current = new WebSocket(wsUrl);
 
             wsRef.current.onopen = () => {
@@ -213,7 +213,7 @@ const useGpsData = (agencyId) => {
     useEffect(() => {
         if (vehicles.length > 0) {
             // Try WebSocket first, fall back to polling
-            if (process.env.REACT_APP_WS_BASE_URL) {
+            if (import.meta.env.VITE_API_URL) {
                 initializeWebSocket();
             } else {
                 startRealTimeUpdates();
