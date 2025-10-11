@@ -1,6 +1,57 @@
 // src/pages/Gps/Home/hooks/useGpsData.js
 import { useState, useEffect, useCallback, useRef } from 'react';
+import * as signalR from '@microsoft/signalr';
 import gpsService from '../../../../services/gpsService';
+
+
+const getBatteryStatus = (voltage) => {
+    if (voltage === null || voltage === undefined) return 'unknown';
+    if (voltage > 12.5) return 'good';
+    if (voltage > 11.8) return 'low';
+    return 'critical';
+};
+
+const getSignalStrength = (signal) => {
+    if (signal === null || signal === undefined) return 'unknown';
+    if (signal > -70) return 'excellent';
+    if (signal > -85) return 'good';
+    if (signal > -100) return 'fair';
+    return 'poor';
+};
+
+const formatVehicleUpdate = (vehicle, update) => {
+    if (!update) return vehicle;
+
+    const latitude = update.latitude ?? update.Latitude;
+    const longitude = update.longitude ?? update.Longitude;
+    const accuracy = update.accuracy ?? update.Accuracy ?? vehicle.lastLocation?.accuracy ?? null;
+    const timestamp = update.timestamp ?? update.Timestamp ?? vehicle.timestamp;
+    const speedValue = update.speedKmh ?? update.speed ?? update.SpeedKmh ?? update.Speed ?? vehicle.speedKmh ?? vehicle.speed ?? 0;
+    const ignitionState = update.ignitionOn ?? update.IgnitionOn ?? vehicle.ignitionOn;
+    const batteryVoltage = update.batteryVoltage ?? update.BatteryVoltage;
+    const gsmSignal = update.gsmSignal ?? update.GsmSignal;
+
+    return {
+        ...vehicle,
+        ...update,
+        speedKmh: speedValue,
+        lastLocation: (latitude !== undefined && latitude !== null && longitude !== undefined && longitude !== null)
+            ? {
+                latitude: parseFloat(latitude),
+                longitude: parseFloat(longitude),
+                accuracy
+            }
+            : vehicle.lastLocation,
+        isOnline: timestamp ? (new Date() - new Date(timestamp)) < 5 * 60 * 1000 : vehicle.isOnline,
+        isMoving: speedValue > 0 && !!ignitionState,
+        batteryStatus: batteryVoltage !== undefined && batteryVoltage !== null
+            ? getBatteryStatus(batteryVoltage)
+            : vehicle.batteryStatus,
+        signalStrength: gsmSignal !== undefined && gsmSignal !== null
+            ? getSignalStrength(gsmSignal)
+            : vehicle.signalStrength
+    };
+};
 
 const useGpsData = (agencyId) => {
     const [vehicles, setVehicles] = useState([]);
@@ -11,7 +62,8 @@ const useGpsData = (agencyId) => {
     // Real-time updates
     const [lastUpdateTime, setLastUpdateTime] = useState(null);
     const intervalRef = useRef(null);
-    const wsRef = useRef(null);
+    const signalRConnectionRef = useRef(null);
+    const vehiclesRef = useRef([]);
 
     // Fetch vehicles for agency
     const fetchVehicles = useCallback(async () => {
@@ -57,7 +109,7 @@ const useGpsData = (agencyId) => {
         intervalRef.current = setInterval(async () => {
             try {
                 // Only update positions for online vehicles to reduce load
-                const onlineVehicles = vehicles.filter(v => v.isOnline);
+                const onlineVehicles = vehiclesRef.current.filter(v => v.isOnline);
 
                 if (onlineVehicles.length === 0) return;
 
@@ -78,17 +130,7 @@ const useGpsData = (agencyId) => {
                     const update = updates.find(u => u?.vehicleId === vehicle.id);
                     if (!update) return vehicle;
 
-                    return {
-                        ...vehicle,
-                        ...update,
-                        lastLocation: update.latitude && update.longitude ? {
-                            latitude: parseFloat(update.latitude),
-                            longitude: parseFloat(update.longitude),
-                            accuracy: update.accuracy || null
-                        } : vehicle.lastLocation,
-                        isOnline: new Date() - new Date(update.timestamp) < 5 * 60 * 1000,
-                        isMoving: update.speedKmh > 0 && update.ignitionOn
-                    };
+                    return formatVehicleUpdate(vehicle, update);
                 }));
 
                 setLastUpdateTime(new Date());
@@ -97,7 +139,7 @@ const useGpsData = (agencyId) => {
                 console.error('Real-time update failed:', error);
             }
         }, 30000); // Update every 30 seconds
-    }, [vehicles]);
+    }, []);
 
     // Stop real-time updates
     const stopRealTimeUpdates = useCallback(() => {
@@ -107,103 +149,114 @@ const useGpsData = (agencyId) => {
         }
     }, []);
 
-    // WebSocket connection for real-time updates (if available)
-    const initializeWebSocket = useCallback(() => {
-        if (!agencyId || wsRef.current) return;
 
-        try {
-            const wsUrl = `${import.meta.env.VITE_API_URL}/gps/${agencyId}`;
-            wsRef.current = new WebSocket(wsUrl);
-
-            wsRef.current.onopen = () => {
-                console.log('GPS WebSocket connected');
-            };
-
-            wsRef.current.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-
-                    switch (data.type) {
-                        case 'VEHICLE_UPDATE':
-                            updateSingleVehicle(data.vehicleId, data.update);
-                            break;
-                        case 'VEHICLE_ALERT':
-                            handleVehicleAlert(data);
-                            break;
-                        default:
-                            console.log('Unknown WebSocket message type:', data.type);
-                    }
-                } catch (error) {
-                    console.error('Error parsing WebSocket message:', error);
-                }
-            };
-
-            wsRef.current.onclose = () => {
-                console.log('GPS WebSocket disconnected');
-                wsRef.current = null;
-                // Attempt to reconnect after 5 seconds
-                setTimeout(initializeWebSocket, 5000);
-            };
-
-            wsRef.current.onerror = (error) => {
-                console.error('GPS WebSocket error:', error);
-            };
-
-        } catch (error) {
-            console.error('Failed to initialize WebSocket:', error);
-            // Fall back to polling
-            startRealTimeUpdates();
-        }
-    }, [agencyId]);
-
-    // Update single vehicle in the list
-    const updateSingleVehicle = useCallback((vehicleId, update) => {
-        setVehicles(prev => prev.map(vehicle => {
-            if (vehicle.id !== vehicleId) return vehicle;
-
-            return {
-                ...vehicle,
-                ...update,
-                lastLocation: update.latitude && update.longitude ? {
-                    latitude: parseFloat(update.latitude),
-                    longitude: parseFloat(update.longitude),
-                    accuracy: update.accuracy || null
-                } : vehicle.lastLocation,
-                isOnline: new Date() - new Date(update.timestamp) < 5 * 60 * 1000,
-                isMoving: update.speedKmh > 0 && update.ignitionOn,
-                batteryStatus: getBatteryStatus(update.batteryVoltage),
-                signalStrength: getSignalStrength(update.gsmSignal)
-            };
-        }));
-    }, []);
-
-    // Handle vehicle alerts
     const handleVehicleAlert = useCallback((alertData) => {
         // This could integrate with a notification system
         console.log('Vehicle alert:', alertData);
         // You could dispatch to a global alert/notification context here
     }, []);
 
+    // Update single vehicle in the list
+    const updateSingleVehicle = useCallback((vehicleId, update) => {
+        setVehicles(prev => prev.map(vehicle => {
+            if (vehicle.id !== vehicleId) return vehicle;
+
+            return formatVehicleUpdate(vehicle, update);
+        }));
+    }, []);
+
+    const initializeSignalR = useCallback(() => {
+        if (!agencyId || signalRConnectionRef.current) return;
+
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            console.warn('GPS real-time updates require an authenticated session');
+            startRealTimeUpdates();
+            return;
+        }
+
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5249';
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`${apiUrl}/hubs/gps`, {
+                accessTokenFactory: () => token,
+                skipNegotiation: false,
+                transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling
+            })
+            .withAutomaticReconnect([0, 2000, 10000, 30000, 60000])
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        connection.on('InitialVehicleData', (initialUpdates = []) => {
+            if (!Array.isArray(initialUpdates) || initialUpdates.length === 0) return;
+
+            setVehicles(prev => prev.map(vehicle => {
+                const payload = initialUpdates.find(update => update?.vehicleId === vehicle.id);
+                if (!payload?.update) return vehicle;
+
+                return formatVehicleUpdate(vehicle, payload.update);
+            }));
+
+            setLastUpdateTime(new Date());
+        });
+
+        connection.on('VehicleUpdate', (vehicleUpdate) => {
+            if (!vehicleUpdate?.vehicleId) return;
+
+            updateSingleVehicle(vehicleUpdate.vehicleId, vehicleUpdate.update);
+            setLastUpdateTime(new Date());
+        });
+
+        connection.on('VehicleAlert', (alertData) => {
+            handleVehicleAlert(alertData);
+        });
+
+        connection.on('Error', (message) => {
+            console.error('GPS hub error:', message);
+            setError(typeof message === 'string' ? message : 'Real-time updates encountered an error');
+        });
+
+        connection.onreconnecting((error) => {
+            console.warn('GPS SignalR reconnecting...', error);
+        });
+
+        connection.onreconnected(async () => {
+            console.log('GPS SignalR reconnected');
+            try {
+                await connection.invoke('JoinAgencyGroup', agencyId);
+            } catch (err) {
+                console.error('Failed to rejoin GPS agency group:', err);
+            }
+        });
+
+        connection.onclose((error) => {
+            console.warn('GPS SignalR connection closed:', error);
+            signalRConnectionRef.current = null;
+            startRealTimeUpdates();
+        });
+
+        signalRConnectionRef.current = connection;
+
+        connection.start()
+            .then(async () => {
+                console.log('GPS SignalR connected');
+                setError(null);
+                stopRealTimeUpdates();
+                await connection.invoke('JoinAgencyGroup', agencyId);
+            })
+            .catch((error) => {
+                console.error('Failed to start GPS SignalR connection:', error);
+                signalRConnectionRef.current = null;
+                startRealTimeUpdates();
+            });
+    }, [agencyId, startRealTimeUpdates, stopRealTimeUpdates, updateSingleVehicle, handleVehicleAlert]);
+
     // Refresh vehicles manually
     const refreshVehicles = useCallback(() => {
         fetchVehicles();
     }, [fetchVehicles]);
 
-    // Helper functions
-    const getBatteryStatus = (voltage) => {
-        if (!voltage) return 'unknown';
-        if (voltage > 12.5) return 'good';
-        if (voltage > 11.8) return 'low';
-        return 'critical';
-    };
 
-    const getSignalStrength = (signal) => {
-        if (!signal) return 'unknown';
-        if (signal > -70) return 'excellent';
-        if (signal > -85) return 'good';
-        if (signal > -100) return 'fair';
-        return 'poor';
-    };
 
     // Effects
     useEffect(() => {
@@ -211,30 +264,31 @@ const useGpsData = (agencyId) => {
     }, [fetchVehicles]);
 
     useEffect(() => {
-        if (vehicles.length > 0) {
-            // Try WebSocket first, fall back to polling
-            if (import.meta.env.VITE_API_URL) {
-                initializeWebSocket();
-            } else {
-                startRealTimeUpdates();
-            }
+
+        if (!agencyId) return undefined;
+
+        if (import.meta.env.VITE_API_URL) {
+            initializeSignalR();
+        } else {
+            startRealTimeUpdates();
         }
 
         return () => {
             stopRealTimeUpdates();
-            if (wsRef.current) {
-                wsRef.current.close();
-                wsRef.current = null;
+            if (signalRConnectionRef.current) {
+                signalRConnectionRef.current.stop();
+                signalRConnectionRef.current = null;
             }
         };
-    }, [vehicles.length, initializeWebSocket, startRealTimeUpdates, stopRealTimeUpdates]);
+    }, [agencyId, initializeSignalR, startRealTimeUpdates, stopRealTimeUpdates]);
 
     // Cleanup on unmount
     useEffect(() => {
         return () => {
             stopRealTimeUpdates();
-            if (wsRef.current) {
-                wsRef.current.close();
+            if (signalRConnectionRef.current) {
+                signalRConnectionRef.current.stop();
+                signalRConnectionRef.current = null;
             }
         };
     }, [stopRealTimeUpdates]);
