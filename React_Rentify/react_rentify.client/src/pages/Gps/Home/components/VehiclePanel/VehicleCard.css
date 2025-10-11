@@ -1,0 +1,543 @@
+/* src/pages/Gps/Home/components/VehiclePanel/VehicleCard.css */
+
+.vehicle-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+    .vehicle-card:hover {
+        border-color: var(--primary-400);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+    }
+
+    .vehicle-card.selected {
+        border-color: var(--primary-500);
+        box-shadow: var(--shadow-lg);
+        background: var(--primary-50);
+    }
+
+    .vehicle-card.dark.selected {
+        background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Status indicator */
+    .vehicle-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--status-color, var(--border-color));
+        transition: background-color 0.2s ease;
+    }
+
+    .vehicle-card.online::before {
+        --status-color: var(--success-500);
+    }
+
+    .vehicle-card.moving::before {
+        --status-color: var(--primary-500);
+    }
+
+    .vehicle-card.parked::before {
+        --status-color: var(--warning-500);
+    }
+
+    .vehicle-card.offline::before {
+        --status-color: var(--error-500);
+    }
+
+/* Card Header */
+.vehicle-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.vehicle-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.vehicle-model {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.vehicle-license-plate {
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    background: var(--bg-tertiary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.vehicle-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1;
+}
+
+    .status-badge.online {
+        background: rgba(34, 197, 94, 0.1);
+        color: var(--success-600);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .status-badge.moving {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--primary-600);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .status-badge.parked {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-600);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .status-badge.offline {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--error-600);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+}
+
+.status-badge.offline .status-indicator {
+    animation: none;
+}
+
+/* Card Body */
+.vehicle-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Vehicle Metrics */
+.vehicle-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1;
+}
+
+.metric-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+    .metric-value svg {
+        width: 14px;
+        height: 14px;
+        color: var(--text-secondary);
+        flex-shrink: 0;
+    }
+
+    /* Special metric styling */
+    .metric-value.speed {
+        color: var(--primary-600);
+    }
+
+        .metric-value.speed.high-speed {
+            color: var(--error-600);
+        }
+
+    .metric-value.battery-low {
+        color: var(--warning-600);
+    }
+
+    .metric-value.signal-weak {
+        color: var(--error-600);
+    }
+
+/* Device Info */
+.device-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    margin-top: 0.5rem;
+}
+
+.device-serial {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-weight: 500;
+}
+
+.device-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.signal-strength {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.signal-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    height: 12px;
+}
+
+.signal-bar {
+    width: 2px;
+    background: var(--text-tertiary);
+    border-radius: 1px;
+    transition: background-color 0.2s ease;
+}
+
+    .signal-bar:nth-child(1) {
+        height: 25%;
+    }
+
+    .signal-bar:nth-child(2) {
+        height: 50%;
+    }
+
+    .signal-bar:nth-child(3) {
+        height: 75%;
+    }
+
+    .signal-bar:nth-child(4) {
+        height: 100%;
+    }
+
+.signal-strength.excellent .signal-bar {
+    background: var(--success-500);
+}
+
+.signal-strength.good .signal-bar:nth-child(-n+3) {
+    background: var(--primary-500);
+}
+
+.signal-strength.fair .signal-bar:nth-child(-n+2) {
+    background: var(--warning-500);
+}
+
+.signal-strength.poor .signal-bar:nth-child(1) {
+    background: var(--error-500);
+}
+
+/* Battery Indicator */
+.battery-indicator {
+    position: relative;
+    width: 20px;
+    height: 10px;
+    border: 1px solid var(--text-secondary);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+}
+
+    .battery-indicator::after {
+        content: '';
+        position: absolute;
+        right: -3px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 2px;
+        height: 4px;
+        background: var(--text-secondary);
+        border-radius: 0 1px 1px 0;
+    }
+
+.battery-level {
+    height: 100%;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+}
+
+    .battery-level.high {
+        background: var(--success-500);
+        width: var(--battery-width, 80%);
+    }
+
+    .battery-level.medium {
+        background: var(--warning-500);
+        width: var(--battery-width, 50%);
+    }
+
+    .battery-level.low {
+        background: var(--error-500);
+        width: var(--battery-width, 20%);
+        animation: batteryBlink 1s infinite alternate;
+    }
+
+/* Last Update Info */
+.last-update {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: 0.5rem;
+}
+
+.update-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+    .update-time svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .update-time.recent {
+        color: var(--success-600);
+    }
+
+    .update-time.old {
+        color: var(--warning-600);
+    }
+
+    .update-time.very-old {
+        color: var(--error-600);
+    }
+
+/* Quick Actions */
+.vehicle-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .action-btn:hover {
+        border-color: var(--primary-400);
+        color: var(--primary-600);
+        background: var(--primary-50);
+    }
+
+    .action-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+
+/* Compact Mode */
+.vehicle-card.compact {
+    padding: 0.75rem;
+}
+
+    .vehicle-card.compact .vehicle-card-header {
+        margin-bottom: 0.5rem;
+    }
+
+    .vehicle-card.compact .vehicle-metrics {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+
+    .vehicle-card.compact .metric-value {
+        font-size: 0.75rem;
+    }
+
+    .vehicle-card.compact .device-info {
+        padding: 0.5rem;
+        margin-top: 0.25rem;
+    }
+
+/* Loading State */
+.vehicle-card.loading {
+    pointer-events: none;
+    opacity: 0.7;
+    position: relative;
+    overflow: hidden;
+}
+
+    .vehicle-card.loading::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient( 90deg, transparent, rgba(255, 255, 255, 0.4), transparent );
+        animation: shimmer 1.5s infinite;
+    }
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes batteryBlink {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.3;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .vehicle-card {
+        padding: 0.75rem;
+    }
+
+    .vehicle-metrics {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .metric-item {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .device-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .vehicle-actions {
+        flex-direction: column;
+    }
+}
+
+/* Dark mode adjustments */
+.vehicle-card.dark {
+    background: var(--bg-primary-dark);
+    border-color: var(--border-color-dark);
+}
+
+    .vehicle-card.dark:hover {
+        border-color: var(--primary-400);
+        box-shadow: var(--shadow-md-dark);
+    }
+
+    .vehicle-card.dark .vehicle-license-plate,
+    .vehicle-card.dark .device-info {
+        background: var(--bg-tertiary-dark);
+    }
+
+    .vehicle-card.dark .device-info {
+        border-color: var(--border-color-dark);
+    }
+
+/* Accessibility */
+.vehicle-card:focus {
+    outline: 2px solid var(--primary-500);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vehicle-card,
+    .status-indicator,
+    .battery-level {
+        transition: none !important;
+        animation: none !important;
+    }
+}

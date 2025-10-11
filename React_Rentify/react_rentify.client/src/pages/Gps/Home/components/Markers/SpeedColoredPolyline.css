@@ -1,0 +1,291 @@
+/* src/pages/Gps/Home/components/Markers/SpeedColoredPolyline.css */
+
+/* Base polyline styles */
+.speed-polyline {
+    pointer-events: stroke;
+    cursor: pointer;
+}
+
+    /* Speed category classes for polylines */
+    .speed-polyline.stationary {
+        stroke: #6b7280;
+        stroke-opacity: 0.8;
+        stroke-width: 3;
+        stroke-dasharray: 5, 5;
+    }
+
+    .speed-polyline.slow {
+        stroke: #10b981;
+        stroke-opacity: 0.9;
+        stroke-width: 3;
+    }
+
+    .speed-polyline.city {
+        stroke: #3b82f6;
+        stroke-opacity: 0.9;
+        stroke-width: 4;
+    }
+
+    .speed-polyline.highway {
+        stroke: #f59e0b;
+        stroke-opacity: 0.9;
+        stroke-width: 5;
+    }
+
+    .speed-polyline.high-speed {
+        stroke: #ef4444;
+        stroke-opacity: 0.9;
+        stroke-width: 6;
+    }
+
+    .speed-polyline.no-data {
+        stroke: #9ca3af;
+        stroke-opacity: 0.6;
+        stroke-width: 2;
+        stroke-dasharray: 3, 3;
+    }
+
+    /* Hover effects */
+    .speed-polyline:hover {
+        stroke-width: 6;
+        stroke-opacity: 1;
+        filter: brightness(1.1);
+    }
+
+    .speed-polyline.stationary:hover {
+        stroke-width: 5;
+        stroke-dasharray: 3, 3;
+    }
+
+    .speed-polyline.no-data:hover {
+        stroke-width: 4;
+    }
+
+    /* Animation for active/selected segments */
+    .speed-polyline.active {
+        animation: dashAnimation 2s linear infinite;
+    }
+
+    .speed-polyline.selected {
+        stroke-width: 8;
+        filter: brightness(1.2) drop-shadow(0 0 4px rgba(0, 0, 0, 0.3));
+    }
+
+    /* Pulsing animation for real-time segments */
+    .speed-polyline.realtime {
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+@keyframes dashAnimation {
+    0% {
+        stroke-dashoffset: 0;
+    }
+
+    100% {
+        stroke-dashoffset: 20;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        stroke-opacity: 0.9;
+        stroke-width: 4;
+    }
+
+    50% {
+        stroke-opacity: 0.6;
+        stroke-width: 6;
+    }
+}
+
+/* Direction arrows for segments */
+.speed-polyline-arrow {
+    fill: currentColor;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.speed-polyline:hover .speed-polyline-arrow {
+    opacity: 1;
+}
+
+/* Segment markers for stops and important points */
+.route-segment-marker {
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.segment-marker-stop {
+    fill: #ef4444;
+    stroke: #ffffff;
+    stroke-width: 2;
+    r: 6;
+}
+
+.segment-marker-start {
+    fill: #10b981;
+    stroke: #ffffff;
+    stroke-width: 2;
+    r: 8;
+}
+
+.segment-marker-end {
+    fill: #6366f1;
+    stroke: #ffffff;
+    stroke-width: 2;
+    r: 8;
+}
+
+.segment-marker-waypoint {
+    fill: #f59e0b;
+    stroke: #ffffff;
+    stroke-width: 1;
+    r: 4;
+}
+
+/* Hover effects for markers */
+.route-segment-marker:hover {
+    filter: brightness(1.2);
+    transform: scale(1.2);
+    transform-origin: center;
+}
+
+/* Speed transition zones */
+.speed-polyline.transition {
+    background: linear-gradient(90deg, var(--start-color, #3b82f6), var(--end-color, #f59e0b) );
+    stroke: url(#speedGradient);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .speed-polyline {
+        stroke-width: 4;
+    }
+
+        .speed-polyline.stationary {
+            stroke-width: 2;
+        }
+
+        .speed-polyline.slow {
+            stroke-width: 3;
+        }
+
+        .speed-polyline.city {
+            stroke-width: 4;
+        }
+
+        .speed-polyline.highway {
+            stroke-width: 5;
+        }
+
+        .speed-polyline.high-speed {
+            stroke-width: 6;
+        }
+
+        .speed-polyline:hover {
+            stroke-width: 5;
+        }
+
+        .speed-polyline.selected {
+            stroke-width: 7;
+        }
+
+    .segment-marker-stop,
+    .segment-marker-start,
+    .segment-marker-end {
+        r: 5;
+        stroke-width: 1;
+    }
+
+    .segment-marker-waypoint {
+        r: 3;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .speed-polyline {
+        stroke-width: 5;
+    }
+
+        .speed-polyline.stationary {
+            stroke: #000000;
+            stroke-dasharray: 8, 4;
+        }
+
+        .speed-polyline.slow {
+            stroke: #008000;
+        }
+
+        .speed-polyline.city {
+            stroke: #0000ff;
+        }
+
+        .speed-polyline.highway {
+            stroke: #ff8c00;
+        }
+
+        .speed-polyline.high-speed {
+            stroke: #ff0000;
+        }
+
+    .route-segment-marker {
+        stroke-width: 3;
+    }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .speed-polyline.active,
+    .speed-polyline.realtime {
+        animation: none;
+    }
+
+    .route-segment-marker:hover {
+        transform: none;
+    }
+}
+
+/* Dark mode adjustments */
+.dark .speed-polyline.stationary {
+    stroke: #9ca3af;
+}
+
+.dark .speed-polyline.no-data {
+    stroke: #6b7280;
+}
+
+.dark .segment-marker-stop,
+.dark .segment-marker-start,
+.dark .segment-marker-end,
+.dark .segment-marker-waypoint {
+    stroke: #1f2937;
+}
+
+/* Accessibility - Focus indicators */
+.speed-polyline:focus {
+    outline: 3px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.route-segment-marker:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 1px;
+}
+
+/* Print styles */
+@media print {
+    .speed-polyline {
+        stroke-width: 1;
+    }
+
+        .speed-polyline.active,
+        .speed-polyline.realtime {
+            animation: none;
+        }
+
+    .route-segment-marker:hover {
+        transform: none;
+        filter: none;
+    }
+}

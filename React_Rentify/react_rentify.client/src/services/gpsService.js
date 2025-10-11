@@ -105,6 +105,26 @@ export const gpsService = {
             throw error;
         }
     },
+    async getAgencyVehicles(agencyId) {
+        try {
+            console.log(`📍 Fetching vehicles for agency ${agencyId}`);
+            const response = await apiClient.get(`/gps/agency/${agencyId}/vehicles`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error fetching vehicles for agency ${agencyId}:`, error);
+            throw error;
+        }
+    },
+    async getVehicleLatestPosition(vehicleId) {
+        try {
+            console.log(`📍 Fetching latest position for vehicle ${vehicleId}`);
+            const response = await apiClient.get(`/gps/vehicles/${vehicleId}/latest`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error fetching latest position for vehicle ${vehicleId}:`, error);
+            throw error;
+        }
+    },
 };
 
 export default gpsService;

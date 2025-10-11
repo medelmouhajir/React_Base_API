@@ -26,7 +26,7 @@ namespace React_Rentify.Server.Controllers
         private readonly ILogger<GPSController> _logger;
         private readonly IAgencyAuthorizationService _authService;
 
-        public GPSController(GpsDbContext context, ILogger<GPSController> logger , IAgencyAuthorizationService authService, MainDbContext contextMain)
+        public GPSController(GpsDbContext context, ILogger<GPSController> logger, IAgencyAuthorizationService authService, MainDbContext contextMain)
         {
             _context = context;
             _logger = logger;
@@ -271,7 +271,7 @@ namespace React_Rentify.Server.Controllers
             {
 
                 var car = await _contextMain.Cars
-                    .Include(x=> x.Car_Model)
+                    .Include(x => x.Car_Model)
                     .FirstOrDefaultAsync(c => c.Id == carId);
 
                 if (car == null)
@@ -337,7 +337,7 @@ namespace React_Rentify.Server.Controllers
                 }
 
                 var cars = await _contextMain.Cars
-                    .Include(x=> x.Car_Model)
+                    .Include(x => x.Car_Model)
                     .Where(c => c.AgencyId == agencyId)
                     .Select(c => new CarGpsDto
                     {
@@ -388,6 +388,205 @@ namespace React_Rentify.Server.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving cars." });
             }
         }
+
+
+        /// <summary>
+        /// GET: api/GPS/vehicles/{vehicleId}/latest
+        /// Returns the latest GPS position for a specific vehicle (DTO).
+        /// </summary>
+        [HttpGet("vehicles/{vehicleId}/latest")]
+        public async Task<IActionResult> GetVehicleLatestPosition(Guid vehicleId)
+        {
+            _logger.LogInformation("Retrieving latest position for vehicle {VehicleId}", vehicleId);
+
+            try
+            {
+                // Get the car and check authorization
+                var car = await _contextMain.Set<Car>()
+                    .Include(c => c.Car_Model)
+                    .FirstOrDefaultAsync(c => c.Id == vehicleId);
+
+                if (car == null)
+                {
+                    _logger.LogWarning("Vehicle {VehicleId} not found", vehicleId);
+                    return NotFound(new { message = $"Vehicle with ID '{vehicleId}' not found." });
+                }
+
+                var hasAccess = await _authService.HasAccessToAgencyAsync(car.AgencyId);
+                if (!hasAccess)
+                {
+                    _logger.LogWarning("User does not have access to vehicle {VehicleId}", vehicleId);
+                    return Forbid();
+                }
+
+                if (string.IsNullOrEmpty(car.DeviceSerialNumber))
+                {
+                    _logger.LogWarning("Vehicle {VehicleId} has no GPS device assigned", vehicleId);
+                    return BadRequest(new { message = "This vehicle has no GPS device assigned." });
+                }
+
+                // Get the latest record
+                var latestRecord = await _context.Set<Location_Record>()
+                    .Where(r => r.DeviceSerialNumber == car.DeviceSerialNumber)
+                    .OrderByDescending(r => r.Timestamp)
+                    .FirstOrDefaultAsync();
+
+                if (latestRecord == null)
+                {
+                    _logger.LogWarning("No GPS records found for vehicle {VehicleId}", vehicleId);
+                    return NotFound(new { message = "No GPS data found for this vehicle." });
+                }
+
+                var result = new VehicleLatestPositionDto
+                {
+                    VehicleId = vehicleId,
+                    Model = car.Car_Model.Name,
+                    LicensePlate = car.LicensePlate,
+                    DeviceSerialNumber = car.DeviceSerialNumber,
+                    LastRecord = new LatestLocationDto
+                    {
+                        Timestamp = latestRecord.Timestamp,
+                        Latitude = latestRecord.Latitude,
+                        Longitude = latestRecord.Longitude,
+                        SpeedKmh = latestRecord.SpeedKmh,
+                        Heading = latestRecord.Heading,
+                        Altitude = latestRecord.Altitude,
+                        IgnitionOn = latestRecord.IgnitionOn,
+                        StatusFlags = latestRecord.StatusFlags
+                    },
+                    IsOnline = (DateTime.UtcNow - latestRecord.Timestamp).TotalMinutes < 5,
+                    LastUpdateMinutesAgo = (int)(DateTime.UtcNow - latestRecord.Timestamp).TotalMinutes
+                };
+
+                _logger.LogInformation("Retrieved latest position for vehicle {VehicleId}", vehicleId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving latest position for vehicle {VehicleId}", vehicleId);
+                return StatusCode(500, new { message = "An error occurred while retrieving vehicle position." });
+            }
+        }
+
+        /// <summary>
+        /// GET: api/GPS/agency/{agencyId}/vehicles
+        /// Returns all vehicles with GPS data for a specific agency (DTO).
+        /// </summary>
+        [HttpGet("agency/{agencyId}/vehicles")]
+        public async Task<IActionResult> GetAgencyVehicles(Guid agencyId)
+        {
+            _logger.LogInformation("Retrieving vehicles with GPS data for agency {AgencyId}", agencyId);
+
+            try
+            {
+                // 1) Auth
+                var hasAccess = await _authService.HasAccessToAgencyAsync(agencyId);
+                if (!hasAccess)
+                {
+                    _logger.LogWarning("User does not have access to agency {AgencyId}", agencyId);
+                    return Forbid();
+                }
+
+                // 2) Fetch cars from MAIN DB (single context)
+                var cars = await _contextMain.Set<Car>()
+                    .AsNoTracking()
+                    .Where(c => c.AgencyId == agencyId)
+                    .Select(c => new
+                    {
+                        c.Id,
+                        Model = c.Car_Model.Name,     // keep Include out; projection handles it
+                        c.LicensePlate,
+                        c.DeviceSerialNumber,
+                        c.IsTrackingActive
+                    })
+                    .ToListAsync();
+
+                // 3) Collect device serials to look up in GPS DB
+                var serials = cars
+                    .Select(c => c.DeviceSerialNumber)
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Distinct()
+                    .ToList();
+
+                // 4) Fetch latest record per device from GPS DB (second context)
+                //    NOTE: group + First() is translated; OrderByDescending + First() picks latest
+                var latestRecords = await _context.Set<Location_Record>()   // <- your GPS context
+                    .AsNoTracking()
+                    .Where(r => serials.Contains(r.DeviceSerialNumber))
+                    .GroupBy(r => r.DeviceSerialNumber)
+                    .Select(g => g.OrderByDescending(r => r.Timestamp).First())
+                    .ToListAsync();
+
+                // 5) Build lookup for quick join in memory
+                var latestBySerial = latestRecords.ToDictionary(
+                    r => r.DeviceSerialNumber,
+                    r => new LatestLocationDto
+                    {
+                        Timestamp = r.Timestamp,
+                        Latitude = r.Latitude,
+                        Longitude = r.Longitude,
+                        SpeedKmh = r.SpeedKmh,
+                        Heading = r.Heading,
+                        IgnitionOn = r.IgnitionOn,
+                        StatusFlags = r.StatusFlags
+                    });
+
+                // 6) Final DTOs
+                var vehicles = cars.Select(c => new AgencyVehicleDto
+                {
+                    Id = c.Id,
+                    Model = c.Model,
+                    LicensePlate = c.LicensePlate,
+                    DeviceSerialNumber = c.DeviceSerialNumber,
+                    IsTrackingActive = c.IsTrackingActive,
+                    LastRecord = (c.DeviceSerialNumber != null && latestBySerial.TryGetValue(c.DeviceSerialNumber, out var dto))
+                        ? dto
+                        : null
+                }).ToList();
+
+                _logger.LogInformation("Retrieved {Count} vehicles for agency {AgencyId}", vehicles.Count, agencyId);
+                return Ok(vehicles);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving vehicles for agency {AgencyId}", agencyId);
+                return StatusCode(500, new { message = "An error occurred while retrieving vehicles." });
+            }
+        }
+
+    }
+
+    internal class AgencyVehicleDto
+    {
+        public Guid Id { get; set; }
+        public string Model { get; set; }
+        public string LicensePlate { get; set; }
+        public string DeviceSerialNumber { get; set; }
+        public bool IsTrackingActive { get; set; }
+        public LatestLocationDto LastRecord { get; set; }
+    }
+
+    internal class VehicleLatestPositionDto
+    {
+        public Guid VehicleId { get; set; }
+        public string Model { get; set; }
+        public string LicensePlate { get; set; }
+        public string DeviceSerialNumber { get; set; }
+        public LatestLocationDto LastRecord { get; set; }
+        public bool IsOnline { get; set; }
+        public int LastUpdateMinutesAgo { get; set; }
+    }
+
+    internal class LatestLocationDto
+    {
+        public DateTime Timestamp { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double SpeedKmh { get; set; }
+        public double? Heading { get; set; }
+        public double? Altitude { get; set; }
+        public bool? IgnitionOn { get; set; }
+        public string StatusFlags { get; set; }
     }
 
     #region DTOs
