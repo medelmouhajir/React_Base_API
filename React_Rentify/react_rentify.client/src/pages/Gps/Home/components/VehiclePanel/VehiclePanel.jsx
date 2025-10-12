@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import VehicleCard from './VehicleCard';
 import VehicleFilters from './VehicleFilters';
 
+import './VehiclePanel.css';
+
 const VehiclePanel = ({
     vehicles,
     selectedVehicle,

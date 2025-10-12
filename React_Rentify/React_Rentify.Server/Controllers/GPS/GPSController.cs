@@ -212,6 +212,47 @@ namespace React_Rentify.Server.Controllers
             return Ok(dtoList);
         }
 
+        [HttpGet("records/car/{carId}")]
+        public async Task<IActionResult> GetRecordsByCarAndDates(Guid carId , [FromQuery] DateTime StartDate, [FromQuery] DateTime EndDate)
+        {
+            _logger.LogInformation("Retrieving location records for car {carId}", carId);
+
+            var car = await _contextMain.Cars.FirstOrDefaultAsync(x=> x.Id == carId);
+
+            if (car == null)
+                return Ok(new NotFoundResult());
+
+            var device = await _context.Set<Gps_Device>()
+                .FirstOrDefaultAsync(d => d.DeviceSerialNumber == car.DeviceSerialNumber);
+            if (device == null)
+            {
+                _logger.LogWarning("GPS device with SerialNumber {Serial} not found", car.DeviceSerialNumber);
+                return NotFound(new { message = $"GPS device with SerialNumber '{car.DeviceSerialNumber}' not found." });
+            }
+
+            var records = await _context.Set<Location_Record>()
+                .Where(r => r.DeviceSerialNumber == device.DeviceSerialNumber )
+                .ToListAsync();
+
+            var dtoList = records.Select(r => new LocationRecordDto
+            {
+                Id = r.Id,
+                Gps_DeviceId = r.Gps_DeviceId,
+                DeviceSerialNumber = r.DeviceSerialNumber,
+                Timestamp = r.Timestamp,
+                Latitude = r.Latitude,
+                Longitude = r.Longitude,
+                SpeedKmh = r.SpeedKmh,
+                Heading = r.Heading,
+                Altitude = r.Altitude,
+                IgnitionOn = r.IgnitionOn,
+                StatusFlags = r.StatusFlags
+            }).ToList();
+
+            _logger.LogInformation("Retrieved {Count} records for device {Serial}", dtoList.Count, car.DeviceSerialNumber);
+            return Ok(dtoList);
+        }
+
         /// <summary>
         /// GET: api/GPS/records/latest/{serialNumber}
         /// Returns the latest location record for a given device serial number (DTO).
@@ -555,6 +596,7 @@ namespace React_Rentify.Server.Controllers
         }
 
     }
+
 
     internal class AgencyVehicleDto
     {

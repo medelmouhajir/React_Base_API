@@ -2,6 +2,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+
+import './VehicleCard.css';
+
 const VehicleCard = ({
     vehicle,
     isSelected,

@@ -1,0 +1,300 @@
+/* src/pages/Gps/Home/components/VehiclePanel/VehicleList.css */
+
+/* ===== VEHICLE LIST WRAPPER ===== */
+.vehicle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 8px 4px 24px;
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+}
+
+    .vehicle-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .vehicle-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .vehicle-list::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.35);
+        border-radius: 999px;
+    }
+
+        .vehicle-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(71, 85, 105, 0.45);
+        }
+
+    .vehicle-list.simple {
+        padding: 0 4px 16px;
+    }
+
+    .vehicle-list.mobile {
+        gap: 12px;
+        padding: 0 2px 24px;
+    }
+
+    /* ===== LOADING STATE ===== */
+    .vehicle-list.loading {
+        padding: 16px;
+        gap: 12px;
+    }
+
+.vehicle-card.skeleton {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    background: rgba(148, 163, 184, 0.12);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.dark .vehicle-card.skeleton {
+    background: rgba(30, 41, 59, 0.65);
+    border-color: rgba(148, 163, 184, 0.15);
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.45);
+}
+
+.skeleton-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.skeleton-line {
+    height: 12px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(148, 163, 184, 0.3) 0%, rgba(148, 163, 184, 0.15) 50%, rgba(148, 163, 184, 0.3) 100%);
+    animation: vehicle-list-skeleton 1.6s ease-in-out infinite;
+}
+
+    .skeleton-line.w-40 {
+        width: 40%;
+    }
+
+    .skeleton-line.w-60 {
+        width: 60%;
+    }
+
+    .skeleton-line.w-80 {
+        width: 80%;
+    }
+
+@keyframes vehicle-list-skeleton {
+    0% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.4;
+    }
+}
+
+/* ===== EMPTY STATE ===== */
+.vehicle-list.empty {
+    padding: 32px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    padding: 32px 28px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    max-width: 360px;
+}
+
+.dark .empty-state {
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(148, 163, 184, 0.15);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.45);
+}
+
+.empty-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 16px;
+    border-radius: 24px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.12) 0%, rgba(var(--primary-rgb), 0.05) 100%);
+    color: var(--primary-500);
+}
+
+.empty-state h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.empty-state p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ===== GROUPED VIEW ===== */
+.vehicle-list.grouped {
+    gap: 28px;
+    padding-right: 12px;
+}
+
+.vehicle-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.group-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: 1px solid transparent;
+    background: rgba(148, 163, 184, 0.08);
+    color: #475569;
+}
+
+    .group-status .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        position: relative;
+    }
+
+    .group-status.moving {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(37, 99, 235, 0.08) 100%);
+        border-color: rgba(37, 99, 235, 0.24);
+        color: #1d4ed8;
+    }
+
+    .group-status.parked {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.08) 100%);
+        border-color: rgba(217, 119, 6, 0.24);
+        color: #b45309;
+    }
+
+    .group-status.offline {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(220, 38, 38, 0.08) 100%);
+        border-color: rgba(220, 38, 38, 0.24);
+        color: #b91c1c;
+    }
+
+    .group-status .status-indicator::before {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.2;
+        animation: vehicle-group-pulse 2.2s ease-in-out infinite;
+    }
+
+@keyframes vehicle-group-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.25;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+.group-count {
+    min-width: 44px;
+    min-height: 44px;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.05);
+    color: var(--text-primary);
+}
+
+.dark .group-count {
+    background: rgba(148, 163, 184, 0.12);
+}
+
+.group-vehicles {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* ===== SIMPLE VIEW ===== */
+.vehicle-list.simple .vehicle-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+    .vehicle-list.simple .vehicle-card:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+    }
+
+/* ===== MOBILE ADJUSTMENTS ===== */
+@media (max-width: 1023px) {
+    .vehicle-list {
+        padding-right: 8px;
+    }
+
+        .vehicle-list.grouped {
+            gap: 20px;
+        }
+
+    .group-vehicles {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .vehicle-list {
+        padding: 0 2px 20px;
+    }
+
+        .vehicle-list.grouped {
+            gap: 18px;
+        }
+
+    .group-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .group-count {
+        align-self: flex-start;
+    }
+}

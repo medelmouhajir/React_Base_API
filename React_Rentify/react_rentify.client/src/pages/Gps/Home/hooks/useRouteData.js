@@ -31,11 +31,7 @@ const useRouteData = () => {
             setError(null);
 
             // Fetch GPS records for the specified time range
-            const records = await gpsService.getVehicleRecords(vehicleId, {
-                startDate: startDate.toISOString(),
-                endDate: endDate.toISOString(),
-                includeStationary: true
-            });
+            const records = await gpsService.getRecordsByCarAndDates(vehicleId, startDate.toISOString(), endDate.toISOString() , true);
 
             if (!records || records.length === 0) {
                 setRouteData(null);

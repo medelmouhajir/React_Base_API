@@ -3,6 +3,8 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import VehicleCard from './VehicleCard';
 
+import './VehicleList.css';
+
 const VehicleList = ({
     vehicles = [],
     selectedVehicle,

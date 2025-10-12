@@ -55,6 +55,22 @@ export const gpsService = {
         }
     },
 
+    async getRecordsByCarAndDates(carId, startDate, endDate, includeStationary = true) {
+        try {
+            const params = new URLSearchParams();
+            if (startDate) params.append('startDate', startDate);
+            if (endDate) params.append('endDate', endDate);
+            if (includeStationary) params.append('includeStationary', includeStationary);
+
+
+            const response = await apiClient.get(`/gps/records/car/${carId}?${params.toString()}`);
+            return response.data;
+        } catch (error) {
+            console.error(`❌ Error fetching records for car ${carId}:`, error);
+            throw error;
+        }
+    },
+
     async getLatestRecordBySerial(serialNumber) {
         try {
             const response = await apiClient.get(`/gps/records/latest/${serialNumber}`);

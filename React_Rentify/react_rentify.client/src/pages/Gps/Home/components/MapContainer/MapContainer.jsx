@@ -2,6 +2,7 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { MapContainer as LeafletMap, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // Components
 import VehicleMarker from '../Markers/VehicleMarker';
