@@ -3,246 +3,162 @@
 /* ===== MAP CONTAINER ===== */
 .map-container-wrapper {
     position: relative;
-    flex: 1;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    border-radius: 24px;
-    background: linear-gradient(135deg, #e2e8f0 0%, #f1f5f9 100%);
+    border-radius: inherit;
+    background: #f8fafc;
 }
 
-    .map-container-wrapper.mobile {
-        height: 100vh;
-        border-radius: 0;
+    .map-container-wrapper.dark {
+        background: #0f172a;
     }
 
-    /* Leaflet container styling */
+    /* Leaflet Container */
     .map-container-wrapper .leaflet-container {
         height: 100% !important;
         width: 100% !important;
-        z-index: 1;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        background: #f8fafc;
+        z-index: var(--z-base);
+        font-family: inherit;
         border-radius: inherit;
     }
 
-        .map-container-wrapper .leaflet-container.dark {
-            background: #0f172a;
-        }
-
-/* ===== CUSTOM MAP CONTROLS ===== */
+/* ===== MAP CONTROLS ===== */
 .map-controls {
     position: absolute;
     top: 24px;
     right: 24px;
-    z-index: 1000;
+    z-index: var(--z-dropdown);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     max-width: 280px;
+    pointer-events: none;
 }
 
-    .map-controls.mobile {
-        top: env(safe-area-inset-top, 16px);
-        right: 16px;
-        gap: 12px;
-        max-width: none;
+    .map-controls > * {
+        pointer-events: auto;
     }
 
+/* Control Groups */
 .map-controls-group {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    border-radius: 20px;
-    padding: 16px;
+    gap: 4px;
+    border-radius: var(--border-radius-lg);
+    padding: 12px;
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(24px) saturate(1.8);
+    backdrop-filter: blur(20px) saturate(1.8);
     border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all var(--transition-normal);
 }
 
 .dark .map-controls-group {
     background: rgba(15, 23, 42, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.map-controls-group.primary {
-    border-width: 2px;
-    border-color: rgba(var(--primary-rgb), 0.2);
-    transform: scale(1.02);
-}
-
-.map-controls-group.secondary {
-    opacity: 0.9;
-    transform: scale(0.98);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .map-controls-group:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.12), 0 6px 20px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
-/* Individual control buttons */
+/* Control Buttons */
 .map-control-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 14px 16px;
+    gap: 8px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 12px;
     border: none;
     background: transparent;
-    border-radius: 14px;
+    border-radius: var(--border-radius-sm);
+    color: #64748b;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    color: var(--text-secondary);
+    transition: all var(--transition-fast);
     font-size: 14px;
-    font-weight: 600;
-    min-width: 52px;
-    min-height: 52px;
+    font-weight: 500;
     position: relative;
     overflow: hidden;
 }
 
-    .map-control-btn::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
-        opacity: 0;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: inherit;
-        transform: scale(0.8);
-    }
-
     .map-control-btn:hover {
-        background: rgba(var(--primary-rgb), 0.08);
-        color: var(--primary-700);
-        transform: translateY(-2px) scale(1.05);
-        box-shadow: 0 8px 24px rgba(var(--primary-rgb), 0.15), 0 3px 8px rgba(var(--primary-rgb), 0.1);
+        background: rgba(59, 130, 246, 0.08);
+        color: #3b82f6;
+        transform: scale(1.05);
     }
-
-        .map-control-btn:hover::before {
-            opacity: 0.1;
-            transform: scale(1);
-        }
-
-    .map-control-btn.active {
-        background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
-        color: white;
-        transform: translateY(-2px) scale(1.02);
-        box-shadow: 0 12px 32px rgba(var(--primary-rgb), 0.3), 0 4px 12px rgba(var(--primary-rgb), 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
-        .map-control-btn.active::before {
-            opacity: 1;
-            transform: scale(1);
-        }
 
     .map-control-btn:active {
-        transform: translateY(0) scale(0.98);
+        transform: scale(0.98);
+    }
+
+    .map-control-btn.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
     }
 
     .map-control-btn svg {
-        width: 22px;
-        height: 22px;
+        width: 20px;
+        height: 20px;
         flex-shrink: 0;
-        position: relative;
-        z-index: 1;
-        transition: transform 0.2s ease;
-    }
-
-    .map-control-btn:hover svg {
-        transform: scale(1.1);
     }
 
     .map-control-btn .control-label {
         white-space: nowrap;
-        position: relative;
-        z-index: 1;
-        font-weight: 600;
-        letter-spacing: 0.01em;
     }
 
-    /* Special button styles */
-    .map-control-btn.zoom-in,
-    .map-control-btn.zoom-out {
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-.dark .map-control-btn.zoom-in,
-.dark .map-control-btn.zoom-out {
-    background: rgba(15, 23, 42, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.location-btn {
-    position: relative;
-}
-
-    .location-btn.searching::after {
-        content: '';
-        position: absolute;
-        inset: -2px;
-        border: 2px solid var(--primary-500);
-        border-radius: inherit;
-        border-top-color: transparent;
-        animation: spin 1s linear infinite;
-    }
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Mobile controls optimization */
-@media (max-width: 768px) {
-    .map-control-btn .control-label {
-        display: none;
-    }
-
-    .map-control-btn {
-        min-width: 56px;
-        min-height: 56px;
-        padding: 16px;
-        border-radius: 16px;
+/* Mobile Adjustments */
+@media (max-width: 767px) {
+    .map-controls {
+        top: env(safe-area-inset-top, 16px);
+        right: 16px;
+        gap: 8px;
     }
 
     .map-controls-group {
-        padding: 12px;
-        border-radius: 18px;
+        padding: 8px;
+        gap: 2px;
     }
 
-    .map-control-btn svg {
-        width: 24px;
-        height: 24px;
+    .map-control-btn {
+        min-width: 48px;
+        min-height: 48px;
+        padding: 14px;
     }
+
+        .map-control-btn .control-label {
+            display: none;
+        }
+
+        .map-control-btn svg {
+            width: 22px;
+            height: 22px;
+        }
 }
 
 /* ===== STATUS INDICATORS ===== */
 .realtime-status {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    background: linear-gradient(135deg, rgba(var(--success-rgb), 0.1) 0%, rgba(var(--success-rgb), 0.05) 100%);
-    border: 1px solid rgba(var(--success-rgb), 0.2);
-    border-radius: 24px;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--success-700);
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #16a34a;
 }
 
 .status-indicator {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--success-400) 0%, var(--success-600) 100%);
+    background: #22c55e;
     position: relative;
 }
 
@@ -251,26 +167,15 @@
         position: absolute;
         inset: -4px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(var(--success-rgb), 0.3) 0%, transparent 70%);
-        animation: pulse-ring 2s infinite;
+        background: #22c55e;
+        opacity: 0.3;
+        animation: pulse 2s infinite;
     }
 
-    .status-indicator.online {
-        background: linear-gradient(135deg, var(--success-400) 0%, var(--success-600) 100%);
-    }
-
-    .status-indicator.offline {
-        background: linear-gradient(135deg, var(--error-400) 0%, var(--error-600) 100%);
-    }
-
-    .status-indicator.warning {
-        background: linear-gradient(135deg, var(--warning-400) 0%, var(--warning-600) 100%);
-    }
-
-@keyframes pulse-ring {
+@keyframes pulse {
     0%, 100% {
         transform: scale(1);
-        opacity: 1;
+        opacity: 0.3;
     }
 
     50% {
@@ -279,90 +184,29 @@
     }
 }
 
-/* ===== LEAFLET CUSTOMIZATIONS ===== */
-.leaflet-control-zoom {
-    display: none !important; /* Hide default zoom controls */
-}
-
+/* ===== LEAFLET OVERRIDES ===== */
+.leaflet-control-zoom,
+.leaflet-control-layers,
 .leaflet-control-attribution {
-    background: rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: blur(8px) !important;
-    border-radius: 8px !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    font-size: 11px !important;
-    padding: 4px 8px !important;
-    margin: 8px !important;
+    display: none;
 }
 
-.dark .leaflet-control-attribution {
-    background: rgba(15, 23, 42, 0.8) !important;
-    color: #e2e8f0 !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Custom popup styles */
 .leaflet-popup-content-wrapper {
-    background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(20px) !important;
-    border-radius: 16px !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important, 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-radius: var(--border-radius-sm);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .dark .leaflet-popup-content-wrapper {
-    background: rgba(15, 23, 42, 0.95) !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    color: #e2e8f0 !important;
+    background: rgba(15, 23, 42, 0.95);
+    color: #f1f5f9;
 }
 
 .leaflet-popup-tip {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.95);
 }
 
 .dark .leaflet-popup-tip {
-    background: rgba(15, 23, 42, 0.95) !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* ===== PERFORMANCE OPTIMIZATIONS ===== */
-.map-container-wrapper {
-    will-change: transform;
-}
-
-.map-control-btn {
-    will-change: transform, background-color;
-}
-
-/* Reduced motion accessibility */
-@media (prefers-reduced-motion: reduce) {
-    .map-controls-group,
-    .map-control-btn,
-    .status-indicator,
-    .status-indicator::before {
-        animation: none !important;
-        transition: none !important;
-    }
-
-        .map-control-btn:hover {
-            transform: none !important;
-        }
-}
-
-/* High contrast accessibility */
-@media (prefers-contrast: high) {
-    .map-controls-group {
-        background: white !important;
-        border: 3px solid #000 !important;
-        box-shadow: none !important;
-    }
-
-    .dark .map-controls-group {
-        background: #000 !important;
-        border: 3px solid #fff !important;
-    }
-
-    .map-control-btn {
-        border: 2px solid currentColor !important;
-    }
+    background: rgba(15, 23, 42, 0.95);
 }
