@@ -1,5 +1,5 @@
 ﻿// src/pages/Gps/Home/GpsHome.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -64,7 +64,8 @@ const GpsHome = () => {
     const [panelState, setPanelState] = useState({
         vehiclePanelVisible: !isMobile,
         routePanelVisible: false,
-        mobileSheetOpen: false
+        mobileSheetOpen: isMobile, // Auto-open on mobile
+        mobileSheetState: 'peek' // Start in peek state
     });
 
     // Effects
@@ -76,8 +77,7 @@ const GpsHome = () => {
 
     // Handle vehicle selection
     const handleVehicleSelect = (vehicle) => {
-        console.warn('car selection');
-        console.warn(vehicle);
+        console.log('Vehicle selected:', vehicle);
         setSelectedVehicle(vehicle);
 
         // Center map on vehicle's last known location
@@ -85,17 +85,66 @@ const GpsHome = () => {
             setMapState(prev => ({
                 ...prev,
                 center: [vehicle.lastLocation.latitude, vehicle.lastLocation.longitude],
-                zoom: 15
+                zoom: 15,
+                followVehicle: true // Auto-follow selected vehicle
             }));
         }
 
-        // Show route panel when vehicle is selected
+        // Enhanced mobile behavior
+        if (isMobile) {
+            setPanelState(prev => ({
+                ...prev,
+                mobileSheetOpen: true,
+                mobileSheetState: 'expanded' // Expand to show route details
+            }));
+        } else {
+            // Desktop behavior
+            setPanelState(prev => ({
+                ...prev,
+                routePanelVisible: true
+            }));
+        }
+    };
+
+    const handleMobileSheetClose = useCallback(() => {
         setPanelState(prev => ({
             ...prev,
-            routePanelVisible: true,
-            mobileSheetOpen: isMobile
+            mobileSheetOpen: false,
+            mobileSheetState: 'peek'
         }));
-    };
+
+        // Optional: Clear selected vehicle when closing
+        // setSelectedVehicle(null);
+    }, []);
+
+    useEffect(() => {
+        if (!isMobile) return;
+
+        const handleBackButton = (e) => {
+            if (panelState.mobileSheetOpen && panelState.mobileSheetState === 'expanded') {
+                e.preventDefault();
+                setPanelState(prev => ({
+                    ...prev,
+                    mobileSheetState: 'partial'
+                }));
+            } else if (panelState.mobileSheetOpen) {
+                e.preventDefault();
+                handleMobileSheetClose();
+            }
+        };
+
+        window.addEventListener('popstate', handleBackButton);
+        return () => window.removeEventListener('popstate', handleBackButton);
+    }, [isMobile, panelState.mobileSheetOpen, panelState.mobileSheetState, handleMobileSheetClose]);
+
+    const containerClasses = [
+        'gps-home-container',
+        isDarkMode ? 'dark' : '',
+        isMobile ? 'mobile' : '',
+        isTablet ? 'tablet' : '',
+        panelState.mobileSheetOpen && panelState.mobileSheetState === 'expanded' ? 'sheet-expanded' : ''
+    ].filter(Boolean).join(' ');
+
 
     // Handle route date range change
     const handleDateRangeChange = (newDateRange) => {
@@ -156,7 +205,7 @@ const GpsHome = () => {
     }
 
     return (
-        <div className={`gps-home-container ${isDarkMode ? 'dark' : ''} ${isMobile ? 'mobile' : ''}`}>
+        <div className={containerClasses}>
 
             {/* Header */}
             <div className="gps-header">

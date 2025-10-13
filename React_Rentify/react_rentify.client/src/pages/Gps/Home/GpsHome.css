@@ -322,3 +322,236 @@
         border: 2px solid currentColor;
     }
 }
+
+/* ===== MOBILE LAYOUT ENHANCEMENTS ===== */
+.gps-home-container.mobile {
+    overflow: hidden;
+}
+
+    .gps-home-container.mobile.sheet-expanded {
+        /* Prevent scroll when sheet is expanded */
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+    }
+
+.map-container-wrapper {
+    position: relative;
+    width: 100%;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+    .map-container-wrapper .mobile-optimized {
+        /* Ensure map doesn't interfere with touch gestures */
+        touch-action: pan-x pan-y;
+    }
+
+/* ===== MOBILE FLOATING ACTION BUTTON ===== */
+.mobile-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    z-index: 998;
+    /* FAB styling */
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+    border: none;
+    border-radius: 32px;
+    cursor: pointer;
+    /* Enhanced shadow */
+    box-shadow: 0 8px 32px rgba(var(--primary-rgb), 0.3), 0 4px 16px rgba(var(--primary-rgb), 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Smooth transitions */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Content positioning */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* Prevent text selection */
+    user-select: none;
+    -webkit-user-select: none;
+    /* Better touch target */
+    touch-action: manipulation;
+}
+
+    .mobile-fab:hover {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 12px 48px rgba(var(--primary-rgb), 0.4), 0 6px 24px rgba(var(--primary-rgb), 0.3), 0 3px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .mobile-fab:active {
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    .mobile-fab svg {
+        width: 28px;
+        height: 28px;
+        color: white;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+/* FAB badge */
+.fab-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--error-500);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 12px;
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Enhanced shadow */
+    box-shadow: 0 4px 12px rgba(var(--error-rgb), 0.3), 0 2px 6px rgba(0, 0, 0, 0.1);
+    /* Animation */
+    animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Safe area support for FAB */
+.mobile-fab {
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    right: calc(20px + env(safe-area-inset-right, 0px));
+}
+
+/* ===== ENHANCED MAP INTERACTIONS ===== */
+.map-container-wrapper .mobile-optimized .leaflet-container {
+    /* Better touch handling */
+    touch-action: pan-x pan-y;
+}
+
+/* Prevent map zoom on double tap when sheet is being dragged */
+.gps-home-container.mobile .leaflet-container.leaflet-touch .leaflet-bar {
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+@media (max-width: 480px) {
+    .mobile-fab {
+        width: 56px;
+        height: 56px;
+        bottom: 20px;
+        right: 16px;
+    }
+
+        .mobile-fab svg {
+            width: 24px;
+            height: 24px;
+        }
+
+    .fab-badge {
+        font-size: 10px;
+        min-width: 20px;
+        height: 20px;
+        top: -4px;
+        right: -4px;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+    .mobile-fab {
+        bottom: 12px;
+        right: 16px;
+        width: 48px;
+        height: 48px;
+    }
+
+        .mobile-fab svg {
+            width: 20px;
+            height: 20px;
+        }
+}
+
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+.mobile-fab:focus {
+    outline: 2px solid var(--primary-200);
+    outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mobile-fab,
+    .fab-badge,
+    .map-container-wrapper {
+        transition: none !important;
+        animation: none !important;
+    }
+
+        .mobile-fab:hover {
+            transform: none !important;
+        }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .mobile-fab {
+        background: #000 !important;
+        border: 3px solid #fff;
+    }
+
+    .dark .mobile-fab {
+        background: #fff !important;
+        border: 3px solid #000;
+    }
+
+    .mobile-fab svg {
+        color: #fff !important;
+        filter: none;
+    }
+
+    .dark .mobile-fab svg {
+        color: #000 !important;
+    }
+
+    .fab-badge {
+        background: #ff0000 !important;
+        border: 2px solid #fff;
+    }
+}
+
+/* ===== DARK MODE ENHANCEMENTS ===== */
+.dark .mobile-fab {
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4), 0 4px 16px rgba(59, 130, 246, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+    .dark .mobile-fab:hover {
+        box-shadow: 0 12px 48px rgba(59, 130, 246, 0.5), 0 6px 24px rgba(59, 130, 246, 0.4), 0 3px 12px rgba(0, 0, 0, 0.4);
+    }
+
+/* ===== PREVENT CONFLICTS ===== */
+/* Ensure sheet doesn't interfere with map controls */
+.gps-home-container.mobile .leaflet-top,
+.gps-home-container.mobile .leaflet-bottom {
+    z-index: 800;
+}
+
+.gps-home-container.mobile .leaflet-control-zoom {
+    margin-bottom: 100px; /* Space for FAB */
+}
+
+/* Adjust for sheet states */
+.gps-home-container.mobile.sheet-expanded .leaflet-control-zoom {
+    opacity: 0.7;
+    pointer-events: auto;
+}
+
+/* Smooth transitions for layout changes */
+.gps-home-container.mobile .leaflet-control-zoom {
+    transition: opacity 0.3s ease, margin 0.3s ease;
+}
