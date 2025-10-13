@@ -636,3 +636,288 @@
 .status-indicator::before {
     will-change: transform, opacity;
 }
+/***** ICON & SVG SYSTEM UPGRADE ************************************************/
+/* Global SVG normalization for this card */
+.vehicle-card svg,
+.vehicle-card .detail-icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    transition: transform 160ms ease, opacity 160ms ease, stroke 160ms ease;
+    opacity: 0.92;
+    filter: drop-shadow(0 0 0 transparent);
+}
+
+/* Slightly thicker baseline for tiny icons */
+.vehicle-card .detail-item .detail-icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 1.7;
+}
+
+/* Icon color variables with light/dark tuning */
+.vehicle-card {
+    --icon-fg: var(--text-primary, #0f172a);
+    --icon-muted: var(--text-secondary, #64748b);
+    --icon-accent: var(--primary-600, #2563eb);
+    --icon-success: #10b981;
+    --icon-warn: #f59e0b;
+    --icon-error: #ef4444;
+}
+
+.dark .vehicle-card {
+    --icon-fg: #e2e8f0;
+    --icon-muted: #94a3b8;
+    --icon-accent: var(--primary-400, #60a5fa);
+}
+
+/* Default icon color */
+.vehicle-card .detail-icon,
+.vehicle-card .status-icon,
+.vehicle-card .tech-icon {
+    color: var(--icon-muted);
+}
+
+/* On hover/focus, make the icon pop a bit */
+.vehicle-card .detail-item:hover .detail-icon,
+.vehicle-card .detail-item:focus-within .detail-icon {
+    color: var(--icon-accent);
+    transform: translateY(-1px);
+    opacity: 1;
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.06));
+}
+
+/* Detail text trimming to avoid overflow */
+.vehicle-card .detail-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Status dot gets a subtle glow by state */
+.vehicle-card.moving .status-indicator {
+    color: var(--icon-success);
+}
+
+.vehicle-card.parked .status-indicator {
+    color: var(--icon-warn);
+}
+
+.vehicle-card.offline .status-indicator {
+    color: var(--icon-error);
+}
+
+/* Micro animation for “moving” status icon */
+.vehicle-card.moving .status-icon {
+    animation: vc-wiggle 1100ms ease-in-out infinite;
+}
+
+@keyframes vc-wiggle {
+    0%,100% {
+        transform: translateY(0) rotate(0);
+    }
+
+    25% {
+        transform: translateY(-1px) rotate(2deg);
+    }
+
+    75% {
+        transform: translateY(1px) rotate(-2deg);
+    }
+}
+
+/* Battery/emojis scale cleanly with layout */
+.vehicle-card .tech-item .tech-icon {
+    font-size: 16px;
+    line-height: 1;
+    transform: translateY(1px);
+}
+
+/* Signal bars: smoother fill/height emphasis for “active” bars */
+.vehicle-card .signal-bars .signal-bar {
+    transform-origin: bottom center;
+    transition: background-color 160ms ease, transform 160ms ease;
+}
+
+    .vehicle-card .signal-bars .signal-bar.active {
+        transform: scaleY(1.06);
+    }
+
+/* Ignition indicator: glow when ON */
+.vehicle-card .ignition .ignition-indicator.on {
+    box-shadow: 0 0 0 2px rgba(16,185,129,0.12), 0 0 10px rgba(16,185,129,0.25);
+    border-radius: 6px;
+}
+
+.vehicle-card .ignition .ignition-indicator.off {
+    opacity: 0.8;
+}
+
+/***** HEADER & BADGES (CLASS ALIASES + POLISH) *********************************/
+/* Alias missing classes so JSX names work without changing components */
+.vehicle-header,
+.vehicle-card-header { /* support both names */
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 16px;
+}
+
+.vehicle-plate,
+.vehicle-license-plate { /* support both names */
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 13px;
+    color: var(--primary-700);
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.10) 0%, rgba(var(--primary-rgb), 0.04) 100%);
+    padding: 8px 10px;
+    border-radius: 10px;
+    display: inline-block;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    border: 1px solid rgba(var(--primary-rgb), 0.18);
+    backdrop-filter: blur(4px);
+}
+
+.dark .vehicle-plate,
+.dark .vehicle-license-plate {
+    color: var(--primary-300);
+}
+
+/* Vehicle status row polishing */
+.vehicle-status {
+    gap: 10px;
+}
+
+    .vehicle-status .status-icon {
+        font-size: 12px;
+        transform: translateY(1px);
+    }
+
+    .vehicle-status .speed-info .speed-value {
+        font-variation-settings: "wght" 750;
+    }
+
+/***** DETAIL ROWS **************************************************************/
+.vehicle-details .detail-item {
+    background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.00));
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: border-color 160ms ease, background 160ms ease;
+}
+
+.dark .vehicle-details .detail-item {
+    border-color: rgba(255,255,255,0.06);
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.00));
+}
+
+.vehicle-details .detail-item:hover {
+    border-color: rgba(var(--primary-rgb), 0.20);
+}
+
+.vehicle-details .detail-item.location .detail-icon {
+    color: var(--icon-accent);
+}
+
+.vehicle-details .detail-item.time .detail-icon {
+    color: var(--icon-muted);
+}
+
+.vehicle-details .detail-item.device .detail-icon {
+    color: var(--icon-muted);
+}
+
+/***** TECH STRIP ***************************************************************/
+.vehicle-technical {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+    .vehicle-technical .tech-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        background: rgba(0,0,0,0.02);
+        border: 1px solid rgba(0,0,0,0.04);
+        border-radius: 12px;
+        transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+.dark .vehicle-technical .tech-item {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.06);
+}
+
+.vehicle-technical .tech-item:hover {
+    transform: translateY(-1px);
+    border-color: rgba(var(--primary-rgb), 0.18);
+}
+
+.vehicle-technical .tech-item .tech-text {
+    font-weight: 700;
+    font-size: 12px;
+}
+
+/* Signal label alignment */
+.vehicle-technical .signal .tech-text {
+    margin-left: auto;
+}
+
+/***** ACTION BUTTON ICONS ******************************************************/
+.vehicle-actions .action-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.vehicle-actions .action-btn:active {
+    transform: translateY(0);
+}
+
+/***** ACCESSIBILITY & MOTION GUARDS ********************************************/
+@media (prefers-reduced-motion: reduce) {
+    .vehicle-card svg,
+    .vehicle-details .detail-item,
+    .vehicle-technical .tech-item,
+    .vehicle-actions .action-btn,
+    .vehicle-card.moving .status-icon {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/***** SMALL TWEAKS TO EXISTING SIGNAL BARS *************************************/
+.signal-bars .signal-bar {
+    background: #e5e7eb;
+}
+
+.dark .signal-bars .signal-bar {
+    background: #334155;
+}
+
+.signal-bar.active {
+    background: var(--icon-success) !important;
+}
+
+.vehicle-card .signal .tech-text[title*="Poor"] {
+    color: var(--icon-error) !important;
+}
+
+.vehicle-card .signal .tech-text[title*="Fair"] {
+    color: var(--icon-warn) !important;
+}
+
+.vehicle-card .signal .tech-text[title*="Good"],
+.vehicle-card .signal .tech-text[title*="Excellent"] {
+    color: var(--icon-success) !important;
+}

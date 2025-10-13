@@ -76,6 +76,8 @@ const GpsHome = () => {
 
     // Handle vehicle selection
     const handleVehicleSelect = (vehicle) => {
+        console.warn('car selection');
+        console.warn(vehicle);
         setSelectedVehicle(vehicle);
 
         // Center map on vehicle's last known location
@@ -196,6 +198,7 @@ const GpsHome = () => {
                         filters={filters}
                         onFiltersChange={setFilters}
                         isLoading={isLoadingVehicles}
+                        isMobile = {isMobile}
                     />
                 )}
 
@@ -215,7 +218,7 @@ const GpsHome = () => {
                 {/* Desktop: Right Panel - Route Timeline */}
                 {!isMobile && selectedVehicle && panelState.routePanelVisible && (
                     <RoutePanel
-                        vehicle={selectedVehicle}
+                        selectedVehicle={selectedVehicle}
                         routeData={routeData}
                         routeStats={routeStats}
                         dateRange={dateRange}

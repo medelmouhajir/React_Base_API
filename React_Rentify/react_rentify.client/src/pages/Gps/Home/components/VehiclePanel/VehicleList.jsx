@@ -151,7 +151,7 @@ const VehicleList = ({
                                     key={vehicle.id}
                                     vehicle={vehicle}
                                     isSelected={selectedVehicle?.id === vehicle.id}
-                                    onClick={() => onVehicleSelect(vehicle)}
+                                    onSelect={() => onVehicleSelect(vehicle)}
                                     showQuickActions={!isMobile}
                                     compact={isMobile}
                                 />
@@ -176,7 +176,7 @@ const VehicleList = ({
                                     key={vehicle.id}
                                     vehicle={vehicle}
                                     isSelected={selectedVehicle?.id === vehicle.id}
-                                    onClick={() => onVehicleSelect(vehicle)}
+                                    onSelect={() => onVehicleSelect(vehicle)}
                                     showQuickActions={!isMobile}
                                     compact={isMobile}
                                 />
@@ -201,7 +201,7 @@ const VehicleList = ({
                                     key={vehicle.id}
                                     vehicle={vehicle}
                                     isSelected={selectedVehicle?.id === vehicle.id}
-                                    onClick={() => onVehicleSelect(vehicle)}
+                                    onSelect={() => onVehicleSelect(vehicle)}
                                     showQuickActions={!isMobile}
                                     compact={isMobile}
                                 />
@@ -221,7 +221,7 @@ const VehicleList = ({
                     key={vehicle.id}
                     vehicle={vehicle}
                     isSelected={selectedVehicle?.id === vehicle.id}
-                    onClick={() => onVehicleSelect(vehicle)}
+                    onSelect={() => onVehicleSelect(vehicle)}
                     showQuickActions={!isMobile}
                     compact={isMobile}
                 />

@@ -7,6 +7,8 @@ import RouteTimeline from './RouteTimeline';
 import RouteStats from './RouteStats';
 import SpeedColorLegend from './SpeedColorLegend';
 
+import './RoutePanel.css';
+
 const RoutePanel = ({
     selectedVehicle,
     routeData,
