@@ -3,6 +3,9 @@ import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { createPortal } from 'react-dom';
 
+// Styles
+import './MobileDrawer.css';
+
 const MobileDrawer = ({
     isOpen,
     onClose,
