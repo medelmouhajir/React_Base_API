@@ -22,22 +22,73 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Minimized state */
 .vehicle-panel.minimized {
-    width: 80px;
+    width: 70px;
     transition: width var(--transition-slow, 0.4s cubic-bezier(0.4, 0, 0.2, 1));
+    padding: 0;
 }
 
-    .vehicle-panel.minimized .header-content h3,
-    .vehicle-panel.minimized .vehicle-count-summary .count-label {
-        opacity: 0;
-        transform: translateX(-20px);
-        transition: opacity 0.2s ease, transform 0.2s ease;
+    .vehicle-panel.minimized .panel-header {
+        padding: 16px 8px;
+        justify-content: center;
     }
+
+    .vehicle-panel.minimized .header-content {
+        align-items: center;
+        text-align: center;
+    }
+
+        .vehicle-panel.minimized .header-content h3,
+        .vehicle-panel.minimized .vehicle-count-summary .count-label {
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            position: absolute;
+            visibility: hidden;
+        }
 
     .vehicle-panel.minimized .total-count {
         font-size: 18px;
+        font-weight: 700;
+        color: var(--primary-600);
+        margin: 0;
     }
+
+    .vehicle-panel.minimized .minimize-btn {
+        position: absolute;
+        top: 16px;
+        right: 8px;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .vehicle-panel.minimized .minimize-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+    /* Hide all other content when minimized */
+    .vehicle-panel.minimized .vehicle-stats,
+    .vehicle-panel.minimized .vehicle-filters,
+    .vehicle-panel.minimized .vehicle-list-container {
+        display: none;
+    }
+
+/* Add expand on hover for desktop */
+@media (min-width: 1024px) {
+    .vehicle-panel.minimized:hover {
+        width: 100px;
+        transition: width 0.3s ease;
+    }
+
+        .vehicle-panel.minimized:hover .minimize-btn {
+            opacity: 1;
+        }
+}
 
 /* Loading state */
 .vehicle-panel.loading {

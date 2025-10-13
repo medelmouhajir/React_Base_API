@@ -325,14 +325,105 @@
 
 /* ===== MOBILE LAYOUT ENHANCEMENTS ===== */
 .gps-home-container.mobile {
+    height: 100vh;
     overflow: hidden;
+    padding: 0;
+    margin: 0;
 }
 
-    .gps-home-container.mobile.sheet-expanded {
-        /* Prevent scroll when sheet is expanded */
-        position: fixed;
-        width: 100%;
+    .gps-home-container.mobile .map-section {
         height: 100vh;
+        width: 100vw;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        border-radius: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .gps-home-container.mobile .map-container-wrapper {
+        height: 100vh !important;
+        width: 100vw !important;
+        position: relative;
+    }
+
+        .gps-home-container.mobile .map-container-wrapper .leaflet-container {
+            height: 100vh !important;
+            width: 100vw !important;
+        }
+
+    /* Remove fixed header, add floating components */
+    .gps-home-container.mobile .gps-header {
+        display: none; /* Remove fixed header completely */
+    }
+
+/* Add floating header components */
+.mobile-floating-header {
+    position: fixed;
+    top: var(--safe-area-top, 20px);
+    left: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none; /* Allow map interaction through header */
+}
+
+.mobile-floating-component {
+    pointer-events: auto; /* Re-enable interaction for components */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .mobile-floating-component {
+    background: rgba(15, 23, 42, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-location-info {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mobile-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.mobile-action-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary-500);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .mobile-action-btn:hover {
+        background: var(--primary-600);
+        transform: scale(1.05);
+    }
+
+    .mobile-action-btn svg {
+        width: 18px;
+        height: 18px;
     }
 
 .map-container-wrapper {

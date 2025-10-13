@@ -141,6 +141,7 @@ const CarLegalDocuments = lazy(() => import('./pages/Gadgets/CarLegal/CarLegalDo
 const GpsHome = lazy(() => import('./pages/Gps/Home/GpsHome'));
 const SetCarGps = lazy(() => import('./pages/Gps/Cars/SetCarGps'));
 const SpeedingAlertsPage = lazy(() => import('./pages/Gps/Alerts/Speeding/SpeedingAlertsPage'));
+const GpsHomeModern = lazy(() => import('./pages/Gps/HomeModern/HomeModern'));
 
 //// Other standalone pages
 const SearchPage = lazy(() => import('./pages/Search/SearchPage'));
@@ -197,6 +198,15 @@ function App() {
                                     element={
                                         <ProtectedRoute>
                                             <GpsHome />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
+                                <Route
+                                    path="/gps/modern"
+                                    element={
+                                        <ProtectedRoute>
+                                            <GpsHomeModern />
                                         </ProtectedRoute>
                                     }
                                 />

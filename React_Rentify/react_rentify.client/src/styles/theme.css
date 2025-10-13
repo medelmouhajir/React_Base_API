@@ -59,6 +59,15 @@
     --radius-xl: 0.75rem; /* 12px */
     --radius-2xl: 1rem; /* 16px */
     --radius-full: 9999px;
+    /* Glass / Modern theme */
+    --glass-surface: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.35);
+    --glass-shadow: 0 20px 45px rgba(15, 23, 42, 0.15);
+    --glass-blur: 18px;
+    --modern-gradient-start: #e2f3ff;
+    --modern-gradient-end: #f5f3ff;
+    --neumorphic-light: rgba(255, 255, 255, 0.6);
+    --neumorphic-dark: rgba(15, 23, 42, 0.12);
 }
 
 /* Apply Tailwind-like custom properties to relevant Tailwind classes */
@@ -92,6 +101,13 @@
     --text-secondary: var(--color-text-dark-secondary);
     --border-color: var(--color-border-dark);
     --input-bg: var(--color-input-dark);
+    --glass-surface: rgba(17, 25, 40, 0.72);
+    --glass-border: rgba(148, 163, 184, 0.2);
+    --glass-shadow: 0 25px 55px rgba(2, 6, 23, 0.45);
+    --modern-gradient-start: #0f172a;
+    --modern-gradient-end: #1f2937;
+    --neumorphic-light: rgba(255, 255, 255, 0.08);
+    --neumorphic-dark: rgba(2, 6, 23, 0.6);
 }
 
 /* Focus Styles */

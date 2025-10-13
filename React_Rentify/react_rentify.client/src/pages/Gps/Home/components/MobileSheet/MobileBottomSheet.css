@@ -18,47 +18,75 @@
 }
 
 /* ===== MODERN MOBILE BOTTOM SHEET ===== */
+.mobile-bottom-sheet .expand-btn,
+.mobile-bottom-sheet .toggle-btn,
+.sheet-actions .expand-btn,
+.sheet-actions .close-btn {
+    display: none !important;
+}
+
+/* Always show sheet in peek state with visible top */
 .mobile-bottom-sheet.modern {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    /* Enhanced glassmorphism */
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(40px) saturate(1.8) brightness(1.1);
-    border-radius: 24px 24px 0 0;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 -20px 80px rgba(0, 0, 0, 0.08), 0 -8px 32px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-    /* Smooth transitions */
-    transition: height 0.4s var(--ease-snap), transform 0.4s var(--ease-snap), box-shadow 0.3s ease;
-    /* Enhanced overflow handling */
-    overflow: hidden;
-    /* Support for safe areas */
-    padding-bottom: var(--mobile-safe-area-bottom);
-    /* Prevent text selection during drag */
-    user-select: none;
-    -webkit-user-select: none;
+    transform: translateY(calc(100% - var(--peek-height)));
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.dark .mobile-bottom-sheet.modern {
-    background: rgba(15, 23, 42, 0.95);
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 -20px 80px rgba(0, 0, 0, 0.4), 0 -8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    .mobile-bottom-sheet.modern.peek {
+        transform: translateY(calc(100% - var(--peek-height)));
+    }
+
+    .mobile-bottom-sheet.modern.partial {
+        transform: translateY(calc(100% - var(--partial-height)));
+    }
+
+    .mobile-bottom-sheet.modern.expanded {
+        transform: translateY(0);
+    }
+
+/* Ensure drawer top is always visible */
+:root {
+    --peek-height: 120px; /* Increased to show more of the drawer */
+    --partial-height: 50vh;
+    --expanded-height: 85vh;
 }
 
-/* Enhanced sheet states */
-.mobile-bottom-sheet.modern.peek {
-    height: calc(84px + var(--mobile-safe-area-bottom));
+/* Enhanced drag handle - more prominent */
+.sheet-handle.enhanced-handle {
+    padding: 12px 0;
+    cursor: grab;
+    touch-action: pan-y;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
-.mobile-bottom-sheet.modern.partial {
-    height: min(40vh, 400px);
+.handle-bar {
+    width: 60px; /* Wider handle */
+    height: 5px; /* Thicker handle */
+    background: rgba(var(--gray-400), 0.6);
+    border-radius: 3px;
+    transition: all 0.2s ease;
 }
 
-.mobile-bottom-sheet.modern.expanded {
-    height: calc(90vh - var(--mobile-safe-area-top));
-    box-shadow: 0 -30px 120px rgba(0, 0, 0, 0.12), 0 -12px 48px rgba(0, 0, 0, 0.08);
+.sheet-handle.enhanced-handle:active .handle-bar {
+    background: var(--primary-500);
+    width: 80px;
+    transform: scale(1.1);
+}
+
+/* Handle indicator text */
+.handle-indicator {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+    opacity: 0.8;
+}
+
+.handle-hint {
+    font-weight: 500;
+    letter-spacing: 0.02em;
 }
 
 /* ===== ENHANCED DRAG HANDLE ===== */

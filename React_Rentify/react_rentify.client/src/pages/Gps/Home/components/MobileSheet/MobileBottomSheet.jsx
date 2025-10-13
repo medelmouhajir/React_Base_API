@@ -46,7 +46,7 @@ const MobileBottomSheet = ({
     // Optimized touch handlers with momentum and velocity tracking
     const handleTouchStart = useCallback((e) => {
         if (!e.target.closest('.sheet-handle, .sheet-header')) return;
-
+        
         e.preventDefault();
         const touch = e.touches[0];
         setIsDragging(true);
@@ -61,18 +61,18 @@ const MobileBottomSheet = ({
 
     const handleTouchMove = useCallback((e) => {
         if (!isDragging) return;
-
+        
         e.preventDefault();
         const touch = e.touches[0];
         const now = Date.now();
         const timeDelta = now - lastMoveTime;
         const yDelta = touch.clientY - currentY;
-
+        
         // Calculate velocity for momentum-based snapping
         if (timeDelta > 0) {
             setVelocity(yDelta / timeDelta);
         }
-
+        
         setCurrentY(touch.clientY);
         setLastMoveTime(now);
 
@@ -80,7 +80,7 @@ const MobileBottomSheet = ({
         const deltaY = touch.clientY - startY;
         const currentHeight = snapPoints[sheetState];
         const newHeight = Math.max(snapPoints.peek, Math.min(snapPoints.expanded, currentHeight - deltaY));
-
+        
         // Apply rubber band effect at boundaries
         let adjustedHeight = newHeight;
         if (newHeight <= snapPoints.peek) {
@@ -105,10 +105,10 @@ const MobileBottomSheet = ({
 
         const deltaY = currentY - startY;
         const currentHeight = sheetRef.current?.offsetHeight || snapPoints[sheetState];
-
+        
         // Determine next state based on gesture direction, velocity, and current position
         let nextState = sheetState;
-
+        
         // Strong velocity-based decisions
         if (Math.abs(velocity) > 0.5) {
             if (velocity > 0) { // Swiping down
@@ -133,7 +133,7 @@ const MobileBottomSheet = ({
 
         // Smooth transition to next state
         setSheetState(nextState);
-
+        
         // Reset any transform applied during drag
         if (sheetRef.current) {
             sheetRef.current.style.height = '';
@@ -144,7 +144,7 @@ const MobileBottomSheet = ({
     // Enhanced tab handling with smart state management
     const handleTabChange = useCallback((tab) => {
         setActiveTab(tab);
-
+        
         // Auto-expand for content-heavy tabs
         if (tab === 'route' && selectedVehicle) {
             setSheetState('expanded');
@@ -197,7 +197,7 @@ const MobileBottomSheet = ({
         <>
             {/* Enhanced backdrop with blur */}
             {sheetState === 'expanded' && (
-                <div
+                <div 
                     className="sheet-backdrop enhanced-backdrop"
                     onClick={onClose}
                     style={{ opacity: sheetState === 'expanded' ? 1 : 0 }}
@@ -207,7 +207,7 @@ const MobileBottomSheet = ({
             <div
                 className={`mobile-bottom-sheet modern ${sheetState} ${isDragging ? 'dragging' : ''}`}
                 ref={sheetRef}
-                style={{
+                style={{ 
                     height: snapPoints[sheetState],
                     touchAction: 'none' // Prevent default touch behaviors
                 }}
@@ -275,8 +275,8 @@ const MobileBottomSheet = ({
                             </button>
                         )}
 
-                        <button
-                            className="close-btn modern-btn"
+                        <button 
+                            className="close-btn modern-btn" 
                             onClick={onClose}
                             aria-label={t('gps.mobile.close', 'Close')}
                         >
@@ -289,10 +289,10 @@ const MobileBottomSheet = ({
                 </div>
 
                 {/* Enhanced scrollable content */}
-                <div
+                <div 
                     className="sheet-content enhanced-content"
                     ref={contentRef}
-                    style={{
+                    style={{ 
                         maxHeight: snapPoints[sheetState] - 140, // Account for header
                         overflowY: 'auto',
                         WebkitOverflowScrolling: 'touch' // iOS momentum scrolling
@@ -356,13 +356,13 @@ const MobileBottomSheet = ({
                     {selectedVehicle && sheetState === 'peek' && (
                         <div className="selected-vehicle-indicator modern-indicator">
                             <div className="vehicle-icon">
-                                {selectedVehicle.status === 'moving' ? '🚗' :
-                                    selectedVehicle.status === 'online' ? '🟢' : '⭕'}
+                                {selectedVehicle.status === 'moving' ? '🚗' : 
+                                 selectedVehicle.status === 'online' ? '🟢' : '⭕'}
                             </div>
                             <div className="vehicle-info">
                                 <div className="vehicle-plate">{selectedVehicle.licensePlate}</div>
                                 <div className="vehicle-status">
-                                    {selectedVehicle.status === 'moving' ?
+                                    {selectedVehicle.status === 'moving' ? 
                                         `${Math.round(selectedVehicle.lastSpeed || 0)} km/h` :
                                         t('gps.parked', 'Parked')
                                     }

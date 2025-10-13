@@ -42,11 +42,13 @@
     <Folder Include="src\pages\Gadgets\CarLegal\" />
     <Folder Include="src\pages\Gps\Alerts\Speeding\" />
     <Folder Include="src\pages\Gps\Cars\" />
+    <Folder Include="src\pages\Gps\HomeModern\components\" />
+    <Folder Include="src\pages\Gps\HomeModern\hooks\" />
+    <Folder Include="src\pages\Gps\HomeModern\layout\" />
     <Folder Include="src\pages\Gps\Home\components\MapContainer\" />
     <Folder Include="src\pages\Gps\Home\components\Markers\" />
     <Folder Include="src\pages\Gps\Home\components\MobileSheet\" />
     <Folder Include="src\pages\Gps\Home\components\RoutePanel\" />
-    <Folder Include="src\pages\Gps\Home\hooks\" />
     <Folder Include="src\pages\Gps\Home\utils\" />
     <Folder Include="src\pages\Home\" />
     <Folder Include="src\pages\Dashboard\" />

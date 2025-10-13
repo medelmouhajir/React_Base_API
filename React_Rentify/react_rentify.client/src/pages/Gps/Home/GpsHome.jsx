@@ -1,5 +1,5 @@
 ﻿// src/pages/Gps/Home/GpsHome.jsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -106,46 +106,6 @@ const GpsHome = () => {
         }
     };
 
-    const handleMobileSheetClose = useCallback(() => {
-        setPanelState(prev => ({
-            ...prev,
-            mobileSheetOpen: false,
-            mobileSheetState: 'peek'
-        }));
-
-        // Optional: Clear selected vehicle when closing
-        // setSelectedVehicle(null);
-    }, []);
-
-    useEffect(() => {
-        if (!isMobile) return;
-
-        const handleBackButton = (e) => {
-            if (panelState.mobileSheetOpen && panelState.mobileSheetState === 'expanded') {
-                e.preventDefault();
-                setPanelState(prev => ({
-                    ...prev,
-                    mobileSheetState: 'partial'
-                }));
-            } else if (panelState.mobileSheetOpen) {
-                e.preventDefault();
-                handleMobileSheetClose();
-            }
-        };
-
-        window.addEventListener('popstate', handleBackButton);
-        return () => window.removeEventListener('popstate', handleBackButton);
-    }, [isMobile, panelState.mobileSheetOpen, panelState.mobileSheetState, handleMobileSheetClose]);
-
-    const containerClasses = [
-        'gps-home-container',
-        isDarkMode ? 'dark' : '',
-        isMobile ? 'mobile' : '',
-        isTablet ? 'tablet' : '',
-        panelState.mobileSheetOpen && panelState.mobileSheetState === 'expanded' ? 'sheet-expanded' : ''
-    ].filter(Boolean).join(' ');
-
-
     // Handle route date range change
     const handleDateRangeChange = (newDateRange) => {
         setDateRange(newDateRange);
@@ -205,7 +165,7 @@ const GpsHome = () => {
     }
 
     return (
-        <div className={containerClasses}>
+        <div className={`gps-home-container ${isDarkMode ? 'dark' : ''} ${isMobile ? 'mobile' : ''}`}>
 
             {/* Header */}
             <div className="gps-header">
