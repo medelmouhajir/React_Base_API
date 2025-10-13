@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getSpeedColor, getSpeedCategory } from '../../utils/speedColorUtils';
 
+
+// Styles
+import './RouteTimeline.css';
+
 const RouteTimeline = ({
     routeData,
     playbackState,

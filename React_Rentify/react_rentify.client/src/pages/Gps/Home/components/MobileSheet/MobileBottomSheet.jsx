@@ -6,6 +6,9 @@ import { useTranslation } from 'react-i18next';
 import VehiclePanel from '../VehiclePanel/VehiclePanel';
 import RoutePanel from '../RoutePanel/RoutePanel';
 
+// Styles
+import './MobileBottomSheet.css';
+
 const MobileBottomSheet = ({
     isOpen,
     onClose,

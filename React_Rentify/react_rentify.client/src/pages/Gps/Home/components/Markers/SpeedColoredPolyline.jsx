@@ -3,6 +3,9 @@ import React from 'react';
 import { Polyline, Tooltip } from 'react-leaflet';
 import { useTranslation } from 'react-i18next';
 
+// Styles
+import './SpeedColoredPolyline.css';
+
 const SpeedColoredPolyline = ({ segment, zoom = 10, showTooltip = true }) => {
     const { t } = useTranslation();
 
