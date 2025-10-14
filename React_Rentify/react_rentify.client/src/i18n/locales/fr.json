@@ -1948,7 +1948,37 @@
     "centerMap": "Centrer la carte",
     "modern": {
       "loadingTitle": "Chargement du tableau de bord GPS",
-      "loadingSubtitle": "Veuillez patienter pendant que nous récupérons les données de vos véhicules..."
+      "loadingSubtitle": "Veuillez patienter pendant que nous récupérons les données de vos véhicules...",
+      "viewAlerts": "Voir les alertes",
+      "fullscreen": "Basculer en plein écran",
+      "quickActions": {
+        "title": "Actions rapides",
+        "main": "Actions principales",
+        "more": "Plus d’options",
+        "refresh": {
+          "desc": "Mettre à jour les positions et les données des véhicules"
+        },
+        "alerts": {
+          "desc": "Consulter les alertes et notifications actives"
+        },
+        "fullscreen": {
+          "desc": "Agrandir la carte pour une meilleure visibilité"
+        },
+        "traffic": "Afficher/Masquer le trafic",
+        "traffic.desc": "Afficher ou masquer les informations de trafic",
+        "recenter": "Recentrer la carte",
+        "recenter.desc": "Centrer la carte sur tous les véhicules",
+        "follow": "Suivre le véhicule",
+        "follow.desc": "Suivre le véhicule sélectionné sur la carte",
+        "follow.noVehicle": "Sélectionnez un véhicule à suivre",
+        "legacy": {
+          "desc": "Utiliser l’interface GPS classique"
+        }
+      },
+      "quickActionsHint": {
+        "mobile": "Appuyez pour exécuter l’action",
+        "desktop": "Cliquez ou utilisez les raccourcis clavier"
+      }
     }
   },
   "attachment": {

@@ -1977,7 +1977,37 @@
     "centerMap": "Center map",
     "modern": {
       "loadingTitle": "Loading GPS Dashboard",
-      "loadingSubtitle": "Please wait while we fetch your vehicle data..."
+      "loadingSubtitle": "Please wait while we fetch your vehicle data...",
+      "viewAlerts": "View Alerts",
+      "fullscreen": "Toggle Fullscreen",
+      "quickActions": {
+        "title": "Quick Actions",
+        "main": "Main Actions",
+        "more": "More Options",
+        "refresh": {
+          "desc": "Update vehicle positions and data"
+        },
+        "alerts": {
+          "desc": "Check active alerts and notifications"
+        },
+        "fullscreen": {
+          "desc": "Maximize map view for better visibility"
+        },
+        "traffic": "Toggle Traffic",
+        "traffic.desc": "Show/hide traffic information",
+        "recenter": "Recenter Map",
+        "recenter.desc": "Center map on all vehicles",
+        "follow": "Follow Vehicle",
+        "follow.desc": "Follow selected vehicle on map",
+        "follow.noVehicle": "Select a vehicle to follow",
+        "legacy": {
+          "desc": "Use the classic GPS interface"
+        }
+      },
+      "quickActionsHint": {
+        "mobile": "Tap to perform action",
+        "desktop": "Click or use keyboard shortcuts"
+      }
     }
   },
   "attachment": {

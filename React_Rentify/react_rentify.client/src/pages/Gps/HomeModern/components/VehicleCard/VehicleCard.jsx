@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 // Styles
 import './VehicleCard.css';
 
-
 const VehicleCard = ({
     vehicle,
     isSelected = false,
@@ -16,9 +15,20 @@ const VehicleCard = ({
 }) => {
     const { t } = useTranslation();
 
-    // Memoized vehicle status
+    // Memoized vehicle status based on DTOs structure
     const vehicleStatus = useMemo(() => {
-        if (!vehicle.isOnline) {
+        // Handle both API DTO formats: VehicleLatestPositionDto and AgencyVehicleDto
+        const isOnline = vehicle.isOnline ??
+            (vehicle.lastRecord?.timestamp ?
+                (new Date() - new Date(vehicle.lastRecord.timestamp)) < 5 * 60 * 1000 :
+                false);
+
+        const isMoving = vehicle.isMoving ??
+            (vehicle.lastRecord?.speedKmh > 2 && vehicle.lastRecord?.ignitionOn) ??
+            (vehicle.speedKmh > 2 && vehicle.ignitionOn) ??
+            false;
+
+        if (!isOnline) {
             return {
                 status: 'offline',
                 label: t('gps.modern.status.offline', 'Offline'),
@@ -26,11 +36,11 @@ const VehicleCard = ({
                 icon: 'offline'
             };
         }
-        if (vehicle.isMoving) {
+        if (isMoving) {
             return {
                 status: 'moving',
                 label: t('gps.modern.status.moving', 'Moving'),
-                color: 'var(--modern-primary)',
+                color: 'var(--modern-success)',
                 icon: 'moving'
             };
         }
@@ -40,14 +50,28 @@ const VehicleCard = ({
             color: 'var(--modern-warning)',
             icon: 'idle'
         };
-    }, [vehicle.isOnline, vehicle.isMoving, t]);
+    }, [vehicle, t]);
 
-    // Format last update time
+    // Format last update time - handle multiple DTO timestamp formats
     const formatLastUpdate = (lastUpdate) => {
-        if (!lastUpdate) return t('gps.modern.noData', 'No data');
+        const timestamp = lastUpdate ??
+            vehicle.lastRecord?.timestamp ??
+            vehicle.timestamp ??
+            vehicle.lastUpdateMinutesAgo;
 
+        if (!timestamp) return t('gps.modern.noData', 'No data');
+
+        // If lastUpdateMinutesAgo is provided directly (from VehicleLatestPositionDto)
+        if (typeof vehicle.lastUpdateMinutesAgo === 'number') {
+            const minutes = vehicle.lastUpdateMinutesAgo;
+            if (minutes < 1) return t('gps.modern.justNow', 'Just now');
+            if (minutes < 60) return t('gps.modern.minutesAgo', '{{minutes}}m ago', { minutes });
+            return t('gps.modern.hoursAgo', '{{hours}}h ago', { hours: Math.floor(minutes / 60) });
+        }
+
+        // Handle datetime string
         const now = new Date();
-        const diff = Math.floor((now - new Date(lastUpdate)) / 1000);
+        const diff = Math.floor((now - new Date(timestamp)) / 1000);
 
         if (diff < 60) return t('gps.modern.justNow', 'Just now');
         if (diff < 3600) return t('gps.modern.minutesAgo', '{{minutes}}m ago', { minutes: Math.floor(diff / 60) });
@@ -78,6 +102,30 @@ const VehicleCard = ({
         };
         return icons[iconType] || icons.offline;
     };
+
+    // Extract vehicle data from DTOs
+    const plateNumber = vehicle.plateNumber || vehicle.licensePlate || vehicle.licencePlate || vehicle.deviceSerialNumber || 'Unknown';
+    const model = vehicle.model || vehicle.carModel || t('gps.modern.unknownModel', 'Unknown Model');
+    const driverName = vehicle.driverName || vehicle.driver || t('gps.modern.unknownDriver', 'Unknown Driver');
+
+    // Handle location from multiple DTO formats
+    const locationAddress = vehicle.lastLocation?.address ||
+        vehicle.lastRecord?.address ||
+        vehicle.address ||
+        t('gps.modern.unknownLocation', 'Unknown location');
+
+    // Handle speed from multiple DTO formats
+    const currentSpeed = vehicle.speed ||
+        vehicle.speedKmh ||
+        vehicle.lastRecord?.speedKmh ||
+        0;
+
+    // Handle alerts
+    const hasAlerts = vehicle.hasAlerts || (vehicle.alertCount && vehicle.alertCount > 0) || false;
+    const alertCount = vehicle.alertCount || 0;
+
+    // Handle distance
+    const totalDistance = vehicle.totalDistance || vehicle.dailyDistance || 0;
 
     const cardVariants = {
         hidden: { opacity: 0, y: 20 },
@@ -115,11 +163,18 @@ const VehicleCard = ({
             whileTap={{ scale: 0.98 }}
             layout
         >
+            {/* Alerts Badge */}
+            {hasAlerts && (
+                <div className="alerts-badge">
+                    {alertCount > 0 ? alertCount : '!'}
+                </div>
+            )}
+
             {/* Vehicle Avatar/Icon */}
             <div className="vehicle-avatar">
                 <motion.div
                     className="avatar-content"
-                    animate={vehicle.isMoving ? {
+                    animate={vehicleStatus.status === 'moving' ? {
                         scale: [1, 1.1, 1],
                         rotate: [0, 5, -5, 0]
                     } : {}}
@@ -137,7 +192,7 @@ const VehicleCard = ({
                 <motion.div
                     className="status-indicator"
                     style={{ backgroundColor: vehicleStatus.color }}
-                    animate={vehicle.isMoving ?
+                    animate={vehicleStatus.status === 'moving' ?
                         { scale: [1, 1.2, 1] } :
                         { opacity: [1, 0.6, 1] }
                     }
@@ -149,7 +204,7 @@ const VehicleCard = ({
             <div className="vehicle-info">
                 <div className="vehicle-primary">
                     <h3 className="vehicle-plate">
-                        {vehicle.plateNumber || vehicle.deviceSerialNumber}
+                        {plateNumber}
                     </h3>
                     <div className="vehicle-status">
                         {getStatusIcon(vehicleStatus.icon)}
@@ -164,7 +219,7 @@ const VehicleCard = ({
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" />
                                 <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none" />
                             </svg>
-                            <span>{vehicle.driverName || t('gps.modern.unknownDriver', 'Unknown')}</span>
+                            <span>{driverName}</span>
                         </div>
 
                         <div className="vehicle-location">
@@ -173,9 +228,10 @@ const VehicleCard = ({
                                 <circle cx="12" cy="10" r="3" fill="currentColor" />
                             </svg>
                             <span>
-                                {vehicle.lastLocation?.address?.slice(0, 30) ||
-                                    t('gps.modern.unknownLocation', 'Unknown location')}
-                                {vehicle.lastLocation?.address?.length > 30 && '...'}
+                                {locationAddress.length > 30 ?
+                                    `${locationAddress.slice(0, 30)}...` :
+                                    locationAddress
+                                }
                             </span>
                         </div>
                     </div>
@@ -189,7 +245,7 @@ const VehicleCard = ({
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                             <path d="M12 2L13.09 8.26L22 9l-6.74 5.74L17 21l-5-2.65L7 21l1.74-6.26L2 9l8.91-1.74L12 2z" fill="currentColor" />
                         </svg>
-                        <span>{vehicle.speed || 0} km/h</span>
+                        <span>{currentSpeed} km/h</span>
                     </div>
 
                     <div className="stat">
@@ -197,63 +253,33 @@ const VehicleCard = ({
                             <circle cx="12" cy="12" r="3" fill="currentColor" />
                             <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" stroke="currentColor" strokeWidth="1" />
                         </svg>
-                        <span>{formatLastUpdate(vehicle.lastUpdate)}</span>
+                        <span>{formatLastUpdate()}</span>
                     </div>
 
-                    {vehicle.totalDistance && (
+                    {totalDistance > 0 && (
                         <div className="stat">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                                 <path d="M9 11H1l8-8 8 8h-8l4 4-4 4z" fill="currentColor" />
                             </svg>
-                            <span>{(vehicle.totalDistance / 1000).toFixed(1)} km</span>
+                            <span>{(totalDistance / 1000).toFixed(1)} km</span>
                         </div>
                     )}
                 </div>
             )}
 
-            {/* Alerts Badge */}
-            {vehicle.hasAlerts && (
-                <motion.div
-                    className="alerts-badge"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    whileHover={{ scale: 1.1 }}
-                >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="currentColor" />
-                    </svg>
-                    {vehicle.alertsCount > 0 && (
-                        <span className="badge-count">{vehicle.alertsCount}</span>
-                    )}
-                </motion.div>
-            )}
-
-            {/* Selection Indicator */}
-            {isSelected && (
-                <motion.div
-                    className="selection-indicator"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                </motion.div>
-            )}
-
-            {/* Hover Actions */}
+            {/* Action Buttons */}
             <motion.div
-                className="card-actions"
+                className="vehicle-actions"
                 initial={{ opacity: 0 }}
+                animate={{ opacity: isSelected ? 1 : 0 }}
                 whileHover={{ opacity: 1 }}
-                transition={{ duration: 0.2 }}
             >
                 <button
                     className="action-btn locate"
                     onClick={(e) => {
                         e.stopPropagation();
-                        onClick?.(vehicle);
+                        // Handle locate action - this will be handled by parent container
+                        console.log('Locate vehicle:', vehicle);
                     }}
                     aria-label={t('gps.modern.locate', 'Locate vehicle')}
                 >
@@ -263,12 +289,13 @@ const VehicleCard = ({
                     </svg>
                 </button>
 
-                {vehicle.hasAlerts && (
+                {hasAlerts && (
                     <button
                         className="action-btn alerts"
                         onClick={(e) => {
                             e.stopPropagation();
-                            // Handle alert action
+                            // Handle alert action - this will be handled by parent container
+                            console.log('View alerts for vehicle:', vehicle);
                         }}
                         aria-label={t('gps.modern.viewAlerts', 'View alerts')}
                     >
@@ -283,8 +310,8 @@ const VehicleCard = ({
             {viewMode === 'grid' && (
                 <div className="grid-footer">
                     <div className="grid-stats">
-                        <span className="speed">{vehicle.speed || 0} km/h</span>
-                        <span className="update">{formatLastUpdate(vehicle.lastUpdate)}</span>
+                        <span className="speed">{currentSpeed} km/h</span>
+                        <span className="update">{formatLastUpdate()}</span>
                     </div>
                 </div>
             )}

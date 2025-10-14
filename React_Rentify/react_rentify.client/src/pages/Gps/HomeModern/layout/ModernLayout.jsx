@@ -81,7 +81,7 @@ const ModernLayout = ({
             <div
                 className="home-modern__main"
                 style={{
-                    paddingBottom: isMobile && !isFullScreenMap ? `${bottomNavHeight}px` : '0'
+                    paddingBottom: '0'
                 }}
             >
                 {/* Map Container */}

@@ -8,7 +8,6 @@ import RouteStats from './components/RouteStats/RouteStats';
 import RoutePlayback from './components/RoutePlayback/RoutePlayback';
 import DateRangePicker from './components/DateRangePicker/DateRangePicker';
 import SpeedChart from './components/SpeedChart/SpeedChart';
-import RouteExport from './components/RouteExport/RouteExport';
 
 import './ModernRoutePanel.css';
 
@@ -333,12 +332,6 @@ const ModernRoutePanel = ({
                                         {showSpeedChart ? t('gps.modern.hideChart', 'Hide Chart') : t('gps.modern.showChart', 'Show Chart')}
                                     </motion.button>
 
-                                    <RouteExport
-                                        routeData={processedRouteData}
-                                        vehicle={selectedVehicle}
-                                        dateRange={dateRange}
-                                        isMobile={isMobile}
-                                    />
                                 </div>
                             </motion.div>
                         )}

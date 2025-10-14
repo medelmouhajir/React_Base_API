@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 // Styles
 import './EnhancedSummaryBar.css';
 
-
 const EnhancedSummaryBar = ({
     stats,
     lastUpdate,
@@ -59,7 +58,7 @@ const EnhancedSummaryBar = ({
             label: t('gps.modern.totalVehicles', 'Total Vehicles'),
             value: stats?.totalVehicles || 0,
             icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <path d="M7 17h10l1.29-3.5H5.71L7 17zM20 8v6h-2v-1c0-.55-.45-1-1-1s-1 .45-1 1v1H8v-1c0-.55-.45-1-1-1s-1 .45-1 1v1H4V8h16z" fill="currentColor" />
                 </svg>
             ),
@@ -70,7 +69,7 @@ const EnhancedSummaryBar = ({
             label: t('gps.modern.onlineVehicles', 'Online'),
             value: stats?.onlineVehicles || 0,
             icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="3" fill="currentColor" />
                     <path d="M12 1l3.09 6.26L22 9l-5.91 1.74L17 17l-4.91-2.26L7 17l.91-6.26L2 9l6.91-1.74L12 1z" fill="currentColor" />
                 </svg>
@@ -82,7 +81,7 @@ const EnhancedSummaryBar = ({
             label: t('gps.modern.movingVehicles', 'Moving'),
             value: stats?.movingVehicles || 0,
             icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <path d="M13 3l3.5 7h-7l3.5-7z" fill="currentColor" />
                     <circle cx="12" cy="17" r="4" fill="currentColor" />
                 </svg>
@@ -95,7 +94,7 @@ const EnhancedSummaryBar = ({
             label: t('gps.modern.activeAlerts', 'Active Alerts'),
             value: stats?.activeAlerts || 0,
             icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="currentColor" />
                 </svg>
             ),
@@ -115,78 +114,72 @@ const EnhancedSummaryBar = ({
                 transition={{ duration: 0.3 }}
             >
                 <div className="summary-header">
-                    <div className="summary-title">
-                        <h1>{t('gps.modern.title', 'GPS Dashboard')}</h1>
+                    <div className="summary-title-section">
+                        <div className="summary-title">
+                            <h1>{t('gps.modern.title', 'GPS Dashboard')}</h1>
+                        </div>
                         <div className="summary-subtitle">
                             <span className="update-time">{lastUpdateText}</span>
-                            <motion.button
-                                className="refresh-btn"
-                                onClick={handleRefresh}
-                                disabled={isRefreshing}
-                                whileTap={{ scale: 0.95 }}
-                                animate={isRefreshing ? { rotate: 360 } : {}}
-                                transition={isRefreshing ? { duration: 1, repeat: Infinity, ease: "linear" } : {}}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M4 12a8 8 0 018-8V2l3 3-3 3V6a6 6 0 100 12 6 6 0 006-6h2a8 8 0 01-16 0z" fill="currentColor" />
-                                </svg>
-                            </motion.button>
+                            <div className="summary-status">
+                                <div className={`status-indicator ${stats?.onlineVehicles > 0 ? 'online' : 'offline'}`}></div>
+                                <span>{t('gps.modern.system', 'System')}</span>
+                            </div>
                         </div>
                     </div>
-
                     <div className="summary-actions">
                         <motion.button
-                            className="action-btn drawer-toggle"
-                            onClick={onToggleDrawer}
+                            className={`action-btn ${isRefreshing ? 'refreshing' : ''}`}
+                            onClick={handleRefresh}
+                            disabled={isRefreshing}
                             whileTap={{ scale: 0.95 }}
+                            title={t('gps.modern.refresh', 'Refresh')}
                         >
-                            <motion.div
-                                animate={{ rotate: isDrawerOpen ? 180 : 0 }}
-                                transition={{ duration: 0.3 }}
-                            >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor" />
-                                </svg>
-                            </motion.div>
-                        </motion.button>
-
-                        <motion.button
-                            className="action-btn fullscreen-toggle"
-                            onClick={onToggleFullScreen}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" fill="currentColor" />
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </motion.button>
+                        {onToggleDrawer && (
+                            <motion.button
+                                className="action-btn"
+                                onClick={onToggleDrawer}
+                                whileTap={{ scale: 0.95 }}
+                                title={t('gps.modern.toggleMenu', 'Menu')}
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                    <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" strokeWidth="2" />
+                                    <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="2" />
+                                    <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" strokeWidth="2" />
+                                </svg>
+                            </motion.button>
+                        )}
                     </div>
                 </div>
 
-                <div className="summary-metrics mobile">
-                    {metrics.map((metric, index) => (
-                        <motion.div
-                            key={metric.key}
-                            className={`metric-card ${metric.color} ${metric.highlight ? 'highlight' : ''} ${metric.clickable ? 'clickable' : ''}`}
-                            onClick={metric.onClick}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            whileTap={metric.clickable ? { scale: 0.95 } : {}}
-                        >
-                            <div className="metric-icon">{metric.icon}</div>
-                            <div className="metric-content">
-                                <div className="metric-value">{metric.value}</div>
-                                <div className="metric-label">{metric.label}</div>
-                            </div>
-                            {metric.value > 0 && (
-                                <motion.div
-                                    className="metric-pulse"
-                                    animate={{ scale: [1, 1.2, 1], opacity: [0.7, 0.3, 0.7] }}
-                                    transition={{ duration: 2, repeat: Infinity }}
-                                />
-                            )}
-                        </motion.div>
-                    ))}
+                <div className="summary-main">
+                    <div className="summary-metrics mobile">
+                        {metrics.map((metric) => (
+                            <motion.div
+                                key={metric.key}
+                                className={`metric-card ${metric.color} ${metric.highlight ? 'highlight' : ''} ${metric.clickable ? 'clickable' : ''}`}
+                                onClick={metric.onClick}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <div className="metric-header">
+                                    <div className="metric-icon">
+                                        {metric.icon}
+                                    </div>
+                                    <div className="metric-label">
+                                        {metric.label}
+                                    </div>
+                                </div>
+                                <div className="metric-value">
+                                    {metric.value}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
             </motion.div>
         );
@@ -194,120 +187,163 @@ const EnhancedSummaryBar = ({
 
     return (
         <motion.div
-            className="enhanced-summary-bar desktop glass"
+            className="enhanced-summary-bar glass"
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}
         >
-            <div className="summary-primary">
-                <div className="summary-header">
+            <div className="summary-header">
+                <div className="summary-title-section">
                     <div className="summary-title">
                         <h1>{t('gps.modern.title', 'GPS Dashboard')}</h1>
-                        <p className="summary-subtitle">
-                            {t('gps.modern.subtitle', 'Real-time vehicle tracking and fleet management')}
-                        </p>
                     </div>
+                    <div className="summary-subtitle">
+                        <span className="last-update-indicator">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                                <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" />
+                            </svg>
+                            <span className="update-time">{lastUpdateText}</span>
+                        </span>
+                        <div className="summary-status">
+                            <div className={`status-indicator ${stats?.onlineVehicles > 0 ? 'online' : 'offline'}`}></div>
+                            <span>{t('gps.modern.systemStatus', 'System Status')}</span>
+                        </div>
+                    </div>
+                </div>
 
-                    <div className="summary-actions">
+                <div className="summary-actions">
+                    <motion.button
+                        className={`action-btn refresh-btn ${isRefreshing ? 'refreshing' : ''}`}
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        whileTap={{ scale: 0.95 }}
+                        title={t('gps.modern.refresh', 'Refresh Data')}
+                    >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <span>{t('gps.modern.refresh', 'Refresh')}</span>
+                    </motion.button>
+
+                    {onToggleFullScreen && (
                         <motion.button
                             className="action-btn"
-                            onClick={handleRefresh}
-                            disabled={isRefreshing}
+                            onClick={onToggleFullScreen}
                             whileTap={{ scale: 0.95 }}
-                            animate={isRefreshing ? { rotate: 360 } : {}}
-                            transition={isRefreshing ? { duration: 1, repeat: Infinity, ease: "linear" } : {}}
+                            title={isFullScreen ? t('gps.modern.exitFullscreen', 'Exit Fullscreen') : t('gps.modern.fullscreen', 'Fullscreen')}
                         >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path d="M4 12a8 8 0 018-8V2l3 3-3 3V6a6 6 0 100 12 6 6 0 006-6h2a8 8 0 01-16 0z" fill="currentColor" />
-                            </svg>
-                            {t('common.refresh', 'Refresh')}
+                            {isFullScreen ? (
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                    <path d="M8 3v3a2 2 0 0 1-2 2H3M18 3v3a2 2 0 0 0 2 2h3M8 21v-3a2 2 0 0 1-2-2H3M18 21v-3a2 2 0 0 0 2-2h3" stroke="currentColor" strokeWidth="2" />
+                                </svg>
+                            ) : (
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                    <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3" stroke="currentColor" strokeWidth="2" />
+                                </svg>
+                            )}
+                            <span>{isFullScreen ? t('gps.modern.exitFullscreen', 'Exit') : t('gps.modern.fullscreen', 'Fullscreen')}</span>
                         </motion.button>
+                    )}
 
+                    {onToggleDrawer && (
                         <motion.button
                             className="action-btn"
                             onClick={onToggleDrawer}
                             whileTap={{ scale: 0.95 }}
+                            title={t('gps.modern.toggleVehicles', 'Toggle Vehicles Panel')}
                         >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" fill="currentColor" />
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2" />
+                                <line x1="9" y1="9" x2="15" y2="9" stroke="currentColor" strokeWidth="2" />
+                                <line x1="9" y1="15" x2="15" y2="15" stroke="currentColor" strokeWidth="2" />
                             </svg>
-                            {isDrawerOpen ? t('common.hide', 'Hide') : t('common.show', 'Show')} Panel
+                            <span>{t('gps.modern.vehicles', 'Vehicles')}</span>
                         </motion.button>
+                    )}
 
+                    {onSwitchLegacy && (
                         <motion.button
-                            className="action-btn secondary"
+                            className="action-btn"
                             onClick={onSwitchLegacy}
                             whileTap={{ scale: 0.95 }}
+                            title={t('gps.modern.switchToClassic', 'Switch to Classic View')}
                         >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 2l3.09 6.26L22 9l-5.91 1.74L17 17l-4.91-2.26L7 17l.91-6.26L2 9l6.91-1.74L12 1z" fill="currentColor" />
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" strokeWidth="2" />
+                                <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2" />
+                                <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2" />
                             </svg>
-                            {t('gps.switchLegacy', 'Legacy View')}
+                            <span>{t('gps.modern.classic', 'Classic')}</span>
                         </motion.button>
-                    </div>
+                    )}
                 </div>
+            </div>
 
-                <div className="summary-metrics desktop">
-                    {metrics.map((metric, index) => (
-                        <motion.div
-                            key={metric.key}
-                            className={`metric-card ${metric.color} ${metric.highlight ? 'highlight' : ''} ${metric.clickable ? 'clickable' : ''}`}
-                            onClick={metric.onClick}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.1 }}
-                            whileHover={{ y: -2, transition: { duration: 0.2 } }}
-                            whileTap={metric.clickable ? { scale: 0.95 } : {}}
-                        >
-                            <div className="metric-header">
-                                <div className="metric-icon">{metric.icon}</div>
-                                <div className="metric-label">{metric.label}</div>
-                            </div>
-                            <div className="metric-value">
-                                <AnimatePresence mode="wait">
-                                    <motion.span
-                                        key={metric.value}
-                                        initial={{ y: 10, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        exit={{ y: -10, opacity: 0 }}
-                                        transition={{ duration: 0.2 }}
-                                    >
-                                        {metric.value}
-                                    </motion.span>
-                                </AnimatePresence>
-                            </div>
-                            {metric.value > 0 && (
-                                <motion.div
-                                    className="metric-pulse"
-                                    animate={{ scale: [1, 1.1, 1], opacity: [0.8, 0.4, 0.8] }}
-                                    transition={{ duration: 2, repeat: Infinity }}
-                                />
-                            )}
-                        </motion.div>
-                    ))}
+            <div className="summary-main">
+                <div className="summary-metrics">
+                    <AnimatePresence>
+                        {metrics.map((metric, index) => (
+                            <motion.div
+                                key={metric.key}
+                                className={`metric-card ${metric.color} ${metric.highlight ? 'highlight' : ''} ${metric.clickable ? 'clickable' : ''}`}
+                                onClick={metric.onClick}
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: -20, opacity: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <div className="metric-header">
+                                    <div className="metric-icon">
+                                        {metric.icon}
+                                    </div>
+                                    <div className="metric-label">
+                                        {metric.label}
+                                    </div>
+                                </div>
+                                <div className="metric-value">
+                                    {metric.value}
+                                    {metric.highlight && (
+                                        <div className="metric-pulse" />
+                                    )}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </div>
             </div>
 
             <div className="summary-secondary">
                 <div className="summary-info">
-                    <span className="info-text">
-                        {t('gps.modern.lastUpdate', 'Last updated')}: {lastUpdateText}
-                    </span>
-                    {stats?.totalDistance > 0 && (
-                        <span className="info-text">
-                            {t('gps.modern.totalDistance', 'Total distance')}: {(stats.totalDistance / 1000).toFixed(1)} km
-                        </span>
-                    )}
+                    <div className="info-text">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z" stroke="currentColor" strokeWidth="2" />
+                        </svg>
+                        <span>{t('gps.modern.realTimeTracking', 'Real-time tracking active')}</span>
+                    </div>
+                    <div className="info-text">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                            <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" />
+                        </svg>
+                        <span>{t('gps.modern.autoRefresh', 'Auto-refresh: 30s')}</span>
+                    </div>
                 </div>
 
-                <div className="summary-status">
-                    <motion.div
-                        className="status-indicator online"
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                    />
-                    <span>{t('gps.modern.systemOnline', 'System Online')}</span>
-                </div>
+                {stats?.totalVehicles > 0 && (
+                    <div className="summary-info">
+                        <div className="info-text">
+                            <span>{t('gps.modern.coverage', 'Coverage')}: </span>
+                            <span style={{ color: 'var(--modern-primary)' }}>
+                                {Math.round((stats.onlineVehicles / stats.totalVehicles) * 100)}%
+                            </span>
+                        </div>
+                    </div>
+                )}
             </div>
         </motion.div>
     );
