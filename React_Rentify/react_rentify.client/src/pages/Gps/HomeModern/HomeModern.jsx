@@ -68,14 +68,21 @@ const HomeModern = () => {
     });
 
     // Route Data Hook
+
     const {
         routeData,
         routeStats,
         isLoading: isLoadingRoute,
-        error: routeError
-    } = useRouteData(selectedVehicle?.id, dateRange, {
-        enabled: !!selectedVehicle?.id  // Fixed: Enable only when a vehicle is selected
-    });
+        error: routeError,
+        fetchRouteData
+    } = useRouteData();
+
+    // Add this useEffect after the useRouteData hook call:
+    useEffect(() => {
+        if (selectedVehicle?.id && dateRange.startDate && dateRange.endDate) {
+            fetchRouteData(selectedVehicle.id, dateRange.startDate, dateRange.endDate);
+        }
+    }, [selectedVehicle?.id, dateRange.startDate, dateRange.endDate, fetchRouteData]);
 
     // Alerts Hook
     const {
