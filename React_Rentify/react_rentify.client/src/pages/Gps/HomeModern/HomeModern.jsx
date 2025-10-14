@@ -26,6 +26,7 @@ import {useModernLayout} from './hooks/useModernLayout';
 import useSpeedingAlerts from './hooks/useSpeedingAlerts';
 import useSwipeGestures from './hooks/useSwipeGestures';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import useScrollLock from './hooks/useScrollLock';
 
 // Styles
 import './HomeModern.css';
@@ -154,6 +155,8 @@ const HomeModern = () => {
         '3': () => setActivePanel('alerts')
     });
 
+    useScrollLock(isMobile && isDrawerOpen);
+
     // Computed Values
     const filteredVehicles = useMemo(() => {
         if (!vehicles?.length) return [];
@@ -225,10 +228,31 @@ const HomeModern = () => {
         }
     }, [selectedVehicle, isMobile]);
 
+    useEffect(() => {
+        // Manage body scroll lock when drawer is open in mobile
+        if (isMobile) {
+            if (isDrawerOpen) {
+                // Lock body scroll
+                document.body.classList.add('drawer-open');
+                document.documentElement.classList.add('drawer-open');
+            } else {
+                // Restore body scroll
+                document.body.classList.remove('drawer-open');
+                document.documentElement.classList.remove('drawer-open');
+            }
+        }
+
+        // Cleanup on unmount
+        return () => {
+            document.body.classList.remove('drawer-open');
+            document.documentElement.classList.remove('drawer-open');
+        };
+    }, [isDrawerOpen, isMobile]);
+
     // Loading State
     if (isLoadingVehicles) {
         return (
-            <div className={`home-modern-container loading ${isDarkMode ? 'dark' : 'light'}`}>
+            <div className={`home-modern-container loading ${isDarkMode ? 'dark' : 'light'} ${isDrawerOpen && isMobile ? 'drawer-open' : ''}`}>
                 <div className="home-modern-loading">
                     <div className="loading-spinner large" />
                     <h2>{t('gps.modern.loadingTitle', 'Loading GPS Dashboard')}</h2>
@@ -241,7 +265,7 @@ const HomeModern = () => {
     // Error State
     if (vehiclesError) {
         return (
-            <div className={`home-modern-container error ${isDarkMode ? 'dark' : 'light'}`}>
+            <div className={`home-modern-container error ${isDarkMode ? 'dark' : 'light'} ${isDrawerOpen && isMobile ? 'drawer-open' : ''}`}>
                 <div className="legacy-modern-toggle">
                     <button type="button" className="btn btn-outline" onClick={handleToggleLegacy}>
                         {t('gps.switchLegacy', 'Switch to legacy dashboard')}
@@ -261,7 +285,7 @@ const HomeModern = () => {
     return (
         <div
             ref={containerRef}
-            className={`home-modern-container ${isDarkMode ? 'dark' : 'light'} ${screenSize}`}
+            className={`home-modern-container ${isDarkMode ? 'dark' : 'light'} ${screenSize} ${isDrawerOpen && isMobile ? 'drawer-open' : ''}`}
         >
             <ModernLayout
                 isDarkMode={isDarkMode}

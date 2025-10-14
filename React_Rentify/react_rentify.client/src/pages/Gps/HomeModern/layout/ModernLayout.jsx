@@ -124,6 +124,13 @@ const ModernLayout = ({
                                 stiffness: 300,
                                 damping: 30
                             }}
+                            style={{
+                                // Ensure visibility in mobile when open
+                                ...(isMobile && isDrawerOpen && {
+                                    visibility: 'visible',
+                                    pointerEvents: 'auto'
+                                })
+                            }}
                         >
                             {/* Drawer Header */}
                             <div className="drawer-header">
@@ -175,6 +182,14 @@ const ModernLayout = ({
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
+                                style={{
+                                    // Ensure content is visible
+                                    ...(isMobile && isDrawerOpen && {
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        flex: 1
+                                    })
+                                }}
                             >
                                 {drawerSlot}
                             </motion.div>
@@ -273,6 +288,24 @@ const ModernLayout = ({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onToggleDrawer}
+                        onTouchStart={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        onTouchMove={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        onTouchEnd={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        style={{
+                            touchAction: 'none',
+                            WebkitTouchCallout: 'none',
+                            WebkitUserSelect: 'none',
+                            userSelect: 'none'
+                        }}
                     />
                 )}
             </AnimatePresence>

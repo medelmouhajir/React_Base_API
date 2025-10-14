@@ -51,6 +51,14 @@ export const useModernLayout = ({ isMobile, isTablet }) => {
         setLastInteraction(Date.now());
     }, []);
 
+    const preventMapTouch = useCallback((e) => {
+        if (isMobile && isDrawerOpen) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    }, [isMobile, isDrawerOpen]);
+
     return {
         isDrawerOpen,
         drawerMode,
@@ -58,6 +66,7 @@ export const useModernLayout = ({ isMobile, isTablet }) => {
         closeDrawerForMobile,
         openDrawer,
         closeDrawer,
-        setDrawerMode
+        setDrawerMode,
+        preventMapTouch // Add this new function
     };
 };
