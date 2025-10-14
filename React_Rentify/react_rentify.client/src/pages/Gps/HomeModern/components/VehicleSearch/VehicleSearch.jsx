@@ -2,6 +2,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
+
+// Styles
+import './VehicleSearch.css';
+
+
 const VehicleSearch = ({
     value = '',
     onChange,

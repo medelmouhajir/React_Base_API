@@ -2,6 +2,10 @@ import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
+// Styles
+import './VehicleFilters.css';
+
+
 const VehicleFilters = ({
     filters = { status: 'all', search: '', selectedTypes: [] },
     onFiltersChange,

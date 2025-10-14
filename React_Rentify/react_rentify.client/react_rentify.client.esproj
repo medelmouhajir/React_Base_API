@@ -44,10 +44,8 @@
     <Folder Include="src\pages\Gps\Cars\" />
     <Folder Include="src\pages\Gps\HomeModern\components\Markers\ModernVehicleMarker\" />
     <Folder Include="src\pages\Gps\HomeModern\components\Markers\ModernRoutePolyline\" />
-    <Folder Include="src\pages\Gps\HomeModern\components\Markers\MapControlsOverlay\" />
     <Folder Include="src\pages\Gps\HomeModern\components\Markers\VehicleClusterGroup\" />
     <Folder Include="src\pages\Gps\HomeModern\components\ModernRoutePanel\components\DateRangePicker\" />
-    <Folder Include="src\pages\Gps\HomeModern\components\ModernRoutePanel\components\MapControlsOverlay\" />
     <Folder Include="src\pages\Gps\HomeModern\components\ModernRoutePanel\components\RouteExport\" />
     <Folder Include="src\pages\Gps\HomeModern\components\ModernRoutePanel\components\SpeedChart\" />
     <Folder Include="src\pages\Gps\HomeModern\components\ModernRoutePanel\components\RoutePlayback\" />
