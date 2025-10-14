@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using React_Rentify.Server.Data;
+using React_Rentify.Server.DTOs.GPS;
 using React_Rentify.Server.Models.Agencies;
 using React_Rentify.Server.Models.Cars;
 using React_Rentify.Server.Models.GPS;
@@ -516,7 +517,7 @@ namespace React_Rentify.Server.Controllers
         [HttpGet("agency/{agencyId}/vehicles")]
         public async Task<IActionResult> GetAgencyVehicles(Guid agencyId)
         {
-            _logger.LogInformation("Retrieving vehicles with GPS data for agency {AgencyId}", agencyId);
+            _logger.LogInformation("Retrieving vehicles (VehicleCardDto) for agency {AgencyId}", agencyId);
 
             try
             {
@@ -528,14 +529,14 @@ namespace React_Rentify.Server.Controllers
                     return Forbid();
                 }
 
-                // 2) Fetch cars from MAIN DB (single context)
+                // 2) Fetch cars from MAIN DB
                 var cars = await _contextMain.Set<Car>()
                     .AsNoTracking()
                     .Where(c => c.AgencyId == agencyId)
                     .Select(c => new
                     {
                         c.Id,
-                        Model = c.Car_Model.Name,     // keep Include out; projection handles it
+                        Model = c.Car_Model.Name,
                         c.LicensePlate,
                         c.DeviceSerialNumber,
                         c.IsTrackingActive
@@ -549,44 +550,66 @@ namespace React_Rentify.Server.Controllers
                     .Distinct()
                     .ToList();
 
-                // 4) Fetch latest record per device from GPS DB (second context)
-                //    NOTE: group + First() is translated; OrderByDescending + First() picks latest
-                var latestRecords = await _context.Set<Location_Record>()   // <- your GPS context
-                    .AsNoTracking()
-                    .Where(r => serials.Contains(r.DeviceSerialNumber))
-                    .GroupBy(r => r.DeviceSerialNumber)
-                    .Select(g => g.OrderByDescending(r => r.Timestamp).First())
-                    .ToListAsync();
+                // 4) Fetch latest GPS record per device
+                var latestRecords = serials.Count == 0
+                    ? new List<Location_Record>()
+                    : await _context.Set<Location_Record>() // GPS context
+                        .AsNoTracking()
+                        .Where(r => serials.Contains(r.DeviceSerialNumber))
+                        .GroupBy(r => r.DeviceSerialNumber)
+                        .Select(g => g.OrderByDescending(r => r.Timestamp).First())
+                        .ToListAsync();
 
-                // 5) Build lookup for quick join in memory
-                var latestBySerial = latestRecords.ToDictionary(
-                    r => r.DeviceSerialNumber,
-                    r => new LatestLocationDto
-                    {
-                        Timestamp = r.Timestamp,
-                        Latitude = r.Latitude,
-                        Longitude = r.Longitude,
-                        SpeedKmh = r.SpeedKmh,
-                        Heading = r.Heading,
-                        IgnitionOn = r.IgnitionOn,
-                        StatusFlags = r.StatusFlags
-                    });
+                // 5) Build lookup
+                var latestBySerial = latestRecords.ToDictionary(r => r.DeviceSerialNumber, r => r);
 
-                // 6) Final DTOs
-                var vehicles = cars.Select(c => new AgencyVehicleDto
+                // Online/moving heuristics
+                static bool IsOnline(DateTimeOffset? ts)
                 {
-                    Id = c.Id,
-                    Model = c.Model,
-                    LicensePlate = c.LicensePlate,
-                    DeviceSerialNumber = c.DeviceSerialNumber,
-                    IsTrackingActive = c.IsTrackingActive,
-                    LastRecord = (c.DeviceSerialNumber != null && latestBySerial.TryGetValue(c.DeviceSerialNumber, out var dto))
-                        ? dto
-                        : null
+                    if (ts == null) return false;
+                    // consider online if last ping within 10 min
+                    return (DateTimeOffset.UtcNow - ts.Value) <= TimeSpan.FromMinutes(10);
+                }
+                static bool IsMoving(double? speedKmh) => (speedKmh ?? 0) > 2.0;
+
+                // 6) Map to VehicleCardDto with safe fallbacks/dummy data
+                var result = cars.Select(c =>
+                {
+                    latestBySerial.TryGetValue(c.DeviceSerialNumber ?? string.Empty, out var rec);
+
+                    var lastUpdate = rec?.Timestamp; // UTC expected in DB
+                    var speed = rec?.SpeedKmh ?? 0;
+
+                    // Dummy/location fallbacks
+                    var location = (rec != null)
+                        ? new VehicleLocationDto
+                        {
+                            // If you don’t have reverse geocoding, keep a short placeholder
+                            Address = "—",
+                            Latitude = rec.Latitude,
+                            Longitude = rec.Longitude
+                        }
+                        : null; // or keep a dummy: new VehicleLocationDto { Address = "Unknown" }
+
+                    return new VehicleCardDto
+                    {
+                        Id = c.Id,
+                        PlateNumber = string.IsNullOrWhiteSpace(c.LicensePlate) ? null : c.LicensePlate,
+                        DeviceSerialNumber = string.IsNullOrWhiteSpace(c.DeviceSerialNumber) ? null : c.DeviceSerialNumber,
+                        DriverName = null, // unknown -> keep null (UI shows "Unknown")
+                        IsOnline = IsOnline(lastUpdate) && (c.IsTrackingActive || rec != null),
+                        IsMoving = IsMoving(speed),
+                        Speed = speed,                          // km/h
+                        TotalDistance = null,                   // unknown -> null (UI handles it)
+                        LastUpdate = lastUpdate,                // ISO-8601 UTC returned by System.Text.Json
+                        LastLocation = location,
+                        HasAlerts = false,                      // no alert source here -> dummy
+                        AlertsCount = 0                         // dummy
+                    };
                 }).ToList();
 
-                _logger.LogInformation("Retrieved {Count} vehicles for agency {AgencyId}", vehicles.Count, agencyId);
-                return Ok(vehicles);
+                _logger.LogInformation("Returned {Count} VehicleCardDto items for agency {AgencyId}", result.Count, agencyId);
+                return Ok(result);
             }
             catch (Exception ex)
             {
