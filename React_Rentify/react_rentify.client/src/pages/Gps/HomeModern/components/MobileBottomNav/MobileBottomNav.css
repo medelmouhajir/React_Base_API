@@ -18,6 +18,13 @@
     border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
     overflow: hidden;
 }
+.home-modern__bottom-nav {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: var(--z-drawer, 100) !important;
+}
 
 /* Drag Handle */
 .nav-drag-handle {

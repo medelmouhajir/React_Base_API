@@ -1,6 +1,9 @@
 ﻿import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Styles
+import './ModernLayout.css';
+
 const ModernLayout = ({
     isDarkMode,
     isMobile,
@@ -182,7 +185,7 @@ const ModernLayout = ({
 
             {/* Mobile Vehicle Carousel */}
             <AnimatePresence>
-                {mobileCarouselSlot && (
+                {!isMobile && mobileCarouselSlot && (
                     <motion.div
                         key="mobile-carousel"
                         className="home-modern__mobile-carousel"
@@ -198,7 +201,7 @@ const ModernLayout = ({
 
             {/* Mobile Bottom Navigation */}
             <AnimatePresence>
-                {mobileNavigationSlot && (
+                {!isMobile && mobileNavigationSlot && (
                     <motion.div
                         key="bottom-nav"
                         className="home-modern__bottom-nav"

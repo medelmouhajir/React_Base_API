@@ -2,11 +2,38 @@
 
 /* FAB Container */
 .fab-container {
-    position: fixed;
-    bottom: calc(var(--space-6) + 80px); /* Account for mobile nav */
-    right: var(--space-6);
-    z-index: var(--z-fab);
+    position: fixed !important;
+    bottom: var(--space-6) !important;
+    right: var(--space-6) !important;
+    z-index: var(--z-fab, 200) !important;
     pointer-events: none;
+}
+
+.home-modern__fab {
+    position: fixed !important;
+    bottom: var(--space-6) !important;
+    right: var(--space-6) !important;
+    z-index: var(--z-fab, 200) !important;
+}
+@media (max-width: 1023px) {
+    .home-modern__fab {
+        bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px)) !important;
+        right: var(--space-4) !important;
+    }
+
+    /* Adjust FAB position when mobile bottom nav is visible */
+    .home-modern:not(.fullscreen-mode) .home-modern__fab {
+        bottom: calc(80px + var(--space-4) + env(safe-area-inset-bottom, 0px)) !important;
+    }
+    .fab-container {
+        bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px)) !important;
+        right: var(--space-4) !important;
+    }
+
+    /* Adjust FAB position when mobile bottom nav is visible */
+    .home-modern:not(.fullscreen-mode) .fab-container {
+        bottom: calc(80px + var(--space-4) + env(safe-area-inset-bottom, 0px)) !important;
+    }
 }
 
 /* FAB Button */

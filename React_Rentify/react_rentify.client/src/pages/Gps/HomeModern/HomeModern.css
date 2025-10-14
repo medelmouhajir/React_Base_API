@@ -150,6 +150,30 @@
         grid-template-columns: 1fr 0;
     }
 }
+@media (max-width: 1023px) {
+    /* Force single column layout in mobile */
+    .home-modern__main {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Hide desktop drawer slot in mobile */
+    .home-modern__drawer,
+    .home-modern__sidebar {
+        display: none !important;
+    }
+}
+@media (max-width: 1023px) {
+    /* Force single column layout in mobile */
+    .home-modern__main {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Hide desktop drawer slot in mobile */
+    .home-modern__drawer,
+    .home-modern__sidebar {
+        display: none !important;
+    }
+}
 
 /* Map Container */
 .home-modern__map-container {
@@ -293,11 +317,14 @@
 }
 
 .drawer-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    z-index: calc(var(--z-drawer) - 1);
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(2px) !important;
+    z-index: calc(var(--z-drawer, 100) - 1) !important;
 }
 
 
