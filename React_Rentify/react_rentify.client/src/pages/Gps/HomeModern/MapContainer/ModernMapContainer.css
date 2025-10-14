@@ -1,4 +1,4 @@
-/* ModernMapContainer.css */
+/* ModernMapContainer.css - FIXED VERSION */
 .modern-map-container {
     position: relative;
     width: 100%;
@@ -8,7 +8,8 @@
     background: var(--glass-surface);
     backdrop-filter: blur(var(--glass-blur));
     transition: all var(--transition-normal);
-    touch-action: pan-x pan-y;
+    /* Remove touch-action to let Leaflet handle it */
+    /* touch-action: pan-x pan-y; */
 }
 
     .modern-map-container.fullscreen {
@@ -21,13 +22,16 @@
         border-radius: 0;
     }
 
+/* CRITICAL FIX: Remove touch-action and let Leaflet handle touch events */
 .leaflet-map {
     width: 100%;
     height: 100%;
     border-radius: inherit;
-    touch-action: pan-x pan-y;
+    /* Remove touch-action - let Leaflet manage this internally */
+    /* touch-action: pan-x pan-y; */
 }
 
+/* Ensure overlays don't block map interactions */
 .map-loading-overlay {
     position: absolute;
     inset: 0;
@@ -37,6 +41,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    pointer-events: auto; /* Only when loading */
 }
 
 .loading-content {
@@ -45,6 +50,7 @@
     align-items: center;
     gap: var(--space-4);
     color: white;
+    pointer-events: none; /* Don't block clicks */
 }
 
 .loading-spinner {
@@ -56,6 +62,7 @@
     animation: spin 1s linear infinite;
 }
 
+/* CRITICAL: Ensure controls don't block map touch events */
 .map-controls-overlay {
     position: absolute;
     top: var(--space-4);
@@ -64,6 +71,7 @@
     flex-direction: column;
     gap: var(--space-3);
     z-index: 500;
+    pointer-events: none; /* IMPORTANT: Don't block map touches */
 }
 
 .map-control-btn {
@@ -79,6 +87,7 @@
     color: white;
     cursor: pointer;
     transition: all var(--transition-fast);
+    pointer-events: auto; /* Individual buttons can receive clicks */
 }
 
     .map-control-btn:hover {
@@ -91,6 +100,7 @@
         border-color: var(--modern-primary);
     }
 
+/* CRITICAL: Gesture hints should not block touches */
 .mobile-gesture-hints {
     position: absolute;
     bottom: var(--space-4);
@@ -98,7 +108,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
-    pointer-events: none;
+    pointer-events: none; /* IMPORTANT: Don't block map touches */
+    z-index: 400; /* Lower than controls */
 }
 
 .gesture-hint {
@@ -110,16 +121,18 @@
     border-radius: var(--radius-lg);
     color: white;
     font-size: var(--font-size-xs);
+    pointer-events: none;
 }
 
+/* CRITICAL: Stats overlay should not block touches */
 .map-stats-overlay {
     position: absolute;
     top: var(--space-4);
     left: var(--space-4);
     display: flex;
     gap: var(--space-3);
-    z-index: 500;
-    pointer-events: none;
+    z-index: 400; /* Lower than controls */
+    pointer-events: none; /* IMPORTANT: Don't block map touches */
 }
 
 .map-stat {
@@ -130,7 +143,7 @@
     backdrop-filter: blur(var(--glass-blur));
     text-align: center;
     color: white;
-    pointer-events: auto;
+    pointer-events: auto; /* Individual stats can be clicked if needed */
 }
 
     .map-stat .stat-value {
@@ -148,3 +161,26 @@
         background: var(--modern-primary);
         border-color: var(--modern-primary);
     }
+
+/* Additional mobile touch fixes */
+@media (max-width: 768px) {
+    .modern-map-container.mobile .map-controls-overlay {
+        top: var(--space-2);
+        right: var(--space-2);
+        gap: var(--space-2);
+        pointer-events: none; /* Ensure no touch blocking */
+    }
+
+    .modern-map-container.mobile .map-control-btn {
+        width: 40px;
+        height: 40px;
+        pointer-events: auto; /* Individual buttons work */
+    }
+
+    .modern-map-container.mobile .map-stats-overlay {
+        top: var(--space-2);
+        left: var(--space-2);
+        gap: var(--space-2);
+        pointer-events: none; /* Ensure no touch blocking */
+    }
+}

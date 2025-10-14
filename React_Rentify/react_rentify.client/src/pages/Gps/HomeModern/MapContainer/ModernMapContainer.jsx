@@ -43,57 +43,46 @@ const MapStateManager = ({
         }
     }, [map, onMapReady]);
 
-    // Handle map state changes
+    // Handle map state changes with improved mobile support
     useEffect(() => {
-        if (mapState.center && mapState.zoom) {
-            map.setView(mapState.center, mapState.zoom, {
-                animate: true,
-                duration: 0.5
-            });
-        }
-    }, [map, mapState.center, mapState.zoom]);
+        if (!map) return;
 
-    // Auto-fit bounds for route data
-    useEffect(() => {
-        if (routeData?.bounds && !followVehicle) {
-            const bounds = calculateMapBounds(routeData);
-            map.fitBounds(bounds, {
-                padding: [20, 20],
-                animate: true,
-                duration: 0.8
+        const handleMoveEnd = () => {
+            const center = map.getCenter();
+            const zoom = map.getZoom();
+            onMapReady?.({
+                center: [center.lat, center.lng],
+                zoom,
+                bounds: map.getBounds()
             });
-        }
-    }, [map, routeData, followVehicle]);
+        };
 
-    // Follow selected vehicle with smooth animation
+        map.on('moveend', handleMoveEnd);
+        map.on('zoomend', handleMoveEnd);
+
+        return () => {
+            map.off('moveend', handleMoveEnd);
+            map.off('zoomend', handleMoveEnd);
+        };
+    }, [map, onMapReady]);
+
+    // Follow vehicle effect
     useEffect(() => {
-        if (followVehicle && selectedVehicle?.lastLocation) {
-            const { latitude, longitude } = selectedVehicle.lastLocation;
-            map.flyTo([latitude, longitude], 16, {
+        if (!map || !followVehicle || !selectedVehicle) return;
+
+        const { latitude, longitude } = selectedVehicle;
+        if (latitude && longitude) {
+            map.setView([latitude, longitude], Math.max(map.getZoom(), 16), {
                 animate: true,
-                duration: 1.2
+                duration: 1
             });
         }
     }, [map, followVehicle, selectedVehicle]);
 
-    // Handle fullscreen mode
-    useEffect(() => {
-        if (isFullScreen) {
-            map.invalidateSize();
-            // Fit all vehicles in fullscreen mode
-            if (vehicles?.length > 0) {
-                const bounds = calculateMapBounds({ vehicles });
-                map.fitBounds(bounds, {
-                    padding: [40, 40],
-                    animate: true
-                });
-            }
-        }
-    }, [map, isFullScreen, vehicles]);
-
     return null;
 };
 
+// Main Component
 const ModernMapContainer = ({
     vehicles = [],
     selectedVehicle,
@@ -107,13 +96,13 @@ const ModernMapContainer = ({
     onMapInteraction
 }) => {
     const mapRef = useRef(null);
+    const containerRef = useRef(null);
     const [isMapReady, setIsMapReady] = useState(false);
     const [followVehicle, setFollowVehicle] = useState(false);
-    const [mapMode, setMapMode] = useState('satellite'); // satellite, streets, terrain
+    const [mapMode, setMapMode] = useState('satellite');
     const [showTraffic, setShowTraffic] = useState(false);
     const [showClusters, setShowClusters] = useState(true);
-    const [mapInteractionState, setMapInteractionState] = useState('idle'); // idle, dragging, zooming
-    const [lastInteraction, setLastInteraction] = useState(null);
+    const [mapInteractionState, setMapInteractionState] = useState('idle');
 
     // Memoized processed data
     const processedVehicles = useMemo(() => {
@@ -125,28 +114,70 @@ const ModernMapContainer = ({
         return processRouteForSpeedColoring(routeData);
     }, [routeData]);
 
-    // Handle map ready callback
-    const handleMapReady = useCallback((map) => {
+    // CRITICAL FIX: Enhanced map ready handler with proper mobile touch setup
+    const handleMapReady = useCallback((mapInstance) => {
+        // Get the actual Leaflet map instance
+        const map = mapInstance?.leafletElement || mapInstance;
+
+        if (!map || mapRef.current === map) return;
+
         mapRef.current = map;
         setIsMapReady(true);
 
-        // Ensure all interaction handlers stay enabled regardless of layout changes
-        map.dragging?.enable();
-        map.boxZoom?.enable();
-        map.doubleClickZoom?.enable();
-        map.keyboard?.enable();
+        console.log('Map ready, setting up interactions...', { isMobile, map });
 
+        // CRITICAL: Clear any existing handlers first
+        map.off();
+
+        // CRITICAL: Ensure proper mobile touch handling
         if (isMobile) {
+            // Enable mobile-specific interactions
             map.touchZoom?.enable();
+            map.tap?.enable();
+            map.dragging?.enable();
+
+            // Disable desktop-only interactions
             map.scrollWheelZoom?.disable();
-            map.tap?.enable?.();
+            map.boxZoom?.disable();
+            map.keyboard?.disable();
+
+            // CRITICAL: Set proper touch handling options
+            if (map.dragging) {
+                map.dragging._draggable._inertia = true;
+                map.dragging._draggable._inertiaDeceleration = 3000;
+                map.dragging._draggable._inertiaMaxSpeed = Infinity;
+            }
+
         } else {
-            map.touchZoom?.disable();
+            // Desktop setup
             map.scrollWheelZoom?.enable();
-            map.tap?.disable?.();
+            map.boxZoom?.enable();
+            map.keyboard?.enable();
+            map.dragging?.enable();
+            map.touchZoom?.disable();
+            map.tap?.disable();
         }
 
-        // Set up map event handlers
+        // CRITICAL: Simplified event handlers to avoid conflicts
+        let moveTimeout;
+        const handleMapInteraction = (type) => {
+            setMapInteractionState(type);
+            onMapInteraction?.(type);
+
+            // Clear any existing timeout
+            if (moveTimeout) {
+                clearTimeout(moveTimeout);
+            }
+
+            // Set idle state after interaction ends
+            moveTimeout = setTimeout(() => {
+                setMapInteractionState('idle');
+            }, 150);
+        };
+
+        // Simplified event binding
+        map.on('movestart', () => handleMapInteraction('dragging'));
+        map.on('zoomstart', () => handleMapInteraction('zooming'));
         map.on('moveend', () => {
             const center = map.getCenter();
             const zoom = map.getZoom();
@@ -155,66 +186,68 @@ const ModernMapContainer = ({
                 zoom,
                 bounds: map.getBounds()
             });
-            setMapInteractionState('idle');
-            onMapInteraction?.('drag-end');
+            handleMapInteraction('idle');
         });
+        map.on('zoomend', () => handleMapInteraction('idle'));
 
-        map.on('movestart', () => {
-            setMapInteractionState('dragging');
-            setLastInteraction(Date.now());
-            onMapInteraction?.('drag-start');
-        });
-
-        map.on('zoomstart', () => {
-            setMapInteractionState('zooming');
-            setLastInteraction(Date.now());
-            onMapInteraction?.('zoom-start');
-        });
-
-        map.on('zoomend', () => {
-            setMapInteractionState('idle');
-            onMapInteraction?.('zoom-end');
-        });
-
-        // Mobile-specific touch handlers
+        // CRITICAL: Mobile-specific event optimization
         if (isMobile) {
+            // Reduce event frequency for better performance
+            let touchMoveCount = 0;
             map.on('touchstart', () => {
-                onMapInteraction?.('touch-start');
+                touchMoveCount = 0;
+                handleMapInteraction('touch-start');
+            });
+
+            map.on('touchmove', () => {
+                touchMoveCount++;
+                // Only trigger every 3rd move event to reduce load
+                if (touchMoveCount % 3 === 0) {
+                    handleMapInteraction('touch-move');
+                }
             });
 
             map.on('touchend', () => {
-                onMapInteraction?.('touch-end');
+                handleMapInteraction('touch-end');
             });
         }
+
+        console.log('Map interactions setup complete:', {
+            dragging: map.dragging?.enabled(),
+            touchZoom: map.touchZoom?.enabled(),
+            tap: map.tap?.enabled(),
+            isMobile
+        });
+
+        return () => {
+            if (moveTimeout) {
+                clearTimeout(moveTimeout);
+            }
+        };
     }, [onMapStateChange, onMapInteraction, isMobile]);
 
-    // Re-enable the correct interaction mode when responsive breakpoints change
+    // Alternative map ready setup using MapStateManager
+    const handleMapReadyFromManager = useCallback((map) => {
+        if (map && !isMapReady) {
+            handleMapReady(map);
+        }
+    }, [handleMapReady, isMapReady]);
+
+    // CRITICAL: Reset interaction handlers when mobile state changes
     useEffect(() => {
         if (!mapRef.current) return;
 
-        const mapInstance = mapRef.current;
-        mapInstance.dragging?.enable();
-        mapInstance.boxZoom?.enable();
-        mapInstance.doubleClickZoom?.enable();
-        mapInstance.keyboard?.enable();
+        const map = mapRef.current;
 
-        if (isMobile) {
-            mapInstance.touchZoom?.enable();
-            mapInstance.scrollWheelZoom?.disable();
-            mapInstance.tap?.enable?.();
-        } else {
-            mapInstance.touchZoom?.disable();
-            mapInstance.scrollWheelZoom?.enable();
-            mapInstance.tap?.disable?.();
-        }
-    }, [isMobile]);
+        // Re-initialize map with correct mobile settings
+        handleMapReady(map);
+    }, [isMobile, handleMapReady]);
 
     // Handle vehicle marker click
     const handleVehicleMarkerClick = useCallback((vehicle) => {
         onVehicleSelect?.(vehicle);
         setFollowVehicle(true);
 
-        // Auto-disable follow mode after a few seconds
         setTimeout(() => {
             setFollowVehicle(false);
         }, 5000);
@@ -238,7 +271,7 @@ const ModernMapContainer = ({
         return urls[mode] || urls.satellite;
     }, []);
 
-    // Map container classes
+    // CRITICAL: Optimized map container classes
     const mapClasses = [
         'modern-map-container',
         className,
@@ -249,12 +282,17 @@ const ModernMapContainer = ({
 
     return (
         <motion.div
+            ref={containerRef}
             className={mapClasses}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            layout={!isFullScreen}
-            data-swipe-ignore="true"
+            layout={false} // CRITICAL: Disable layout to prevent interference
+            data-swipe-ignore="true" // Keep this for carousel integration
+            style={{
+                // CRITICAL: Ensure touch events pass through
+                touchAction: 'none' // Let Leaflet handle all touch actions
+            }}
         >
             {/* Map Loading Overlay */}
             <AnimatePresence>
@@ -273,22 +311,29 @@ const ModernMapContainer = ({
                 )}
             </AnimatePresence>
 
-            {/* Leaflet Map */}
+            {/* CRITICAL: Leaflet Map with optimized props */}
             <LeafletMap
-                center={mapState.center || [33.5731, -7.5898]} // Default to Casablanca
+                center={mapState.center || [33.5731, -7.5898]}
                 zoom={mapState.zoom || 12}
                 className="leaflet-map"
                 data-swipe-ignore="true"
                 zoomControl={false}
                 attributionControl={!isMobile}
-                scrollWheelZoom={!isMobile}
-                touchZoom={isMobile}
+                // CRITICAL: Let the handleMapReady function control these
+                scrollWheelZoom={false} // Will be enabled in handleMapReady
+                touchZoom={false} // Will be enabled in handleMapReady
                 doubleClickZoom={true}
-                boxZoom={!isMobile}
-                keyboard={!isMobile}
-                dragging={true}
-                tap={isMobile}
+                boxZoom={false} // Will be enabled in handleMapReady for desktop
+                keyboard={false} // Will be enabled in handleMapReady for desktop
+                dragging={true} // Always enable, let Leaflet manage touch vs mouse
+                tap={false} // Will be enabled in handleMapReady for mobile
                 worldCopyJump={true}
+                // CRITICAL: Use ref instead of whenCreated
+                ref={(map) => {
+                    if (map && !isMapReady) {
+                        handleMapReady(map);
+                    }
+                }}
             >
                 {/* Map State Manager */}
                 <MapStateManager
@@ -298,7 +343,7 @@ const ModernMapContainer = ({
                     selectedVehicle={selectedVehicle}
                     isFullScreen={isFullScreen}
                     vehicles={vehicles}
-                    onMapReady={handleMapReady}
+                    onMapReady={handleMapReadyFromManager}
                 />
 
                 {/* Tile Layer */}
@@ -324,6 +369,7 @@ const ModernMapContainer = ({
                         vehicles={processedVehicles}
                         selectedVehicle={selectedVehicle}
                         onVehicleClick={handleVehicleMarkerClick}
+                        showClusters={!selectedVehicle}
                         isMobile={isMobile}
                     />
                 ) : (
@@ -332,9 +378,8 @@ const ModernMapContainer = ({
                             key={vehicle.id}
                             vehicle={vehicle}
                             isSelected={selectedVehicle?.id === vehicle.id}
-                            onClick={() => handleVehicleMarkerClick(vehicle)}
-                            isMobile={isMobile}
-                            showDetails={!isMobile || selectedVehicle?.id === vehicle.id}
+                            onClick={handleVehicleMarkerClick}
+                            showLabel={!isMobile}
                         />
                     ))
                 )}
@@ -342,9 +387,9 @@ const ModernMapContainer = ({
                 {/* Route Polyline */}
                 {processedRoute && (
                     <ModernRoutePolyline
-                        routeData={processedRoute}
+                        route={processedRoute}
                         selectedVehicle={selectedVehicle}
-                        isVisible={!!selectedVehicle}
+                        isActive={!!selectedVehicle}
                         isMobile={isMobile}
                     />
                 )}
@@ -373,7 +418,7 @@ const ModernMapContainer = ({
                 selectedVehicle={selectedVehicle}
             />
 
-            {/* Mobile Gesture Hints */}
+            {/* Mobile Gesture Hints - Only show initially */}
             {isMobile && !isFullScreen && (
                 <motion.div
                     className="mobile-gesture-hints"
