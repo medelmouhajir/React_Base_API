@@ -3,19 +3,20 @@
 /* CSS Custom Properties */
 :root {
     /* Modern Color Palette */
-    --modern-primary: #3B82F6;
-    --modern-primary-light: #60A5FA;
-    --modern-primary-dark: #1D4ED8;
-    --modern-success: #10B981;
-    --modern-warning: #F59E0B;
-    --modern-danger: #EF4444;
-    --modern-info: #06B6D4;
+    --modern-primary: #3b82f6;
+    --modern-primary-light: #60a5fa;
+    --modern-primary-dark: #1d4ed8;
+    --modern-secondary: #6366f1;
+    --modern-success: #10b981;
+    --modern-warning: #f59e0b;
+    --modern-danger: #ef4444;
+    --modern-info: #0ea5e9;
     /* Glass Morphism */
-    --glass-surface: rgba(255, 255, 255, 0.1);
-    --glass-surface-hover: rgba(255, 255, 255, 0.15);
-    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-surface: rgba(255, 255, 255, 0.08);
+    --glass-surface-hover: rgba(255, 255, 255, 0.12);
+    --glass-border: rgba(255, 255, 255, 0.15);
     --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-    --glass-blur: 10px;
+    --glass-blur: 16px;
     /* Dark Mode Glass */
     --glass-surface-dark: rgba(0, 0, 0, 0.2);
     --glass-border-dark: rgba(255, 255, 255, 0.1);
@@ -57,13 +58,16 @@
     --z-modal: 300;
     --z-tooltip: 400;
     --z-toast: 500;
+    --z-map: 1;
+    --z-panels: 10;
 }
 
 /* Dark Mode Variables */
 .dark {
-    --glass-surface: var(--glass-surface-dark);
-    --glass-border: var(--glass-border-dark);
     --glass-shadow: var(--glass-shadow-dark);
+    --glass-surface: rgba(0, 0, 0, 0.1);
+    --glass-surface-hover: rgba(0, 0, 0, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 /* Base Container */
@@ -1160,5 +1164,159 @@
     .dark .glass {
         background: rgba(0, 0, 0, 0.95) !important;
         border-color: #fff !important;
+    }
+}
+
+
+
+
+
+
+@media (max-width: 640px) {
+    .summary-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: var(--space-2);
+    }
+}
+
+/* Missing enhanced-summary-bar responsive styles */
+.enhanced-summary-bar {
+    min-height: 120px; /* Add minimum height */
+}
+
+    .enhanced-summary-bar.mobile {
+        min-height: 100px;
+    }
+/* Enhanced glass effect for better visibility */
+.glass {
+    background: rgba(255, 255, 255, 0.12); /* Increase opacity */
+    border: 1px solid rgba(255, 255, 255, 0.25); /* Stronger border */
+    backdrop-filter: blur(16px) saturate(180%); /* Enhanced blur */
+}
+
+    /* Missing glass hover state enhancement */
+    .glass:hover {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.35);
+    }
+
+/* Missing vehicle card base styles */
+.vehicle-card {
+    min-width: 280px;
+    height: 160px;
+    border-radius: var(--radius-xl);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    padding: var(--space-4);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    flex-shrink: 0;
+}
+
+    .vehicle-card.selected {
+        border-color: var(--modern-primary);
+        background: rgba(59, 130, 246, 0.15);
+    }
+
+/* Missing carousel track positioning */
+.carousel-track {
+    transform: translateX(calc(-${currentIndex * 100}%));
+}
+/* Missing FAB container positioning */
+.fab-container {
+    position: fixed;
+    bottom: calc(var(--space-6) + 80px); /* Account for mobile nav */
+    right: var(--space-6);
+    z-index: var(--z-fab);
+}
+
+/* Missing FAB animation keyframes */
+@keyframes fab-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
+
+.fab-button.has-alerts {
+    animation: fab-pulse 2s infinite;
+}
+/* Complete mobile bottom navigation styles */
+.mobile-bottom-nav {
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Missing nav item active state animation */
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: var(--modern-primary);
+    border-radius: var(--radius-full);
+}
+/* Missing map container responsive integration */
+.home-modern__map {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+}
+
+    .home-modern__map.fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: var(--z-modal);
+        border-radius: 0;
+    }
+
+/* Enhanced loading states for components */
+.component-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 120px;
+    opacity: 0.7;
+}
+
+.skeleton-loader {
+    background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Better touch targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+    .action-btn, .control-btn, .nav-item {
+        min-height: 44px;
+        min-width: 44px;
     }
 }
