@@ -1,51 +1,63 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
-const DEFAULT_CENTER = [33.5731, -7.5898];
+export const useModernLayout = ({ isMobile, isTablet }) => {
+    const [isDrawerOpen, setIsDrawerOpen] = useState(!isMobile);
+    const [drawerMode, setDrawerMode] = useState(isMobile ? 'overlay' : 'sidebar');
+    const [lastInteraction, setLastInteraction] = useState(Date.now());
 
-const useModernLayout = ({ isMobile }) => {
-    const [isDrawerOpen, setDrawerOpen] = useState(!isMobile);
-    const [mapState, setMapState] = useState({
-        center: DEFAULT_CENTER,
-        zoom: 7,
-        followVehicle: false
-    });
-
+    // Auto-close drawer on mobile after inactivity
     useEffect(() => {
-        setDrawerOpen(!isMobile);
-    }, [isMobile]);
+        if (!isMobile || !isDrawerOpen) return;
+
+        const timer = setTimeout(() => {
+            if (Date.now() - lastInteraction > 10000) { // 10 seconds
+                setIsDrawerOpen(false);
+            }
+        }, 10000);
+
+        return () => clearTimeout(timer);
+    }, [isMobile, isDrawerOpen, lastInteraction]);
+
+    // Update drawer mode based on screen size
+    useEffect(() => {
+        if (isMobile) {
+            setDrawerMode('overlay');
+        } else if (isTablet) {
+            setDrawerMode('collapsible');
+        } else {
+            setDrawerMode('sidebar');
+        }
+    }, [isMobile, isTablet]);
 
     const toggleDrawer = useCallback(() => {
-        setDrawerOpen(prev => !prev);
+        setIsDrawerOpen(prev => !prev);
+        setLastInteraction(Date.now());
     }, []);
 
     const closeDrawerForMobile = useCallback(() => {
         if (isMobile) {
-            setDrawerOpen(false);
+            setIsDrawerOpen(false);
         }
+        setLastInteraction(Date.now());
     }, [isMobile]);
 
-    const focusVehicleOnMap = useCallback((vehicle) => {
-        if (!vehicle?.lastLocation) {
-            return;
-        }
+    const openDrawer = useCallback(() => {
+        setIsDrawerOpen(true);
+        setLastInteraction(Date.now());
+    }, []);
 
-        const { latitude, longitude } = vehicle.lastLocation;
-        setMapState(prev => ({
-            ...prev,
-            center: [latitude, longitude],
-            zoom: 16,
-            followVehicle: true
-        }));
+    const closeDrawer = useCallback(() => {
+        setIsDrawerOpen(false);
+        setLastInteraction(Date.now());
     }, []);
 
     return {
         isDrawerOpen,
+        drawerMode,
         toggleDrawer,
         closeDrawerForMobile,
-        mapState,
-        setMapState,
-        focusVehicleOnMap
+        openDrawer,
+        closeDrawer,
+        setDrawerMode
     };
 };
-
-export default useModernLayout;

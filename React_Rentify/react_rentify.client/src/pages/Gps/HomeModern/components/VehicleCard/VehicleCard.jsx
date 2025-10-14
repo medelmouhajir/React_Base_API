@@ -1,0 +1,291 @@
+import React, { useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+
+const VehicleCard = ({
+    vehicle,
+    isSelected = false,
+    viewMode = 'list', // list, grid, compact
+    onClick,
+    isMobile = false,
+    index = 0
+}) => {
+    const { t } = useTranslation();
+
+    // Memoized vehicle status
+    const vehicleStatus = useMemo(() => {
+        if (!vehicle.isOnline) {
+            return {
+                status: 'offline',
+                label: t('gps.modern.status.offline', 'Offline'),
+                color: '#6B7280',
+                icon: 'offline'
+            };
+        }
+        if (vehicle.isMoving) {
+            return {
+                status: 'moving',
+                label: t('gps.modern.status.moving', 'Moving'),
+                color: 'var(--modern-primary)',
+                icon: 'moving'
+            };
+        }
+        return {
+            status: 'idle',
+            label: t('gps.modern.status.idle', 'Idle'),
+            color: 'var(--modern-warning)',
+            icon: 'idle'
+        };
+    }, [vehicle.isOnline, vehicle.isMoving, t]);
+
+    // Format last update time
+    const formatLastUpdate = (lastUpdate) => {
+        if (!lastUpdate) return t('gps.modern.noData', 'No data');
+
+        const now = new Date();
+        const diff = Math.floor((now - new Date(lastUpdate)) / 1000);
+
+        if (diff < 60) return t('gps.modern.justNow', 'Just now');
+        if (diff < 3600) return t('gps.modern.minutesAgo', '{{minutes}}m ago', { minutes: Math.floor(diff / 60) });
+        return t('gps.modern.hoursAgo', '{{hours}}h ago', { hours: Math.floor(diff / 3600) });
+    };
+
+    // Get status icon
+    const getStatusIcon = (iconType) => {
+        const icons = {
+            moving: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M13 3l3.5 7h-7l3.5-7z" fill="currentColor" />
+                    <circle cx="12" cy="17" r="4" fill="currentColor" />
+                </svg>
+            ),
+            idle: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="3" fill="currentColor" />
+                    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" stroke="currentColor" strokeWidth="2" />
+                </svg>
+            ),
+            offline: (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.5" />
+                    <path d="M3 3l18 18M9 9l6 6" stroke="currentColor" strokeWidth="2" />
+                </svg>
+            )
+        };
+        return icons[iconType] || icons.offline;
+    };
+
+    const cardVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                delay: index * 0.05,
+                duration: 0.3,
+                ease: "easeOut"
+            }
+        }
+    };
+
+    const cardClasses = [
+        'vehicle-card',
+        viewMode,
+        isSelected ? 'selected' : '',
+        vehicleStatus.status,
+        isMobile ? 'mobile' : 'desktop'
+    ].filter(Boolean).join(' ');
+
+    return (
+        <motion.div
+            className={cardClasses}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            onClick={onClick}
+            whileHover={{
+                y: -2,
+                scale: 1.02,
+                transition: { duration: 0.2 }
+            }}
+            whileTap={{ scale: 0.98 }}
+            layout
+        >
+            {/* Vehicle Avatar/Icon */}
+            <div className="vehicle-avatar">
+                <motion.div
+                    className="avatar-content"
+                    animate={vehicle.isMoving ? {
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 5, -5, 0]
+                    } : {}}
+                    transition={{ duration: 2, repeat: Infinity }}
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 16" fill="none">
+                        <rect x="2" y="6" width="20" height="8" rx="2" fill="currentColor" opacity="0.8" />
+                        <circle cx="6" cy="12" r="2" fill="var(--color-gray-700)" />
+                        <circle cx="18" cy="12" r="2" fill="var(--color-gray-700)" />
+                        <rect x="4" y="4" width="16" height="4" rx="1" fill="currentColor" />
+                    </svg>
+                </motion.div>
+
+                {/* Status Indicator */}
+                <motion.div
+                    className="status-indicator"
+                    style={{ backgroundColor: vehicleStatus.color }}
+                    animate={vehicle.isMoving ?
+                        { scale: [1, 1.2, 1] } :
+                        { opacity: [1, 0.6, 1] }
+                    }
+                    transition={{ duration: 2, repeat: Infinity }}
+                />
+            </div>
+
+            {/* Vehicle Info */}
+            <div className="vehicle-info">
+                <div className="vehicle-primary">
+                    <h3 className="vehicle-plate">
+                        {vehicle.plateNumber || vehicle.deviceSerialNumber}
+                    </h3>
+                    <div className="vehicle-status">
+                        {getStatusIcon(vehicleStatus.icon)}
+                        <span>{vehicleStatus.label}</span>
+                    </div>
+                </div>
+
+                {viewMode !== 'compact' && (
+                    <div className="vehicle-secondary">
+                        <div className="vehicle-driver">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" />
+                                <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" fill="none" />
+                            </svg>
+                            <span>{vehicle.driverName || t('gps.modern.unknownDriver', 'Unknown')}</span>
+                        </div>
+
+                        <div className="vehicle-location">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="none" stroke="currentColor" strokeWidth="2" />
+                                <circle cx="12" cy="10" r="3" fill="currentColor" />
+                            </svg>
+                            <span>
+                                {vehicle.lastLocation?.address?.slice(0, 30) ||
+                                    t('gps.modern.unknownLocation', 'Unknown location')}
+                                {vehicle.lastLocation?.address?.length > 30 && '...'}
+                            </span>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Vehicle Stats */}
+            {viewMode === 'list' && (
+                <div className="vehicle-stats">
+                    <div className="stat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L13.09 8.26L22 9l-6.74 5.74L17 21l-5-2.65L7 21l1.74-6.26L2 9l8.91-1.74L12 2z" fill="currentColor" />
+                        </svg>
+                        <span>{vehicle.speed || 0} km/h</span>
+                    </div>
+
+                    <div className="stat">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="3" fill="currentColor" />
+                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" stroke="currentColor" strokeWidth="1" />
+                        </svg>
+                        <span>{formatLastUpdate(vehicle.lastUpdate)}</span>
+                    </div>
+
+                    {vehicle.totalDistance && (
+                        <div className="stat">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                <path d="M9 11H1l8-8 8 8h-8l4 4-4 4z" fill="currentColor" />
+                            </svg>
+                            <span>{(vehicle.totalDistance / 1000).toFixed(1)} km</span>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Alerts Badge */}
+            {vehicle.hasAlerts && (
+                <motion.div
+                    className="alerts-badge"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    whileHover={{ scale: 1.1 }}
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="currentColor" />
+                    </svg>
+                    {vehicle.alertsCount > 0 && (
+                        <span className="badge-count">{vehicle.alertsCount}</span>
+                    )}
+                </motion.div>
+            )}
+
+            {/* Selection Indicator */}
+            {isSelected && (
+                <motion.div
+                    className="selection-indicator"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 12l2 2 4-4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                </motion.div>
+            )}
+
+            {/* Hover Actions */}
+            <motion.div
+                className="card-actions"
+                initial={{ opacity: 0 }}
+                whileHover={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
+            >
+                <button
+                    className="action-btn locate"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onClick?.(vehicle);
+                    }}
+                    aria-label={t('gps.modern.locate', 'Locate vehicle')}
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="currentColor" />
+                        <circle cx="12" cy="10" r="3" fill="white" />
+                    </svg>
+                </button>
+
+                {vehicle.hasAlerts && (
+                    <button
+                        className="action-btn alerts"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            // Handle alert action
+                        }}
+                        aria-label={t('gps.modern.viewAlerts', 'View alerts')}
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="currentColor" />
+                        </svg>
+                    </button>
+                )}
+            </motion.div>
+
+            {/* Grid View Additional Info */}
+            {viewMode === 'grid' && (
+                <div className="grid-footer">
+                    <div className="grid-stats">
+                        <span className="speed">{vehicle.speed || 0} km/h</span>
+                        <span className="update">{formatLastUpdate(vehicle.lastUpdate)}</span>
+                    </div>
+                </div>
+            )}
+        </motion.div>
+    );
+};
+
+export default VehicleCard;

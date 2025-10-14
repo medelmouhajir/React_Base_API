@@ -4,7 +4,13 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "react_lawyer.server": "StartDebugging"
+        "react_lawyer.server": "StartDebugging",
+        "certbot": "StartWithoutDebugging",
+        "db": "StartWithoutDebugging",
+        "db_backup": "StartWithoutDebugging",
+        "react_rentify.client": "StartWithoutDebugging",
+        "react_rentify.server": "StartDebugging",
+        "rentify-gps-listener": "StartDebugging"
       }
     }
   }

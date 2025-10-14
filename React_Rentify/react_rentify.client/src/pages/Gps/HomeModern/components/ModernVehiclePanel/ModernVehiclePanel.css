@@ -1,0 +1,253 @@
+/* ModernVehiclePanel.css */
+.modern-vehicle-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    backdrop-filter: blur(var(--glass-blur));
+    overflow: hidden;
+}
+
+    .modern-vehicle-panel.mobile {
+        border-radius: var(--radius-xl);
+    }
+
+.panel-header {
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+    .panel-header.mobile {
+        padding: var(--space-4);
+    }
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-4);
+}
+
+.panel-title h2 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: white;
+}
+
+.vehicle-count {
+    font-size: var(--font-size-sm);
+    opacity: 0.7;
+    margin-left: var(--space-2);
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
+    }
+
+.quick-stats {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+}
+
+    .quick-stats .stat {
+        text-align: center;
+    }
+
+    .quick-stats .value {
+        display: block;
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: white;
+    }
+
+    .quick-stats .label {
+        font-size: var(--font-size-xs);
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .quick-stats .stat.online .value {
+        color: var(--modern-success);
+    }
+
+    .quick-stats .stat.moving .value {
+        color: var(--modern-primary);
+    }
+
+    .quick-stats .stat.alerts .value {
+        color: var(--modern-warning);
+    }
+
+.filters-panel {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sort-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+    .sort-controls.mobile {
+        padding: var(--space-3) var(--space-4);
+    }
+
+.sort-label {
+    font-size: var(--font-size-sm);
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+.sort-buttons {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.sort-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-lg);
+    background: transparent;
+    border: 1px solid transparent;
+    color: white;
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+    .sort-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--glass-border);
+    }
+
+    .sort-btn.active {
+        background: var(--modern-primary);
+        border-color: var(--modern-primary);
+        color: white;
+    }
+
+.vehicles-container {
+    flex: 1;
+    overflow: hidden;
+}
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    padding: var(--space-8);
+    color: white;
+}
+
+.vehicles-list {
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+    .vehicles-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .vehicles-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .vehicles-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: var(--radius-full);
+    }
+
+        .vehicles-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+.panel-footer {
+    padding: var(--space-4) var(--space-5);
+    border-top: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .panel-footer.mobile {
+        padding: var(--space-3) var(--space-4);
+    }
+
+.footer-stats {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    font-size: var(--font-size-xs);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.filter-indicator {
+    color: var(--modern-warning);
+}
+
+.selected-vehicle-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--modern-primary);
+    border-radius: var(--radius-lg);
+    color: white;
+    font-size: var(--font-size-sm);
+}
+
+.clear-selection {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+    .clear-selection:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
