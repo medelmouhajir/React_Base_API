@@ -146,7 +146,6 @@ const ModernMapContainer = ({
             map.tap?.disable?.();
         }
 
-
         // Set up map event handlers
         map.on('moveend', () => {
             const center = map.getCenter();
@@ -189,7 +188,7 @@ const ModernMapContainer = ({
         }
     }, [onMapStateChange, onMapInteraction, isMobile]);
 
-
+    // Re-enable the correct interaction mode when responsive breakpoints change
     useEffect(() => {
         if (!mapRef.current) return;
 
@@ -255,6 +254,7 @@ const ModernMapContainer = ({
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
             layout={!isFullScreen}
+            data-swipe-ignore="true"
         >
             {/* Map Loading Overlay */}
             <AnimatePresence>

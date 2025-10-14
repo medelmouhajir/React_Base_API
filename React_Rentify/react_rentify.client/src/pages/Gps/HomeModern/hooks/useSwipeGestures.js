@@ -19,14 +19,36 @@ const useSwipeGestures = (elementRef, callbacks = {}) => {
         const element = elementRef?.current;
         if (!element) return;
 
-        const shouldIgnoreEvent = (target) => {
+        const shouldIgnoreEvent = (event) => {
+            const target = event?.target;
+            const elementCtorAvailable = typeof Element !== 'undefined';
+
+            const matchesIgnoreSelector = (node) => {
+                if (!node) return false;
+                if (elementCtorAvailable && !(node instanceof Element)) return false;
+                if (node.getAttribute?.('data-swipe-ignore') === 'true') {
+                    return true;
+                }
+
+                return ignoreSelectors?.some((selector) => node.matches?.(selector));
+            };
+
+            if (matchesIgnoreSelector(target)) {
+                return true;
+            }
+
+            const composedPath = event?.composedPath?.();
+            if (Array.isArray(composedPath)) {
+                return composedPath.some(matchesIgnoreSelector);
+            }
+
             if (!ignoreSelectors?.length || !target?.closest) return false;
             return ignoreSelectors.some((selector) => target.closest(selector));
         };
 
         const handleTouchStart = (e) => {
 
-            if (shouldIgnoreEvent(e.target)) {
+            if (shouldIgnoreEvent(e)) {
                 touchStartRef.current = null;
                 touchEndRef.current = null;
                 isSwipingRef.current = false;
@@ -42,7 +64,7 @@ const useSwipeGestures = (elementRef, callbacks = {}) => {
         };
 
         const handleTouchMove = (e) => {
-            if (shouldIgnoreEvent(e.target)) {
+            if (shouldIgnoreEvent(e)) {
                 return;
             }
 
@@ -64,7 +86,7 @@ const useSwipeGestures = (elementRef, callbacks = {}) => {
         };
 
         const handleTouchEnd = (e) => {
-            if (shouldIgnoreEvent(e.target)) {
+            if (shouldIgnoreEvent(e)) {
                 touchStartRef.current = null;
                 touchEndRef.current = null;
                 isSwipingRef.current = false;
