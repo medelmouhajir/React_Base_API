@@ -41,6 +41,9 @@ const useSwipeGestures = (elementRef, callbacks = {}) => {
             if (Array.isArray(composedPath)) {
                 return composedPath.some(matchesIgnoreSelector);
             }
+            if (target?.closest?.('[data-swipe-ignore="true"]')) {
+                return true;
+            }
 
             if (!ignoreSelectors?.length || !target?.closest) return false;
             return ignoreSelectors.some((selector) => target.closest(selector));
