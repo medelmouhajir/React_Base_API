@@ -5,15 +5,15 @@
 
 /**
  * Process route data for speed-based visualization
- * @param {Object} routeData - Raw route data from API
+ * Updated to work with LocationRecordDto from GPSController
+ * @param {Array} records - Array of LocationRecordDto objects from API
  * @returns {Object} - Processed route data with speed coloring
  */
-export const processRouteForSpeedColoring = (routeData) => {
-    if (!routeData || !routeData.coordinates || routeData.coordinates.length === 0) {
+export const processRouteForSpeedColoring = (records) => {
+    if (!records || !Array.isArray(records) || records.length === 0) {
         return null;
     }
 
-    const coordinates = routeData.coordinates;
     const segments = [];
     const speedPoints = [];
     const stops = [];
@@ -22,16 +22,19 @@ export const processRouteForSpeedColoring = (routeData) => {
     let maxSpeed = 0;
     let minSpeed = Infinity;
 
-    // Process each coordinate pair to create segments
-    for (let i = 0; i < coordinates.length - 1; i++) {
-        const current = coordinates[i];
-        const next = coordinates[i + 1];
+    // Process each record pair to create segments
+    for (let i = 0; i < records.length - 1; i++) {
+        const current = records[i];
+        const next = records[i + 1];
 
-        if (!current || !next || !current.latitude || !current.longitude) {
+        if (!current || !next ||
+            current.latitude === undefined || current.longitude === undefined ||
+            next.latitude === undefined || next.longitude === undefined) {
             continue;
         }
 
-        const speed = current.speed || 0;
+        // Use speedKmh from DTO (previously was speed)
+        const speed = current.speedKmh || 0;
         const timestamp = new Date(current.timestamp);
         const nextTimestamp = new Date(next.timestamp);
 
@@ -41,13 +44,15 @@ export const processRouteForSpeedColoring = (routeData) => {
             next.latitude, next.longitude
         );
 
-        // Calculate segment duration
+        // Calculate segment duration in milliseconds
         const segmentDuration = nextTimestamp - timestamp;
 
         totalDistance += segmentDistance;
         totalDuration += segmentDuration;
         maxSpeed = Math.max(maxSpeed, speed);
-        minSpeed = Math.min(minSpeed, speed);
+        if (speed > 0) {
+            minSpeed = Math.min(minSpeed, speed);
+        }
 
         // Create segment with styling information
         segments.push({
@@ -59,7 +64,8 @@ export const processRouteForSpeedColoring = (routeData) => {
             opacity: getSpeedOpacity(speed),
             timestamp: timestamp,
             distance: segmentDistance,
-            duration: segmentDuration
+            duration: segmentDuration,
+            ignitionOn: current.ignitionOn || false
         });
 
         // Add to speed points for charting
@@ -68,44 +74,86 @@ export const processRouteForSpeedColoring = (routeData) => {
             speed: speed,
             latitude: current.latitude,
             longitude: current.longitude,
-            distance: totalDistance
+            distance: totalDistance,
+            heading: current.heading,
+            altitude: current.altitude,
+            ignitionOn: current.ignitionOn
         });
 
-        // Detect stops
-        if (speed === 0 || (current.isStop && segmentDuration > 60000)) { // Stop if 0 speed or marked stop > 1 minute
+        // Detect stops based on speed and ignition status
+        if (speed === 0 && segmentDuration > 60000) { // Stop if 0 speed for more than 1 minute
             stops.push({
                 latitude: current.latitude,
                 longitude: current.longitude,
                 timestamp: timestamp,
                 duration: segmentDuration,
-                address: current.address,
+                address: current.address || null,
                 isStop: true
             });
         }
     }
 
-    // Calculate additional statistics
-    const averageSpeed = speedPoints.length > 0 ?
-        speedPoints.reduce((sum, point) => sum + point.speed, 0) / speedPoints.length : 0;
+    // Add the last point to speedPoints
+    if (records.length > 0) {
+        const lastRecord = records[records.length - 1];
+        speedPoints.push({
+            timestamp: new Date(lastRecord.timestamp),
+            speed: lastRecord.speedKmh || 0,
+            latitude: lastRecord.latitude,
+            longitude: lastRecord.longitude,
+            distance: totalDistance,
+            heading: lastRecord.heading,
+            altitude: lastRecord.altitude,
+            ignitionOn: lastRecord.ignitionOn
+        });
+    }
 
+    // Calculate additional statistics
+    const averageSpeed = speedPoints.length > 0
+        ? speedPoints.reduce((sum, p) => sum + p.speed, 0) / speedPoints.length
+        : 0;
+
+    // Fix minSpeed if no movement detected
+    if (minSpeed === Infinity) {
+        minSpeed = 0;
+    }
+
+    // Calculate speed distribution
     const speedDistribution = calculateSpeedDistribution(speedPoints);
-    const timeStats = calculateTimeStats(coordinates);
+
+    // Calculate time statistics
+    const timeStats = calculateTimeStats(records);
+
+    // Create route bounds for map fitting
+    const bounds = calculateRouteBounds(records);
 
     return {
-        segments,
-        speedPoints,
-        stops,
-        coordinates,
+        // Original records for reference (DTOs)
+        records: records,
+        // Processed data
+        segments: segments,
+        speedPoints: speedPoints,
+        stops: stops,
+        bounds: bounds,
+        // Statistics
         statistics: {
-            totalDistance,
-            totalDuration,
-            maxSpeed,
-            minSpeed,
-            averageSpeed,
-            speedDistribution,
+            totalDistance: totalDistance,
+            totalDuration: totalDuration,
+            averageSpeed: averageSpeed,
+            maxSpeed: maxSpeed,
+            minSpeed: minSpeed,
+            stopCount: stops.length,
+            dataPoints: records.length,
+            speedDistribution: speedDistribution,
             ...timeStats
         },
-        bounds: calculateRouteBounds(coordinates)
+        // Metadata
+        metadata: {
+            vehicleId: records[0]?.gps_DeviceId || null,
+            deviceSerialNumber: records[0]?.deviceSerialNumber || null,
+            startTime: timeStats.startTime,
+            endTime: timeStats.endTime
+        }
     };
 };
 
@@ -256,98 +304,123 @@ const calculateTimeStats = (coordinates) => {
 
 /**
  * Calculate route bounds for map fitting
- * @param {Array} coordinates - Route coordinates
- * @returns {Object} - Bounds object with north, south, east, west
+ * @param {Array} records - Array of LocationRecordDto objects
+ * @returns {Object} - Bounds object with north, south, east, west coordinates
  */
-export const calculateRouteBounds = (coordinates) => {
-    if (!coordinates || coordinates.length === 0) {
+export const calculateRouteBounds = (records) => {
+    if (!records || records.length === 0) {
         return null;
     }
 
-    let north = -90, south = 90, east = -180, west = 180;
+    let north = -90;
+    let south = 90;
+    let east = -180;
+    let west = 180;
 
-    coordinates.forEach(coord => {
-        if (coord.latitude && coord.longitude) {
-            north = Math.max(north, coord.latitude);
-            south = Math.min(south, coord.latitude);
-            east = Math.max(east, coord.longitude);
-            west = Math.min(west, coord.longitude);
+    records.forEach(record => {
+        if (record.latitude !== undefined && record.longitude !== undefined) {
+            north = Math.max(north, record.latitude);
+            south = Math.min(south, record.latitude);
+            east = Math.max(east, record.longitude);
+            west = Math.min(west, record.longitude);
         }
     });
 
-    // Add padding to bounds
+    // Add some padding to the bounds
     const latPadding = (north - south) * 0.1;
-    const lonPadding = (east - west) * 0.1;
+    const lngPadding = (east - west) * 0.1;
 
     return {
         north: north + latPadding,
         south: south - latPadding,
-        east: east + lonPadding,
-        west: west - lonPadding
+        east: east + lngPadding,
+        west: west - lngPadding,
+        center: {
+            lat: (north + south) / 2,
+            lng: (east + west) / 2
+        }
     };
 };
 
 /**
  * Detect stops in route data
- * @param {Array} coordinates - Route coordinates
- * @param {number} minStopDuration - Minimum stop duration in milliseconds
- * @param {number} maxStopSpeed - Maximum speed to consider as stopped
- * @returns {Array} - Array of detected stops
+ * @param {Array} records - Array of LocationRecordDto objects
+ * @param {number} minStopDuration - Minimum stop duration in milliseconds (default: 60000 = 1 minute)
+ * @returns {Array} - Array of stop objects
  */
-export const detectStops = (coordinates, minStopDuration = 120000, maxStopSpeed = 5) => {
-    if (!coordinates || coordinates.length < 2) return [];
-
+export const detectStops = (records, minStopDuration = 60000) => {
     const stops = [];
+
+    if (!records || records.length < 2) {
+        return stops;
+    }
+
     let currentStop = null;
 
-    for (let i = 0; i < coordinates.length; i++) {
-        const coord = coordinates[i];
-        const speed = coord.speed || 0;
-        const timestamp = new Date(coord.timestamp);
+    for (let i = 0; i < records.length; i++) {
+        const record = records[i];
+        const speed = record.speedKmh || 0;
+        const ignitionOn = record.ignitionOn || false;
 
-        if (speed <= maxStopSpeed) {
+        // Consider it a stop if speed is 0 or ignition is off
+        if (speed === 0 || !ignitionOn) {
             if (!currentStop) {
+                // Start of a new stop
                 currentStop = {
                     startIndex: i,
-                    startTime: timestamp,
-                    latitude: coord.latitude,
-                    longitude: coord.longitude,
-                    address: coord.address
+                    startTime: new Date(record.timestamp),
+                    latitude: record.latitude,
+                    longitude: record.longitude,
+                    ignitionOn: ignitionOn
                 };
             }
         } else {
+            // Vehicle is moving
             if (currentStop) {
-                const duration = timestamp - currentStop.startTime;
+                // End of stop detected
+                const endTime = new Date(records[i - 1].timestamp);
+                const duration = endTime - currentStop.startTime;
+
                 if (duration >= minStopDuration) {
                     stops.push({
-                        ...currentStop,
-                        endTime: timestamp,
-                        duration,
-                        endIndex: i - 1
+                        latitude: currentStop.latitude,
+                        longitude: currentStop.longitude,
+                        startTime: currentStop.startTime,
+                        endTime: endTime,
+                        duration: duration,
+                        durationMinutes: Math.round(duration / 60000),
+                        ignitionOn: currentStop.ignitionOn,
+                        isStop: true
                     });
                 }
+
                 currentStop = null;
             }
         }
     }
 
-    // Handle stop that goes to end of route
-    if (currentStop) {
-        const endTime = new Date(coordinates[coordinates.length - 1].timestamp);
+    // Handle case where route ends with a stop
+    if (currentStop && records.length > 0) {
+        const lastRecord = records[records.length - 1];
+        const endTime = new Date(lastRecord.timestamp);
         const duration = endTime - currentStop.startTime;
+
         if (duration >= minStopDuration) {
             stops.push({
-                ...currentStop,
-                endTime,
-                duration,
-                endIndex: coordinates.length - 1
+                latitude: currentStop.latitude,
+                longitude: currentStop.longitude,
+                startTime: currentStop.startTime,
+                endTime: endTime,
+                duration: duration,
+                durationMinutes: Math.round(duration / 60000),
+                ignitionOn: currentStop.ignitionOn,
+                isStop: true
             });
         }
     }
 
     return stops;
 };
-
 /**
  * Smooth route coordinates to reduce noise
  * @param {Array} coordinates - Raw coordinates

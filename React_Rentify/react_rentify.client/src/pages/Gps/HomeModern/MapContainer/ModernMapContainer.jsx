@@ -110,7 +110,7 @@ const ModernMapContainer = ({
     }, [vehicles, mapState.zoom]);
 
     const processedRoute = useMemo(() => {
-        if (!routeData?.coordinates) return null;
+        if (!routeData || !Array.isArray(routeData) || routeData.length === 0) return null;
         return processRouteForSpeedColoring(routeData);
     }, [routeData]);
 

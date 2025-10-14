@@ -14,6 +14,15 @@ const RouteTimeline = ({
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const [showTooltip, setShowTooltip] = useState(false);
 
+    // Speed categorization
+    const getSpeedCategory = (speed) => {
+        if (speed === 0) return 'stopped';
+        if (speed < 10) return 'slow';
+        if (speed < 30) return 'moderate';
+        if (speed < 60) return 'fast';
+        return 'very-fast';
+    };
+
     // Process time points for visualization
     const processedPoints = useMemo(() => {
         if (!timePoints.length) return [];
@@ -30,14 +39,6 @@ const RouteTimeline = ({
         }));
     }, [timePoints, currentIndex]);
 
-    // Speed categorization
-    const getSpeedCategory = (speed) => {
-        if (speed === 0) return 'stopped';
-        if (speed < 10) return 'slow';
-        if (speed < 30) return 'moderate';
-        if (speed < 60) return 'fast';
-        return 'very-fast';
-    };
 
     // Get speed color
     const getSpeedColor = (speed) => {

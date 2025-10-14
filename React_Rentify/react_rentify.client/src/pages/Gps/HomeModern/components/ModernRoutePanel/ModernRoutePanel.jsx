@@ -31,56 +31,6 @@ const ModernRoutePanel = ({
     const [showSpeedChart, setShowSpeedChart] = useState(false);
     const [selectedMetric, setSelectedMetric] = useState('speed'); // speed, distance, stops
 
-    // Process route data for visualization
-    const processedRouteData = useMemo(() => {
-        if (!routeData?.coordinates?.length) return null;
-
-        const coordinates = routeData.coordinates;
-        const timePoints = [];
-        const speedPoints = [];
-        const distancePoints = [];
-        let totalDistance = 0;
-
-        coordinates.forEach((coord, index) => {
-            const timestamp = new Date(coord.timestamp);
-            const speed = coord.speed || 0;
-
-            if (index > 0) {
-                const prevCoord = coordinates[index - 1];
-                const distance = calculateDistance(
-                    prevCoord.latitude, prevCoord.longitude,
-                    coord.latitude, coord.longitude
-                );
-                totalDistance += distance;
-            }
-
-            timePoints.push({
-                index,
-                timestamp,
-                latitude: coord.latitude,
-                longitude: coord.longitude,
-                speed,
-                distance: totalDistance,
-                address: coord.address,
-                isStop: coord.isStop || false
-            });
-
-            speedPoints.push({ time: timestamp, value: speed });
-            distancePoints.push({ time: timestamp, value: totalDistance });
-        });
-
-        return {
-            timePoints,
-            speedPoints,
-            distancePoints,
-            totalDistance,
-            totalDuration: timePoints.length > 0 ?
-                timePoints[timePoints.length - 1].timestamp - timePoints[0].timestamp : 0,
-            maxSpeed: Math.max(...speedPoints.map(p => p.value)),
-            avgSpeed: speedPoints.reduce((sum, p) => sum + p.value, 0) / speedPoints.length
-        };
-    }, [routeData]);
-
     // Calculate distance between two points
     const calculateDistance = (lat1, lon1, lat2, lon2) => {
         const R = 6371; // Earth's radius in kilometers
@@ -92,6 +42,91 @@ const ModernRoutePanel = ({
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     };
+
+    // Process route data for visualization
+    const processedRouteData = useMemo(() => {
+        // Handle both old format (routeData.coordinates) and new format (routeData.records)
+        const records = routeData?.records || routeData?.coordinates;
+
+        if (!records?.length) return null;
+
+        const timePoints = [];
+        const speedPoints = [];
+        const distancePoints = [];
+        let totalDistance = 0;
+
+        records.forEach((record, index) => {
+            // Handle timestamp - works for both old and new format
+            const timestamp = new Date(record.timestamp);
+
+            // Handle speed - new format uses speedKmh, old format uses speed
+            const speed = record.speedKmh || record.speed || 0;
+
+            // Calculate cumulative distance
+            if (index > 0) {
+                const prevRecord = records[index - 1];
+                const distance = calculateDistance(
+                    prevRecord.latitude, prevRecord.longitude,
+                    record.latitude, record.longitude
+                );
+                totalDistance += distance;
+            }
+
+            // Create time point with all available data
+            timePoints.push({
+                index,
+                timestamp,
+                latitude: record.latitude,
+                longitude: record.longitude,
+                speed,
+                distance: totalDistance,
+                address: record.address || null,
+                isStop: record.isStop || false,
+                // Additional fields from DTO
+                ignitionOn: record.ignitionOn,
+                heading: record.heading,
+                altitude: record.altitude,
+                deviceSerialNumber: record.deviceSerialNumber
+            });
+
+            // Create chart data points
+            speedPoints.push({
+                time: timestamp,
+                value: speed
+            });
+
+            distancePoints.push({
+                time: timestamp,
+                value: totalDistance
+            });
+        });
+
+        // Use statistics from processRouteForSpeedColoring if available
+        const statistics = routeData?.statistics;
+
+        return {
+            timePoints,
+            speedPoints,
+            distancePoints,
+            totalDistance: statistics?.totalDistance || totalDistance,
+            totalDuration: statistics?.totalDuration || (
+                timePoints.length > 0
+                    ? timePoints[timePoints.length - 1].timestamp - timePoints[0].timestamp
+                    : 0
+            ),
+            maxSpeed: statistics?.maxSpeed || Math.max(...speedPoints.map(p => p.value)),
+            avgSpeed: statistics?.averageSpeed || (
+                speedPoints.reduce((sum, p) => sum + p.value, 0) / speedPoints.length
+            ),
+            // Include additional statistics if available
+            minSpeed: statistics?.minSpeed,
+            stopCount: statistics?.stopCount,
+            movingTime: statistics?.movingTime,
+            stoppedTime: statistics?.stoppedTime,
+            speedDistribution: statistics?.speedDistribution
+        };
+    }, [routeData]);
+
 
     // Handle playback controls
     const handlePlayback = useCallback((action) => {
