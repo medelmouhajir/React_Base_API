@@ -130,6 +130,23 @@ const ModernMapContainer = ({
         mapRef.current = map;
         setIsMapReady(true);
 
+        // Ensure all interaction handlers stay enabled regardless of layout changes
+        map.dragging?.enable();
+        map.boxZoom?.enable();
+        map.doubleClickZoom?.enable();
+        map.keyboard?.enable();
+
+        if (isMobile) {
+            map.touchZoom?.enable();
+            map.scrollWheelZoom?.disable();
+            map.tap?.enable?.();
+        } else {
+            map.touchZoom?.disable();
+            map.scrollWheelZoom?.enable();
+            map.tap?.disable?.();
+        }
+
+
         // Set up map event handlers
         map.on('moveend', () => {
             const center = map.getCenter();
@@ -171,6 +188,27 @@ const ModernMapContainer = ({
             });
         }
     }, [onMapStateChange, onMapInteraction, isMobile]);
+
+
+    useEffect(() => {
+        if (!mapRef.current) return;
+
+        const mapInstance = mapRef.current;
+        mapInstance.dragging?.enable();
+        mapInstance.boxZoom?.enable();
+        mapInstance.doubleClickZoom?.enable();
+        mapInstance.keyboard?.enable();
+
+        if (isMobile) {
+            mapInstance.touchZoom?.enable();
+            mapInstance.scrollWheelZoom?.disable();
+            mapInstance.tap?.enable?.();
+        } else {
+            mapInstance.touchZoom?.disable();
+            mapInstance.scrollWheelZoom?.enable();
+            mapInstance.tap?.disable?.();
+        }
+    }, [isMobile]);
 
     // Handle vehicle marker click
     const handleVehicleMarkerClick = useCallback((vehicle) => {

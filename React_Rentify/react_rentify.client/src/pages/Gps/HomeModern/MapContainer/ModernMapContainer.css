@@ -117,6 +117,7 @@
     display: flex;
     gap: var(--space-3);
     z-index: 500;
+    pointer-events: none;
 }
 
 .map-stat {
@@ -127,6 +128,7 @@
     backdrop-filter: blur(var(--glass-blur));
     text-align: center;
     color: white;
+    pointer-events: auto;
 }
 
     .map-stat .stat-value {
