@@ -24,7 +24,8 @@
     "chart.js": "^4.4.6",
     "@microsoft/signalr": "^8.0.7",
     "lucide-react": "^0.475.0",
-    "framer-motion": "^11.3.13"
+    "framer-motion": "^11.3.13",
+    "@tanstack/react-virtual": "^3.10.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

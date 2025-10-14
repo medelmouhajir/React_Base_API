@@ -1,0 +1,283 @@
+/* src/pages/Gps/HomeModern/SpeedChart.css */
+
+.speed-chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    backdrop-filter: blur(var(--glass-blur));
+}
+
+    .speed-chart.mobile {
+        padding: var(--space-4);
+        gap: var(--space-3);
+    }
+
+/* Chart Header */
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.chart-title h4 {
+    margin: 0 0 var(--space-1);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: white;
+}
+
+.chart-subtitle {
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Metric Selector */
+.metric-selector {
+    display: flex;
+    gap: var(--space-2);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: var(--space-1);
+}
+
+.metric-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+    .metric-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .metric-btn.active {
+        background: var(--metric-color, var(--modern-primary));
+        color: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .metric-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .metric-btn span {
+        white-space: nowrap;
+    }
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+    .chart-container canvas {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+/* Chart Labels */
+.chart-labels {
+    position: absolute;
+    pointer-events: none;
+}
+
+.y-axis-label {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    font-size: var(--font-size-xs);
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.x-axis-label {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: var(--font-size-xs);
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+/* Chart Stats */
+.chart-stats {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: space-around;
+    padding: var(--space-4);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.stat-label {
+    font-size: var(--font-size-xs);
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: var(--font-size-sm);
+    color: white;
+    font-weight: 600;
+}
+
+/* Chart Tooltip */
+.chart-tooltip {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    backdrop-filter: blur(var(--glass-blur));
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    min-width: 120px;
+}
+
+.tooltip-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.tooltip-time {
+    font-size: var(--font-size-xs);
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+.tooltip-value {
+    font-size: var(--font-size-sm);
+    color: white;
+    font-weight: 600;
+}
+
+/* Empty State */
+.speed-chart-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    backdrop-filter: blur(var(--glass-blur));
+}
+
+.empty-content {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+    .empty-content svg {
+        margin-bottom: var(--space-3);
+        opacity: 0.5;
+    }
+
+    .empty-content p {
+        margin: 0;
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+    }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .chart-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .metric-selector {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .metric-btn span {
+        display: none;
+    }
+
+    .chart-stats {
+        gap: var(--space-2);
+        padding: var(--space-3);
+    }
+
+    .stat-item {
+        gap: var(--space-05);
+    }
+
+    .chart-container {
+        min-height: 250px;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .speed-chart {
+        background: white !important;
+        border: 2px solid #000 !important;
+        color: #000 !important;
+    }
+
+    .dark .speed-chart {
+        background: #000 !important;
+        border: 2px solid #fff !important;
+        color: #fff !important;
+    }
+
+    .metric-btn.active {
+        background: #000 !important;
+        color: #fff !important;
+    }
+
+    .dark .metric-btn.active {
+        background: #fff !important;
+        color: #000 !important;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .speed-chart,
+    .metric-btn,
+    .chart-tooltip {
+        transition: none !important;
+        animation: none !important;
+    }
+}

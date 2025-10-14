@@ -206,7 +206,7 @@ const EmptyState = ({
                             {action.label}
                         </motion.button>
                     ))}
-                </div>
+                </motion.div>
             )}
 
             {/* Helpful Tips */}

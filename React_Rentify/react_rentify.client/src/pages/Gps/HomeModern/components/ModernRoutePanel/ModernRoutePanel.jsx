@@ -7,8 +7,8 @@ import RouteTimeline from './components/RouteTimeline/RouteTimeline';
 import RouteStats from './components/RouteStats/RouteStats';
 import RoutePlayback from './components/RoutePlayback/RoutePlayback';
 import DateRangePicker from './components/DateRangePicker/DateRangePicker';
-import SpeedChart from './SpeedChart';
-import RouteExport from './RouteExport';
+import SpeedChart from './components/SpeedChart/SpeedChart';
+import RouteExport from './components/RouteExport/RouteExport';
 
 import './ModernRoutePanel.css';
 
