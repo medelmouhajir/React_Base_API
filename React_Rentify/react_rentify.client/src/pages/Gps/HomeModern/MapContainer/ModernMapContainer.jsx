@@ -140,6 +140,7 @@ const ModernMapContainer = ({
                 bounds: map.getBounds()
             });
             setMapInteractionState('idle');
+            onMapInteraction?.('drag-end');
         });
 
         map.on('movestart', () => {
@@ -239,6 +240,7 @@ const ModernMapContainer = ({
                 center={mapState.center || [33.5731, -7.5898]} // Default to Casablanca
                 zoom={mapState.zoom || 12}
                 className="leaflet-map"
+                data-swipe-ignore="true"
                 zoomControl={false}
                 attributionControl={!isMobile}
                 scrollWheelZoom={!isMobile}

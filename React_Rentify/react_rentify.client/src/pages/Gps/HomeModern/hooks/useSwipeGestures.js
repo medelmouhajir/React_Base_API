@@ -11,14 +11,28 @@ const useSwipeGestures = (elementRef, callbacks = {}) => {
         onSwipeUp,
         onSwipeDown,
         threshold = 50,
-        velocityThreshold = 0.5
+        velocityThreshold = 0.5,
+        ignoreSelectors = []
     } = callbacks;
 
     useEffect(() => {
         const element = elementRef?.current;
         if (!element) return;
 
+        const shouldIgnoreEvent = (target) => {
+            if (!ignoreSelectors?.length || !target?.closest) return false;
+            return ignoreSelectors.some((selector) => target.closest(selector));
+        };
+
         const handleTouchStart = (e) => {
+
+            if (shouldIgnoreEvent(e.target)) {
+                touchStartRef.current = null;
+                touchEndRef.current = null;
+                isSwipingRef.current = false;
+                return;
+            }
+
             touchStartRef.current = {
                 x: e.touches[0].clientX,
                 y: e.touches[0].clientY,
@@ -28,6 +42,10 @@ const useSwipeGestures = (elementRef, callbacks = {}) => {
         };
 
         const handleTouchMove = (e) => {
+            if (shouldIgnoreEvent(e.target)) {
+                return;
+            }
+
             if (!touchStartRef.current || !isSwipingRef.current) return;
 
             touchEndRef.current = {
@@ -46,6 +64,13 @@ const useSwipeGestures = (elementRef, callbacks = {}) => {
         };
 
         const handleTouchEnd = (e) => {
+            if (shouldIgnoreEvent(e.target)) {
+                touchStartRef.current = null;
+                touchEndRef.current = null;
+                isSwipingRef.current = false;
+                return;
+            }
+
             if (!touchStartRef.current || !touchEndRef.current || !isSwipingRef.current) {
                 isSwipingRef.current = false;
                 return;
@@ -101,7 +126,7 @@ const useSwipeGestures = (elementRef, callbacks = {}) => {
             element.removeEventListener('touchend', handleTouchEnd);
             element.removeEventListener('touchcancel', handleTouchCancel);
         };
-    }, [elementRef, onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, threshold, velocityThreshold]);
+    }, [elementRef, onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, threshold, velocityThreshold, ignoreSelectors]);
 };
 
 export default useSwipeGestures;

@@ -1945,7 +1945,11 @@
     "noMatchingCars": "Aucun véhicule correspondant",
     "zoomIn": "Zoomer",
     "zoomOut": "Dézoomer",
-    "centerMap": "Centrer la carte"
+    "centerMap": "Centrer la carte",
+    "modern": {
+      "loadingTitle": "Chargement du tableau de bord GPS",
+      "loadingSubtitle": "Veuillez patienter pendant que nous récupérons les données de vos véhicules..."
+    }
   },
   "attachment": {
     "title": "Pièces jointes",

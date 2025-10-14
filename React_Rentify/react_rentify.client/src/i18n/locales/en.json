@@ -1974,7 +1974,11 @@
     "noMatchingCars": "No matching cars found",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
-    "centerMap": "Center map"
+    "centerMap": "Center map",
+    "modern": {
+      "loadingTitle": "Loading GPS Dashboard",
+      "loadingSubtitle": "Please wait while we fetch your vehicle data..."
+    }
   },
   "attachment": {
     "title": "Attachments",

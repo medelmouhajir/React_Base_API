@@ -1966,7 +1966,11 @@
     "noMatchingCars": "لم يتم العثور على سيارات مطابقة",
     "zoomIn": "تكبير",
     "zoomOut": "تصغير",
-    "centerMap": "توسيط الخريطة"
+    "centerMap": "توسيط الخريطة",
+    "modern": {
+      "loadingTitle": "جارٍ تحميل لوحة تحكم GPS",
+      "loadingSubtitle": "يرجى الانتظار ريثما نجلب بيانات مركباتك..."
+    }
   },
   "attachment": {
     "title": "المرفقات",

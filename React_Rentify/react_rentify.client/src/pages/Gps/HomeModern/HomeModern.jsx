@@ -127,7 +127,16 @@ const HomeModern = () => {
             if (isMobile && isFullScreenMap) {
                 setIsFullScreenMap(false);
             }
-        }
+        },
+        ignoreSelectors: [
+            '.leaflet-container',
+            '.leaflet-pane',
+            '.leaflet-control',
+            '.leaflet-top',
+            '.leaflet-bottom',
+            '.leaflet-interactive',
+            '.modern-map-container'
+        ]
     });
 
     // Keyboard Shortcuts
