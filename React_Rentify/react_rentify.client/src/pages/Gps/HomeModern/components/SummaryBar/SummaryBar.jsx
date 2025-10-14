@@ -1,6 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+// Styles
+import './SummaryBar.css';
+
+
 const formatRelativeTime = (date, t) => {
     if (!date) {
         return t('gps.lastUpdateUnknown', 'No recent update');

@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
+// Styles
+import './VehicleCarousel.css';
+
+
 const VehicleCarousel = ({
     vehicles = [],
     selectedVehicle,

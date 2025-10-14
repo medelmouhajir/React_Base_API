@@ -11,12 +11,12 @@ import ModernVehiclePanel from './components/ModernVehiclePanel/ModernVehiclePan
 import ModernRoutePanel from './components/ModernRoutePanel/ModernRoutePanel';
 
 // Modern Components
-import EnhancedSummaryBar from './components/EnhancedSummaryBar';
-import MobileBottomNav from './components/MobileBottomNav';
-import VehicleCarousel from './components/VehicleCarousel';
-import AlertDrawer from './components/AlertDrawer';
-import FloatingActionButton from './components/FloatingActionButton';
-import QuickActionsPanel from './components/QuickActionsPanel';
+import EnhancedSummaryBar from './components/EnhancedSummaryBar/EnhancedSummaryBar';
+import MobileBottomNav from './components/MobileBottomNav/MobileBottomNav';
+import VehicleCarousel from './components/VehicleCarousel/VehicleCarousel';
+import AlertDrawer from './components/AlertDrawer/AlertDrawer';
+import FloatingActionButton from './components/FloatingActionButton/FloatingActionButton';
+import QuickActionsPanel from './components/QuickActionsPanel/QuickActionsPanel';
 
 // Layout
 import ModernLayout from './layout/ModernLayout';

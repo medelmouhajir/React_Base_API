@@ -1,6 +1,10 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+// Styles
+import './AlertDrawer.css';
+
+
 const AlertDrawer = ({
     isOpen,
     onClose,

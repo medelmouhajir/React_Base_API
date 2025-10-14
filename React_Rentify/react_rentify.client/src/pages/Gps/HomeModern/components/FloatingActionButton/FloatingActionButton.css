@@ -1,0 +1,421 @@
+/* FloatingActionButton.css - Floating action button component styles */
+
+/* FAB Container */
+.fab-container {
+    position: fixed;
+    bottom: calc(var(--space-6) + 80px); /* Account for mobile nav */
+    right: var(--space-6);
+    z-index: var(--z-fab);
+    pointer-events: none;
+}
+
+/* FAB Button */
+.fab-button {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--modern-primary);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+    transition: all var(--transition-normal);
+    pointer-events: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+    /* Gradient Background Effect */
+    .fab-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, var(--modern-primary), var(--modern-primary-light));
+        border-radius: 50%;
+        transition: opacity var(--transition-fast);
+        opacity: 0;
+    }
+
+    .fab-button:hover::before {
+        opacity: 1;
+    }
+
+    /* FAB Icon */
+    .fab-button svg {
+        position: relative;
+        z-index: 1;
+        width: 24px;
+        height: 24px;
+        transition: transform var(--transition-fast);
+    }
+
+    .fab-button:hover svg {
+        transform: scale(1.1) rotate(15deg);
+    }
+
+    .fab-button:active svg {
+        transform: scale(0.9);
+    }
+
+    /* FAB States */
+    .fab-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 32px rgba(59, 130, 246, 0.6);
+    }
+
+    .fab-button:active {
+        transform: scale(0.95);
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Alert State */
+    .fab-button.has-alerts {
+        background: var(--modern-warning);
+        animation: fab-pulse 2s infinite;
+        box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+    }
+
+        .fab-button.has-alerts::before {
+            background: linear-gradient(135deg, var(--modern-warning), #fbbf24);
+        }
+
+        .fab-button.has-alerts:hover {
+            box-shadow: 0 12px 32px rgba(245, 158, 11, 0.6);
+        }
+
+/* Alert Pulse Animation */
+@keyframes fab-pulse {
+    0% {
+        box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4), 0 0 0 0 rgba(245, 158, 11, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4), 0 0 0 10px rgba(245, 158, 11, 0);
+    }
+
+    100% {
+        box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4), 0 0 0 0 rgba(245, 158, 11, 0);
+    }
+}
+
+/* Success State */
+.fab-button.success {
+    background: var(--modern-success);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+}
+
+    .fab-button.success::before {
+        background: linear-gradient(135deg, var(--modern-success), #34d399);
+    }
+
+    .fab-button.success:hover {
+        box-shadow: 0 12px 32px rgba(16, 185, 129, 0.6);
+    }
+
+/* Danger State */
+.fab-button.danger {
+    background: var(--modern-danger);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+}
+
+    .fab-button.danger::before {
+        background: linear-gradient(135deg, var(--modern-danger), #f87171);
+    }
+
+    .fab-button.danger:hover {
+        box-shadow: 0 12px 32px rgba(239, 68, 68, 0.6);
+    }
+
+/* Disabled State */
+.fab-button:disabled {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+    .fab-button:disabled:hover {
+        transform: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .fab-button:disabled::before {
+        display: none;
+    }
+
+/* Loading State */
+.fab-button.loading {
+    pointer-events: none;
+}
+
+    .fab-button.loading svg {
+        animation: spin 1s linear infinite;
+    }
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Notification Badge */
+.fab-notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 20px;
+    height: 20px;
+    background: var(--modern-danger);
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: white;
+    z-index: 2;
+    animation: badge-bounce 0.5s ease-out;
+}
+
+@keyframes badge-bounce {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.fab-notification-badge.large {
+    width: 24px;
+    height: 24px;
+    top: -6px;
+    right: -6px;
+    font-size: var(--font-size-sm);
+}
+
+/* FAB Tooltip */
+.fab-tooltip {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    margin-bottom: var(--space-2);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: all var(--transition-fast);
+    pointer-events: none;
+    z-index: 3;
+}
+
+    .fab-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        right: 16px;
+        border: 4px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.9);
+    }
+
+.fab-button:hover + .fab-tooltip,
+.fab-button:focus + .fab-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Mini FAB */
+.fab-button.mini {
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+    .fab-button.mini svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .fab-button.mini:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
+    }
+
+/* Extended FAB */
+.fab-button.extended {
+    width: auto;
+    height: 48px;
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-full);
+    gap: var(--space-2);
+}
+
+    .fab-button.extended svg {
+        width: 20px;
+        height: 20px;
+    }
+
+.fab-text {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+    .fab-container {
+        bottom: calc(var(--space-4) + 60px);
+        right: var(--space-4);
+    }
+
+    .fab-button {
+        width: 48px;
+        height: 48px;
+    }
+
+        .fab-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .fab-button.mini {
+            width: 36px;
+            height: 36px;
+        }
+
+            .fab-button.mini svg {
+                width: 16px;
+                height: 16px;
+            }
+
+    .fab-notification-badge {
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
+    }
+}
+
+/* Tablet Adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .fab-container {
+        bottom: calc(var(--space-5) + 70px);
+        right: var(--space-5);
+    }
+}
+
+/* Desktop Adjustments */
+@media (min-width: 1025px) {
+    .fab-container {
+        bottom: var(--space-8);
+        right: var(--space-8);
+    }
+
+    .fab-button {
+        width: 64px;
+        height: 64px;
+    }
+
+        .fab-button svg {
+            width: 28px;
+            height: 28px;
+        }
+}
+
+/* Dark Theme Adjustments */
+.dark .fab-tooltip {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--color-text-dark-primary);
+}
+
+    .dark .fab-tooltip::after {
+        border-top-color: rgba(255, 255, 255, 0.95);
+    }
+
+/* Light Theme Adjustments */
+.light .fab-button {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+    .light .fab-button:hover {
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .light .fab-button.has-alerts {
+        box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
+    }
+
+        .light .fab-button.has-alerts:hover {
+            box-shadow: 0 12px 32px rgba(245, 158, 11, 0.4);
+        }
+
+/* Accessibility */
+.fab-button:focus {
+    outline: none;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4), 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+
+.fab-button.has-alerts:focus {
+    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4), 0 0 0 3px rgba(245, 158, 11, 0.5);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .fab-button {
+        transition: none;
+        animation: none;
+    }
+
+        .fab-button:hover {
+            transform: none;
+        }
+
+        .fab-button.has-alerts {
+            animation: none;
+        }
+
+    .fab-notification-badge {
+        animation: none;
+    }
+
+    .fab-button.loading svg {
+        animation: none;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .fab-button {
+        border: 2px solid white;
+    }
+
+    .fab-notification-badge {
+        border: 3px solid white;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .fab-container {
+        display: none;
+    }
+}
