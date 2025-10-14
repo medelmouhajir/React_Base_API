@@ -1,0 +1,469 @@
+/* src/pages/Gps/HomeModern/components/Markers/MapControlsOverlay/MapControlsOverlay.css */
+
+/* ===== MAP CONTROLS OVERLAY ===== */
+.map-controls-overlay {
+    position: absolute;
+    top: var(--space-6);
+    right: var(--space-6);
+    z-index: var(--z-dropdown, 50);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 300px;
+    pointer-events: none;
+    user-select: none;
+}
+
+    .map-controls-overlay > * {
+        pointer-events: auto;
+    }
+
+    .map-controls-overlay.mobile {
+        top: calc(env(safe-area-inset-top, 0px) + var(--space-4));
+        right: var(--space-4);
+        max-width: 200px;
+    }
+
+    .map-controls-overlay.fullscreen {
+        top: var(--space-4);
+        right: var(--space-4);
+    }
+
+/* ===== CONTROLS GROUPS ===== */
+.controls-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow);
+    transition: all var(--transition-normal);
+}
+
+    .controls-group:hover {
+        background: var(--glass-surface-hover);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+        box-shadow: var(--glass-shadow), 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .controls-group.primary {
+        background: var(--glass-surface);
+    }
+
+    .controls-group.secondary {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+/* ===== CONTROL BUTTONS ===== */
+.map-control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    min-width: 48px;
+    min-height: 48px;
+    padding: var(--space-3);
+    border: none;
+    border-radius: var(--radius-lg);
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+    .map-control-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.1);
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+        border-radius: inherit;
+    }
+
+    .map-control-btn:hover::before {
+        opacity: 1;
+    }
+
+    .map-control-btn:hover {
+        color: var(--modern-primary-light);
+        transform: translateX(4px);
+    }
+
+    .map-control-btn:active {
+        transform: translateX(2px) scale(0.98);
+    }
+
+    .map-control-btn.active {
+        background: linear-gradient(135deg, var(--modern-primary) 0%, var(--modern-primary-dark) 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+        .map-control-btn.active::before {
+            opacity: 0;
+        }
+
+    .map-control-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+/* ===== BUTTON ICON ===== */
+.btn-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+    .btn-icon svg {
+        width: 20px;
+        height: 20px;
+        transition: transform var(--transition-fast);
+    }
+
+.map-control-btn:hover .btn-icon svg {
+    transform: scale(1.1);
+}
+
+.map-control-btn.active .btn-icon svg {
+    transform: scale(1.05);
+}
+
+/* ===== BUTTON BADGE ===== */
+.btn-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    background: var(--modern-danger);
+    color: white;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    line-height: 1;
+    padding: 0 var(--space-1);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* ===== BUTTON LABEL ===== */
+.btn-label {
+    white-space: nowrap;
+    font-weight: 500;
+    opacity: 0.9;
+    transition: opacity var(--transition-fast);
+}
+
+.map-control-btn:hover .btn-label {
+    opacity: 1;
+}
+
+/* ===== BUTTON TOOLTIP (MOBILE) ===== */
+.btn-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    margin-bottom: var(--space-2);
+    opacity: 0;
+    animation: fadeInTooltip 0.3s forwards;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+    .btn-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 4px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.9);
+    }
+
+@keyframes fadeInTooltip {
+    to {
+        opacity: 1;
+    }
+}
+
+/* ===== MOBILE TOGGLE BUTTON ===== */
+.mobile-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border: none;
+    border-radius: var(--radius-full);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow);
+    margin-bottom: var(--space-2);
+}
+
+    .mobile-toggle-btn:hover {
+        background: var(--glass-surface-hover);
+        transform: scale(1.05);
+    }
+
+    .mobile-toggle-btn:active {
+        transform: scale(0.95);
+    }
+
+    .mobile-toggle-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+
+/* ===== VEHICLE INFO BADGE ===== */
+.vehicle-info-badge {
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-3) var(--space-4);
+    backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--glass-shadow);
+    margin-top: var(--space-2);
+}
+
+.vehicle-badge-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.vehicle-plate {
+    font-weight: 600;
+    color: white;
+    font-size: var(--font-size-sm);
+}
+
+.follow-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--modern-success);
+    border-radius: var(--radius-full);
+    animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+}
+
+.follow-text {
+    font-size: var(--font-size-xs);
+    color: var(--modern-success);
+    font-weight: 500;
+}
+
+/* ===== SPECIFIC BUTTON STYLES ===== */
+.map-mode-btn.active {
+    background: linear-gradient(135deg, var(--modern-info) 0%, #0891b2 100%);
+}
+
+.follow-btn.active {
+    background: linear-gradient(135deg, var(--modern-success) 0%, #047857 100%);
+}
+
+.traffic-btn.active {
+    background: linear-gradient(135deg, var(--modern-warning) 0%, #d97706 100%);
+}
+
+.cluster-btn.active {
+    background: linear-gradient(135deg, var(--modern-primary) 0%, var(--modern-primary-dark) 100%);
+}
+
+.recenter-btn:hover {
+    color: var(--modern-primary-light);
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 767px) {
+    .map-controls-overlay {
+        top: calc(env(safe-area-inset-top, 0px) + var(--space-3));
+        right: var(--space-3);
+        gap: var(--space-3);
+    }
+
+    .controls-group {
+        padding: var(--space-2);
+        gap: var(--space-1);
+    }
+
+    .map-control-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: var(--space-2);
+        gap: var(--space-2);
+    }
+
+        .map-control-btn:hover {
+            transform: none;
+        }
+
+    .btn-label {
+        display: none;
+    }
+
+    .vehicle-info-badge {
+        padding: var(--space-2) var(--space-3);
+    }
+
+    .vehicle-badge-content {
+        gap: var(--space-2);
+    }
+
+    .vehicle-plate {
+        font-size: var(--font-size-xs);
+    }
+}
+
+/* ===== TABLET RESPONSIVE ===== */
+@media (max-width: 1024px) and (min-width: 768px) {
+    .map-controls-overlay {
+        max-width: 250px;
+    }
+
+    .controls-group {
+        padding: var(--space-3);
+    }
+
+    .map-control-btn {
+        min-width: 46px;
+        min-height: 46px;
+    }
+}
+
+/* ===== DARK THEME SPECIFIC ===== */
+.dark .controls-group {
+    background: var(--glass-surface-dark);
+    border-color: var(--glass-border-dark);
+    box-shadow: var(--glass-shadow-dark);
+}
+
+    .dark .controls-group:hover {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+.dark .mobile-toggle-btn {
+    background: var(--glass-surface-dark);
+    border-color: var(--glass-border-dark);
+}
+
+.dark .vehicle-info-badge {
+    background: var(--glass-surface-dark);
+    border-color: var(--glass-border-dark);
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+    .map-control-btn,
+    .controls-group,
+    .mobile-toggle-btn {
+        transition: none;
+    }
+
+    .pulse-dot,
+    .btn-badge {
+        animation: none;
+    }
+
+    .btn-tooltip {
+        animation: none;
+        opacity: 1;
+    }
+}
+
+.map-control-btn:focus-visible {
+    outline: 2px solid var(--modern-primary);
+    outline-offset: 2px;
+}
+
+.mobile-toggle-btn:focus-visible {
+    outline: 2px solid var(--modern-primary);
+    outline-offset: 2px;
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+@media (prefers-contrast: high) {
+    .controls-group {
+        background: rgba(0, 0, 0, 0.9);
+        border-color: white;
+        border-width: 2px;
+    }
+
+    .map-control-btn.active {
+        background: #0066CC;
+        border: 2px solid white;
+    }
+
+    .btn-badge {
+        background: #FF0000;
+        border: 1px solid white;
+    }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    .map-controls-overlay {
+        display: none;
+    }
+}
