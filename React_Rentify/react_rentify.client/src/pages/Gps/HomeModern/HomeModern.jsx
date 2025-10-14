@@ -74,7 +74,7 @@ const HomeModern = () => {
         isLoading: isLoadingRoute,
         error: routeError
     } = useRouteData(selectedVehicle?.id, dateRange, {
-        enabled: !!selectedVehicle
+        enabled: !!selectedVehicle?.id  // Fixed: Enable only when a vehicle is selected
     });
 
     // Alerts Hook
