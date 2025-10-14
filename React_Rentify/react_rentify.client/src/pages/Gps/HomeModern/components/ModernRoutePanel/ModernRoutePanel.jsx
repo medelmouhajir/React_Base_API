@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
 // Modern Components
-import RouteTimeline from './RouteTimeline';
-import RouteStats from './RouteStats';
-import RoutePlayback from './RoutePlayback';
-import DateRangePicker from './DateRangePicker';
+import RouteTimeline from './components/RouteTimeline/RouteTimeline';
+import RouteStats from './components/RouteStats/RouteStats';
+import RoutePlayback from './components/RoutePlayback/RoutePlayback';
+import DateRangePicker from './components/DateRangePicker/DateRangePicker';
 import SpeedChart from './SpeedChart';
 import RouteExport from './RouteExport';
 
