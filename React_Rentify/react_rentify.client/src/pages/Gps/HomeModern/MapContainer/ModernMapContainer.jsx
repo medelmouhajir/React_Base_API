@@ -17,11 +17,11 @@ import { calculateMapBounds, optimizeMarkerRendering } from '../utils/mapOptimiz
 import './ModernMapContainer.css';
 
 // Enhanced Leaflet Icons
-L.Icon.Default.imagePath = '';
+delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-    iconRetinaUrl: '/markers/modern-marker-2x.png',
-    iconUrl: '/markers/modern-marker.png',
-    shadowUrl: '/markers/modern-shadow.png',
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
 // Map State Manager Component
@@ -387,7 +387,7 @@ const ModernMapContainer = ({
                 {/* Route Polyline */}
                 {processedRoute && (
                     <ModernRoutePolyline
-                        route={processedRoute}
+                        processedRouteData={processedRoute}
                         selectedVehicle={selectedVehicle}
                         isActive={!!selectedVehicle}
                         isMobile={isMobile}

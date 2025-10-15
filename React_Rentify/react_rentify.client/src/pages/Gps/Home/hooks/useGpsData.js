@@ -85,9 +85,9 @@ const useGpsData = (agencyId) => {
                 isMoving: vehicle.lastSpeed > 0 && vehicle.ignitionOn,
                 batteryStatus: getBatteryStatus(vehicle.batteryVoltage),
                 signalStrength: getSignalStrength(vehicle.gsmSignal),
-                lastLocation: vehicle.latitude && vehicle.longitude ? {
-                    latitude: parseFloat(vehicle.latitude),
-                    longitude: parseFloat(vehicle.longitude),
+                lastLocation: vehicle.lastLocation?.latitude && vehicle.lastLocation?.longitude ? {
+                    latitude: parseFloat(vehicle.lastLocation?.latitude),
+                    longitude: parseFloat(vehicle.lastLocation?.longitude),
                     accuracy: vehicle.accuracy || null
                 } : null
             }));

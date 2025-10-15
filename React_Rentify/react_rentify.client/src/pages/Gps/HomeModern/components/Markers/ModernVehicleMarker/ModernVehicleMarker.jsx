@@ -109,6 +109,8 @@ const ModernVehicleMarker = ({
         return null;
     }
 
+    console.warn(position);
+
     return (
         <Marker
             position={position}

@@ -168,6 +168,8 @@ const HomeModern = () => {
     const filteredVehicles = useMemo(() => {
         if (!vehicles?.length) return [];
 
+        console.warn(vehicles);
+
         let filtered = vehicles;
 
         if (filters.status !== 'all') {
@@ -189,6 +191,7 @@ const HomeModern = () => {
             );
         }
 
+        console.warn(filtered);
         return filtered;
     }, [vehicles, filters]);
 

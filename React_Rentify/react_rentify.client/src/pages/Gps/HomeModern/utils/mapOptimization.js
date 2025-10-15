@@ -67,9 +67,10 @@ export const calculateMapBounds = (data) => {
  * @param {Array} vehicles - Array of vehicle objects
  * @param {number} zoomLevel - Current map zoom level
  * @param {Object} viewBounds - Current map view bounds
- * @returns {Array} - Optimized vehicles array
+ * @returns {Array} - Optimized vehicles array  
  */
 export const optimizeMarkerRendering = (vehicles, zoomLevel = 12, viewBounds = null) => {
+    console.warn(vehicles);
     if (!Array.isArray(vehicles)) return [];
 
     let filteredVehicles = vehicles.filter(vehicle =>
@@ -102,6 +103,7 @@ export const optimizeMarkerRendering = (vehicles, zoomLevel = 12, viewBounds = n
         return filteredVehicles.slice(0, 200);
     }
 
+    console.warn(filteredVehicles);
     // Very high zoom - show all vehicles in view
     return filteredVehicles;
 };
