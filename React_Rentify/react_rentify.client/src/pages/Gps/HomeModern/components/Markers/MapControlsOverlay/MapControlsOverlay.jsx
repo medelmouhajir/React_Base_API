@@ -337,28 +337,28 @@ const MapControlsOverlay = ({
             </AnimatePresence>
 
             {/* Vehicle Info Badge */}
-            {selectedVehicle && (
-                <motion.div
-                    className="vehicle-info-badge"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                >
-                    <div className="vehicle-badge-content">
-                        <span className="vehicle-plate">
-                            {selectedVehicle.plateNumber}
-                        </span>
-                        {followVehicle && (
-                            <div className="follow-indicator">
-                                <div className="pulse-dot" />
-                                <span className="follow-text">
-                                    {t('gps.following', 'Following')}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                </motion.div>
-            )}
+            {/*{selectedVehicle && (*/}
+            {/*    <motion.div*/}
+            {/*        className="vehicle-info-badge"*/}
+            {/*        initial={{ opacity: 0, scale: 0.8 }}*/}
+            {/*        animate={{ opacity: 1, scale: 1 }}*/}
+            {/*        exit={{ opacity: 0, scale: 0.8 }}*/}
+            {/*    >*/}
+            {/*        <div className="vehicle-badge-content">*/}
+            {/*            <span className="vehicle-plate">*/}
+            {/*                {selectedVehicle.plateNumber}*/}
+            {/*            </span>*/}
+            {/*            {followVehicle && (*/}
+            {/*                <div className="follow-indicator">*/}
+            {/*                    <div className="pulse-dot" />*/}
+            {/*                    <span className="follow-text">*/}
+            {/*                        {t('gps.following', 'Following')}*/}
+            {/*                    </span>*/}
+            {/*                </div>*/}
+            {/*            )}*/}
+            {/*        </div>*/}
+            {/*    </motion.div>*/}
+            {/*)}*/}
         </motion.div>
     );
 };

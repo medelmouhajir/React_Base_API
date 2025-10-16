@@ -132,17 +132,17 @@ const MobileBottomNav = ({
             </div>
 
             {/* Navigation Items */}
-            <div className="nav-items">
+            <div className="nav-mobile-buttom-items">
                 {navItems.map((item) => (
                     <motion.button
                         key={item.id}
-                        className={`nav-item ${activePanel === item.id ? 'active' : ''} ${item.disabled ? 'disabled' : ''}`}
+                        className={`nav-mobile-buttom-item ${activePanel === item.id ? 'active' : ''} ${item.disabled ? 'disabled' : ''}`}
                         onClick={() => handleItemClick(item)}
                         disabled={item.disabled}
                         whileTap={{ scale: 0.95 }}
                         whileHover={{ scale: 1.05 }}
                     >
-                        <div className="nav-item-icon">
+                        <div className="nav-mobile-buttom-item-icon">
                             {getIcon(item.icon)}
                             {item.badge > 0 && (
                                 <motion.span
@@ -155,7 +155,7 @@ const MobileBottomNav = ({
                                 </motion.span>
                             )}
                         </div>
-                        <span className="nav-item-label">{item.label}</span>
+                        <span className="nav-mobile-buttom-item-label">{item.label}</span>
                     </motion.button>
                 ))}
             </div>

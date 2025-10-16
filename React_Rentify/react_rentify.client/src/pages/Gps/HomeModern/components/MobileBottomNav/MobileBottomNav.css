@@ -46,7 +46,7 @@
     }
 
 /* Navigation Items Container */
-.nav-items {
+.nav-mobile-buttom-items {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -55,7 +55,7 @@
 }
 
 /* Navigation Item */
-.nav-item {
+.nav-mobile-buttom-item {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -74,29 +74,29 @@
     max-width: 80px;
 }
 
-    .nav-item:hover:not(:disabled) {
+    .nav-mobile-buttom-item:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.1);
         color: white;
         transform: translateY(-2px);
     }
 
-    .nav-item:active {
+    .nav-mobile-buttom-item:active {
         transform: translateY(0);
     }
 
-    .nav-item:disabled {
+    .nav-mobile-buttom-item:disabled {
         opacity: 0.4;
         cursor: not-allowed;
         transform: none;
     }
 
-    .nav-item.active {
+    .nav-mobile-buttom-item.active {
         color: var(--modern-primary);
         background: rgba(59, 130, 246, 0.1);
     }
 
         /* Active State Indicator */
-        .nav-item.active::before {
+        .nav-mobile-buttom-item.active::before {
             content: '';
             position: absolute;
             top: -2px;
@@ -122,7 +122,7 @@
 }
 
 /* Navigation Icon Container */
-.nav-item-icon {
+.nav-mobile-buttom-item-icon {
     position: relative;
     display: flex;
     align-items: center;
@@ -131,22 +131,22 @@
     height: 24px;
 }
 
-    .nav-item-icon svg {
+    .nav-mobile-buttom-item-icon svg {
         width: 20px;
         height: 20px;
         transition: transform var(--transition-fast);
     }
 
-.nav-item:hover .nav-item-icon svg {
+.nav-mobile-buttom-item:hover .nav-mobile-buttom-item-icon svg {
     transform: scale(1.1);
 }
 
-.nav-item.active .nav-item-icon svg {
+.nav-mobile-buttom-item.active .nav-mobile-buttom-item-icon svg {
     transform: scale(1.15);
 }
 
 /* Badge */
-.nav-item-badge {
+.nav-mobile-buttom-item-badge {
     position: absolute;
     top: -6px;
     right: -6px;
@@ -179,24 +179,24 @@
     }
 }
 
-.nav-item-badge.primary {
+.nav-mobile-buttom-item-badge.primary {
     background: var(--modern-primary);
 }
 
-.nav-item-badge.secondary {
+.nav-mobile-buttom-item-badge.secondary {
     background: var(--modern-secondary);
 }
 
-.nav-item-badge.warning {
+.nav-mobile-buttom-item-badge.warning {
     background: var(--modern-warning);
 }
 
-.nav-item-badge.success {
+.nav-mobile-buttom-item-badge.success {
     background: var(--modern-success);
 }
 
 /* Navigation Item Label */
-.nav-item-label {
+.nav-mobile-buttom-item-label {
     font-size: 10px;
     font-weight: 500;
     text-align: center;
@@ -208,7 +208,7 @@
     white-space: nowrap;
 }
 
-.nav-item.active .nav-item-label {
+.nav-mobile-buttom-item.active .nav-mobile-buttom-item-label {
     opacity: 1;
     font-weight: 600;
 }
@@ -304,17 +304,17 @@
 }
 
 /* Touch Feedback */
-.nav-item:active {
+.nav-mobile-buttom-item:active {
     background: rgba(255, 255, 255, 0.15);
     transform: scale(0.95);
 }
 
 /* Haptic Feedback Classes */
-.nav-item.haptic-light {
+.nav-mobile-buttom-item.haptic-light {
     animation: haptic-light 0.1s ease-out;
 }
 
-.nav-item.haptic-medium {
+.nav-mobile-buttom-item.haptic-medium {
     animation: haptic-medium 0.15s ease-out;
 }
 
@@ -345,17 +345,17 @@
 
 /* Responsive Adjustments */
 @media (max-width: 375px) {
-    .nav-items {
+    .nav-mobile-buttom-items {
         padding: var(--space-1) var(--space-2);
         gap: var(--space-1);
     }
 
-    .nav-item {
+    .nav-mobile-buttom-item {
         padding: var(--space-1) var(--space-2);
         max-width: 70px;
     }
 
-    .nav-item-label {
+    .nav-mobile-buttom-item-label {
         font-size: 9px;
         max-width: 50px;
     }
@@ -370,11 +370,11 @@
 }
 
 @media (min-width: 376px) and (max-width: 480px) {
-    .nav-items {
+    .nav-mobile-buttom-items {
         padding: var(--space-2) var(--space-3);
     }
 
-    .nav-item {
+    .nav-mobile-buttom-item {
         padding: var(--space-2);
         max-width: 75px;
     }
@@ -386,21 +386,21 @@
         min-height: 60px;
     }
 
-    .nav-items {
+    .nav-mobile-buttom-items {
         padding: var(--space-1) var(--space-4);
     }
 
-    .nav-item {
+    .nav-mobile-buttom-item {
         padding: var(--space-1) var(--space-2);
         min-height: 36px;
     }
 
-    .nav-item-icon svg {
+    .nav-mobile-buttom-item-icon svg {
         width: 18px;
         height: 18px;
     }
 
-    .nav-item-label {
+    .nav-mobile-buttom-item-label {
         font-size: 9px;
     }
 
@@ -421,16 +421,16 @@
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.light .nav-item {
+.light .nav-mobile-buttom-item {
     color: rgba(0, 0, 0, 0.7);
 }
 
-    .light .nav-item:hover:not(:disabled) {
+    .light .nav-mobile-buttom-item:hover:not(:disabled) {
         background: rgba(0, 0, 0, 0.05);
         color: rgba(0, 0, 0, 0.9);
     }
 
-    .light .nav-item.active {
+    .light .nav-mobile-buttom-item.active {
         color: var(--modern-primary);
         background: rgba(59, 130, 246, 0.1);
     }
@@ -450,14 +450,14 @@
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
-    .nav-item,
-    .nav-item-badge,
+    .nav-mobile-buttom-item,
+    .nav-mobile-buttom-item-badge,
     .nav-expandable-content {
         transition: none;
         animation: none;
     }
 
-        .nav-item:hover {
+        .nav-mobile-buttom-item:hover {
             transform: none;
         }
 
@@ -473,11 +473,11 @@
         background: rgba(0, 0, 0, 0.95);
     }
 
-    .nav-item {
+    .nav-mobile-buttom-item {
         border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-        .nav-item.active {
+        .nav-mobile-buttom-item.active {
             border-color: var(--modern-primary);
             background: var(--modern-primary);
             color: white;
@@ -485,7 +485,7 @@
 }
 
 /* Focus States for Keyboard Navigation */
-.nav-item:focus {
+.nav-mobile-buttom-item:focus {
     outline: none;
     box-shadow: 0 0 0 2px var(--modern-primary);
     background: rgba(59, 130, 246, 0.1);

@@ -55,8 +55,8 @@ const EnhancedSummaryBar = ({
     const metrics = [
         {
             key: 'total',
-            label: t('gps.modern.totalVehicles', 'Total Vehicles'),
-            value: stats?.totalVehicles || 0,
+            label: t('car.status.available', 'Total Vehicles'),
+            value: stats?.availableVehicles || 0,
             icon: (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <path d="M7 17h10l1.29-3.5H5.71L7 17zM20 8v6h-2v-1c0-.55-.45-1-1-1s-1 .45-1 1v1H8v-1c0-.55-.45-1-1-1s-1 .45-1 1v1H4V8h16z" fill="currentColor" />
@@ -66,8 +66,8 @@ const EnhancedSummaryBar = ({
         },
         {
             key: 'online',
-            label: t('gps.modern.onlineVehicles', 'Online'),
-            value: stats?.onlineVehicles || 0,
+            label: t('car.status.rented', 'Online'),
+            value: stats?.rentedVehicles || 0,
             icon: (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="3" fill="currentColor" />
@@ -78,8 +78,8 @@ const EnhancedSummaryBar = ({
         },
         {
             key: 'moving',
-            label: t('gps.modern.movingVehicles', 'Moving'),
-            value: stats?.movingVehicles || 0,
+            label: t('car.status.maintenance', 'Moving'),
+            value: stats?.maintenanceVehicles || 0,
             icon: (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                     <path d="M13 3l3.5 7h-7l3.5-7z" fill="currentColor" />
@@ -128,7 +128,7 @@ const EnhancedSummaryBar = ({
                     </div>
                     <div className="summary-actions">
                         <motion.button
-                            className={`action-btn ${isRefreshing ? 'refreshing' : ''}`}
+                            className={`action-summary-btn ${isRefreshing ? 'refreshing' : ''}`}
                             onClick={handleRefresh}
                             disabled={isRefreshing}
                             whileTap={{ scale: 0.95 }}
@@ -141,7 +141,7 @@ const EnhancedSummaryBar = ({
                         </motion.button>
                         {onToggleDrawer && (
                             <motion.button
-                                className="action-btn"
+                                className="action-summary-btn"
                                 onClick={onToggleDrawer}
                                 whileTap={{ scale: 0.95 }}
                                 title={t('gps.modern.toggleMenu', 'Menu')}
@@ -214,7 +214,7 @@ const EnhancedSummaryBar = ({
 
                 <div className="summary-actions">
                     <motion.button
-                        className={`action-btn refresh-btn ${isRefreshing ? 'refreshing' : ''}`}
+                        className={`action-summary-btn refresh-btn ${isRefreshing ? 'refreshing' : ''}`}
                         onClick={handleRefresh}
                         disabled={isRefreshing}
                         whileTap={{ scale: 0.95 }}
@@ -229,7 +229,7 @@ const EnhancedSummaryBar = ({
 
                     {onToggleFullScreen && (
                         <motion.button
-                            className="action-btn"
+                            className="action-summary-btn"
                             onClick={onToggleFullScreen}
                             whileTap={{ scale: 0.95 }}
                             title={isFullScreen ? t('gps.modern.exitFullscreen', 'Exit Fullscreen') : t('gps.modern.fullscreen', 'Fullscreen')}
@@ -249,7 +249,7 @@ const EnhancedSummaryBar = ({
 
                     {onToggleDrawer && (
                         <motion.button
-                            className="action-btn"
+                            className="action-summary-btn"
                             onClick={onToggleDrawer}
                             whileTap={{ scale: 0.95 }}
                             title={t('gps.modern.toggleVehicles', 'Toggle Vehicles Panel')}
@@ -265,10 +265,10 @@ const EnhancedSummaryBar = ({
 
                     {onSwitchLegacy && (
                         <motion.button
-                            className="action-btn"
+                            className="action-summary-btn"
                             onClick={onSwitchLegacy}
                             whileTap={{ scale: 0.95 }}
-                            title={t('gps.modern.switchToClassic', 'Switch to Classic View')}
+                            title={t('sidebar.dashboard', 'Switch to Classic View')}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth="2" />
@@ -276,7 +276,7 @@ const EnhancedSummaryBar = ({
                                 <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" strokeWidth="2" />
                                 <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" strokeWidth="2" />
                             </svg>
-                            <span>{t('gps.modern.classic', 'Classic')}</span>
+                            <span>{t('sidebar.dashboard', 'Classic')}</span>
                         </motion.button>
                     )}
                 </div>

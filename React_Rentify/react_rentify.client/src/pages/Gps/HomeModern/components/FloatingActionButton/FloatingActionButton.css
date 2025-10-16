@@ -30,10 +30,6 @@
         right: var(--space-4) !important;
     }
 
-    /* Adjust FAB position when mobile bottom nav is visible */
-    .home-modern:not(.fullscreen-mode) .fab-container {
-        bottom: calc(80px + var(--space-4) + env(safe-area-inset-bottom, 0px)) !important;
-    }
 }
 
 /* FAB Button */

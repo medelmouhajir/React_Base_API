@@ -138,7 +138,7 @@
     font-size: var(--font-size-base);
 }
 
-.vehicle-status {
+.vehicle-vehicule-card-status {
     display: flex;
     align-items: center;
     gap: var(--space-1);
@@ -218,7 +218,7 @@
     opacity: 1;
 }
 
-.action-btn {
+.action-vehicule-card-btn {
     width: 32px;
     height: 32px;
     border-radius: var(--radius-lg);
@@ -232,17 +232,17 @@
     transition: all var(--transition-fast);
 }
 
-    .action-btn:hover {
+    .action-vehicule-card-btn:hover {
         background: rgba(255, 255, 255, 0.25);
         transform: scale(1.1);
     }
 
-    .action-btn.locate {
+    .action-vehicule-card-btn.locate {
         background: rgba(var(--modern-primary-rgb), 0.2);
         border-color: var(--modern-primary);
     }
 
-    .action-btn.alerts {
+    .action-vehicule-card-btn.alerts {
         background: rgba(var(--modern-error-rgb), 0.2);
         border-color: var(--modern-error);
         animation: pulse 2s infinite;

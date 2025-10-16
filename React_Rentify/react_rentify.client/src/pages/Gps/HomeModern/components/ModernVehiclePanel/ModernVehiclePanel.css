@@ -49,13 +49,13 @@
     gap: var(--space-2);
 }
 
-.action-btn {
+.action-vehicule-panel-btn {
     width: 36px;
     height: 36px;
     border-radius: var(--radius-lg);
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--glass-border);
-    display: flex;
+    /*display: flex;*/
     align-items: center;
     justify-content: center;
     color: white;
@@ -63,7 +63,7 @@
     transition: all var(--transition-fast);
 }
 
-    .action-btn:hover {
+    .action-vehicule-panel-btn:hover {
         background: rgba(255, 255, 255, 0.2);
         transform: scale(1.05);
     }

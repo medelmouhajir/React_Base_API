@@ -261,7 +261,7 @@ const QuickActionsPanel = ({
     const contextualActions = [
         {
             id: 'legacy',
-            label: t('gps.switchLegacy', 'Switch to Legacy View'),
+            label: t('sidebar.dashboard', 'Switch to Legacy View'),
             description: t('gps.modern.quickActions.legacy.desc', 'Use the classic GPS interface'),
             icon: (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">

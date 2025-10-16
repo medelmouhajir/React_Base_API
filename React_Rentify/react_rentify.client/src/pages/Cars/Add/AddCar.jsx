@@ -6,7 +6,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import carService from '../../../services/carService';
 import carFiltersService from '../../../services/carFiltersService';
-import carAttachmentService from '../../../services/carAttachmentService';
+
 import './AddCar.css';
 
 const AddCar = () => {
@@ -688,14 +688,14 @@ const AddCar = () => {
                         </button>
                     )}
 
-                    <button
-                        type="button"
-                        className="btn btn-outline"
-                        onClick={handleCancel}
-                        disabled={isSubmitting}
-                    >
-                        {t('common.cancel')}
-                    </button>
+                    {/*<button*/}
+                    {/*    type="button"*/}
+                    {/*    className="btn btn-outline"*/}
+                    {/*    onClick={handleCancel}*/}
+                    {/*    disabled={isSubmitting}*/}
+                    {/*>*/}
+                    {/*    {t('common.cancel')}*/}
+                    {/*</button>*/}
 
                     {currentStep < totalSteps ? (
                         <button

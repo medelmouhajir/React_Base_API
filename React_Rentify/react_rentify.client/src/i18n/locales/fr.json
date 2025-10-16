@@ -1978,8 +1978,46 @@
       "quickActionsHint": {
         "mobile": "Appuyez pour exécuter l’action",
         "desktop": "Cliquez ou utilisez les raccourcis clavier"
-      }
-    }
+      },
+      "title": "Tableau de bord GPS",
+      "system": "Système",
+      "systemStatus": "État du système",
+      "refresh": "Rafraîchir",
+      "toggleMenu": "Menu",
+      "toggleVehicles": "Afficher/Masquer le panneau des véhicules",
+      "vehicles": "Véhicules",
+      "switchToClassic": "Passer à la vue classique",
+      "classic": "Classique",
+      "exitFullscreen": "Quitter le plein écran",
+      "totalVehicles": "Véhicules au total",
+      "onlineVehicles": "En ligne",
+      "movingVehicles": "En mouvement",
+      "activeAlerts": "Alertes actives",
+      "justNow": "À l’instant",
+      "minutesAgo": "il y a {{minutes}} min",
+      "hoursAgo": "il y a {{hours}} h",
+      "realTimeTracking": "Suivi en temps réel actif",
+      "autoRefresh": "Actualisation auto : 30 s",
+      "coverage": "Couverture"
+    },
+    "map": {
+      "satellite": "Satellite",
+      "streets": "Rues",
+      "terrain": "Relief",
+      "layer": "Calque"
+    },
+    "controls": {
+      "collapse": "Réduire",
+      "expand": "Développer",
+      "stopFollow": "Arrêter le suivi",
+      "followVehicle": "Suivre le véhicule",
+      "hideTraffic": "Masquer le trafic",
+      "showTraffic": "Afficher le trafic",
+      "hideClusters": "Masquer les groupes",
+      "showClusters": "Afficher les groupes",
+      "recenterMap": "Recentrer la carte"
+    },
+    "following": "En suivi"
   },
   "attachment": {
     "title": "Pièces jointes",

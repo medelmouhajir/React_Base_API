@@ -529,17 +529,25 @@ namespace React_Rentify.Server.Controllers
                     return Forbid();
                 }
 
+                var today = DateTime.UtcNow;
+
                 // 2) Fetch cars from MAIN DB
                 var cars = await _contextMain.Set<Car>()
                     .AsNoTracking()
                     .Where(c => c.AgencyId == agencyId)
+                    .Include(x=> x.Car_Model)
+                    .Include(x=> x.Reservations.Where(r=> r.StartDate <= today && r.EndDate >= today && r.Status != "Reserved"))
+                    .ThenInclude(x=> x.Reservation_Customers)
+                    .ThenInclude(x=> x.Customer)
                     .Select(c => new
                     {
                         c.Id,
                         Model = c.Car_Model.Name,
                         c.LicensePlate,
                         c.DeviceSerialNumber,
-                        c.IsTrackingActive
+                        c.IsTrackingActive,
+                        c.Status,
+                        lastReservation = c.Reservations.FirstOrDefault()
                     })
                     .ToListAsync();
 
@@ -573,7 +581,7 @@ namespace React_Rentify.Server.Controllers
                 static bool IsMoving(double? speedKmh) => (speedKmh ?? 0) > 2.0;
 
                 // 6) Map to VehicleCardDto with safe fallbacks/dummy data
-                var result = cars.Select(c =>
+                var result =cars.Select(c =>
                 {
                     latestBySerial.TryGetValue(c.DeviceSerialNumber ?? string.Empty, out var rec);
 
@@ -591,12 +599,20 @@ namespace React_Rentify.Server.Controllers
                         }
                         : null; // or keep a dummy: new VehicleLocationDto { Address = "Unknown" }
 
+                    var customersLabel = "";
+
+                    if( c.lastReservation != null && c.lastReservation.Reservation_Customers.Any() )
+                    {
+                        foreach (var customer in c.lastReservation.Reservation_Customers)
+                            customersLabel = customersLabel + customer.Customer.FullName + " ";
+                    }
+
                     return new VehicleCardDto
                     {
                         Id = c.Id,
                         PlateNumber = string.IsNullOrWhiteSpace(c.LicensePlate) ? null : c.LicensePlate,
                         DeviceSerialNumber = string.IsNullOrWhiteSpace(c.DeviceSerialNumber) ? null : c.DeviceSerialNumber,
-                        DriverName = null, // unknown -> keep null (UI shows "Unknown")
+                        DriverName = customersLabel, // unknown -> keep null (UI shows "Unknown")
                         IsOnline = IsOnline(lastUpdate) && (c.IsTrackingActive || rec != null),
                         IsMoving = IsMoving(speed),
                         Speed = speed,                          // km/h
@@ -604,7 +620,10 @@ namespace React_Rentify.Server.Controllers
                         LastUpdate = lastUpdate,                // ISO-8601 UTC returned by System.Text.Json
                         LastLocation = location,
                         HasAlerts = false,                      // no alert source here -> dummy
-                        AlertsCount = 0                         // dummy
+                        AlertsCount = 0,                        // dummy
+                        Model = c.Model,
+                        LicensePlate = c.LicensePlate,
+                        Status = c.Status
                     };
                 }).ToList();
 

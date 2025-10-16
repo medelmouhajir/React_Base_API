@@ -116,7 +116,7 @@ const VehicleCard = ({
 
     // Handle speed from multiple DTO formats
     const currentSpeed = vehicle.speed ||
-        vehicle.speedKmh ||
+        vehicle.lastLocation?.speed ||
         vehicle.lastRecord?.speedKmh ||
         0;
 
@@ -204,9 +204,9 @@ const VehicleCard = ({
             <div className="vehicle-info">
                 <div className="vehicle-primary">
                     <h3 className="vehicle-plate">
-                        {plateNumber}
+                        {plateNumber} {model}
                     </h3>
-                    <div className="vehicle-status">
+                    <div className="vehicle-vehicule-card-status">
                         {getStatusIcon(vehicleStatus.icon)}
                         <span>{vehicleStatus.label}</span>
                     </div>
@@ -224,48 +224,14 @@ const VehicleCard = ({
 
                         <div className="vehicle-location">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" fill="none" stroke="currentColor" strokeWidth="2" />
-                                <circle cx="12" cy="10" r="3" fill="currentColor" />
+                                <path d="M12 2L13.09 8.26L22 9l-6.74 5.74L17 21l-5-2.65L7 21l1.74-6.26L2 9l8.91-1.74L12 2z" fill="currentColor" />
                             </svg>
-                            <span>
-                                {locationAddress.length > 30 ?
-                                    `${locationAddress.slice(0, 30)}...` :
-                                    locationAddress
-                                }
-                            </span>
+                            <span>{currentSpeed} km/h</span>
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* Vehicle Stats */}
-            {viewMode === 'list' && (
-                <div className="vehicle-stats">
-                    <div className="stat">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                            <path d="M12 2L13.09 8.26L22 9l-6.74 5.74L17 21l-5-2.65L7 21l1.74-6.26L2 9l8.91-1.74L12 2z" fill="currentColor" />
-                        </svg>
-                        <span>{currentSpeed} km/h</span>
-                    </div>
-
-                    <div className="stat">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="3" fill="currentColor" />
-                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" stroke="currentColor" strokeWidth="1" />
-                        </svg>
-                        <span>{formatLastUpdate()}</span>
-                    </div>
-
-                    {totalDistance > 0 && (
-                        <div className="stat">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                <path d="M9 11H1l8-8 8 8h-8l4 4-4 4z" fill="currentColor" />
-                            </svg>
-                            <span>{(totalDistance / 1000).toFixed(1)} km</span>
-                        </div>
-                    )}
-                </div>
-            )}
 
             {/* Action Buttons */}
             <motion.div
@@ -275,7 +241,7 @@ const VehicleCard = ({
                 whileHover={{ opacity: 1 }}
             >
                 <button
-                    className="action-btn locate"
+                    className="action-vehicule-card-btn locate"
                     onClick={(e) => {
                         e.stopPropagation();
                         // Handle locate action - this will be handled by parent container
@@ -291,7 +257,7 @@ const VehicleCard = ({
 
                 {hasAlerts && (
                     <button
-                        className="action-btn alerts"
+                        className="action-vehicule-card-btn alerts"
                         onClick={(e) => {
                             e.stopPropagation();
                             // Handle alert action - this will be handled by parent container

@@ -170,7 +170,7 @@ const ModernVehiclePanel = ({
 
                     <div className="header-actions">
                         <motion.button
-                            className="action-btn refresh"
+                            className="action-vehicule-panel-btn refresh"
                             onClick={onRefresh}
                             whileTap={{ scale: 0.95 }}
                             disabled={isLoading}
@@ -188,7 +188,7 @@ const ModernVehiclePanel = ({
                         </motion.button>
 
                         <motion.button
-                            className="action-btn filters"
+                            className="action-vehicule-panel-btn filters"
                             onClick={() => setShowFilters(!showFilters)}
                             whileTap={{ scale: 0.95 }}
                         >
@@ -198,7 +198,7 @@ const ModernVehiclePanel = ({
                         </motion.button>
 
                         <motion.button
-                            className="action-btn view-mode"
+                            className="action-vehicule-panel-btn view-mode"
                             onClick={() => {
                                 const modes = ['list', 'grid', 'compact'];
                                 const currentIndex = modes.indexOf(viewMode);

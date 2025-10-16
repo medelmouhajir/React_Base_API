@@ -1999,8 +1999,46 @@
       "quickActionsHint": {
         "mobile": "اضغط لتنفيذ الإجراء",
         "desktop": "انقر أو استخدم اختصارات لوحة المفاتيح"
-      }
-    }
+      },
+      "title": "لوحة تحكم نظام التتبع",
+      "system": "النظام",
+      "systemStatus": "حالة النظام",
+      "refresh": "تحديث",
+      "toggleMenu": "القائمة",
+      "toggleVehicles": "إظهار/إخفاء لوحة المركبات",
+      "vehicles": "المركبات",
+      "switchToClassic": "التبديل إلى العرض الكلاسيكي",
+      "classic": "كلاسيكي",
+      "exitFullscreen": "الخروج من ملء الشاشة",
+      "totalVehicles": "إجمالي المركبات",
+      "onlineVehicles": "متصل",
+      "movingVehicles": "قيد الحركة",
+      "activeAlerts": "تنبيهات نشطة",
+      "justNow": "الآن",
+      "minutesAgo": "قبل {{minutes}} د",
+      "hoursAgo": "قبل {{hours}} س",
+      "realTimeTracking": "تتبع لحظي مُفعل",
+      "autoRefresh": "تحديث تلقائي: 30ث",
+      "coverage": "التغطية"
+    },
+    "map": {
+      "satellite": "قمر صناعي",
+      "streets": "الشوارع",
+      "terrain": "التضاريس",
+      "layer": "طبقة"
+    },
+    "controls": {
+      "collapse": "طيّ",
+      "expand": "توسيع",
+      "stopFollow": "إيقاف المتابعة",
+      "followVehicle": "اتّباع المركبة",
+      "hideTraffic": "إخفاء حركة المرور",
+      "showTraffic": "إظهار حركة المرور",
+      "hideClusters": "إخفاء التجميعات",
+      "showClusters": "إظهار التجميعات",
+      "recenterMap": "توسيط الخريطة"
+    },
+    "following": "قيد المتابعة"
   },
   "attachment": {
     "title": "المرفقات",

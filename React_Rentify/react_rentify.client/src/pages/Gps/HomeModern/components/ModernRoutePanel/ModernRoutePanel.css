@@ -101,7 +101,7 @@
     align-items: center;
 }
 
-.close-btn {
+.close-route-panel-btn {
     width: 36px;
     height: 36px;
     border-radius: var(--radius-lg);
@@ -115,7 +115,7 @@
     transition: all var(--transition-fast);
 }
 
-    .close-btn:hover {
+    .close-route-panel-btn:hover {
         background: rgba(255, 255, 255, 0.2);
         transform: scale(1.05);
     }

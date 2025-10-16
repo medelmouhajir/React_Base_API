@@ -57,6 +57,8 @@ export const carService = {
 
     async create(carData) {
         try {
+            console.warn(carData);
+
             const formData = new FormData();
 
             // Add car data as JSON string or individual fields
@@ -71,6 +73,26 @@ export const carService = {
             }
             formData.append('Gear_Type', carData.Gear_Type);
             formData.append('Engine_Type', carData.Engine_Type);
+
+
+            formData.append('CurrentKM', carData.CurrentKM);
+
+            // Add the legal document fields if they exist
+            if (carData.AssuranceName) {
+                formData.append('AssuranceName', carData.AssuranceName);
+            }
+            if (carData.AssuranceStartDate) {
+                formData.append('AssuranceStartDate', carData.AssuranceStartDate);
+            }
+            if (carData.AssuranceEndDate) {
+                formData.append('AssuranceEndDate', carData.AssuranceEndDate);
+            }
+            if (carData.TechnicalVisitStartDate) {
+                formData.append('TechnicalVisitStartDate', carData.TechnicalVisitStartDate);
+            }
+            if (carData.TechnicalVisitEndDate) {
+                formData.append('TechnicalVisitEndDate', carData.TechnicalVisitEndDate);
+            }
 
             const response = await apiClient.post('/cars', formData, {
                 headers: {
@@ -87,6 +109,7 @@ export const carService = {
 
     async createWithImages(carData, images, mainImageIndex = 0) {
         try {
+            console.warn(carData);
             const formData = new FormData();
 
             // Add car data as JSON string or individual fields
@@ -101,6 +124,25 @@ export const carService = {
             }
             formData.append('Gear_Type', carData.Gear_Type);
             formData.append('Engine_Type', carData.Engine_Type);
+
+            formData.append('CurrentKM', carData.CurrentKM);
+
+            // Add the legal document fields if they exist
+            if (carData.AssuranceName) {
+                formData.append('AssuranceName', carData.AssuranceName);
+            }
+            if (carData.AssuranceStartDate) {
+                formData.append('AssuranceStartDate', carData.AssuranceStartDate);
+            }
+            if (carData.AssuranceEndDate) {
+                formData.append('AssuranceEndDate', carData.AssuranceEndDate);
+            }
+            if (carData.TechnicalVisitStartDate) {
+                formData.append('TechnicalVisitStartDate', carData.TechnicalVisitStartDate);
+            }
+            if (carData.TechnicalVisitEndDate) {
+                formData.append('TechnicalVisitEndDate', carData.TechnicalVisitEndDate);
+            }
 
             // Add images
             images.forEach((image, index) => {

@@ -2007,8 +2007,46 @@
       "quickActionsHint": {
         "mobile": "Tap to perform action",
         "desktop": "Click or use keyboard shortcuts"
-      }
-    }
+      },
+      "justNow": "Just now",
+      "minutesAgo": "{{minutes}}m ago",
+      "hoursAgo": "{{hours}}h ago",
+      "totalVehicles": "Total Vehicles",
+      "onlineVehicles": "Online",
+      "movingVehicles": "Moving",
+      "activeAlerts": "Active Alerts",
+      "title": "GPS Dashboard",
+      "system": "System",
+      "systemStatus": "System Status",
+      "refresh": "Refresh",
+      "toggleMenu": "Menu",
+      "exitFullscreen": "Exit Fullscreen",
+      "toggleVehicles": "Toggle Vehicles Panel",
+      "vehicles": "Vehicles",
+      "switchToClassic": "Switch to Classic View",
+      "classic": "Classic",
+      "realTimeTracking": "Real-time tracking active",
+      "autoRefresh": "Auto-refresh: 30s",
+      "coverage": "Coverage"
+    },
+    "map": {
+      "satellite": "Satellite",
+      "streets": "Streets",
+      "terrain": "Terrain",
+      "layer": "Layer"
+    },
+    "controls": {
+      "collapse": "Collapse",
+      "expand": "Expand",
+      "stopFollow": "Stop Following",
+      "followVehicle": "Follow Vehicle",
+      "hideTraffic": "Hide Traffic",
+      "showTraffic": "Show Traffic",
+      "hideClusters": "Hide Clusters",
+      "showClusters": "Show Clusters",
+      "recenterMap": "Recenter Map"
+    },
+    "following": "Following"
   },
   "attachment": {
     "title": "Attachments",

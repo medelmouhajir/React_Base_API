@@ -266,7 +266,7 @@ const ModernRoutePanel = ({
                         />
 
                         <motion.button
-                            className="close-btn"
+                            className="close-route-panel-btn"
                             onClick={onClose}
                             whileTap={{ scale: 0.95 }}
                             aria-label={t('common.close', 'Close')}

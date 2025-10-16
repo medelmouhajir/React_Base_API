@@ -199,6 +199,9 @@ const HomeModern = () => {
         totalVehicles: vehicles?.length || 0,
         onlineVehicles: vehicles?.filter(v => v.isOnline).length || 0,
         movingVehicles: vehicles?.filter(v => v.isMoving).length || 0,
+        availableVehicles: vehicles?.filter(v => v.status == 'Available').length || 0,
+        rentedVehicles: vehicles?.filter(v => v.status == 'Rented').length || 0,
+        maintenanceVehicles: vehicles?.filter(v => v.status == 'Maintenance').length || 0,
         activeAlerts: alertStats?.unacknowledgedAlerts || 0,
         totalDistance: routeStats?.totalDistance || 0
     }), [vehicles, alertStats, routeStats]);
@@ -221,7 +224,7 @@ const HomeModern = () => {
 
     const handleToggleLegacy = useCallback(() => {
         localStorage.setItem('gps-view-preference', 'legacy');
-        navigate('/gps');
+        navigate('/dashboard');
     }, [navigate]);
 
     const handlePanelSwitch = useCallback((panel) => {
@@ -278,7 +281,7 @@ const HomeModern = () => {
             <div className={`home-modern-container error ${isDarkMode ? 'dark' : 'light'} ${isDrawerOpen && isMobile ? 'drawer-open' : ''}`}>
                 <div className="legacy-modern-toggle">
                     <button type="button" className="btn btn-outline" onClick={handleToggleLegacy}>
-                        {t('gps.switchLegacy', 'Switch to legacy dashboard')}
+                        {t('sidebar.dashboard', 'Switch to legacy dashboard')}
                     </button>
                 </div>
                 <div className="home-modern-error">

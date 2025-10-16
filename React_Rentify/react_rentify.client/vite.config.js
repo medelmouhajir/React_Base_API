@@ -69,10 +69,10 @@ const pwaConfig = {
     registerType: 'autoUpdate',
     includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
     manifest: {
-        name: 'Rentify - Car Rental Management',
-        short_name: 'Rentify',
+        name: 'Renter - Car Rental Management',
+        short_name: 'Renter',
         description: 'Complete car rental management system',
-        theme_color: '#0284c7',
+        theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',
@@ -118,56 +118,17 @@ const pwaConfig = {
             }
         ]
     },
-    workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        runtimeCaching: [
-            {
-                urlPattern: /^https:\/\/.*\/api\/notifications.*/i,
-                handler: 'NetworkOnly' // CHANGED: Never cache notifications
-            },
-            // Cache API calls
-            {
-                urlPattern: /^https:\/\/.*\/api\/.*/i,
-                handler: 'CacheFirst',
-                options: {
-                    cacheName: 'api-cache',
-                    expiration: {
-                        maxEntries: 100,
-                        maxAgeSeconds: 60 * 60 * 24 // 24 hours
-                    },
-                    cacheableResponse: {
-                        statuses: [0, 200]
-                    }
-                }
-            },
-            // Cache images
-            {
-                urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
-                handler: 'CacheFirst',
-                options: {
-                    cacheName: 'images-cache',
-                    expiration: {
-                        maxEntries: 50,
-                        maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-                    }
-                }
-            },
-            // Cache CSS and JS
-            {
-                urlPattern: /\.(?:css|js)$/,
-                handler: 'StaleWhileRevalidate',
-                options: {
-                    cacheName: 'static-resources',
-                }
-            }
-        ],
-        cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true
-    },
     strategies: 'injectManifest',
     srcDir: 'public',
     filename: 'sw.js',
+    injectManifest: {
+        swSrc: 'public/sw.js',
+        swDest: 'dist/sw.js',
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // Don't include the service worker itself in the manifest
+        dontCacheBustURLsMatching: /\.\w{8}\./,
+        maximumFileSizeToCacheInBytes: 5000000, // 5MB
+    },
     devOptions: {
         enabled: true,
         type: 'module'

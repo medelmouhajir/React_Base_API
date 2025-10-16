@@ -193,17 +193,17 @@ function App() {
                                 </Route>
 
                                 {/* GPS Route - Independent (no MainLayout) */}
-                                <Route
-                                    path="/gps"
-                                    element={
-                                        <ProtectedRoute>
-                                            <GpsHome />
-                                        </ProtectedRoute>
-                                    }
-                                />
+                                {/*<Route*/}
+                                {/*    path="/gps"*/}
+                                {/*    element={*/}
+                                {/*        <ProtectedRoute>*/}
+                                {/*            <GpsHome />*/}
+                                {/*        </ProtectedRoute>*/}
+                                {/*    }*/}
+                                {/*/>*/}
 
                                 <Route
-                                    path="/gps/modern"
+                                    path="/gps"
                                     element={
                                         <ProtectedRoute>
                                             <GpsHomeModern />

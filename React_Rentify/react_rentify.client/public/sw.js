@@ -1,18 +1,72 @@
 // Service Worker for Web Push Notifications
+import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
+import { registerRoute } from 'workbox-routing';
+import { CacheFirst, NetworkOnly, StaleWhileRevalidate } from 'workbox-strategies';
+import { ExpirationPlugin } from 'workbox-expiration';
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
 const CACHE_NAME = 'rentify-v1';
 
-// Install event
+// CRITICAL: This placeholder is required for manifest injection
+precacheAndRoute(self.__WB_MANIFEST);
+
+// Clean up outdated caches
+cleanupOutdatedCaches();
+
+// Skip waiting and claim clients
 self.addEventListener('install', (event) => {
     console.log('Service Worker installing...');
     self.skipWaiting();
 });
 
-// Activate event
 self.addEventListener('activate', (event) => {
     console.log('Service Worker activating...');
     event.waitUntil(clients.claim());
 });
+
+// Runtime caching strategies
+registerRoute(
+    ({ url }) => url.pathname.includes('/api/notifications'),
+    new NetworkOnly(), // Never cache notifications
+    'GET'
+);
+
+registerRoute(
+    ({ url }) => url.pathname.includes('/api/'),
+    new CacheFirst({
+        cacheName: 'api-cache',
+        plugins: [
+            new ExpirationPlugin({
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24, // 24 hours
+            }),
+            new CacheableResponsePlugin({
+                statuses: [0, 200],
+            }),
+        ],
+    }),
+    'GET'
+);
+
+registerRoute(
+    ({ request }) => request.destination === 'image',
+    new CacheFirst({
+        cacheName: 'images-cache',
+        plugins: [
+            new ExpirationPlugin({
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+            }),
+        ],
+    })
+);
+
+registerRoute(
+    ({ request }) => request.destination === 'script' || request.destination === 'style',
+    new StaleWhileRevalidate({
+        cacheName: 'static-resources',
+    })
+);
 
 // Push event - handle incoming push notifications
 self.addEventListener('push', (event) => {
@@ -50,7 +104,8 @@ self.addEventListener('push', (event) => {
                 title: 'Dismiss'
             }
         ],
-        vibrate: notification.data?.severity === 'Critical' ? [200, 100, 200] : [100]
+        vibrate: notification.data?.severity === 'Critical' ? [200, 100, 200] : [100],
+        silent: false
     };
 
     event.waitUntil(
@@ -68,49 +123,23 @@ self.addEventListener('notificationclick', (event) => {
         return;
     }
 
-    const urlToOpen = event.notification.data?.url || '/';
-
+    // Handle notification click
     event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true })
-            .then((clientList) => {
-                // Check if there's already a window open
-                for (let i = 0; i < clientList.length; i++) {
-                    const client = clientList[i];
-                    if (client.url === urlToOpen && 'focus' in client) {
-                        return client.focus();
-                    }
-                }
-                // Open new window if none exists
-                if (clients.openWindow) {
-                    return clients.openWindow(urlToOpen);
-                }
-            })
+        clients.openWindow(event.notification.data?.url || '/')
     );
 });
 
 // Background sync for offline actions
 self.addEventListener('sync', (event) => {
-    console.log('Background sync:', event.tag);
-
-    if (event.tag === 'sync-notifications') {
-        event.waitUntil(syncNotifications());
+    if (event.tag === 'background-sync') {
+        console.log('Background sync triggered');
+        // Handle offline data sync here
     }
 });
 
-async function syncNotifications() {
-    // Sync notification read status when back online
-    try {
-        const cache = await caches.open(CACHE_NAME);
-        const requests = await cache.keys();
-
-        // Process pending notification updates
-        for (const request of requests) {
-            if (request.url.includes('/notifications/')) {
-                await fetch(request);
-                await cache.delete(request);
-            }
-        }
-    } catch (error) {
-        console.error('Failed to sync notifications:', error);
+// Message handling for communication with main thread
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
     }
-}
+});

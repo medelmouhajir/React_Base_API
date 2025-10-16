@@ -49,10 +49,10 @@ const VehicleSearch = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
         >
-            <div className="search-input-container">
+            <div className="search-vehicules-input-container">
                 {/* Search Icon */}
                 <motion.div
-                    className="search-icon"
+                    className="search-vehicules-icon"
                     animate={{
                         scale: isFocused ? 1.1 : 1,
                         color: isFocused ? 'var(--modern-primary)' : 'rgba(255, 255, 255, 0.5)'
@@ -75,7 +75,7 @@ const VehicleSearch = ({
                     onBlur={() => setIsFocused(false)}
                     onKeyDown={handleKeyDown}
                     placeholder={placeholder}
-                    className="search-input"
+                    className="search-vehicules-input"
                     autoComplete="off"
                     autoCorrect="off"
                     autoCapitalize="off"
@@ -86,7 +86,7 @@ const VehicleSearch = ({
                 <AnimatePresence>
                     {hasValue && (
                         <motion.button
-                            className="clear-btn"
+                            className="clear-vehicules-btn"
                             onClick={handleClear}
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
