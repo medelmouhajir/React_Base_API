@@ -25,8 +25,6 @@ const ModernRoutePanel = ({
 }) => {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('overview'); // overview, timeline, playback, analytics
-    const [playbackSpeed, setPlaybackSpeed] = useState(1);
-    const [isPlaying, setIsPlaying] = useState(false);
     const [currentTimeIndex, setCurrentTimeIndex] = useState(0);
     const [showSpeedChart, setShowSpeedChart] = useState(false);
     const [selectedMetric, setSelectedMetric] = useState('speed'); // speed, distance, stops
@@ -128,49 +126,7 @@ const ModernRoutePanel = ({
     }, [routeData]);
 
 
-    // Handle playback controls
-    const handlePlayback = useCallback((action) => {
-        switch (action) {
-            case 'play':
-                setIsPlaying(true);
-                break;
-            case 'pause':
-                setIsPlaying(false);
-                break;
-            case 'stop':
-                setIsPlaying(false);
-                setCurrentTimeIndex(0);
-                break;
-            case 'next':
-                if (processedRouteData && currentTimeIndex < processedRouteData.timePoints.length - 1) {
-                    setCurrentTimeIndex(currentTimeIndex + 1);
-                }
-                break;
-            case 'previous':
-                if (currentTimeIndex > 0) {
-                    setCurrentTimeIndex(currentTimeIndex - 1);
-                }
-                break;
-        }
-        onPlaybackStateChange?.(action, currentTimeIndex);
-    }, [currentTimeIndex, processedRouteData, onPlaybackStateChange]);
 
-    // Auto-advance playback
-    useEffect(() => {
-        if (isPlaying && processedRouteData) {
-            const interval = setInterval(() => {
-                setCurrentTimeIndex(prev => {
-                    if (prev >= processedRouteData.timePoints.length - 1) {
-                        setIsPlaying(false);
-                        return prev;
-                    }
-                    return prev + playbackSpeed;
-                });
-            }, 1000 / playbackSpeed);
-
-            return () => clearInterval(interval);
-        }
-    }, [isPlaying, playbackSpeed, processedRouteData]);
 
     const tabs = [
         {
@@ -188,15 +144,6 @@ const ModernRoutePanel = ({
             icon: (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M12 2v20M17 7l-5 5-5-5" stroke="currentColor" strokeWidth="2" fill="none" />
-                </svg>
-            )
-        },
-        {
-            id: 'playback',
-            label: t('gps.modern.playback', 'Playback'),
-            icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M8 5v14l11-7z" fill="currentColor" />
                 </svg>
             )
         },
@@ -384,28 +331,6 @@ const ModernRoutePanel = ({
                                     timePoints={processedRouteData?.timePoints || []}
                                     currentIndex={currentTimeIndex}
                                     onPointSelect={setCurrentTimeIndex}
-                                    isMobile={isMobile}
-                                />
-                            </motion.div>
-                        )}
-
-                        {activeTab === 'playback' && (
-                            <motion.div
-                                key="playback"
-                                className="tab-content playback"
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <RoutePlayback
-                                    timePoints={processedRouteData?.timePoints || []}
-                                    currentIndex={currentTimeIndex}
-                                    isPlaying={isPlaying}
-                                    playbackSpeed={playbackSpeed}
-                                    onPlaybackControl={handlePlayback}
-                                    onSpeedChange={setPlaybackSpeed}
-                                    onSeek={setCurrentTimeIndex}
                                     isMobile={isMobile}
                                 />
                             </motion.div>

@@ -243,6 +243,88 @@ const ModernMapContainer = ({
         handleMapReady(map);
     }, [isMobile, handleMapReady]);
 
+    useEffect(() => {
+        if (!mapRef.current) return;
+
+        const map = mapRef.current;
+        let resizeTimeout;
+
+        // Function to handle map resize with debouncing
+        const handleMapResize = () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (map && map.invalidateSize) {
+                    console.log('Invalidating map size due to container resize');
+                    // Invalidate map size to force tile reload and proper sizing
+                    map.invalidateSize({
+                        pan: false,  // Don't pan the map
+                        animate: false  // Don't animate the resize for better performance
+                    });
+                }
+            }, 150); // Debounce resize events
+        };
+
+        // Create ResizeObserver to watch container size changes
+        const resizeObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                if (width > 0 && height > 0) {
+                    handleMapResize();
+                }
+            }
+        });
+
+        // Watch the container element for size changes
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        // Also listen for these specific events that trigger layout changes
+        const handleLayoutChange = () => {
+            handleMapResize();
+        };
+
+        // Listen for drawer state changes via custom events or direct triggers
+        const handleDrawerToggle = () => {
+            // Wait for CSS transition to complete before invalidating
+            setTimeout(handleMapResize, 350); // Match CSS transition duration
+        };
+
+        // Listen for fullscreen changes
+        const handleFullscreenChange = () => {
+            // Wait for animation to complete
+            setTimeout(handleMapResize, 350);
+        };
+
+        // Add event listeners for layout changes
+        window.addEventListener('resize', handleLayoutChange);
+
+        // Cleanup
+        return () => {
+            clearTimeout(resizeTimeout);
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', handleLayoutChange);
+        };
+    }, [isMapReady, containerRef]); // Dependencies: map readiness and container ref
+
+    // ADDITIONAL FIX: React to prop changes that affect layout
+    useEffect(() => {
+        if (!mapRef.current || !isMapReady) return;
+
+        // Delay to allow CSS transitions to complete
+        const timer = setTimeout(() => {
+            if (mapRef.current && mapRef.current.invalidateSize) {
+                console.log('Invalidating map size due to prop changes:', { isFullScreen, className });
+                mapRef.current.invalidateSize({
+                    pan: false,
+                    animate: false
+                });
+            }
+        }, 350); // Match transition duration from CSS
+
+        return () => clearTimeout(timer);
+    }, [isFullScreen, className, isMapReady]);
+
     // Handle vehicle marker click
     const handleVehicleMarkerClick = useCallback((vehicle) => {
         onVehicleSelect?.(vehicle);

@@ -92,7 +92,6 @@
     margin: 0;
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: white;
     text-align: center;
     padding-right: var(--space-8);
 }
@@ -106,7 +105,6 @@
     border-radius: var(--radius-lg);
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -166,7 +164,7 @@
     padding: var(--space-4) var(--space-4);
     background: transparent;
     border: none;
-    color: white;
+    
     cursor: pointer;
     transition: all var(--transition-fast);
     width: 100%;
@@ -224,7 +222,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    
     transition: all var(--transition-fast);
     flex-shrink: 0;
     position: relative;
@@ -287,7 +285,7 @@
     min-width: 20px;
     height: 20px;
     background: var(--modern-danger);
-    color: white;
+    
     border-radius: var(--radius-full);
     font-size: var(--font-size-xs);
     font-weight: 600;
@@ -311,7 +309,7 @@
 .quick-action-label {
     font-size: var(--font-size-base);
     font-weight: 500;
-    color: white;
+    
     line-height: 1.4;
 }
 
@@ -355,7 +353,7 @@
 }
 
 .quick-action-item:hover:not(.disabled) .quick-action-arrow {
-    color: white;
+    
     transform: translateX(4px);
 }
 
@@ -622,7 +620,7 @@
         .quick-action-item:focus {
             border-color: var(--modern-primary);
             background: var(--modern-primary);
-            color: white;
+            
         }
 
     .quick-actions-close {

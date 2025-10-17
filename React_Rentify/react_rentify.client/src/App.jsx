@@ -162,7 +162,6 @@ const ThemedToastContainer = () => {
             newestOnTop
             closeOnClick
             rtl={i18n.language === 'ar'}
-            rtl={false}
             pauseOnFocusLoss
             draggable
             pauseOnHover

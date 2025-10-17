@@ -69,7 +69,6 @@
     margin: 0;
     background: linear-gradient(135deg, var(--modern-primary), var(--modern-primary-light));
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
     line-height: 1.2;
 }
@@ -78,7 +77,6 @@
     margin-top: var(--space-1); /* Reduced from var(--space-2) */
     opacity: 0.8;
     font-size: var(--font-size-xs); /* Reduced from var(--font-size-sm) */
-    color: white;
     display: flex;
     align-items: center;
     gap: var(--space-2);
@@ -96,7 +94,6 @@
     gap: var(--space-2);
     font-size: var(--font-size-xs); /* Reduced from var(--font-size-sm) */
     font-weight: 500;
-    color: white;
 }
 
 .status-indicator {
@@ -130,7 +127,6 @@
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--radius-lg);
-    color: white;
     cursor: pointer;
     font-size: var(--font-size-xs); /* Reduced from var(--font-size-sm) */
     font-weight: 500;
@@ -157,7 +153,6 @@
     .action-summary-btn.primary {
         background: var(--modern-primary);
         border-color: var(--modern-primary);
-        color: white;
     }
 
         .action-summary-btn.primary:hover:not(:disabled) {
@@ -285,7 +280,6 @@
     font-size: var(--font-size-xs); /* Reduced from var(--font-size-sm) */
     font-weight: 500;
     opacity: 0.8;
-    color: white;
     flex: 1;
     line-height: 1.2;
 }
@@ -293,7 +287,6 @@
 .metric-value {
     font-size: var(--font-size-xl); /* Reduced from var(--font-size-2xl) */
     font-weight: 700;
-    color: white;
     line-height: 1;
     position: relative;
 }
@@ -333,7 +326,6 @@
 .info-text {
     font-size: var(--font-size-xs); /* Reduced from var(--font-size-sm) */
     opacity: 0.7;
-    color: white;
     display: flex;
     align-items: center;
     gap: var(--space-1);

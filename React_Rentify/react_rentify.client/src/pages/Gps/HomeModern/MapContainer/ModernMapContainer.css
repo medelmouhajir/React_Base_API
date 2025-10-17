@@ -3,15 +3,13 @@
     position: relative;
     width: 100%;
     height: 100%;
+    max-height: 100%; /* Added */
     border-radius: var(--radius-2xl);
     overflow: hidden;
     background: var(--glass-surface);
     backdrop-filter: blur(var(--glass-blur));
-    transition: all var(--transition-normal);
-    /* Remove touch-action to let Leaflet handle it */
-    /* touch-action: pan-x pan-y; */
+    transition: all var(--transition-normal, 0.3s ease);
 }
-
     .modern-map-container.fullscreen {
         position: fixed;
         top: 0;
@@ -20,6 +18,7 @@
         bottom: 0;
         z-index: 1000;
         border-radius: 0;
+        transition: all var(--transition-normal, 0.3s ease);
     }
 
 /* CRITICAL FIX: Remove touch-action and let Leaflet handle touch events */
@@ -27,8 +26,7 @@
     width: 100%;
     height: 100%;
     border-radius: inherit;
-    /* Remove touch-action - let Leaflet manage this internally */
-    /* touch-action: pan-x pan-y; */
+    transition: all var(--transition-normal, 0.3s ease);
 }
 
 /* Ensure overlays don't block map interactions */
@@ -183,4 +181,38 @@
         gap: var(--space-2);
         pointer-events: none; /* Ensure no touch blocking */
     }
+}
+
+/* Ensure leaflet map resizes properly */
+.leaflet-map {
+    /* Existing styles... */
+    /* Force proper sizing */
+}
+
+/* Prevent map jumping during fullscreen transitions */
+.modern-map-container.fullscreen {
+    /* Existing styles... */
+    /* Ensure smooth transition to fullscreen */
+}
+
+
+.home-modern.drawer-closed .modern-map-container:not(.fullscreen) {
+    width: 100%;
+}
+
+/* Mobile specific fixes */
+@media (max-width: 1024px) {
+    .home-modern.drawer-open .modern-map-container:not(.fullscreen) {
+        width: 100%; /* Full width on mobile as drawer is overlay */
+    }
+}
+
+/* Ensure map tiles load properly during size changes */
+.leaflet-container {
+    transition: none; /* Remove transitions from leaflet container to prevent tile rendering issues */
+}
+
+/* Optimize tile loading during resize */
+.leaflet-tile-pane {
+    transition: none; /* Prevent tile pane transitions that can cause blank tiles */
 }

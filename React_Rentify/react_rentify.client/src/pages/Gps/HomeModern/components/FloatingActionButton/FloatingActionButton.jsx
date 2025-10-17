@@ -33,7 +33,7 @@ const FloatingActionButton = ({
                         onClick={onToggleQuickActions}
                         whileTap={{ scale: 0.9 }}
                         whileHover={{ scale: 1.1 }}
-                        aria-label={t('gps.modern.quickActions', 'Quick Actions')}
+                        aria-label={t('gps.modern.quickActions.title', 'Quick Actions')}
                     >
                         <motion.svg
                             width="24"
@@ -91,15 +91,15 @@ const FloatingActionButton = ({
                     </motion.button>
 
                     {/* Tooltip */}
-                    <motion.div
-                        className="fab-tooltip"
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 10 }}
-                        transition={{ delay: 1 }}
-                    >
-                        {t('gps.modern.quickActions', 'Quick Actions')}
-                    </motion.div>
+                    {/*<motion.div*/}
+                    {/*    className="fab-tooltip"*/}
+                    {/*    initial={{ opacity: 0, x: 10 }}*/}
+                    {/*    animate={{ opacity: 1, x: 0 }}*/}
+                    {/*    exit={{ opacity: 0, x: 10 }}*/}
+                    {/*    transition={{ delay: 1 }}*/}
+                    {/*>*/}
+                    {/*    {t('gps.modern.quickActions', 'Quick Actions')}*/}
+                    {/*</motion.div>*/}
                 </motion.div>
             )}
         </AnimatePresence>

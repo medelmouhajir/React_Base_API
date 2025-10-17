@@ -72,13 +72,14 @@
 
 /* Base Container */
 .home-modern-container {
-    min-height: 100vh;
+    height: 100vh; /* Changed from min-height: 100vh */
+    max-height: 100vh; /* Added to prevent overflow */
+    overflow: hidden; /* Changed from overflow-x: hidden */
     display: flex;
     flex-direction: column;
-    background: linear-gradient(135deg, hsl(220, 70%, 8%) 0%, hsl(240, 60%, 12%) 50%, hsl(260, 70%, 8%) 100% );
+    background: linear-gradient(135deg, hsl(220, 70%, 8%) 0%, hsl(240, 60%, 12%) 50%, hsl(260, 70%, 8%) 100%);
     color: white;
     position: relative;
-    overflow-x: hidden;
 }
 
     .home-modern-container.light {
@@ -123,6 +124,8 @@
     gap: var(--space-4);
     grid-template-rows: auto 1fr auto;
     position: relative;
+    min-height: 0; /* Added to prevent flex item from growing beyond container */
+    overflow: hidden; /* Added to contain content */
 }
 
     .home-modern.fullscreen-mode {
@@ -137,8 +140,9 @@
     display: grid;
     gap: var(--space-4);
     grid-template-columns: 1fr;
-    min-height: 60vh;
+    min-height: 0; /* Changed from min-height: 60vh */
     position: relative;
+    overflow: hidden; /* Added to prevent overflow */
 }
 
 @media (min-width: 1024px) {
@@ -199,7 +203,8 @@
 .home-modern__map {
     width: 100%;
     height: 100%;
-    min-height: 400px;
+    min-height: 0; /* Changed from min-height: 400px */
+    max-height: 100%; /* Added to prevent overflow */
     border-radius: inherit;
     overflow: hidden;
 }
@@ -551,4 +556,107 @@ body.drawer-open {
     -webkit-touch-callout: none !important;
     -webkit-user-select: none !important;
     user-select: none !important;
+}
+
+
+
+/* Apply theme-aware text colors globally */
+.home-modern-container h1,
+.home-modern-container h2,
+.home-modern-container h3,
+.home-modern-container .metric-value,
+.home-modern-container .panel-title {
+    color: var(--text-primary);
+}
+
+.home-modern-container p,
+.home-modern-container span:not(.highlight),
+.home-modern-container .metric-label,
+.home-modern-container .subtitle {
+    color: var(--text-secondary);
+}
+
+.home-modern-container .muted,
+.home-modern-container .description {
+    color: var(--text-muted);
+}
+
+/* Enhanced glass effect with better text contrast */
+.light .glass {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(12px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+    .light .glass:hover {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(0, 0, 0, 0.15);
+    }
+
+    /* Ensure proper text contrast on glass surfaces */
+    .light .glass * {
+        color: var(--color-text-light-primary, #111827);
+    }
+
+    .light .glass .muted,
+    .light .glass .secondary {
+        color: var(--color-text-light-secondary, #6b7280);
+    }
+
+/* ===========================================*/
+
+/* 5. SPECIFIC COMPONENT FIXES */
+
+/* Fix any remaining hardcoded white colors */
+.light .status-indicator,
+.light .metric-icon,
+.light .action-btn {
+    color: var(--color-text-light-primary, #111827);
+}
+
+/* Ensure buttons have proper contrast */
+.light .summary-action-btn,
+.light .refresh-btn {
+    color: var(--color-text-light-primary, #111827);
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+    .light .summary-action-btn:hover,
+    .light .refresh-btn:hover {
+        background: rgba(0, 0, 0, 0.1);
+        color: var(--color-text-light-primary, #111827);
+    }
+
+/* Fix gradient text for light mode */
+.light .gradient-text {
+    background: linear-gradient(135deg, var(--modern-primary), var(--modern-primary-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ===========================================*/
+
+/* 6. ACCESSIBILITY IMPROVEMENTS */
+
+/* Ensure minimum contrast ratios */
+.light .glass {
+    --glass-text-contrast: #111827;
+    --glass-text-secondary: #6b7280;
+}
+
+.dark .glass {
+    --glass-text-contrast: #f9fafb;
+    --glass-text-secondary: #d1d5db;
+}
+
+/* Apply contrast-safe colors */
+.glass .contrast-text {
+    color: var(--glass-text-contrast);
+}
+
+.glass .contrast-text-secondary {
+    color: var(--glass-text-secondary);
 }

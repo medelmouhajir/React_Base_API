@@ -28,7 +28,7 @@
 .empty-content {
     text-align: center;
     padding: var(--space-8);
-    color: white;
+    
 }
 
     .empty-content svg {
@@ -79,14 +79,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    
 }
 
 .vehicle-details h2 {
     margin: 0;
     font-size: var(--font-size-xl);
     font-weight: 600;
-    color: white;
+    
 }
 
 .vehicle-details p {
@@ -110,7 +110,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    
     cursor: pointer;
     transition: all var(--transition-fast);
 }
@@ -151,13 +151,13 @@
     .tab-btn:hover {
         background: rgba(255, 255, 255, 0.1);
         border-color: var(--glass-border);
-        color: white;
+        
     }
 
     .tab-btn.active {
         background: var(--modern-primary);
         border-color: var(--modern-primary);
-        color: white;
+        
     }
 
 .panel-content {
@@ -183,7 +183,7 @@
     justify-content: center;
     height: 100%;
     text-align: center;
-    color: white;
+    
 }
 
 .error-content {
@@ -211,7 +211,7 @@
     background: var(--modern-primary);
     border: none;
     border-radius: var(--radius-lg);
-    color: white;
+    
     font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -235,7 +235,7 @@
 .action-btn.primary {
     background: var(--modern-primary);
     border-color: var(--modern-primary);
-    color: white;
+    
     padding: var(--space-3) var(--space-5);
     border-radius: var(--radius-xl);
     font-weight: 500;
