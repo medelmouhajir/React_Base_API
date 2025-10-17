@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 // Modern Components
 import RouteTimeline from './components/RouteTimeline/RouteTimeline';
 import RouteStats from './components/RouteStats/RouteStats';
-import RoutePlayback from './components/RoutePlayback/RoutePlayback';
 import DateRangePicker from './components/DateRangePicker/DateRangePicker';
 import SpeedChart from './components/SpeedChart/SpeedChart';
 

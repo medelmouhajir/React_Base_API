@@ -340,6 +340,7 @@ const HomeModern = () => {
                         onVehicleSelect={handleVehicleSelect}
                         isMobile={isMobile}
                         isFullScreen={isFullScreenMap}
+                        onToggleFullScreen={() => setIsFullScreenMap(!isFullScreenMap)}
                         className={isFullScreenMap ? 'fullscreen' : ''}
                     />
                 )}

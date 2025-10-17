@@ -10,6 +10,7 @@ const MapControlsOverlay = ({
     isVisible = true,
     isMobile = false,
     isFullScreen = false,
+    onToggleFullScreen,
     mapMode = 'satellite',
     followVehicle = false,
     showTraffic = false,
@@ -324,6 +325,16 @@ const MapControlsOverlay = ({
                             className: 'cluster-btn'
                         })}
 
+                        {/* Fullscreen Toggle */}
+                        {renderControlButton({
+                            icon: isFullScreen ? 'collapse' : 'expand',
+                            label: isFullScreen
+                                ? t('gps.controls.exitFullscreen', 'Exit Fullscreen')
+                                : t('gps.controls.enterFullscreen', 'Enter Fullscreen'),
+                            onClick: onToggleFullScreen,
+                            isActive: isFullScreen,
+                            className: 'fullscreen-overlay-btn'
+                        })}
                         {/* Recenter Map */}
                         {renderControlButton({
                             icon: 'recenter',

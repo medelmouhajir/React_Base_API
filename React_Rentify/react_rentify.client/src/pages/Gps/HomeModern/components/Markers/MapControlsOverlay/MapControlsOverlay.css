@@ -467,3 +467,10 @@
         display: none;
     }
 }
+.fullscreen-overlay-btn.active {
+    background: linear-gradient(135deg, var(--modern-info) 0%, #0891b2 100%);
+}
+
+.fullscreen-overlay-btn:hover {
+    color: var(--modern-info-light);
+}

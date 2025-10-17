@@ -7,8 +7,11 @@ namespace React_Rentify.Server.DTOs.GPS
         public Guid Id { get; init; }
         public string? PlateNumber { get; init; }
         public string Model { get; set; }
+        public string Manufacturer { get; set; }
+        public int Year { get; set; }
         public string LicensePlate { get; set; }
         public string Status { get; set; }
+        public string MainImage { get; set; }
 
         public string? DeviceSerialNumber { get; init; }
         public string? DriverName { get; init; }

@@ -536,18 +536,24 @@ namespace React_Rentify.Server.Controllers
                     .AsNoTracking()
                     .Where(c => c.AgencyId == agencyId)
                     .Include(x=> x.Car_Model)
+                    .ThenInclude(x=> x.Manufacturer)
                     .Include(x=> x.Reservations.Where(r=> r.StartDate <= today && r.EndDate >= today && r.Status != "Reserved"))
                     .ThenInclude(x=> x.Reservation_Customers)
                     .ThenInclude(x=> x.Customer)
+                    .Include(x=> x.Car_Images)
+                    .Include(x=> x.Car_Year)
                     .Select(c => new
                     {
                         c.Id,
                         Model = c.Car_Model.Name,
+                        Manufacturer = c.Car_Model.Manufacturer.Name,
+                        c.Car_Year.YearValue,
                         c.LicensePlate,
                         c.DeviceSerialNumber,
                         c.IsTrackingActive,
                         c.Status,
-                        lastReservation = c.Reservations.FirstOrDefault()
+                        lastReservation = c.Reservations.FirstOrDefault(),
+                        mainImage = c.Car_Images.FirstOrDefault(v=> v.IsMainImage)
                     })
                     .ToListAsync();
 
@@ -623,7 +629,10 @@ namespace React_Rentify.Server.Controllers
                         AlertsCount = 0,                        // dummy
                         Model = c.Model,
                         LicensePlate = c.LicensePlate,
-                        Status = c.Status
+                        Status = c.Status,
+                        Manufacturer = c.Manufacturer,
+                        MainImage = c.mainImage == null ? null : c.mainImage.Path,
+                        Year = c.YearValue
                     };
                 }).ToList();
 

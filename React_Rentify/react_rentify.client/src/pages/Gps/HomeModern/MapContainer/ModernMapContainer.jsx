@@ -92,6 +92,7 @@ const ModernMapContainer = ({
     onVehicleSelect,
     isMobile = false,
     isFullScreen = false,
+    onToggleFullScreen,
     className = '',
     onMapInteraction
 }) => {
@@ -482,6 +483,7 @@ const ModernMapContainer = ({
                 isVisible={isMapReady}
                 isMobile={isMobile}
                 isFullScreen={isFullScreen}
+                onToggleFullScreen={onToggleFullScreen}
                 mapMode={mapMode}
                 followVehicle={followVehicle}
                 showTraffic={showTraffic}
