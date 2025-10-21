@@ -22,12 +22,12 @@ const PaymentsTab = ({ invoice, payments, onAddPayment, onGenerateInvoice }) => 
             <div className="payments-tab">
                 <div className="empty-state">
                     <span className="empty-icon">📄</span>
-                    <p>{t('invoice.notGenerated', 'No invoice generated yet')}</p>
+                    <p>{t('reservation.invoice.notGenerated', 'No invoice generated yet')}</p>
                     <p className="empty-description">
                         {t('invoice.generateDescription', 'Generate an invoice to start tracking payments')}
                     </p>
                     <button className="btn-success" onClick={onGenerateInvoice}>
-                        {t('invoice.actions.generate', 'Generate Invoice')}
+                        {t('invoice.list.new', 'Generate Invoice')}
                     </button>
                 </div>
             </div>
@@ -97,7 +97,7 @@ const PaymentsTab = ({ invoice, payments, onAddPayment, onGenerateInvoice }) => 
             {/* Payments History */}
             <div className="payments-history-section">
                 <h3 className="section-title">
-                    {t('payment.history.title', 'Payment History')} ({payments?.length || 0})
+                    {t('payment.details.paymentsTitle', 'Payment History')} ({payments?.length || 0})
                 </h3>
 
                 {payments && payments.length > 0 ? (
@@ -113,7 +113,7 @@ const PaymentsTab = ({ invoice, payments, onAddPayment, onGenerateInvoice }) => 
                                 <div className="payment-info">
                                     <div className="payment-header">
                                         <span className="payment-method">
-                                            {t(`payment.method.${payment.paymentMethod?.toLowerCase()}`, payment.paymentMethod)}
+                                            {t(`payment.method.${payment.method?.toLowerCase()}`, payment.method)}
                                         </span>
                                         <span className="payment-amount">
                                             {payment.amount?.toFixed(2)} {t('common.currency', 'DH')}
@@ -122,7 +122,7 @@ const PaymentsTab = ({ invoice, payments, onAddPayment, onGenerateInvoice }) => 
 
                                     <div className="payment-meta">
                                         <span className="payment-date">
-                                            📅 {formatDate(payment.paymentDate || payment.createdAt)}
+                                            📅 {formatDate(payment.paidAt || payment.createdAt)}
                                         </span>
                                         {payment.reference && (
                                             <span className="payment-reference">
@@ -162,14 +162,14 @@ const PaymentsTab = ({ invoice, payments, onAddPayment, onGenerateInvoice }) => 
                     </div>
 
                     <div className="detail-row">
-                        <span className="detail-label">{t('invoice.issuedAt', 'Issue Date')}</span>
-                        <span className="detail-value">{formatDate(invoice.issueDate || invoice.createdAt)}</span>
+                        <span className="detail-label">{t('invoice.fields.issuedAt', 'Issue Date')}</span>
+                        <span className="detail-value">{formatDate(invoice.issuedAt || invoice.createdAt)}</span>
                     </div>
 
                     <div className="divider"></div>
 
                     <div className="detail-row">
-                        <span className="detail-label">{t('invoice.fields.subtotal', 'Subtotal')}</span>
+                        <span className="detail-label">{t('invoice.fields.amount', 'Subtotal')}</span>
                         <span className="detail-value">
                             {invoice.amount?.toFixed(2)} {t('common.currency', 'DH')}
                         </span>
@@ -196,7 +196,7 @@ const PaymentsTab = ({ invoice, payments, onAddPayment, onGenerateInvoice }) => 
                     <div className="divider"></div>
 
                     <div className="detail-row total">
-                        <span className="detail-label">{t('invoice.fields.total', 'Total')}</span>
+                        <span className="detail-label">{t('invoice.fields.totalAmount', 'Total')}</span>
                         <span className="detail-value">
                             {invoice.amount?.toFixed(2)} {t('common.currency', 'DH')}
                         </span>

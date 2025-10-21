@@ -146,6 +146,16 @@ const ModernLayout = ({
                                         Vehicles
                                     </button>
                                     <button
+                                        className={`tab-btn ${activePanel === 'details' ? 'active' : ''}`}
+                                        onClick={() => onPanelChange?.('details')}
+                                        disabled={!selectedVehicle}
+                                    >
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 2L13.09 8.26L18 7L16.74 12.74L22 14L15.74 15.26L17 21L11.26 19.74L10 24L8.74 19.74L3 21L4.26 15.26L2 14L7.26 12.74L6 7L10.91 8.26L12 2Z" fill="currentColor" />
+                                        </svg>
+                                        Details
+                                    </button>
+                                    <button
                                         className={`tab-btn ${activePanel === 'routes' ? 'active' : ''}`}
                                         onClick={() => onPanelChange?.('routes')}
                                         disabled={!selectedVehicle}

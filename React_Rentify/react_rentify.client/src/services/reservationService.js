@@ -42,6 +42,23 @@ export const reservationService = {
         }
     },
 
+    /**
+     * Get all reservations that don't have paid invoices for a specific agency
+     * @param {string} agencyId - The ID of the agency
+     * @returns {Promise<Array>} - Array of unpaid reservation objects
+     */
+    async getUnpaidReservations(agencyId) {
+        try {
+            console.log(`🔍 Fetching unpaid reservations for agency: ${agencyId}`);
+            const response = await apiClient.get(`/reservations/agency/${agencyId}/unpaid`);
+            console.log(`✅ Successfully fetched ${response.data.length} unpaid reservations`);
+            return response.data;
+        } catch (error) {
+            console.error('❌ Error fetching unpaid reservations:', error);
+            throw error;
+        }
+    },
+
     updateReservationPrices: async (id, priceData) => {
         try {
             const response = await apiClient.put(`/reservations/${id}/prices`, priceData);

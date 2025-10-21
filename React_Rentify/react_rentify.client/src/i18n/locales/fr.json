@@ -1,7 +1,8 @@
 {
   "language": {
     "selectLanguage": "Choisissez la langue",
-    "changeInfo": "Vous pouvez changer la langue à tout moment"
+    "changeInfo": "Vous pouvez changer la langue à tout moment",
+    "locale": "fr"
   },
   "search": {
     "all": "Tout",
@@ -119,7 +120,8 @@
     "next": "Suivant",
     "previous": "Précédent",
     "add": "Ajouter",
-    "continue": "Continuer"
+    "continue": "Continuer",
+    "others": "Autres"
   },
   "landing": {
     "features": "Fonctionnalités",
@@ -486,7 +488,8 @@
     },
     "notFound": "Réservation introuvable",
     "details": {
-      "title": "Détails de la réservation"
+      "title": "Détails de la réservation",
+      "history": "Historique des actions"
     },
     "fields": {
       "period": "Période",
@@ -524,7 +527,8 @@
       "numberOfDays": "Nombre de jours",
       "from": "De",
       "to": "À",
-      "addedBy": "Ajouté par"
+      "addedBy": "Ajouté par",
+      "daysRemaining": "Jours restants"
     },
     "status": {
       "delivered": "Livré",
@@ -621,6 +625,10 @@
       "finalPricing": "Tarification finale",
       "submit": "Enregistrer les prix",
       "buttonText": "Modifier les prix"
+    },
+    "unpaid": {
+      "title": "Réservations impayées",
+      "subtitle": "Gérer toutes les réservations impayées"
     }
   },
   "customerDetails": {
@@ -992,7 +1000,11 @@
       "selectPaymentMethod": "Sélectionner le moyen de paiement…"
     },
     "noReservationsFound": "Aucune réservation ne correspond à votre recherche",
-    "selectedReservation": "Réservation sélectionnée"
+    "selectedReservation": "Réservation sélectionnée",
+    "status": {
+      "paid": "Payé",
+      "unpaid": "Impayé"
+    }
   },
   "car": {
     "fields": {

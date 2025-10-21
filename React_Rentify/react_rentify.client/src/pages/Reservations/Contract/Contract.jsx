@@ -168,7 +168,14 @@ const Contract = () => {
             <p className="text-center">Contrat de location</p>
           </div>
           <div className="col-4 right-logo-container">
-            <img src={apiBaseUrl + reservation.agency?.logoUrlAssociation} className="right-logo" width="220" alt="Flascam" />
+                      {reservation.agency?.logoUrlAssociation && reservation.agency.logoUrlAssociation.trim() !== "" && (
+                          <img
+                              src={apiBaseUrl + reservation.agency.logoUrlAssociation}
+                              className="right-logo"
+                              width="220"
+                              alt="Flascam"
+                          />
+                      )}
           </div>
         </div>
 

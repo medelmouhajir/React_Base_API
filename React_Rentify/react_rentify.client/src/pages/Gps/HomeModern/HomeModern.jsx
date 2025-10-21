@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+﻿import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -9,6 +9,7 @@ import { useGpsData, useRouteData, useMobileResponsive } from '../Home/hooks';
 import ModernMapContainer from './MapContainer/ModernMapContainer';
 import ModernVehiclePanel from './components/ModernVehiclePanel/ModernVehiclePanel';
 import ModernRoutePanel from './components/ModernRoutePanel/ModernRoutePanel';
+import ModernVehicleDetailsPanel from './components/ModernVehicleDetailsPanel/ModernVehicleDetailsPanel';
 
 // Modern Components
 import EnhancedSummaryBar from './components/EnhancedSummaryBar/EnhancedSummaryBar';
@@ -210,7 +211,7 @@ const HomeModern = () => {
     const handleVehicleSelect = useCallback((vehicle) => {
         setSelectedVehicle(vehicle);
         if (isMobile) {
-            setActivePanel('routes');
+            setActivePanel('details');
         }
     }, [setSelectedVehicle, isMobile]);
 
@@ -234,10 +235,48 @@ const HomeModern = () => {
         }
     }, [isMobile, isDrawerOpen, toggleDrawer]);
 
+    const handleVehicleAction = useCallback((vehicle, action) => {
+        console.log(`Vehicle action: ${action} for vehicle:`, vehicle);
+
+        // TODO: Implement actual vehicle control API calls
+        switch (action) {
+            case 'toggle-engine':
+                console.log('Toggle engine for vehicle:', vehicle.plateNumber);
+                // API call to toggle engine
+                break;
+            case 'lock-doors':
+                console.log('Lock doors for vehicle:', vehicle.plateNumber);
+                // API call to lock doors
+                break;
+            case 'unlock-doors':
+                console.log('Unlock doors for vehicle:', vehicle.plateNumber);
+                // API call to unlock doors
+                break;
+            case 'horn-lights':
+                console.log('Activate horn and lights for vehicle:', vehicle.plateNumber);
+                // API call to activate horn and lights
+                break;
+            case 'locate-vehicle':
+                console.log('Locate vehicle:', vehicle.plateNumber);
+                // API call to locate vehicle (could center map on vehicle)
+                if (vehicle.lastLocation?.latitude && vehicle.lastLocation?.longitude) {
+                    // Center map on vehicle location
+                    setMapState(prev => ({
+                        ...prev,
+                        center: [vehicle.lastLocation.latitude, vehicle.lastLocation.longitude],
+                        zoom: 16
+                    }));
+                }
+                break;
+            default:
+                console.log('Unknown action:', action);
+        }
+    }, [setMapState]);
+
     // Effects
     useEffect(() => {
         if (selectedVehicle && isMobile) {
-            setActivePanel('routes');
+            setActivePanel('details');
         }
     }, [selectedVehicle, isMobile]);
 
@@ -376,6 +415,14 @@ const HomeModern = () => {
                                     }
                                 }}
                                 isMobile={isMobile}
+                            />
+                        )}
+                        {activePanel === 'details' && (
+                            <ModernVehicleDetailsPanel
+                                selectedVehicle={selectedVehicle}
+                                onClose={() => setActivePanel('vehicles')}
+                                isMobile={isMobile}
+                                onVehicleAction={handleVehicleAction}
                             />
                         )}
                     </div>

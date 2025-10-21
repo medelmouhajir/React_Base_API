@@ -30,6 +30,10 @@ const HeroSection = ({ reservation, invoice, primaryAction }) => {
     const daysRemaining = calculateDaysRemaining();
     const paymentProgress = calculatePaymentProgress();
 
+    const totalPaid = invoice && Array.isArray(invoice.payments)
+        ? invoice.payments.reduce((sum, p) => sum + (p.amount || 0), 0)
+        : 0;
+
     const apiUrl = import.meta.env.VITE_API_URL;
 
     return (
@@ -111,7 +115,7 @@ const HeroSection = ({ reservation, invoice, primaryAction }) => {
                 <div className="metric-card">
                     <div className="metric-icon">📅</div>
                     <div className="metric-content">
-                        <span className="metric-label">{t('reservation.metrics.daysRemaining', 'Days Remaining')}</span>
+                        <span className="metric-label">{t('reservation.fields.daysRemaining', 'Days Remaining')}</span>
                         <span className={`metric-value ${daysRemaining < 0 ? 'overdue' : ''}`}>
                             {daysRemaining < 0 ? `${Math.abs(daysRemaining)} ${t('reservation.metrics.overdue', 'overdue')}` : daysRemaining}
                         </span>
@@ -121,7 +125,7 @@ const HeroSection = ({ reservation, invoice, primaryAction }) => {
                 <div className="metric-card">
                     <div className="metric-icon">💰</div>
                     <div className="metric-content">
-                        <span className="metric-label">{t('reservation.metrics.totalPrice', 'Total Price')}</span>
+                        <span className="metric-label">{t('invoice.fields.totalAmount', 'Total Price')}</span>
                         <span className="metric-value">
                             {invoice?.finalPrice?.toFixed(2) || reservation.agreedPrice?.toFixed(2) || '0.00'} {t('common.currency', 'DH')}
                         </span>
@@ -131,9 +135,9 @@ const HeroSection = ({ reservation, invoice, primaryAction }) => {
                 <div className="metric-card">
                     <div className="metric-icon">✓</div>
                     <div className="metric-content">
-                        <span className="metric-label">{t('reservation.metrics.amountPaid', 'Amount Paid')}</span>
+                        <span className="metric-label">{t('invoice.fields.paidAmount', 'Amount Paid')}</span>
                         <span className="metric-value payment-status">
-                            {invoice?.amountPaid?.toFixed(2) || '0.00'} {t('common.currency', 'DH')}
+                            {totalPaid.toFixed(2) || '0.00'} {t('common.currency', 'DH')}
                         </span>
                         {invoice && (
                             <div className="payment-progress-bar">
@@ -150,7 +154,7 @@ const HeroSection = ({ reservation, invoice, primaryAction }) => {
             {/* Customers Quick Link */}
             {reservation.customers && reservation.customers.length > 0 && (
                 <div className="customers-quick-link">
-                    <span className="quick-link-label">{t('reservation.customers.label', 'Customers')}:</span>
+                    <span className="quick-link-label">{t('reservation.fields.customers', 'Customers')}:</span>
                     <div className="customer-tags">
                         {reservation.customers.map((customer) => (
                             <Link

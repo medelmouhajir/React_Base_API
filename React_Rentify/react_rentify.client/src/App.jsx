@@ -42,7 +42,6 @@ const RoleBasedDashboard = lazy(() => import('./components/redirections/RoleBase
 
 
 const CarsList = lazy(() => import('./pages/Cars/List/CarsList'));
-const ReservationsList = lazy(() => import('./pages/Reservations/List/ReservationsList'));
 const MaintenancesList = lazy(() => import('./pages/Maintenances/List/MaintenancesList'));
 const InvoicesList = lazy(() => import('./pages/Invoices/List/InvoicesList'));
 const Profile = lazy(() => import('./pages/Profile/Profile'));
@@ -76,9 +75,11 @@ const CustomerEdit = lazy(() => import('./pages/Customers/Edit/CustomerEdit'));
 const CustomersList = lazy(() => import('./pages/Customers/List/CustomersList'));
 
 //// Child routes for Reservations
+const ReservationsList = lazy(() => import('./pages/Reservations/List/ReservationsList'));
 const ReservationDetails = lazy(() => import('./pages/Reservations/Details/ReservationDetails'));
 const ReservationAdd = lazy(() => import('./pages/Reservations/Add/ReservationAdd'));
 const Contract = lazy(() => import('./pages/Reservations/Contract/Contract'));
+const UnpaidReservations = lazy(() => import('./pages/Reservations/Unpaid/UnpaidReservations'));
 
 
 const AddMaintenance = lazy(() => import('./pages/Maintenances/Add/AddMaintenance'));
@@ -252,6 +253,7 @@ function App() {
 
                                     {/* Reservations */}
                                     <Route path="/reservations" element={<ReservationsList />} />
+                                    <Route path="/reservations/unpaid" element={<UnpaidReservations />} />
                                     <Route path="/reservations/:id" element={<ReservationDetails />} />
                                     <Route path="/reservations/add" element={<ReservationAdd />} />
                                     <Route path="/reservations/:id/contract" element={<Contract />} />

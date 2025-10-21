@@ -1,7 +1,8 @@
 {
   "language": {
     "selectLanguage": "Select language",
-    "changeInfo": "You can change the language at any time"
+    "changeInfo": "You can change the language at any time",
+    "locale": "en"
   },
   "search": {
     "all": "All",
@@ -119,7 +120,8 @@
     "next": "Next",
     "previous": "Previous",
     "add": "Add",
-    "continue": "Continue"
+    "continue": "Continue",
+    "others": "Others"
   },
   "landing": {
     "features": "Features",
@@ -487,7 +489,8 @@
     },
     "notFound": "Reservation not found",
     "details": {
-      "title": "Reservation Details"
+      "title": "Reservation Details",
+      "history": "History"
     },
     "fields": {
       "period": "Period",
@@ -526,7 +529,8 @@
       "numberOfDays": "Number of days",
       "from": "From",
       "to": "To",
-      "addedBy": "Added By"
+      "addedBy": "Added By",
+      "daysRemaining": "Days Remaining"
     },
     "placeholders": {
       "price": "Enter price",
@@ -642,6 +646,10 @@
       "finalPricing": "Final pricing",
       "submit": "Save prices",
       "buttonText": "Edit prices"
+    },
+    "unpaid": {
+      "title": "Unpaid reservations",
+      "subtitle": "Manage all unpaid reservations"
     }
   },
   "customerDetails": {
@@ -1012,7 +1020,11 @@
       "selectPaymentMethod": "Select payment method..."
     },
     "noReservationsFound": "No reservations found matching your search",
-    "selectedReservation": "Selected Reservation"
+    "selectedReservation": "Selected Reservation",
+    "status": {
+      "paid": "Paid",
+      "unpaid": "Unpaid"
+    }
   },
   "car": {
     "car": "Car",

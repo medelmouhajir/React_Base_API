@@ -1,7 +1,8 @@
 {
   "language": {
     "selectLanguage": "اختر اللغة",
-    "changeInfo": "يمكنك تغيير اللغة في أي وقت"
+    "changeInfo": "يمكنك تغيير اللغة في أي وقت",
+    "locale": "ar"
   },
   "search": {
     "all": "الكل",
@@ -119,7 +120,8 @@
     "next": "التالي",
     "previous": "السابق",
     "add": "إضافة",
-    "continue": "متابعة"
+    "continue": "متابعة",
+    "others": "آخرون"
   },
   "landing": {
     "features": "الميزات",
@@ -498,7 +500,8 @@
     },
     "notFound": "الحجز غير موجود",
     "details": {
-      "title": "تفاصيل الحجز"
+      "title": "تفاصيل الحجز",
+      "history": "تاريخ الإجراءات"
     },
     "fields": {
       "period": "الفترة",
@@ -536,7 +539,8 @@
       "numberOfDays": "عدد الأيام",
       "from": "من",
       "to": "إلى",
-      "addedBy": "تمت الإضافة بواسطة"
+      "addedBy": "تمت الإضافة بواسطة",
+      "daysRemaining": "الأيام المتبقية"
     },
     "status": {
       "delivered": "تم التسليم",
@@ -633,6 +637,10 @@
       "finalPricing": "التسعير النهائي",
       "submit": "حفظ الأسعار",
       "buttonText": "تعديل الأسعار"
+    },
+    "unpaid": {
+      "title": "حجوزات غير مدفوعة",
+      "subtitle": "إدارة جميع الحجوزات غير المدفوعة"
     }
   },
   "customerDetails": {
@@ -1004,7 +1012,11 @@
       "selectPaymentMethod": "اختر طريقة الدفع..."
     },
     "noReservationsFound": "لم يتم العثور على حجوزات مطابقة لبحثك",
-    "selectedReservation": "الحجز المحدد"
+    "selectedReservation": "الحجز المحدد",
+    "status": {
+      "paid": "مدفوع",
+      "unpaid": "غير مدفوع"
+    }
   },
   "car": {
     "car": "سيارة",

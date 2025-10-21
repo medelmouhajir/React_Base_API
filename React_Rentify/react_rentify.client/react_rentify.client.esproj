@@ -53,6 +53,7 @@
     <Folder Include="src\pages\Gps\HomeModern\components\ModernRoutePanel\components\RouteTimeline\" />
     <Folder Include="src\pages\Gps\HomeModern\components\ModernVehiclePanel\" />
     <Folder Include="src\pages\Gps\HomeModern\components\EmptyState\" />
+    <Folder Include="src\pages\Gps\HomeModern\components\ModernVehicleDetailsPanel\" />
     <Folder Include="src\pages\Gps\HomeModern\components\VehicleFilters\" />
     <Folder Include="src\pages\Gps\HomeModern\components\VehicleSearch\" />
     <Folder Include="src\pages\Gps\HomeModern\hooks\" />
@@ -86,6 +87,7 @@
     <Folder Include="src\pages\Reservations\Edit\" />
     <Folder Include="src\pages\Reservations\List\" />
     <Folder Include="src\pages\Reservations\Contract\" />
+    <Folder Include="src\pages\Reservations\Unpaid\" />
     <Folder Include="src\pages\ServiceAlerts\Add\" />
     <Folder Include="src\pages\Settings\Agency\" />
     <Folder Include="src\pages\Settings\Notifications\" />

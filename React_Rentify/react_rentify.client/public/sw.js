@@ -1,7 +1,7 @@
 // Service Worker for Web Push Notifications
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { CacheFirst, NetworkOnly, StaleWhileRevalidate } from 'workbox-strategies';
+import { CacheFirst, NetworkOnly, StaleWhileRevalidate , NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
@@ -33,7 +33,7 @@ registerRoute(
 
 registerRoute(
     ({ url }) => url.pathname.includes('/api/'),
-    new CacheFirst({
+    new NetworkFirst({
         cacheName: 'api-cache',
         plugins: [
             new ExpirationPlugin({

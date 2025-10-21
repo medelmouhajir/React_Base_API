@@ -73,7 +73,7 @@
   ------------------------------------------------------------*/
 .gadgets-home-container {
     min-height: 100vh;
-    background: var(--background-light);
+    background-color: transparent;
     color: var(--text-primary-light);
     transition: all var(--transition-normal);
     padding: var(--space-md);

@@ -11,7 +11,7 @@ const OverviewTab = ({ reservation, invoice, onEditDates, onEditCar, onEditPrice
             {/* Dates & Car Section */}
             <div className="overview-card">
                 <div className="card-header">
-                    <h3 className="card-title">{t('reservation.overview.datesAndCar', 'Dates & Car')}</h3>
+                    <h3 className="card-title">{t('reservation.summary', 'Dates & Car')}</h3>
                     <button className="btn-icon" onClick={onEditDates}>
                         ✎
                     </button>
@@ -56,53 +56,53 @@ const OverviewTab = ({ reservation, invoice, onEditDates, onEditCar, onEditPrice
             </div>
 
             {/* Pricing Section */}
-            <div className="overview-card">
-                <div className="card-header">
-                    <h3 className="card-title">{t('reservation.overview.pricing', 'Pricing')}</h3>
-                    <button className="btn-icon" onClick={onEditPrices}>
-                        ✎
-                    </button>
-                </div>
+            {/*<div className="overview-card">*/}
+            {/*    <div className="card-header">*/}
+            {/*        <h3 className="card-title">{t('reservation.overview.pricing', 'Pricing')}</h3>*/}
+            {/*        <button className="btn-icon" onClick={onEditPrices}>*/}
+            {/*            ✎*/}
+            {/*        </button>*/}
+            {/*    </div>*/}
 
-                <div className="card-content">
-                    <div className="detail-row">
-                        <span className="detail-label">{t('reservation.pricing.dailyRate', 'Daily Rate')}</span>
-                        <span className="detail-value">
-                            {reservation.dailyPrice?.toFixed(2) || '0.00'} {t('common.currency', 'DH')}
-                        </span>
-                    </div>
+            {/*    <div className="card-content">*/}
+            {/*        <div className="detail-row">*/}
+            {/*            <span className="detail-label">{t('reservation.pricing.dailyRate', 'Daily Rate')}</span>*/}
+            {/*            <span className="detail-value">*/}
+            {/*                {reservation.dailyPrice?.toFixed(2) || '0.00'} {t('common.currency', 'DH')}*/}
+            {/*            </span>*/}
+            {/*        </div>*/}
 
-                    <div className="detail-row">
-                        <span className="detail-label">{t('reservation.pricing.subtotal', 'Subtotal')}</span>
-                        <span className="detail-value">
-                            {reservation.subTotalPrice?.toFixed(2) || '0.00'} {t('common.currency', 'DH')}
-                        </span>
-                    </div>
+            {/*        <div className="detail-row">*/}
+            {/*            <span className="detail-label">{t('reservation.pricing.subtotal', 'Subtotal')}</span>*/}
+            {/*            <span className="detail-value">*/}
+            {/*                {reservation.subTotalPrice?.toFixed(2) || '0.00'} {t('common.currency', 'DH')}*/}
+            {/*            </span>*/}
+            {/*        </div>*/}
 
-                    {reservation.discount > 0 && (
-                        <div className="detail-row discount">
-                            <span className="detail-label">{t('reservation.pricing.discount', 'Discount')}</span>
-                            <span className="detail-value discount-value">
-                                -{reservation.discount?.toFixed(2)} {t('common.currency', 'DH')}
-                            </span>
-                        </div>
-                    )}
+            {/*        {reservation.discount > 0 && (*/}
+            {/*            <div className="detail-row discount">*/}
+            {/*                <span className="detail-label">{t('reservation.pricing.discount', 'Discount')}</span>*/}
+            {/*                <span className="detail-value discount-value">*/}
+            {/*                    -{reservation.discount?.toFixed(2)} {t('common.currency', 'DH')}*/}
+            {/*                </span>*/}
+            {/*            </div>*/}
+            {/*        )}*/}
 
-                    <div className="divider"></div>
+            {/*        <div className="divider"></div>*/}
 
-                    <div className="detail-row total">
-                        <span className="detail-label">{t('reservation.pricing.totalPrice', 'Total Price')}</span>
-                        <span className="detail-value total-value">
-                            {reservation.totalPrice?.toFixed(2) || '0.00'} {t('common.currency', 'DH')}
-                        </span>
-                    </div>
-                </div>
-            </div>
+            {/*        <div className="detail-row total">*/}
+            {/*            <span className="detail-label">{t('reservation.pricing.totalPrice', 'Total Price')}</span>*/}
+            {/*            <span className="detail-value total-value">*/}
+            {/*                {reservation.totalPrice?.toFixed(2) || '0.00'} {t('common.currency', 'DH')}*/}
+            {/*            </span>*/}
+            {/*        </div>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
 
             {/* Invoice Section */}
             <div className="overview-card">
                 <div className="card-header">
-                    <h3 className="card-title">{t('invoice.title', 'Invoice')}</h3>
+                    <h3 className="card-title">{t('invoice.list.title', 'Invoice')}</h3>
                 </div>
 
                 <div className="card-content">
@@ -124,14 +124,14 @@ const OverviewTab = ({ reservation, invoice, onEditDates, onEditCar, onEditPrice
                                     </div>
 
                                     <div className="detail-row">
-                                        <span className="detail-label">{t('invoice.fields.amountPaid', 'Amount Paid')}</span>
+                                        <span className="detail-label">{t('invoice.fields.paidAmount', 'Amount Paid')}</span>
                                         <span className="detail-value success">
                                             {invoice.amountPaid?.toFixed(2)} {t('common.currency', 'DH')}
                                         </span>
                                     </div>
 
                                     <div className="detail-row">
-                                        <span className="detail-label">{t('invoice.fields.remainingAmount', 'Remaining')}</span>
+                                        <span className="detail-label">{t('invoice.fields.remaining', 'Remaining')}</span>
                                         <span className="detail-value warning">
                                             {invoice.remainingAmount?.toFixed(2)} {t('common.currency', 'DH')}
                                         </span>

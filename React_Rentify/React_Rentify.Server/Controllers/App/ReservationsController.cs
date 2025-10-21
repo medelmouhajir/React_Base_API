@@ -248,6 +248,51 @@ namespace React_Rentify.Server.Controllers.App
             }
         }
 
+
+        /// <summary>
+        /// GET: api/Reservations/agency/{agencyId}/unpaid
+        /// Returns all reservations for an agency that don't have paid invoices (DTO), including related entities.
+        /// </summary>
+        [HttpGet("agency/{agencyId:guid}/unpaid")]
+        public async Task<IActionResult> GetUnpaidReservationsByAgencyId(Guid agencyId)
+        {
+            _logger.LogInformation("Retrieving unpaid reservations for Agency {AgencyId}", agencyId);
+
+            var agencyExists = await _context.Set<Agency>()
+                .FirstOrDefaultAsync(a => a.Id == agencyId);
+            if (agencyExists == null)
+            {
+                _logger.LogWarning("Agency with Id {AgencyId} not found", agencyId);
+                return NotFound(new { message = $"Agency with Id '{agencyId}' does not exist." });
+            }
+
+            if (!await _authService.HasAccessToAgencyAsync(agencyId))
+                return Unauthorized();
+
+            try
+            {
+                var unpaidReservations = await _context.Set<Reservation>()
+                    .Include(r => r.Invoice)
+                    .ThenInclude(x=> x.Payments)
+                    .Where(r => r.AgencyId == agencyId)
+                    .Where(r => r.Invoice == null || r.Invoice.Amount > r.Invoice.Payments.Sum(c=> c.Amount))
+                    .Include(r => r.Car)
+                    .ThenInclude(x => x.Car_Model)
+                    .Include(r => r.Reservation_Customers)
+                    .ThenInclude(x => x.Customer)
+                    .ToListAsync();
+
+                var dtoList = unpaidReservations.Select(r => MapToDto(r)).ToList();
+                _logger.LogInformation("Retrieved {Count} unpaid reservations for Agency {AgencyId}", dtoList.Count, agencyId);
+                return Ok(dtoList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving unpaid reservations for Agency {AgencyId}", agencyId);
+                return BadRequest(ex.Message);
+            }
+        }
+
         /// <summary>
         /// GET: api/Reservations/customer/{customerId}
         /// Returns all reservations for a given customer (DTO), including related entities.

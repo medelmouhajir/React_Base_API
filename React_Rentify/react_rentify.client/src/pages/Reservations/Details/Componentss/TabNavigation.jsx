@@ -7,24 +7,24 @@ const TabNavigation = ({ activeTab, onTabChange, customerCount, paymentCount }) 
     const tabs = [
         {
             id: 'overview',
-            label: t('reservation.tabs.overview', 'Overview'),
+            label: t('reservation.summary', 'Overview'),
             icon: '📊'
         },
         {
             id: 'customers',
-            label: t('reservation.tabs.customers', 'Customers'),
+            label: t('reservation.fields.customers', 'Customers'),
             icon: '👥',
             badge: customerCount
         },
         {
             id: 'payments',
-            label: t('reservation.tabs.payments', 'Payments'),
+            label: t('invoice.details.paymentsTitle', 'Payments'),
             icon: '💳',
             badge: paymentCount
         },
         {
             id: 'history',
-            label: t('reservation.tabs.history', 'History'),
+            label: t('reservation.details.history', 'History'),
             icon: '📜'
         }
     ];
