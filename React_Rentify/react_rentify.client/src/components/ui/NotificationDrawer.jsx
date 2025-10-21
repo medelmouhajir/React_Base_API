@@ -451,7 +451,7 @@ const NotificationDrawer = () => {
                         <Search className="search-notifications-icon" size={18} />
                         <input
                             type="text"
-                            placeholder={t('notifications.search')}
+                            placeholder={t('search.placeholder')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="search-notifications-input-modern"

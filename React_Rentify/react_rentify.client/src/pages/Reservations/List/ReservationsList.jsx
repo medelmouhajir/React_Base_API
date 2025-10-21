@@ -265,7 +265,7 @@ const ReservationsList = () => {
                                 </option>
                                 {statuses.map((s) => (
                                     <option key={s} value={s}>
-                                        {t('reservation.status.') + s}
+                                        {t('reservation.status.') + s.toLowerCase()}
                                     </option>
                                 ))}
                             </select>

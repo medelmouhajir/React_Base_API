@@ -375,7 +375,7 @@ const UnpaidReservations = () => {
                                                 <span className="field-value">
                                                     {reservation.customers?.[0] ? (
                                                         <>
-                                                            {reservation.customers[0].firstName} {reservation.customers[0].lastName}
+                                                            {reservation.customers[0].fullName}
                                                             {reservation.customers.length > 1 && (
                                                                 <span className="additional-customers">
                                                                     {' '}+{reservation.customers.length - 1}

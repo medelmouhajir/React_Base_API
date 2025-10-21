@@ -314,7 +314,7 @@ const Dashboard = () => {
                         {t('dashboard.welcomeMessage', { name: user?.fullName || t('common.user') })}
                     </h1>
                     <p className="welcome-date">
-                        {new Date().toLocaleDateString(undefined, {
+                        {new Date().toLocaleDateString(t('language.locale'), {
                             weekday: 'long',
                             year: 'numeric',
                             month: 'long',

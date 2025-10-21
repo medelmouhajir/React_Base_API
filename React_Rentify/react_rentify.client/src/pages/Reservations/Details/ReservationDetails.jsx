@@ -214,14 +214,14 @@ const ReservationDetails = () => {
 
         if (status === 'reserved') {
             return {
-                label: t('reservation.actions.deliverCar', 'Deliver Car'),
+                label: t('reservation.actions.deliver', 'Deliver Car'),
                 onClick: () => setShowDeliverCarModal(true),
                 icon: '🚗',
                 variant: 'success'
             };
         } else if (status === 'ongoing') {
             return {
-                label: t('reservation.actions.returnCar', 'Return Car'),
+                label: t('reservation.actions.return', 'Return Car'),
                 onClick: () => setShowReturnCarModal(true),
                 icon: '✓',
                 variant: 'primary'
