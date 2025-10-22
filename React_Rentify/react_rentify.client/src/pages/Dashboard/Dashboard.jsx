@@ -172,7 +172,7 @@ const Dashboard = () => {
                     upcomingMaintenance,
                     monthlyRevenue
                 });
-                setRecentReservations(sortedReservations);
+                setRecentReservations(sortedReservations.filter(r => r.status !== 'Reserved'));
                 setCarStatus(recentCars);
                 setAlerts(alertList);
                 setIsLoading(false);

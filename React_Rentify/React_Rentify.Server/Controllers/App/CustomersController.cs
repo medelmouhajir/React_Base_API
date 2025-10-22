@@ -459,7 +459,7 @@ namespace React_Rentify.Server.Controllers
                 nationalId, passportId, licenseNumber);
 
             IQueryable<Customer> query = _context.Set<Customer>()
-                .Where(x=> x.AgencyId == agencyId);
+                .Where(x => x.AgencyId == agencyId);
 
             if (!string.IsNullOrWhiteSpace(nationalId))
             {
@@ -489,6 +489,38 @@ namespace React_Rentify.Server.Controllers
 
             _logger.LogInformation("Search returned {Count} entries", dtoList.Count);
             return Ok(dtoList);
+        }
+
+
+        [HttpDelete("{customerId:guid}/attachments/{attachmentId:guid}")]
+        [Authorize(Roles = "Owner")]
+        public async Task<IActionResult> DeleteCustomerAttachment(Guid customerId, Guid attachmentId)
+        {
+            _logger.LogInformation("Deleting customer's attachement {attachmentId}", attachmentId);
+
+            var customer = await _context.Set<Customer>()
+                .Include(c => c.Customer_Attachments)
+                .FirstOrDefaultAsync(c => c.Id == customerId);
+
+            if (customer == null)
+            {
+                _logger.LogWarning("Customer with Id {CustomerId} not found", customerId);
+                return NotFound(new { message = $"Customer with Id '{customerId}' not found." });
+            }
+
+            if (!await _authService.HasAccessToAgencyAsync(customer.AgencyId))
+                return Unauthorized();
+
+            if (customer.Customer_Attachments != null && customer.Customer_Attachments.Any(x=> x.Id == attachmentId))
+            {
+                _logger.LogInformation("Removing {Count} attachments for Customer {CustomerId}", customer.Customer_Attachments.Count, customerId);
+                _context.Set<Customer_Attachment>().Remove(customer.Customer_Attachments.First(x=> x.Id == attachmentId));
+
+                await _context.SaveChangesAsync();
+            }
+
+            _logger.LogInformation("Deleted customer attachement {attachmentId}", attachmentId);
+            return NoContent();
         }
     }
 

@@ -147,6 +147,9 @@ const GpsHomeModern = lazy(() => import('./pages/Gps/HomeModern/HomeModern'));
 //// Other standalone pages
 const SearchPage = lazy(() => import('./pages/Search/SearchPage'));
 
+//// Files pages
+const FilesHome = lazy(() => import('./pages/Files/Home/FilesHome'));
+
 //// Other standalone pages
 const SubscriptionsList = lazy(() => import('./pages/Subscriptions/List/SubscriptionsList'));
 const SubscriptionAgency = lazy(() => import('./pages/Subscriptions/Agency/SubscriptionAgency'));
@@ -280,6 +283,10 @@ function App() {
                                     {/* Tickets */}
                                     <Route path="/tickets" element={<TicketsList />} />
                                     <Route path="/tickets/:id" element={<TicketDetails />} />
+
+
+                                    {/* Files */}
+                                    <Route path="/files" element={<FilesHome />} />
 
 
                                     {/* Accidents */}

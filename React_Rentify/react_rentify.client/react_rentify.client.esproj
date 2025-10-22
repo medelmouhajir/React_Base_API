@@ -31,6 +31,7 @@
     <Folder Include="src\pages\Expenses\Add\" />
     <Folder Include="src\pages\Expenses\List\" />
     <Folder Include="src\pages\Expenses\Details\" />
+    <Folder Include="src\pages\Files\Home\" />
     <Folder Include="src\pages\Filters\CarModels\" />
     <Folder Include="src\pages\Filters\Manufacturer\" />
     <Folder Include="src\pages\Filters\CarYear\" />
