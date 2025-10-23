@@ -2806,5 +2806,38 @@
       "refundNamePlaceholder": "Ex. assurance, tiers...",
       "refundAmount": "Montant du remboursement"
     }
+  },
+  "filesHome": {
+    "title": "Fichiers",
+    "subtitle": "Gérez les fichiers de votre agence, de vos clients et de vos véhicules.",
+    "tabs": {
+      "agency": "Agence",
+      "customers": "Clients",
+      "cars": "Véhicules"
+    },
+    "agencyFiles": "Fichiers de l'agence",
+    "uploadFile": "Téléverser un fichier",
+    "noFiles": "Aucun fichier pour le moment",
+    "download": "Télécharger",
+    "delete": "Supprimer",
+    "searchCustomers": "Rechercher des clients...",
+    "searchCars": "Rechercher des voitures...",
+    "noCustomers": "Aucun client trouvé",
+    "noCars": "Aucune voiture trouvée",
+    "files": "fichiers",
+    "selectEntity": "Sélectionnez un client ou une voiture pour afficher les fichiers.",
+    "fileTitle": "Titre du fichier",
+    "fileTitlePlaceholder": "Saisissez un titre (sans extension)",
+    "selectedFile": "Fichier sélectionné",
+    "upload": "Téléverser",
+    "uploadSuccess": "Fichier téléversé avec succès",
+    "deleteSuccess": "Fichier supprimé avec succès",
+    "confirmDelete": "Supprimer ce fichier ?",
+    "errors": {
+      "fetchFailed": "Échec du chargement des données",
+      "uploadFailed": "Échec du téléversement du fichier",
+      "titleRequired": "Veuillez saisir un titre",
+      "deleteFailed": "Échec de la suppression du fichier"
+    }
   }
 }

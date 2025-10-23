@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using React_Rentify.Server.Models.Accidents;
 using React_Rentify.Server.Models.Agencies;
@@ -15,14 +16,19 @@ using React_Rentify.Server.Models.Reservations;
 using React_Rentify.Server.Models.Subscriptions;
 using React_Rentify.Server.Models.Tickets;
 using React_Rentify.Server.Models.Users;
+using React_Rentify.Server.Services.DataEncryption;
 
 namespace React_Rentify.Server.Data
 {
-    public class MainDbContext : IdentityDbContext<User>
+    public class MainDbContext : IdentityDbContext<User>, IDataProtectionKeyContext
     {
-        public MainDbContext(DbContextOptions<MainDbContext> options)
-            : base(options)
+        private readonly IDataEncryptionService _encryption;
+
+        public MainDbContext(
+            DbContextOptions<MainDbContext> options,
+            IDataEncryptionService encryption) : base(options)
         {
+            _encryption = encryption;
         }
 
 
@@ -51,6 +57,67 @@ namespace React_Rentify.Server.Data
                 .HasIndex(u => new { u.AgencySubscriptionId, u.Year, u.Month })
                 .IsUnique();
         }
+
+        // Auto-encrypt on save
+        public override int SaveChanges()
+        {
+            EncryptData();
+            var result = base.SaveChanges();
+            DecryptData();
+            return result;
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken token = default)
+        {
+            EncryptData();
+            var result = await base.SaveChangesAsync(token);
+            DecryptData();
+            return result;
+        }
+
+        private void EncryptData()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (var entry in entries)
+            {
+                foreach (var prop in entry.Properties)
+                {
+                    // Check if property has [Encrypted] attribute
+                    var attr = entry.Entity.GetType()
+                        .GetProperty(prop.Metadata.Name)?
+                        .GetCustomAttributes(typeof(EncryptedAttribute), false);
+
+                    if (attr?.Any() == true && prop.CurrentValue is string value && !string.IsNullOrEmpty(value))
+                    {
+                        prop.CurrentValue = _encryption.Encrypt(value);
+                    }
+                }
+            }
+        }
+
+        private void DecryptData()
+        {
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.State != EntityState.Detached);
+
+            foreach (var entry in entries)
+            {
+                foreach (var prop in entry.Properties)
+                {
+                    var attr = entry.Entity.GetType()
+                        .GetProperty(prop.Metadata.Name)?
+                        .GetCustomAttributes(typeof(EncryptedAttribute), false);
+
+                    if (attr?.Any() == true && prop.CurrentValue is string value && !string.IsNullOrEmpty(value))
+                    {
+                        prop.CurrentValue = _encryption.Decrypt(value);
+                    }
+                }
+            }
+        }
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
         // ----- Lookup tables -----
         public DbSet<Manufacturer> Manufacturers { get; set; }

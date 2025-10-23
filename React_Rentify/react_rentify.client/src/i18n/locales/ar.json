@@ -2827,5 +2827,38 @@
       "refundNamePlaceholder": "مثال: تأمين، طرف ثالث...",
       "refundAmount": "مبلغ التعويض"
     }
+  },
+  "filesHome": {
+    "title": "الملفات",
+    "subtitle": "إدارة ملفات الوكالة والعملاء والسيارات.",
+    "tabs": {
+      "agency": "الوكالة",
+      "customers": "العملاء",
+      "cars": "السيارات"
+    },
+    "agencyFiles": "ملفات الوكالة",
+    "uploadFile": "رفع ملف",
+    "noFiles": "لا توجد ملفات بعد",
+    "download": "تنزيل",
+    "delete": "حذف",
+    "searchCustomers": "ابحث عن العملاء...",
+    "searchCars": "ابحث عن السيارات...",
+    "noCustomers": "لا يوجد عملاء",
+    "noCars": "لا توجد سيارات",
+    "files": "ملفات",
+    "selectEntity": "اختر عميلًا أو سيارة لعرض الملفات.",
+    "fileTitle": "عنوان الملف",
+    "fileTitlePlaceholder": "أدخل عنوانًا (بدون الامتداد)",
+    "selectedFile": "الملف المحدد",
+    "upload": "رفع",
+    "uploadSuccess": "تم رفع الملف بنجاح",
+    "deleteSuccess": "تم حذف الملف بنجاح",
+    "confirmDelete": "هل تريد حذف هذا الملف؟",
+    "errors": {
+      "fetchFailed": "فشل في جلب البيانات",
+      "uploadFailed": "فشل رفع الملف",
+      "titleRequired": "يرجى إدخال عنوان",
+      "deleteFailed": "فشل حذف الملف"
+    }
   }
 }

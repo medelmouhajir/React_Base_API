@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using React_Rentify.Server.Controllers.App;
 using React_Rentify.Server.Data;
 using React_Rentify.Server.Models;
 using React_Rentify.Server.Models.Agencies;
@@ -24,12 +26,21 @@ namespace React_Rentify.Server.Controllers
         private readonly MainDbContext _context;
         private readonly ILogger<CustomersController> _logger;
         private readonly IAgencyAuthorizationService _authService;
+        private readonly string _uploadsFolder;
 
-        public CustomersController(MainDbContext context, ILogger<CustomersController> logger, IAgencyAuthorizationService authService)
+        public CustomersController(MainDbContext context, ILogger<CustomersController> logger, IAgencyAuthorizationService authService, IWebHostEnvironment environment)
         {
             _context = context;
             _logger = logger;
             _authService = authService;
+
+            _uploadsFolder = Path.Combine(environment.ContentRootPath, "wwwroot", "uploads", "customers");
+
+            // Ensure the uploads folder exists
+            if (!Directory.Exists(_uploadsFolder))
+            {
+                Directory.CreateDirectory(_uploadsFolder);
+            }
         }
 
         /// <summary>
@@ -305,25 +316,25 @@ namespace React_Rentify.Server.Controllers
             existingCustomer.IsBlacklisted = dto.IsBlacklisted;
 
             // If attachments are provided, replace existing attachments
-            if (dto.Attachments != null)
-            {
-                _logger.LogInformation("Updating attachments for Customer {CustomerId}", id);
+            //if (dto.Attachments != null)
+            //{
+            //    _logger.LogInformation("Updating attachments for Customer {CustomerId}", id);
 
-                _context.Set<Customer_Attachment>().RemoveRange(existingCustomer.Customer_Attachments);
+            //    _context.Set<Customer_Attachment>().RemoveRange(existingCustomer.Customer_Attachments);
 
-                foreach (var attachDto in dto.Attachments)
-                {
-                    var newAttach = new Customer_Attachment
-                    {
-                        Id = Guid.NewGuid(),
-                        FileName = attachDto.FileName,
-                        FilePath = attachDto.FilePath,
-                        CustomerId = existingCustomer.Id,
-                        UploadedAt = DateTime.UtcNow
-                    };
-                    _context.Set<Customer_Attachment>().Add(newAttach);
-                }
-            }
+            //    foreach (var attachDto in dto.Attachments)
+            //    {
+            //        var newAttach = new Customer_Attachment
+            //        {
+            //            Id = Guid.NewGuid(),
+            //            FileName = attachDto.FileName,
+            //            FilePath = attachDto.FilePath,
+            //            CustomerId = existingCustomer.Id,
+            //            UploadedAt = DateTime.UtcNow
+            //        };
+            //        _context.Set<Customer_Attachment>().Add(newAttach);
+            //    }
+            //}
 
             _context.Entry(existingCustomer).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -363,7 +374,7 @@ namespace React_Rentify.Server.Controllers
         /// </summary>
         [HttpDelete("{id:guid}")]
         [Authorize(Roles = "Owner")]
-        public async Task<IActionResult> DeleteCustomer(Guid id)
+        public async Task<IActionResult> GetAttachementByCarId(Guid id)
         {
             _logger.LogInformation("Deleting customer {CustomerId}", id);
 
@@ -393,12 +404,45 @@ namespace React_Rentify.Server.Controllers
             return NoContent();
         }
 
+
+        [HttpGet("{customerId:guid}/attachments")]
+        public async Task<IActionResult> GetAttachments(Guid customerId)
+        {
+            _logger.LogInformation("Retrieving attachments for customer {customerId}", customerId);
+
+            var customerExists = await _context.Set<Customer>().FirstOrDefaultAsync(c => c.Id == customerId);
+            if (customerExists == null)
+            {
+                _logger.LogWarning("customer with Id {customerId} not found", customerId);
+                return NotFound(new { message = $"customer with Id '{customerId}' not found." });
+            }
+
+
+            if (!await _authService.HasAccessToAgencyAsync(customerExists.AgencyId))
+                return Unauthorized();
+
+            var attachments = await _context.Set<Customer_Attachment>()
+                .Where(a => a.CustomerId == customerId)
+                .ToListAsync();
+
+            var dtoList = attachments.Select(a => new CustomerAttachmentDto
+            {
+                Id = a.Id,
+                FileName = a.FileName,
+                FilePath = a.FilePath,
+                UploadedAt = a.UploadedAt
+            }).ToList();
+
+            _logger.LogInformation("Retrieved {Count} attachments for customer {customerId}", dtoList.Count, customerId);
+            return Ok(dtoList);
+        }
+
         /// <summary>
         /// POST: api/Customers/{id}/attachments
         /// Adds an attachment to an existing customer.
         /// </summary>
-        [HttpPost("{id:guid}/attachments")]
-        public async Task<IActionResult> AddAttachmentToCustomer(Guid id, [FromBody] CreateCustomerAttachmentDto dto)
+        [HttpPost("{id:guid}/attachments/add")]
+        public async Task<IActionResult> AddAttachmentToCustomer(Guid id, [FromForm] CreateCustomerAttachmentDto dto)
         {
             _logger.LogInformation("Adding attachment to Customer {CustomerId}", id);
 
@@ -421,11 +465,32 @@ namespace React_Rentify.Server.Controllers
             if (!await _authService.HasAccessToAgencyAsync(customer.AgencyId))
                 return Unauthorized();
 
+            // Create folder for this car if it doesn't exist
+            var customerFolder = Path.Combine(_uploadsFolder, customer.Id.ToString());
+            if (!Directory.Exists(customerFolder))
+            {
+                Directory.CreateDirectory(customerFolder);
+            }
+
+            // Sanitize filename and generate unique name
+            var fileName = Path.GetFileName(dto.File.FileName);
+            var safeFileName = string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
+            var uniqueFileName = $"{DateTime.UtcNow.Ticks}_{safeFileName}";
+            var filePath = Path.Combine(customerFolder, uniqueFileName);
+
+            // Save the file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await dto.File.CopyToAsync(stream);
+            }
+
+            var relativePath = $"/uploads/customers/{customer.Id}/{uniqueFileName}";
+
             var attachment = new Customer_Attachment
             {
                 Id = Guid.NewGuid(),
                 FileName = dto.FileName,
-                FilePath = dto.FilePath,
+                FilePath = relativePath,
                 CustomerId = id,
                 UploadedAt = DateTime.UtcNow
             };
@@ -587,7 +652,7 @@ namespace React_Rentify.Server.Controllers
     public class CreateCustomerAttachmentDto
     {
         public string FileName { get; set; }
-        public string FilePath { get; set; }
+        public IFormFile File { get; set; }
     }
 
     #endregion

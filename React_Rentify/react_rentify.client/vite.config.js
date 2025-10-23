@@ -124,6 +124,7 @@ const pwaConfig = {
     injectManifest: {
         swSrc: 'public/sw.js',
         swDest: 'dist/sw.js',
+        injectionPoint: undefined,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         // Don't include the service worker itself in the manifest
         dontCacheBustURLsMatching: /\.\w{8}\./,

@@ -79,7 +79,7 @@ const customerAttachmentService = {
 
             // Upload the file
             const response = await apiClient.post(
-                `/customers/${customerId}/upload`,
+                `/customers/${customerId}/attachments/add`,
                 formData,
                 {
                     headers: {

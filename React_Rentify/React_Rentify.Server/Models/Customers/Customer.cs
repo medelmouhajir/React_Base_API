@@ -21,12 +21,15 @@ namespace React_Rentify.Server.Models.Customers
         /// <summary>
         /// National ID or driving license number (used to check blacklist).
         /// </summary>
+        [Encrypted]
         public string? NationalId { get; set; }
+        [Encrypted]
         public string? PassportId { get; set; }
 
         /// <summary>
         /// Driver's license number (if different from NationalId).
         /// </summary>
+        [Encrypted]
         public string LicenseNumber { get; set; }
 
         public DateTime DateOfBirth { get; set; }

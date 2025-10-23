@@ -5,7 +5,9 @@ import { CacheFirst, NetworkOnly, StaleWhileRevalidate , NetworkFirst } from 'wo
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
-const CACHE_NAME = 'rentify-v1';
+const CACHE_VERSION = '1.1';
+
+const CACHE_NAME = 'rentify-v' + CACHE_VERSION;
 
 // CRITICAL: This placeholder is required for manifest injection
 precacheAndRoute(self.__WB_MANIFEST);

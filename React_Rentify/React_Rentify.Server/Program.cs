@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,6 +10,8 @@ using React_Rentify.Server.Extensions;
 using React_Rentify.Server.Hubs;
 using React_Rentify.Server.Models.Users;
 using React_Rentify.Server.Services;
+using React_Rentify.Server.Services.DataEncryption;
+using React_Rentify.Server.Services.DataMigrationService;
 using React_Rentify.Server.Services.Notifications;
 using System.Text;
 
@@ -104,8 +107,17 @@ namespace React_Rentify.Server
             // Add HttpContextAccessor for accessing user information
             builder.Services.AddHttpContextAccessor();
 
+            builder.Services.AddScoped<DataMigrationService>();
 
             builder.Services.AddHostedService<NotificationCheckerService>();
+
+
+            builder.Services.AddDataProtection()
+                .PersistKeysToDbContext<MainDbContext>()
+                .SetApplicationName("React_Rentify");
+
+            builder.Services.AddScoped<IDataEncryptionService, DataEncryptionService>();
+
 
             var app = builder.Build();
 
@@ -149,6 +161,13 @@ namespace React_Rentify.Server
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred while migrating the database or seeding data.");
                 }
+            }
+
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var migrationService = scope.ServiceProvider.GetRequiredService<DataMigrationService>();
+                await migrationService.EncryptExistingDataAsync();
             }
 
 

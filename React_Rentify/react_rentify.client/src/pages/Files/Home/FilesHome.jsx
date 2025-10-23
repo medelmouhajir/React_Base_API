@@ -1,717 +1,606 @@
 ﻿// src/pages/Files/Home/FilesHome.jsx
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { toast } from 'react-toastify';
-
-// Services
+import { useTheme } from '../../../contexts/ThemeContext';
+import { useRtlDirection } from '../../../hooks/useRtlDirection';
 import agencyService from '../../../services/agencyService';
+import customerAttachmentService from '../../../services/customerAttachmentService';
 import carAttachmentService from '../../../services/carAttachmentService';
-import customerService from '../../../services/customerService';
-
-// Components
-import LoadingScreen from '../../../components/ui/LoadingScreen';
-import Modal from '../../../components/Modals/Modal';
-
-// Styles
+import { carService } from '../../../services/carService';
+import { customerService } from '../../../services/customerService';
+import { toast } from 'react-toastify';
 import './FilesHome.css';
 
 const FilesHome = () => {
     const { t } = useTranslation();
-    const { isDarkMode } = useTheme();
     const { user } = useAuth();
+    const { isDarkMode } = useTheme();
+    useRtlDirection();
 
-    // States
-    const [loading, setLoading] = useState(true);
-    const [files, setFiles] = useState([]);
-    const [filteredFiles, setFilteredFiles] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const [sortBy, setSortBy] = useState('date');
-    const [sortOrder, setSortOrder] = useState('desc');
-    const [selectedFiles, setSelectedFiles] = useState(new Set());
-    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+    const agencyId = user?.agencyId;
+    const apiBaseUrl = import.meta.env.VITE_API_URL || '';
 
-    // Modal states
+    // State
+    const [activeTab, setActiveTab] = useState('agency'); // agency, customers, cars
+    const [isLoading, setIsLoading] = useState(false);
+    const [uploadingFiles, setUploadingFiles] = useState({});
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedEntity, setSelectedEntity] = useState(null);
     const [showUploadModal, setShowUploadModal] = useState(false);
-    const [showDetailsModal, setShowDetailsModal] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadingFiles, setUploadingFiles] = useState(false);
+    const [uploadForm, setUploadForm] = useState({ title: '', file: null });
 
-    // File categories
-    const categories = [
-        { key: 'all', label: t('files.categories.all'), icon: '📁' },
-        { key: 'agency', label: t('files.categories.agency'), icon: '🏢' },
-        { key: 'customers', label: t('files.categories.customers'), icon: '👥' },
-        { key: 'cars', label: t('files.categories.cars'), icon: '🚗' }
-    ];
+    // Data states
+    const [agencyFiles, setAgencyFiles] = useState([]);
+    const [customers, setCustomers] = useState([]);
+    const [cars, setCars] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
-    // Sort options
-    const sortOptions = [
-        { key: 'date', label: t('files.sort.date') },
-        { key: 'name', label: t('files.sort.name') },
-        { key: 'size', label: t('files.sort.size') },
-        { key: 'type', label: t('files.sort.type') }
-    ];
+    // Fetch agency files
+    useEffect(() => {
+        if (agencyId && activeTab === 'agency') {
+            fetchAgencyFiles();
+        }
+    }, [agencyId, activeTab]);
 
-    // Load all files
-    const loadFiles = useCallback(async () => {
-        if (!user?.agencyId) return;
+    // Fetch customers list
+    useEffect(() => {
+        if (agencyId && activeTab === 'customers') {
+            fetchCustomers();
+        }
+    }, [agencyId, activeTab]);
+
+    // Fetch cars list
+    useEffect(() => {
+        if (agencyId && activeTab === 'cars') {
+            fetchCars();
+        }
+    }, [agencyId, activeTab]);
+
+    // Fetch agency files
+    const fetchAgencyFiles = async () => {
+        try {
+            setIsLoading(true);
+            const files = await agencyService.getAttachments(agencyId);
+            setAgencyFiles(files || []);
+        } catch (error) {
+            console.error('Error fetching agency files:', error);
+            toast.error(t('filesHome.errors.fetchFailed'));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Fetch customers
+    const fetchCustomers = async () => {
+        try {
+            setIsLoading(true);
+            const customersData = await customerService.getByAgencyId(agencyId);
+            setCustomers(customersData || []);
+        } catch (error) {
+            console.error('Error fetching customers:', error);
+            toast.error(t('filesHome.errors.fetchFailed'));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Fetch cars
+    const fetchCars = async () => {
+        try {
+            setIsLoading(true);
+            const carsData = await carService.getByAgencyId(agencyId);
+            setCars(carsData || []);
+        } catch (error) {
+            console.error('Error fetching cars:', error);
+            toast.error(t('filesHome.errors.fetchFailed'));
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Fetch entity files (customer or car)
+    const fetchEntityFiles = async (entityId, type) => {
+        try {
+            if (type === 'customer') {
+                const files = await customerAttachmentService.getByCustomerId(entityId);
+                return files || [];
+            } else if (type === 'car') {
+                const files = await carAttachmentService.getByCarId(entityId);
+                return files || [];
+            }
+        } catch (error) {
+            console.error(`Error fetching ${type} files:`, error);
+            return [];
+        }
+    };
+
+    // Handle entity selection
+    const handleEntitySelect = async (entity, type) => {
+        setIsLoading(true);
+        const files = await fetchEntityFiles(entity.id, type);
+        setSelectedEntity({ ...entity, type, files });
+        setIsLoading(false);
+    };
+
+    // Handle file selection
+    const handleFileSelect = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            setUploadForm({ title: file.name.split('.')[0], file });
+            setShowUploadModal(true);
+        }
+        event.target.value = '';
+    };
+
+    // Handle file upload with title
+    const handleFileUpload = async () => {
+        if (!uploadForm.file || !uploadForm.title.trim()) {
+            toast.error(t('filesHome.errors.titleRequired'));
+            return;
+        }
+
+        setUploadingFiles({ uploading: true });
 
         try {
-            setLoading(true);
-            const allFiles = [];
+            const fileName = uploadForm.title.trim() + '.' + uploadForm.file.name.split('.').pop();
 
-            // Load agency attachments
-            try {
-                const agencyAttachments = await agencyService.getAttachments(user.agencyId);
-                agencyAttachments.forEach(file => {
-                    allFiles.push({
-                        ...file,
-                        category: 'agency',
-                        categoryLabel: t('files.categories.agency'),
-                        entityType: 'agency',
-                        entityId: user.agencyId,
-                        entityName: t('files.myAgency'),
-                        size: estimateFileSize(file.fileName),
-                        type: getFileType(file.fileName),
-                        icon: getFileIcon(file.fileName)
-                    });
-                });
-            } catch (error) {
-                console.warn('Failed to load agency attachments:', error);
+            if (activeTab === 'agency') {
+                await agencyService.addAttachment(agencyId, fileName, uploadForm.file);
+            } else if (activeTab === 'customers' && selectedEntity) {
+                await customerAttachmentService.uploadFile(selectedEntity.id, uploadForm.file, uploadForm.title);
+            } else if (activeTab === 'cars' && selectedEntity) {
+                await carAttachmentService.uploadFile(selectedEntity.id, uploadForm.file);
             }
 
-            // Load car attachments
-            try {
-                // First get all agency cars, then their attachments
-                const cars = await carAttachmentService.getByCarId; // This will need to be updated to get all cars
-                // Note: You might need to create a service method to get all cars for an agency
-                // For now, this is a placeholder structure
-            } catch (error) {
-                console.warn('Failed to load car attachments:', error);
+            toast.success(t('filesHome.uploadSuccess'));
+
+            // Refresh files
+            if (activeTab === 'agency') {
+                fetchAgencyFiles();
+            } else if (selectedEntity) {
+                const updatedFiles = await fetchEntityFiles(selectedEntity.id, selectedEntity.type);
+                setSelectedEntity({ ...selectedEntity, files: updatedFiles });
             }
 
-            // Load customer attachments (similar pattern)
-            try {
-                // Similar implementation for customers
-            } catch (error) {
-                console.warn('Failed to load customer attachments:', error);
-            }
-
-            setFiles(allFiles);
+            // Close modal and reset form
+            setShowUploadModal(false);
+            setUploadForm({ title: '', file: null });
         } catch (error) {
-            console.error('Error loading files:', error);
-            toast.error(t('files.errors.loadFailed'));
+            console.error('Error uploading file:', error);
+            toast.error(t('filesHome.errors.uploadFailed'));
         } finally {
-            setLoading(false);
-        }
-    }, [user?.agencyId, t]);
-
-    // Filter and sort files
-    const processedFiles = useMemo(() => {
-        let filtered = files;
-
-        // Filter by category
-        if (selectedCategory !== 'all') {
-            filtered = filtered.filter(file => file.category === selectedCategory);
-        }
-
-        // Filter by search term
-        if (searchTerm) {
-            const term = searchTerm.toLowerCase();
-            filtered = filtered.filter(file =>
-                file.fileName.toLowerCase().includes(term) ||
-                file.entityName?.toLowerCase().includes(term)
-            );
-        }
-
-        // Sort files
-        filtered.sort((a, b) => {
-            let compareValue = 0;
-
-            switch (sortBy) {
-                case 'name':
-                    compareValue = a.fileName.localeCompare(b.fileName);
-                    break;
-                case 'date':
-                    compareValue = new Date(a.uploadedAt) - new Date(b.uploadedAt);
-                    break;
-                case 'size':
-                    compareValue = a.size - b.size;
-                    break;
-                case 'type':
-                    compareValue = a.type.localeCompare(b.type);
-                    break;
-                default:
-                    compareValue = 0;
-            }
-
-            return sortOrder === 'asc' ? compareValue : -compareValue;
-        });
-
-        return filtered;
-    }, [files, selectedCategory, searchTerm, sortBy, sortOrder]);
-
-    // Initialize
-    useEffect(() => {
-        loadFiles();
-    }, [loadFiles]);
-
-    // Helper functions
-    const getFileType = (fileName) => {
-        const extension = fileName.split('.').pop()?.toLowerCase();
-        if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'image';
-        if (['pdf'].includes(extension)) return 'pdf';
-        if (['doc', 'docx'].includes(extension)) return 'document';
-        if (['xls', 'xlsx'].includes(extension)) return 'spreadsheet';
-        return 'file';
-    };
-
-    const getFileIcon = (fileName) => {
-        const type = getFileType(fileName);
-        const icons = {
-            image: '🖼️',
-            pdf: '📄',
-            document: '📝',
-            spreadsheet: '📊',
-            file: '📁'
-        };
-        return icons[type] || '📁';
-    };
-
-    const estimateFileSize = (fileName) => {
-        // This is a placeholder - in a real implementation, you'd get this from the server
-        return Math.floor(Math.random() * 5000) + 100; // KB
-    };
-
-    const formatFileSize = (sizeInKB) => {
-        if (sizeInKB < 1024) return `${sizeInKB} KB`;
-        const sizeInMB = sizeInKB / 1024;
-        return `${sizeInMB.toFixed(1)} MB`;
-    };
-
-    const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
-
-    // File selection handlers
-    const toggleFileSelection = (fileId) => {
-        const newSelection = new Set(selectedFiles);
-        if (newSelection.has(fileId)) {
-            newSelection.delete(fileId);
-        } else {
-            newSelection.add(fileId);
-        }
-        setSelectedFiles(newSelection);
-    };
-
-    const selectAllFiles = () => {
-        if (selectedFiles.size === processedFiles.length) {
-            setSelectedFiles(new Set());
-        } else {
-            setSelectedFiles(new Set(processedFiles.map(file => file.id)));
+            setUploadingFiles({});
         }
     };
 
-    // File actions
-    const downloadFile = (file) => {
+    // Cancel upload
+    const handleCancelUpload = () => {
+        setShowUploadModal(false);
+        setUploadForm({ title: '', file: null });
+    };
+
+    // Handle file download
+    const handleFileDownload = (filePath, fileName) => {
+        const fileUrl = `${apiBaseUrl}${filePath}`;
         const link = document.createElement('a');
-        link.href = file.filePath;
-        link.download = file.fileName;
+        link.href = fileUrl;
+        link.download = fileName;
         link.target = '_blank';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
 
-    const downloadSelectedFiles = () => {
-        const selectedFilesList = processedFiles.filter(file => selectedFiles.has(file.id));
-        selectedFilesList.forEach(file => downloadFile(file));
-        toast.success(t('files.downloadStarted', { count: selectedFilesList.length }));
-    };
+    // Handle file delete
+    const handleFileDelete = async (fileId) => {
+        if (!window.confirm(t('filesHome.confirmDelete'))) return;
 
-    const deleteFile = async (file) => {
         try {
-            // Delete based on category
-            switch (file.category) {
-                case 'agency':
-                    await agencyService.removeAttachment(file.entityId, file.id);
-                    break;
-                case 'cars':
-                    await carAttachmentService.deleteAttachment(file.entityId, file.id);
-                    break;
-                case 'customers':
-                    // await customerService.removeAttachment(file.entityId, file.id);
-                    // Note: This method might need to be implemented
-                    break;
-                default:
-                    throw new Error('Unknown file category');
+            if (activeTab === 'agency') {
+                await agencyService.removeAttachment(agencyId, fileId);
+                fetchAgencyFiles();
+            } else if (activeTab === 'customers' && selectedEntity) {
+                await customerAttachmentService.deleteAttachment(selectedEntity.id, fileId);
+                const updatedFiles = await fetchEntityFiles(selectedEntity.id, 'customer');
+                setSelectedEntity({ ...selectedEntity, files: updatedFiles });
+            } else if (activeTab === 'cars' && selectedEntity) {
+                await carAttachmentService.deleteAttachment(selectedEntity.id, fileId);
+                const updatedFiles = await fetchEntityFiles(selectedEntity.id, 'car');
+                setSelectedEntity({ ...selectedEntity, files: updatedFiles });
             }
-
-            // Remove from state
-            setFiles(prevFiles => prevFiles.filter(f => f.id !== file.id));
-            toast.success(t('files.deleteSuccess'));
+            toast.success(t('filesHome.deleteSuccess'));
         } catch (error) {
             console.error('Error deleting file:', error);
-            toast.error(t('files.errors.deleteFailed'));
+            toast.error(t('filesHome.errors.deleteFailed'));
         }
     };
 
-    const openFileDetails = (file) => {
-        setSelectedFile(file);
-        setShowDetailsModal(true);
+    // Format file size
+    const formatFileSize = (bytes) => {
+        if (!bytes) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
     };
 
-    // Upload handler
-    const handleFileUpload = async (files, category, entityId) => {
-        try {
-            setUploadingFiles(true);
-            const uploadPromises = Array.from(files).map(file => {
-                switch (category) {
-                    case 'agency':
-                        return agencyService.addAttachment(entityId, file.name, file);
-                    case 'cars':
-                        return carAttachmentService.uploadFile(entityId, file);
-                    case 'customers':
-                        // return customerService.addAttachment(entityId, { fileName: file.name, file });
-                        break;
-                    default:
-                        throw new Error('Unknown category');
-                }
-            });
+    // Format date
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString(t('language.locale'), {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
 
-            await Promise.all(uploadPromises);
-            toast.success(t('files.uploadSuccess', { count: files.length }));
-            setShowUploadModal(false);
-            loadFiles(); // Reload files
-        } catch (error) {
-            console.error('Error uploading files:', error);
-            toast.error(t('files.errors.uploadFailed'));
-        } finally {
-            setUploadingFiles(false);
+    // Get file icon based on extension
+    const getFileIcon = (fileName) => {
+        if (!fileName) return '📄';
+        const ext = fileName.split('.').pop().toLowerCase();
+        const icons = {
+            pdf: '📕',
+            doc: '📘',
+            docx: '📘',
+            xls: '📗',
+            xlsx: '📗',
+            jpg: '🖼️',
+            jpeg: '🖼️',
+            png: '🖼️',
+            gif: '🖼️',
+            zip: '📦',
+            rar: '📦'
+        };
+        return icons[ext] || '📄';
+    };
+
+    // Filter entities based on search
+    const getFilteredEntities = () => {
+        const query = searchQuery.toLowerCase();
+
+        if (activeTab === 'customers') {
+            return customers.filter(customer =>
+                customer.fullName?.toLowerCase().includes(query) ||
+                customer.phoneNumber?.toLowerCase().includes(query) ||
+                customer.email?.toLowerCase().includes(query)
+            );
+        } else if (activeTab === 'cars') {
+            return cars.filter(car =>
+                car.licensePlate?.toLowerCase().includes(query) ||
+                car.model?.toLowerCase().includes(query)
+            );
         }
+        return [];
     };
 
-    if (loading) {
-        return <LoadingScreen message={t('files.loading')} />;
+    // Render loading state
+    if (isLoading && !selectedEntity && agencyFiles.length === 0) {
+        return (
+            <div className={`files-home-container ${isDarkMode ? 'dark' : ''}`}>
+                <div className="loading-state">
+                    <div className="spinner"></div>
+                    <p>{t('common.loading')}</p>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className={`files-home ${isDarkMode ? 'dark' : ''}`}>
+        <div className={`files-home-container ${isDarkMode ? 'dark' : ''}`}>
             {/* Header */}
             <div className="files-header">
-                <div className="files-header-main">
-                    <h1 className="files-title">
-                        📁 {t('files.title')}
-                    </h1>
-                    <p className="files-subtitle">
-                        {t('files.subtitle')}
-                    </p>
-                </div>
-
-                <div className="files-actions">
-                    <button
-                        className="btn-primary"
-                        onClick={() => setShowUploadModal(true)}
-                    >
-                        <span className="btn-icon">⬆️</span>
-                        {t('files.upload')}
-                    </button>
+                <div className="header-content">
+                    <h1 className="page-title">{t('filesHome.title')}</h1>
+                    <p className="page-subtitle">{t('filesHome.subtitle')}</p>
                 </div>
             </div>
 
-            {/* Stats */}
-            <div className="files-stats">
-                <div className="stat-card">
-                    <div className="stat-icon">📄</div>
-                    <div className="stat-content">
-                        <div className="stat-number">{files.length}</div>
-                        <div className="stat-label">{t('files.totalFiles')}</div>
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-icon">💾</div>
-                    <div className="stat-content">
-                        <div className="stat-number">
-                            {formatFileSize(files.reduce((total, file) => total + file.size, 0))}
+            {/* Tabs */}
+            <div className="files-tabs">
+                <button
+                    className={`tab-button ${activeTab === 'agency' ? 'active' : ''}`}
+                    onClick={() => {
+                        setActiveTab('agency');
+                        setSelectedEntity(null);
+                        setSearchQuery('');
+                    }}
+                >
+                    <svg className="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    <span>{t('filesHome.tabs.agency')}</span>
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'customers' ? 'active' : ''}`}
+                    onClick={() => {
+                        setActiveTab('customers');
+                        setSelectedEntity(null);
+                        setSearchQuery('');
+                    }}
+                >
+                    <svg className="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                    </svg>
+                    <span>{t('filesHome.tabs.customers')}</span>
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'cars' ? 'active' : ''}`}
+                    onClick={() => {
+                        setActiveTab('cars');
+                        setSelectedEntity(null);
+                        setSearchQuery('');
+                    }}
+                >
+                    <svg className="tab-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                    </svg>
+                    <span>{t('filesHome.tabs.cars')}</span>
+                </button>
+            </div>
+
+            {/* Main Content */}
+            <div className="files-content">
+                {/* Agency Files View */}
+                {activeTab === 'agency' && (
+                    <div className="files-section">
+                        <div className="section-header">
+                            <h2 className="section-title">{t('filesHome.agencyFiles')}</h2>
+                            <label className="upload-button">
+                                <input
+                                    type="file"
+                                    onChange={handleFileSelect}
+                                    style={{ display: 'none' }}
+                                />
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                </svg>
+                                <span>{t('filesHome.uploadFile')}</span>
+                            </label>
                         </div>
-                        <div className="stat-label">{t('files.totalSize')}</div>
-                    </div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-icon">✅</div>
-                    <div className="stat-content">
-                        <div className="stat-number">{selectedFiles.size}</div>
-                        <div className="stat-label">{t('files.selected')}</div>
-                    </div>
-                </div>
-            </div>
 
-            {/* Filters and Controls */}
-            <div className="files-controls">
-                <div className="files-controls-left">
-                    {/* Search */}
-                    <div className="search-container">
-                        <input
-                            type="text"
-                            placeholder={t('files.searchPlaceholder')}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="search-input"
-                        />
-                        <span className="search-icon">🔍</span>
-                    </div>
-
-                    {/* Category Filter */}
-                    <select
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="filter-select"
-                    >
-                        {categories.map(category => (
-                            <option key={category.key} value={category.key}>
-                                {category.icon} {category.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="files-controls-right">
-                    {/* Sort */}
-                    <select
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                        className="sort-select"
-                    >
-                        {sortOptions.map(option => (
-                            <option key={option.key} value={option.key}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-
-                    <button
-                        className="sort-order-btn"
-                        onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                        title={t(`files.sort.${sortOrder}`)}
-                    >
-                        {sortOrder === 'asc' ? '⬆️' : '⬇️'}
-                    </button>
-
-                    {/* View Mode */}
-                    <div className="view-mode-toggle">
-                        <button
-                            className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-                            onClick={() => setViewMode('grid')}
-                            title={t('files.viewMode.grid')}
-                        >
-                            ⊞
-                        </button>
-                        <button
-                            className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
-                            onClick={() => setViewMode('list')}
-                            title={t('files.viewMode.list')}
-                        >
-                            ☰
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Bulk Actions */}
-            {selectedFiles.size > 0 && (
-                <div className="bulk-actions">
-                    <div className="bulk-actions-info">
-                        <span>{t('files.selectedCount', { count: selectedFiles.size })}</span>
-                    </div>
-                    <div className="bulk-actions-buttons">
-                        <button
-                            className="btn-secondary"
-                            onClick={downloadSelectedFiles}
-                        >
-                            ⬇️ {t('files.downloadSelected')}
-                        </button>
-                        <button
-                            className="btn-secondary"
-                            onClick={() => setSelectedFiles(new Set())}
-                        >
-                            ❌ {t('files.clearSelection')}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Files Grid/List */}
-            <div className={`files-container ${viewMode}`}>
-                {processedFiles.length === 0 ? (
-                    <div className="empty-state">
-                        <div className="empty-icon">📂</div>
-                        <h3 className="empty-title">{t('files.empty.title')}</h3>
-                        <p className="empty-description">{t('files.empty.description')}</p>
-                        <button
-                            className="btn-primary"
-                            onClick={() => setShowUploadModal(true)}
-                        >
-                            {t('files.empty.uploadFirst')}
-                        </button>
-                    </div>
-                ) : (
-                    <>
-                        {/* Select All (only in list view) */}
-                        {viewMode === 'list' && (
-                            <div className="files-header-row">
-                                <div className="file-select">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedFiles.size === processedFiles.length && processedFiles.length > 0}
-                                        onChange={selectAllFiles}
-                                    />
-                                </div>
-                                <div className="file-name-header">{t('files.columns.name')}</div>
-                                <div className="file-category-header">{t('files.columns.category')}</div>
-                                <div className="file-size-header">{t('files.columns.size')}</div>
-                                <div className="file-date-header">{t('files.columns.date')}</div>
-                                <div className="file-actions-header">{t('files.columns.actions')}</div>
+                        {agencyFiles.length === 0 ? (
+                            <div className="empty-state">
+                                <svg className="empty-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                                </svg>
+                                <p>{t('filesHome.noFiles')}</p>
+                            </div>
+                        ) : (
+                            <div className="files-grid">
+                                {agencyFiles.map((file) => (
+                                    <div key={file.id} className="file-card">
+                                        <div className="file-icon-wrapper">
+                                            <span className="file-icon">{getFileIcon(file.fileName)}</span>
+                                        </div>
+                                        <div className="file-info">
+                                            <h3 className="file-name" title={file.fileName}>
+                                                {file.fileName}
+                                            </h3>
+                                            <p className="file-meta">
+                                                {formatDate(file.uploadedAt)}
+                                            </p>
+                                        </div>
+                                        <div className="file-actions">
+                                            <button
+                                                className="action-button download"
+                                                onClick={() => handleFileDownload(file.filePath, file.fileName)}
+                                                title={t('filesHome.download')}
+                                            >
+                                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                className="action-button delete"
+                                                onClick={() => handleFileDelete(file.id)}
+                                                title={t('filesHome.delete')}
+                                            >
+                                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         )}
+                    </div>
+                )}
 
-                        {/* Files */}
-                        {processedFiles.map(file => (
-                            <div
-                                key={file.id}
-                                className={`file-item ${selectedFiles.has(file.id) ? 'selected' : ''}`}
-                            >
-                                <div className="file-select">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedFiles.has(file.id)}
-                                        onChange={() => toggleFileSelection(file.id)}
-                                    />
-                                </div>
-
-                                <div className="file-icon" onClick={() => openFileDetails(file)}>
-                                    {file.icon}
-                                </div>
-
-                                <div className="file-info" onClick={() => openFileDetails(file)}>
-                                    <div className="file-name" title={file.fileName}>
-                                        {file.fileName}
-                                    </div>
-                                    <div className="file-meta">
-                                        <span className="file-entity">
-                                            {file.categoryLabel} • {file.entityName}
-                                        </span>
-                                        <span className="file-size">
-                                            {formatFileSize(file.size)}
-                                        </span>
-                                        <span className="file-date">
-                                            {formatDate(file.uploadedAt)}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="file-actions">
-                                    <button
-                                        className="action-btn download"
-                                        onClick={() => downloadFile(file)}
-                                        title={t('files.actions.download')}
-                                    >
-                                        ⬇️
-                                    </button>
-                                    <button
-                                        className="action-btn details"
-                                        onClick={() => openFileDetails(file)}
-                                        title={t('files.actions.details')}
-                                    >
-                                        ℹ️
-                                    </button>
-                                    <button
-                                        className="action-btn delete"
-                                        onClick={() => deleteFile(file)}
-                                        title={t('files.actions.delete')}
-                                    >
-                                        🗑️
-                                    </button>
-                                </div>
+                {/* Customers/Cars View */}
+                {(activeTab === 'customers' || activeTab === 'cars') && (
+                    <div className="entity-files-view">
+                        {/* Entity List */}
+                        <div className="entity-list-panel">
+                            <div className="search-bar">
+                                <svg className="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                                </svg>
+                                <input
+                                    type="text"
+                                    className="search-input"
+                                    placeholder={t(`filesHome.search${activeTab === 'customers' ? 'Customers' : 'Cars'}`)}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
                             </div>
-                        ))}
-                    </>
+
+                            <div className="entity-list">
+                                {getFilteredEntities().map((entity) => (
+                                    <button
+                                        key={entity.id}
+                                        className={`entity-item ${selectedEntity?.id === entity.id ? 'active' : ''}`}
+                                        onClick={() => handleEntitySelect(entity, activeTab === 'customers' ? 'customer' : 'car')}
+                                    >
+                                        <div className="entity-avatar">
+                                            {activeTab === 'customers' ? (
+                                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                                </svg>
+                                            ) : (
+                                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                                                    <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
+                                                </svg>
+                                            )}
+                                        </div>
+                                        <div className="entity-info">
+                                            <span className="entity-name">
+                                                {activeTab === 'customers' ? entity.fullName : `${entity.fields.manufacturer} ${entity.fields.model}`}
+                                            </span>
+                                            <span className="entity-detail">
+                                                {activeTab === 'customers' ? entity.phoneNumber : entity.licensePlate}
+                                            </span>
+                                        </div>
+                                    </button>
+                                ))}
+
+                                {getFilteredEntities().length === 0 && (
+                                    <div className="empty-list">
+                                        <p>{t(`filesHome.no${activeTab === 'customers' ? 'Customers' : 'Cars'}`)}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Files Panel */}
+                        <div className="files-panel">
+                            {selectedEntity ? (
+                                <>
+                                    <div className="panel-header">
+                                        <div className="entity-header-info">
+                                            <h2 className="entity-title">
+                                                {activeTab === 'customers' ? selectedEntity.fullName : selectedEntity.licensePlate}
+                                            </h2>
+                                            <p className="entity-subtitle">
+                                                {selectedEntity.files?.length || 0} {t('filesHome.files')}
+                                            </p>
+                                        </div>
+                                        <label className="upload-button">
+                                            <input
+                                                type="file"
+                                                onChange={handleFileSelect}
+                                                style={{ display: 'none' }}
+                                            />
+                                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                            <span>{t('filesHome.uploadFile')}</span>
+                                        </label>
+                                    </div>
+
+                                    {selectedEntity.files?.length === 0 ? (
+                                        <div className="empty-state">
+                                            <svg className="empty-icon" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                                            </svg>
+                                            <p>{t('filesHome.noFiles')}</p>
+                                        </div>
+                                    ) : (
+                                        <div className="files-grid">
+                                            {selectedEntity.files?.map((file) => (
+                                                <div key={file.id} className="file-card">
+                                                    <div className="file-icon-wrapper">
+                                                        <span className="file-icon">{getFileIcon(file.fileName)}</span>
+                                                    </div>
+                                                    <div className="file-info">
+                                                        <h3 className="file-name" title={file.fileName}>
+                                                            {file.fileName}
+                                                        </h3>
+                                                        <p className="file-meta">
+                                                            {formatDate(file.uploadedAt)}
+                                                        </p>
+                                                    </div>
+                                                    <div className="file-actions">
+                                                        <button
+                                                            className="action-button download"
+                                                            onClick={() => handleFileDownload(file.filePath, file.fileName)}
+                                                            title={t('filesHome.download')}
+                                                        >
+                                                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                            </svg>
+                                                        </button>
+                                                        <button
+                                                            className="action-button delete"
+                                                            onClick={() => handleFileDelete(file.id)}
+                                                            title={t('filesHome.delete')}
+                                                        >
+                                                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="empty-selection">
+                                    <svg className="empty-icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clipRule="evenodd" />
+                                    </svg>
+                                    <p>{t('filesHome.selectEntity')}</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 )}
             </div>
 
             {/* Upload Modal */}
             {showUploadModal && (
-                <Modal
-                    isOpen={showUploadModal}
-                    onClose={() => setShowUploadModal(false)}
-                    title={t('files.upload.title')}
-                    size="medium"
-                >
-                    <UploadModal
-                        onUpload={handleFileUpload}
-                        onClose={() => setShowUploadModal(false)}
-                        uploading={uploadingFiles}
-                    />
-                </Modal>
-            )}
+                <div className="modal-overlay" onClick={handleCancelUpload}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">{t('filesHome.uploadFile')}</h3>
+                            <button className="modal-close" onClick={handleCancelUpload}>
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
 
-            {/* File Details Modal */}
-            {showDetailsModal && selectedFile && (
-                <Modal
-                    isOpen={showDetailsModal}
-                    onClose={() => setShowDetailsModal(false)}
-                    title={selectedFile.fileName}
-                    size="medium"
-                >
-                    <FileDetailsModal
-                        file={selectedFile}
-                        onClose={() => setShowDetailsModal(false)}
-                        onDownload={() => downloadFile(selectedFile)}
-                        onDelete={() => deleteFile(selectedFile)}
-                    />
-                </Modal>
-            )}
-        </div>
-    );
-};
-
-// Upload Modal Component
-const UploadModal = ({ onUpload, onClose, uploading }) => {
-    const { t } = useTranslation();
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('agency');
-    const [selectedEntityId, setSelectedEntityId] = useState('');
-
-    const handleFileChange = (e) => {
-        setSelectedFiles(Array.from(e.target.files));
-    };
-
-    const handleUpload = () => {
-        if (selectedFiles.length === 0) {
-            toast.warning(t('files.upload.selectFiles'));
-            return;
-        }
-        if (!selectedEntityId) {
-            toast.warning(t('files.upload.selectEntity'));
-            return;
-        }
-        onUpload(selectedFiles, selectedCategory, selectedEntityId);
-    };
-
-    return (
-        <div className="upload-modal">
-            <div className="upload-section">
-                <label className="upload-label">
-                    {t('files.upload.category')}
-                </label>
-                <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="upload-select"
-                >
-                    <option value="agency">{t('files.categories.agency')}</option>
-                    <option value="cars">{t('files.categories.cars')}</option>
-                    <option value="customers">{t('files.categories.customers')}</option>
-                </select>
-            </div>
-
-            <div className="upload-section">
-                <label className="upload-label">
-                    {t('files.upload.selectFiles')}
-                </label>
-                <input
-                    type="file"
-                    multiple
-                    onChange={handleFileChange}
-                    className="upload-input"
-                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
-                />
-                {selectedFiles.length > 0 && (
-                    <div className="selected-files">
-                        {selectedFiles.map((file, index) => (
-                            <div key={index} className="selected-file">
-                                {file.name} ({formatFileSize(file.size / 1024)})
+                        <div className="modal-body">
+                            <div className="form-group">
+                                <label className="form-label">{t('filesHome.fileTitle')}</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    value={uploadForm.title}
+                                    onChange={(e) => setUploadForm({ ...uploadForm, title: e.target.value })}
+                                    placeholder={t('filesHome.fileTitlePlaceholder')}
+                                    autoFocus
+                                />
                             </div>
-                        ))}
+
+                            <div className="form-group">
+                                <label className="form-label">{t('filesHome.selectedFile')}</label>
+                                <div className="file-preview">
+                                    <span className="file-preview-icon">{getFileIcon(uploadForm.file?.name)}</span>
+                                    <span className="file-preview-name">{uploadForm.file?.name}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="modal-footer">
+                            <button className="btn-secondary" onClick={handleCancelUpload}>
+                                {t('common.cancel')}
+                            </button>
+                            <button
+                                className="btn-primary"
+                                onClick={handleFileUpload}
+                                disabled={uploadingFiles.uploading || !uploadForm.title.trim()}
+                            >
+                                {uploadingFiles.uploading ? t('common.uploading') : t('filesHome.upload')}
+                            </button>
+                        </div>
                     </div>
-                )}
-            </div>
-
-            <div className="upload-actions">
-                <button
-                    className="btn-secondary"
-                    onClick={onClose}
-                    disabled={uploading}
-                >
-                    {t('common.cancel')}
-                </button>
-                <button
-                    className="btn-primary"
-                    onClick={handleUpload}
-                    disabled={uploading || selectedFiles.length === 0}
-                >
-                    {uploading ? t('files.uploading') : t('files.upload.start')}
-                </button>
-            </div>
-        </div>
-    );
-};
-
-// File Details Modal Component
-const FileDetailsModal = ({ file, onClose, onDownload, onDelete }) => {
-    const { t } = useTranslation();
-
-    return (
-        <div className="file-details-modal">
-            <div className="file-details-header">
-                <div className="file-details-icon">{file.icon}</div>
-                <div className="file-details-info">
-                    <h3 className="file-details-name">{file.fileName}</h3>
-                    <p className="file-details-meta">
-                        {file.categoryLabel} • {file.entityName}
-                    </p>
                 </div>
-            </div>
-
-            <div className="file-details-body">
-                <div className="detail-row">
-                    <span className="detail-label">{t('files.details.size')}</span>
-                    <span className="detail-value">{formatFileSize(file.size)}</span>
-                </div>
-                <div className="detail-row">
-                    <span className="detail-label">{t('files.details.type')}</span>
-                    <span className="detail-value">{file.type}</span>
-                </div>
-                <div className="detail-row">
-                    <span className="detail-label">{t('files.details.uploaded')}</span>
-                    <span className="detail-value">{formatDate(file.uploadedAt)}</span>
-                </div>
-                <div className="detail-row">
-                    <span className="detail-label">{t('files.details.category')}</span>
-                    <span className="detail-value">{file.categoryLabel}</span>
-                </div>
-                <div className="detail-row">
-                    <span className="detail-label">{t('files.details.entity')}</span>
-                    <span className="detail-value">{file.entityName}</span>
-                </div>
-            </div>
-
-            <div className="file-details-actions">
-                <button className="btn-primary" onClick={onDownload}>
-                    ⬇️ {t('files.actions.download')}
-                </button>
-                <button className="btn-danger" onClick={onDelete}>
-                    🗑️ {t('files.actions.delete')}
-                </button>
-            </div>
+            )}
         </div>
     );
 };

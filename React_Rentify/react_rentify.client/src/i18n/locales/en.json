@@ -2873,5 +2873,38 @@
       "refundNamePlaceholder": "e.g., Insurance, third party...",
       "refundAmount": "Refund amount"
     }
+  },
+  "filesHome": {
+    "title": "Files",
+    "subtitle": "Manage files for your agency, customers, and cars.",
+    "tabs": {
+      "agency": "Agency",
+      "customers": "Customers",
+      "cars": "Cars"
+    },
+    "agencyFiles": "Agency files",
+    "uploadFile": "Upload file",
+    "noFiles": "No files yet",
+    "download": "Download",
+    "delete": "Delete",
+    "searchCustomers": "Search customers...",
+    "searchCars": "Search cars...",
+    "noCustomers": "No customers found",
+    "noCars": "No cars found",
+    "files": "files",
+    "selectEntity": "Select a customer or car to view files.",
+    "fileTitle": "File title",
+    "fileTitlePlaceholder": "Enter a title (without extension)",
+    "selectedFile": "Selected file",
+    "upload": "Upload",
+    "uploadSuccess": "File uploaded successfully",
+    "deleteSuccess": "File deleted successfully",
+    "confirmDelete": "Delete this file?",
+    "errors": {
+      "fetchFailed": "Failed to fetch data",
+      "uploadFailed": "File upload failed",
+      "titleRequired": "Please enter a title",
+      "deleteFailed": "Failed to delete file"
+    }
   }
 }
