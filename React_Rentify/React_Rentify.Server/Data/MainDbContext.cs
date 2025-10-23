@@ -22,7 +22,7 @@ namespace React_Rentify.Server.Data
 {
     public class MainDbContext : IdentityDbContext<User>, IDataProtectionKeyContext
     {
-        private readonly IDataEncryptionService _encryption;
+        private IDataEncryptionService? _encryption;
 
         public MainDbContext(
             DbContextOptions<MainDbContext> options,
@@ -58,6 +58,11 @@ namespace React_Rentify.Server.Data
                 .IsUnique();
         }
 
+        // Property to inject encryption service when needed
+        public void SetEncryptionService(IDataEncryptionService encryption)
+        {
+            _encryption = encryption;
+        }
         // Auto-encrypt on save
         public override int SaveChanges()
         {

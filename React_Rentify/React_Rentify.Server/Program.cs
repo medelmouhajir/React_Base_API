@@ -30,6 +30,11 @@ namespace React_Rentify.Server
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddDataProtection()
+                .PersistKeysToDbContext<MainDbContext>()
+                .SetApplicationName("React_Rentify");
+
+            builder.Services.AddScoped<IDataEncryptionService, DataEncryptionService>();
 
             // Configure database
             builder.Services.AddDbContext<MainDbContext>(options =>
@@ -112,11 +117,6 @@ namespace React_Rentify.Server
             builder.Services.AddHostedService<NotificationCheckerService>();
 
 
-            builder.Services.AddDataProtection()
-                .PersistKeysToDbContext<MainDbContext>()
-                .SetApplicationName("React_Rentify");
-
-            builder.Services.AddScoped<IDataEncryptionService, DataEncryptionService>();
 
 
             var app = builder.Build();
