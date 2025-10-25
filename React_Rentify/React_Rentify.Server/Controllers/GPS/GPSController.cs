@@ -538,6 +538,8 @@ namespace React_Rentify.Server.Controllers
                     .Include(x=> x.Car_Model)
                     .ThenInclude(x=> x.Manufacturer)
                     .Include(x=> x.Reservations.Where(r=> r.Status == "Delivred"))
+                    .ThenInclude(x=> x.CreatedByUser)
+                    .Include(x=> x.Reservations.Where(r=> r.Status == "Delivred"))
                     .ThenInclude(x=> x.Reservation_Customers)
                     .ThenInclude(x=> x.Customer)
                     .Include(x=> x.Car_Images)
@@ -632,7 +634,23 @@ namespace React_Rentify.Server.Controllers
                         Status = c.Status,
                         Manufacturer = c.Manufacturer,
                         MainImage = c.mainImage == null ? null : c.mainImage.Path,
-                        Year = c.YearValue
+                        Year = c.YearValue,
+                        LastReservation = c.lastReservation == null ? null : new Models.Reservations.Reservation
+                        {
+                            ActualStartTime = c.lastReservation.ActualEndTime,
+                            ActualEndTime = c.lastReservation.ActualEndTime,
+                            StartDate = c.lastReservation.StartDate,
+                            EndDate = c.lastReservation.EndDate,
+                            Status = c.lastReservation.Status,
+                            AgreedPrice = c.lastReservation.AgreedPrice,
+                            CreatedByUser = c.lastReservation.CreatedByUser == null ? null : new Models.Users.User
+                            {
+                                Id = c.lastReservation.CreatedByUser.Id,
+                                FullName = c.lastReservation.CreatedByUser.FullName,
+                                Role = c.lastReservation.CreatedByUser.Role
+                            },
+                            FinalPrice = c.lastReservation.FinalPrice
+                        }
                     };
                 }).ToList();
 

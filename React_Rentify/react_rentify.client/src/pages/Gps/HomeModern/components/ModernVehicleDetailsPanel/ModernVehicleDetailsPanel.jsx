@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+﻿import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
@@ -304,47 +304,204 @@ const ModernVehicleDetailsPanel = ({
                     >
                         {activeTab === 'overview' && (
                             <div className="vehicule-details-panel-overview">
-                                {/* Quick Stats */}
-                                <div className="vehicule-details-panel-quick-stats">
-                                    <div className="vehicule-details-panel-stat">
-                                        <div className="vehicule-details-panel-stat-value">
-                                            {selectedVehicle.speed || selectedVehicle.lastRecord?.speedKmh || 0}
-                                        </div>
-                                        <div className="vehicule-details-panel-stat-label">
-                                            {t('gps.modern.speed', 'Speed')} (km/h)
-                                        </div>
-                                    </div>
-                                    <div className="vehicule-details-panel-stat">
-                                        <div className="vehicule-details-panel-stat-value">
-                                            {selectedVehicle.totalDistance || '0'}
-                                        </div>
-                                        <div className="vehicule-details-panel-stat-label">
-                                            {t('gps.modern.distance', 'Distance')} (km)
-                                        </div>
-                                    </div>
-                                    <div className="vehicule-details-panel-stat">
-                                        <div className="vehicule-details-panel-stat-value">
-                                            {formatLastUpdate(selectedVehicle.lastUpdate || selectedVehicle.lastRecord?.timestamp)}
-                                        </div>
-                                        <div className="vehicule-details-panel-stat-label">
-                                            {t('gps.modern.lastUpdate', 'Last Update')}
-                                        </div>
-                                    </div>
-                                </div>
 
-                                {/* Location Info */}
-                                {selectedVehicle.lastLocation && (
-                                    <div className="vehicule-details-panel-location-info">
-                                        <h4>{t('gps.modern.location', 'Current Location')}</h4>
-                                        <div className="vehicule-details-panel-location-coords">
-                                            <span>Lat: {selectedVehicle.lastLocation.latitude?.toFixed(6)}</span>
-                                            <span>Lng: {selectedVehicle.lastLocation.longitude?.toFixed(6)}</span>
+                                {/* Reservation Info Section */}
+                                {selectedVehicle.lastReservation ? (
+                                    <div className="modern-vehicle-details-panel-reservation-container">
+                                        <div className="modern-vehicle-details-panel-reservation-header">
+                                            <div className="modern-vehicle-details-panel-reservation-status">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                                <h4>{t('gps.modern.activeReservation', 'Active Reservation')}</h4>
+                                            </div>
+                                            <span className={`modern-vehicle-details-panel-reservation-badge modern-vehicle-details-panel-reservation-badge-${selectedVehicle.lastReservation.status?.toLowerCase()}`}>
+                                                {selectedVehicle.lastReservation.status || 'N/A'}
+                                            </span>
                                         </div>
-                                        {selectedVehicle.lastLocation.address && (
-                                            <p className="vehicule-details-panel-location-address">
-                                                {selectedVehicle.lastLocation.address}
-                                            </p>
+
+                                        {/* Reservation Dates */}
+                                        <div className="modern-vehicle-details-panel-reservation-dates">
+                                            <div className="modern-vehicle-details-panel-reservation-date-item">
+                                                <div className="modern-vehicle-details-panel-reservation-date-icon">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    </svg>
+                                                </div>
+                                                <div className="modern-vehicle-details-panel-reservation-date-content">
+                                                    <span className="modern-vehicle-details-panel-reservation-date-label">
+                                                        {t('gps.modern.startDate', 'Start Date')}
+                                                    </span>
+                                                    <span className="modern-vehicle-details-panel-reservation-date-value">
+                                                        {selectedVehicle.lastReservation.startDate
+                                                            ? new Date(selectedVehicle.lastReservation.startDate).toLocaleDateString([], {
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })
+                                                            : 'N/A'
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="modern-vehicle-details-panel-reservation-date-divider">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <path d="M13 7l5 5m0 0l-5 5m5-5H6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </div>
+
+                                            <div className="modern-vehicle-details-panel-reservation-date-item">
+                                                <div className="modern-vehicle-details-panel-reservation-date-icon">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    </svg>
+                                                </div>
+                                                <div className="modern-vehicle-details-panel-reservation-date-content">
+                                                    <span className="modern-vehicle-details-panel-reservation-date-label">
+                                                        {t('gps.modern.endDate', 'End Date')}
+                                                    </span>
+                                                    <span className="modern-vehicle-details-panel-reservation-date-value">
+                                                        {selectedVehicle.lastReservation.endDate
+                                                            ? new Date(selectedVehicle.lastReservation.endDate).toLocaleDateString([], {
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })
+                                                            : 'N/A'
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Customer Information */}
+                                        {selectedVehicle.driverName && (
+                                            <div className="modern-vehicle-details-panel-reservation-section">
+                                                <h5 className="modern-vehicle-details-panel-reservation-section-title">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    </svg>
+                                                    {t('gps.modern.customerInfo', 'Customer Information')}
+                                                </h5>
+                                                <div className="modern-vehicle-details-panel-reservation-customer">
+                                                    <div className="modern-vehicle-details-panel-reservation-customer-avatar">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                        </svg>
+                                                    </div>
+                                                    <div className="modern-vehicle-details-panel-reservation-customer-info">
+                                                        <span className="modern-vehicle-details-panel-reservation-customer-name">
+                                                            {selectedVehicle.driverName}
+                                                        </span>
+                                                        <span className="modern-vehicle-details-panel-reservation-customer-label">
+                                                            {t('gps.modern.renter', 'Renter')}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         )}
+
+                                        {/* Pricing Information */}
+                                        <div className="modern-vehicle-details-panel-reservation-section">
+                                            <h5 className="modern-vehicle-details-panel-reservation-section-title">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                    <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                                {t('gps.modern.pricing', 'Pricing')}
+                                            </h5>
+                                            <div className="modern-vehicle-details-panel-reservation-pricing">
+                                                <div className="modern-vehicle-details-panel-reservation-price-item">
+                                                    <span className="modern-vehicle-details-panel-reservation-price-label">
+                                                        {t('gps.modern.agreedPrice', 'Agreed Price')}
+                                                    </span>
+                                                    <span className="modern-vehicle-details-panel-reservation-price-value">
+                                                        {selectedVehicle.lastReservation.agreedPrice
+                                                            ? `${selectedVehicle.lastReservation.agreedPrice.toLocaleString()} MAD`
+                                                            : 'N/A'
+                                                        }
+                                                    </span>
+                                                </div>
+                                                {selectedVehicle.lastReservation.finalPrice && (
+                                                    <div className="modern-vehicle-details-panel-reservation-price-item">
+                                                        <span className="modern-vehicle-details-panel-reservation-price-label">
+                                                            {t('gps.modern.finalPrice', 'Final Price')}
+                                                        </span>
+                                                        <span className="modern-vehicle-details-panel-reservation-price-value modern-vehicle-details-panel-reservation-price-final">
+                                                            {selectedVehicle.lastReservation.finalPrice.toLocaleString()} MAD
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Pickup & Dropoff Locations */}
+                                        {(selectedVehicle.lastReservation.pickupLocation || selectedVehicle.lastReservation.dropoffLocation) && (
+                                            <div className="modern-vehicle-details-panel-reservation-section">
+                                                <h5 className="modern-vehicle-details-panel-reservation-section-title">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                        <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                        <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                                    </svg>
+                                                    {t('gps.modern.locations', 'Locations')}
+                                                </h5>
+                                                <div className="modern-vehicle-details-panel-reservation-locations">
+                                                    {selectedVehicle.lastReservation.pickupLocation && (
+                                                        <div className="modern-vehicle-details-panel-reservation-location-item">
+                                                            <div className="modern-vehicle-details-panel-reservation-location-icon modern-vehicle-details-panel-reservation-location-pickup">
+                                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                                    <circle cx="12" cy="12" r="10" />
+                                                                </svg>
+                                                            </div>
+                                                            <div className="modern-vehicle-details-panel-reservation-location-content">
+                                                                <span className="modern-vehicle-details-panel-reservation-location-label">
+                                                                    {t('gps.modern.pickup', 'Pickup')}
+                                                                </span>
+                                                                <span className="modern-vehicle-details-panel-reservation-location-address">
+                                                                    {selectedVehicle.lastReservation.pickupLocation}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {selectedVehicle.lastReservation.dropoffLocation && (
+                                                        <div className="modern-vehicle-details-panel-reservation-location-item">
+                                                            <div className="modern-vehicle-details-panel-reservation-location-icon modern-vehicle-details-panel-reservation-location-dropoff">
+                                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                                    <circle cx="12" cy="12" r="10" />
+                                                                </svg>
+                                                            </div>
+                                                            <div className="modern-vehicle-details-panel-reservation-location-content">
+                                                                <span className="modern-vehicle-details-panel-reservation-location-label">
+                                                                    {t('gps.modern.dropoff', 'Dropoff')}
+                                                                </span>
+                                                                <span className="modern-vehicle-details-panel-reservation-location-address">
+                                                                    {selectedVehicle.lastReservation.dropoffLocation}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    /* No Reservation State */
+                                    <div className="modern-vehicle-details-panel-reservation-empty">
+                                        <div className="modern-vehicle-details-panel-reservation-empty-icon">
+                                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        </div>
+                                        <h3 className="modern-vehicle-details-panel-reservation-empty-title">
+                                            {t('gps.modern.noActiveReservation', 'No Active Reservation')}
+                                        </h3>
+                                        <p className="modern-vehicle-details-panel-reservation-empty-description">
+                                            {t('gps.modern.noReservationDesc', 'This vehicle currently has no active reservation')}
+                                        </p>
                                     </div>
                                 )}
 

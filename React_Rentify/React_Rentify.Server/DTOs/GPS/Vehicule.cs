@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using React_Rentify.Server.Models.Reservations;
+using System.Text.Json.Serialization;
 
 namespace React_Rentify.Server.DTOs.GPS
 {
@@ -32,6 +33,8 @@ namespace React_Rentify.Server.DTOs.GPS
         public bool HasAlerts { get; init; }
 
         public int AlertsCount { get; init; }
+
+        public Reservation? LastReservation { get; set; }
     }
 
     public sealed class VehicleLocationDto

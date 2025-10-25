@@ -520,3 +520,343 @@
         height: 40px;
     }
 }
+/* ==========================================
+   RESERVATION SECTION STYLES
+   ========================================== */
+
+/* Container */
+.modern-vehicle-details-panel-reservation-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-2);
+}
+
+/* Header */
+.modern-vehicle-details-panel-reservation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.modern-vehicle-details-panel-reservation-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+    .modern-vehicle-details-panel-reservation-status svg {
+        color: var(--modern-primary);
+    }
+
+    .modern-vehicle-details-panel-reservation-status h4 {
+        margin: 0;
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+/* Status Badge */
+.modern-vehicle-details-panel-reservation-badge {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: capitalize;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.modern-vehicle-details-panel-reservation-badge-reserved {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3B82F6;
+}
+
+.modern-vehicle-details-panel-reservation-badge-delivred,
+.modern-vehicle-details-panel-reservation-badge-ongoing {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22C55E;
+}
+
+.modern-vehicle-details-panel-reservation-badge-completed {
+    background: rgba(107, 114, 128, 0.15);
+    color: #6B7280;
+}
+
+.modern-vehicle-details-panel-reservation-badge-cancelled {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+}
+
+/* Date Section */
+.modern-vehicle-details-panel-reservation-dates {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+}
+
+.modern-vehicle-details-panel-reservation-date-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+}
+
+.modern-vehicle-details-panel-reservation-date-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, var(--modern-primary-light), var(--modern-primary));
+    color: white;
+    flex-shrink: 0;
+}
+
+.modern-vehicle-details-panel-reservation-date-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.modern-vehicle-details-panel-reservation-date-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.modern-vehicle-details-panel-reservation-date-value {
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.modern-vehicle-details-panel-reservation-date-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--modern-primary);
+    opacity: 0.6;
+}
+
+/* Section */
+.modern-vehicle-details-panel-reservation-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.modern-vehicle-details-panel-reservation-section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+    .modern-vehicle-details-panel-reservation-section-title svg {
+        color: var(--modern-primary);
+    }
+
+/* Customer Info */
+.modern-vehicle-details-panel-reservation-customer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+}
+
+.modern-vehicle-details-panel-reservation-customer-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--modern-primary-light), var(--modern-primary));
+    color: white;
+    flex-shrink: 0;
+}
+
+.modern-vehicle-details-panel-reservation-customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.modern-vehicle-details-panel-reservation-customer-name {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modern-vehicle-details-panel-reservation-customer-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+}
+
+/* Pricing */
+.modern-vehicle-details-panel-reservation-pricing {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+}
+
+.modern-vehicle-details-panel-reservation-price-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) 0;
+}
+
+    .modern-vehicle-details-panel-reservation-price-item:not(:last-child) {
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+.modern-vehicle-details-panel-reservation-price-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.modern-vehicle-details-panel-reservation-price-value {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modern-vehicle-details-panel-reservation-price-final {
+    color: var(--modern-primary);
+    font-size: var(--font-size-lg);
+}
+
+/* Locations */
+.modern-vehicle-details-panel-reservation-locations {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.modern-vehicle-details-panel-reservation-location-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+}
+
+.modern-vehicle-details-panel-reservation-location-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+}
+
+.modern-vehicle-details-panel-reservation-location-pickup {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22C55E;
+}
+
+.modern-vehicle-details-panel-reservation-location-dropoff {
+    background: rgba(239, 68, 68, 0.15);
+    color: #EF4444;
+}
+
+.modern-vehicle-details-panel-reservation-location-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    flex: 1;
+}
+
+.modern-vehicle-details-panel-reservation-location-label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.modern-vehicle-details-panel-reservation-location-address {
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+/* Empty State */
+.modern-vehicle-details-panel-reservation-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-12) var(--space-6);
+    text-align: center;
+}
+
+.modern-vehicle-details-panel-reservation-empty-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-4);
+    color: var(--text-secondary);
+    opacity: 0.5;
+}
+
+.modern-vehicle-details-panel-reservation-empty-title {
+    margin: 0 0 var(--space-2);
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modern-vehicle-details-panel-reservation-empty-description {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    max-width: 320px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .modern-vehicle-details-panel-reservation-dates {
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    .modern-vehicle-details-panel-reservation-date-divider {
+        transform: rotate(90deg);
+    }
+
+    .modern-vehicle-details-panel-reservation-date-item {
+        width: 100%;
+    }
+
+    .modern-vehicle-details-panel-reservation-container {
+        gap: var(--space-4);
+    }
+}
