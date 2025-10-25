@@ -187,41 +187,41 @@ const ModernVehiclePanel = ({
                             </motion.svg>
                         </motion.button>
 
-                        <motion.button
-                            className="action-vehicule-panel-btn filters"
-                            onClick={() => setShowFilters(!showFilters)}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" fill="currentColor" />
-                            </svg>
-                        </motion.button>
+                        {/*<motion.button*/}
+                        {/*    className="action-vehicule-panel-btn filters"*/}
+                        {/*    onClick={() => setShowFilters(!showFilters)}*/}
+                        {/*    whileTap={{ scale: 0.95 }}*/}
+                        {/*>*/}
+                        {/*    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">*/}
+                        {/*        <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" fill="currentColor" />*/}
+                        {/*    </svg>*/}
+                        {/*</motion.button>*/}
 
-                        <motion.button
-                            className="action-vehicule-panel-btn view-mode"
-                            onClick={() => {
-                                const modes = ['list', 'grid', 'compact'];
-                                const currentIndex = modes.indexOf(viewMode);
-                                setViewMode(modes[(currentIndex + 1) % modes.length]);
-                            }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            {viewMode === 'list' && (
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" fill="currentColor" />
-                                </svg>
-                            )}
-                            {viewMode === 'grid' && (
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 0h7v7h-7v-7z" fill="currentColor" />
-                                </svg>
-                            )}
-                            {viewMode === 'compact' && (
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M3 4h18v2H3V4zm0 4h18v2H3V8zm0 4h18v2H3v-2zm0 4h18v2H3v-2z" fill="currentColor" />
-                                </svg>
-                            )}
-                        </motion.button>
+                        {/*<motion.button*/}
+                        {/*    className="action-vehicule-panel-btn view-mode"*/}
+                        {/*    onClick={() => {*/}
+                        {/*        const modes = ['list', 'grid', 'compact'];*/}
+                        {/*        const currentIndex = modes.indexOf(viewMode);*/}
+                        {/*        setViewMode(modes[(currentIndex + 1) % modes.length]);*/}
+                        {/*    }}*/}
+                        {/*    whileTap={{ scale: 0.95 }}*/}
+                        {/*>*/}
+                        {/*    {viewMode === 'list' && (*/}
+                        {/*        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">*/}
+                        {/*            <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" fill="currentColor" />*/}
+                        {/*        </svg>*/}
+                        {/*    )}*/}
+                        {/*    {viewMode === 'grid' && (*/}
+                        {/*        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">*/}
+                        {/*            <path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 0h7v7h-7v-7z" fill="currentColor" />*/}
+                        {/*        </svg>*/}
+                        {/*    )}*/}
+                        {/*    {viewMode === 'compact' && (*/}
+                        {/*        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">*/}
+                        {/*            <path d="M3 4h18v2H3V4zm0 4h18v2H3V8zm0 4h18v2H3v-2zm0 4h18v2H3v-2z" fill="currentColor" />*/}
+                        {/*        </svg>*/}
+                        {/*    )}*/}
+                        {/*</motion.button>*/}
                     </div>
                 </div>
 
@@ -234,42 +234,42 @@ const ModernVehiclePanel = ({
                 />
 
                 {/* Quick Stats */}
-                <div className="quick-stats">
-                    <div className="stat online">
-                        <span className="value">{vehicleStats.online}</span>
-                        <span className="label">Online</span>
-                    </div>
-                    <div className="stat moving">
-                        <span className="value">{vehicleStats.moving}</span>
-                        <span className="label">Moving</span>
-                    </div>
-                    <div className="stat alerts">
-                        <span className="value">{vehicleStats.alerts}</span>
-                        <span className="label">Alerts</span>
-                    </div>
-                </div>
+                {/*<div className="quick-stats">*/}
+                {/*    <div className="stat online">*/}
+                {/*        <span className="value">{vehicleStats.online}</span>*/}
+                {/*        <span className="label">Online</span>*/}
+                {/*    </div>*/}
+                {/*    <div className="stat moving">*/}
+                {/*        <span className="value">{vehicleStats.moving}</span>*/}
+                {/*        <span className="label">Moving</span>*/}
+                {/*    </div>*/}
+                {/*    <div className="stat alerts">*/}
+                {/*        <span className="value">{vehicleStats.alerts}</span>*/}
+                {/*        <span className="label">Alerts</span>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
             </div>
 
             {/* Filters Panel */}
-            <AnimatePresence>
-                {showFilters && (
-                    <motion.div
-                        className="filters-panel"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <VehicleFilters
-                            filters={filters}
-                            onFiltersChange={onFiltersChange}
-                            vehicles={vehicles}
-                            stats={vehicleStats}
-                            isMobile={isMobile}
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/*<AnimatePresence>*/}
+            {/*    {showFilters && (*/}
+            {/*        <motion.div*/}
+            {/*            className="filters-panel"*/}
+            {/*            initial={{ height: 0, opacity: 0 }}*/}
+            {/*            animate={{ height: 'auto', opacity: 1 }}*/}
+            {/*            exit={{ height: 0, opacity: 0 }}*/}
+            {/*            transition={{ duration: 0.3 }}*/}
+            {/*        >*/}
+            {/*            <VehicleFilters*/}
+            {/*                filters={filters}*/}
+            {/*                onFiltersChange={onFiltersChange}*/}
+            {/*                vehicles={vehicles}*/}
+            {/*                stats={vehicleStats}*/}
+            {/*                isMobile={isMobile}*/}
+            {/*            />*/}
+            {/*        </motion.div>*/}
+            {/*    )}*/}
+            {/*</AnimatePresence>*/}
 
             {/* Sort Controls */}
             <div className="sort-controls">

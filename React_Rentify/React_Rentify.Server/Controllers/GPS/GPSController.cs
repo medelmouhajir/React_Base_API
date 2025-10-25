@@ -534,10 +534,10 @@ namespace React_Rentify.Server.Controllers
                 // 2) Fetch cars from MAIN DB
                 var cars = await _contextMain.Set<Car>()
                     .AsNoTracking()
-                    .Where(c => c.AgencyId == agencyId)
+                    .Where(c => c.AgencyId == agencyId && c.IsTrackingActive)
                     .Include(x=> x.Car_Model)
                     .ThenInclude(x=> x.Manufacturer)
-                    .Include(x=> x.Reservations.Where(r=> r.StartDate <= today && r.EndDate >= today && r.Status != "Reserved"))
+                    .Include(x=> x.Reservations.Where(r=> r.Status == "Delivred"))
                     .ThenInclude(x=> x.Reservation_Customers)
                     .ThenInclude(x=> x.Customer)
                     .Include(x=> x.Car_Images)

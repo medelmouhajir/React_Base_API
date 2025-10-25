@@ -110,9 +110,16 @@ const ModernMapContainer = ({
         return optimizeMarkerRendering(vehicles, mapState.zoom);
     }, [vehicles, mapState.zoom]);
 
+    // In ModernMapContainer.jsx, replace the processedRoute useMemo:
     const processedRoute = useMemo(() => {
-        if (!routeData || !Array.isArray(routeData) || routeData.length === 0) return null;
-        return processRouteForSpeedColoring(routeData);
+        // Handle both old format (array) and new format (object with records)
+        const records = Array.isArray(routeData)
+            ? routeData
+            : routeData?.records || routeData?.coordinates;
+
+        if (!records || records.length === 0) return null;
+
+        return processRouteForSpeedColoring(records);
     }, [routeData]);
 
     // CRITICAL FIX: Enhanced map ready handler with proper mobile touch setup

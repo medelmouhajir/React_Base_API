@@ -164,11 +164,11 @@ namespace React_Rentify.Server
             }
 
 
-            using (var scope = app.Services.CreateScope())
-            {
-                var migrationService = scope.ServiceProvider.GetRequiredService<DataMigrationService>();
-                await migrationService.EncryptExistingDataAsync();
-            }
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var migrationService = scope.ServiceProvider.GetRequiredService<DataMigrationService>();
+            //    await migrationService.EncryptExistingDataAsync();
+            //}
 
 
             app.UseDefaultFiles();

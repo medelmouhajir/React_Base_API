@@ -92,12 +92,14 @@ export const optimizeMarkerRendering = (vehicles, zoomLevel = 12, viewBounds = n
     // Optimize based on zoom level
     if (zoomLevel < 10) {
         // Very zoomed out - show only moving vehicles or those with alerts
-        return filteredVehicles.filter(vehicle =>
-            vehicle.isMoving || vehicle.hasAlerts
-        ).slice(0, 50); // Limit to 50 markers at low zoom
+        //return filteredVehicles.filter(vehicle =>
+        //    vehicle.isMoving || vehicle.hasAlerts
+        //).slice(0, 50);
+        return filteredVehicles.slice(0, 50); // Limit to 50 markers at low zoom
     } else if (zoomLevel < 13) {
         // Medium zoom - show online vehicles, limit total
-        return filteredVehicles.filter(vehicle => vehicle.isOnline).slice(0, 100);
+        //return filteredVehicles.filter(vehicle => vehicle.isOnline).slice(0, 100);
+        return filteredVehicles.slice(0, 200);
     } else if (zoomLevel < 15) {
         // High zoom - show most vehicles, reasonable limit
         return filteredVehicles.slice(0, 200);

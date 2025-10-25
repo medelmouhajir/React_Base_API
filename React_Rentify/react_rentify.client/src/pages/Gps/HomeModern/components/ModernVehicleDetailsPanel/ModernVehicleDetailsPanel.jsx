@@ -20,30 +20,30 @@ const ModernVehicleDetailsPanel = ({
     const vehicleStatus = useMemo(() => {
         if (!selectedVehicle) return null;
 
-        const isOnline = selectedVehicle.isOnline ??
-            (selectedVehicle.lastRecord?.timestamp ?
-                (new Date() - new Date(selectedVehicle.lastRecord.timestamp)) < 5 * 60 * 1000 :
-                false);
-
-        const isMoving = selectedVehicle.isMoving ??
-            (selectedVehicle.lastRecord?.speedKmh > 2 && selectedVehicle.lastRecord?.ignitionOn) ??
-            (selectedVehicle.speedKmh > 2 && selectedVehicle.ignitionOn) ??
-            false;
-
-        if (!isOnline) {
+        if (selectedVehicle.status === 'Available') {
             return {
-                status: 'offline',
-                label: t('gps.modern.status.offline', 'Offline'),
+                status: 'available',
+                label: t('car.status.available', 'Offline'),
                 color: '#6B7280',
                 icon: 'offline'
             };
         }
-        if (isMoving) {
+
+        if (selectedVehicle.status === 'Rented') {
             return {
-                status: 'moving',
-                label: t('gps.modern.status.moving', 'Moving'),
+                status: 'rented',
+                label: t('car.status.rented', 'Offline'),
                 color: 'var(--modern-success)',
                 icon: 'moving'
+            };
+        }
+
+        if (selectedVehicle.status === 'Maintenance') {
+            return {
+                status: 'maintenance',
+                label: t('car.status.maintenance', 'Offline'),
+                color: 'var(--modern-warning)',
+                icon: 'idle'
             };
         }
         return {

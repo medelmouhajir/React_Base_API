@@ -1,4 +1,4 @@
-// src/layouts/LandingLayout.jsx
+﻿// src/layouts/LandingLayout.jsx
 import { useEffect, useState } from 'react';
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';

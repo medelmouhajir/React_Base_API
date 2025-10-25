@@ -274,7 +274,7 @@ namespace React_Rentify.Server.Controllers.App
                 var unpaidReservations = await _context.Set<Reservation>()
                     .Include(r => r.Invoice)
                     .ThenInclude(x=> x.Payments)
-                    .Where(r => r.AgencyId == agencyId)
+                    .Where(r => r.AgencyId == agencyId && r.Status != "Reserved")
                     .Where(r => r.Invoice == null || r.Invoice.Amount > r.Invoice.Payments.Sum(c=> c.Amount))
                     .Include(r => r.Car)
                     .ThenInclude(x => x.Car_Model)

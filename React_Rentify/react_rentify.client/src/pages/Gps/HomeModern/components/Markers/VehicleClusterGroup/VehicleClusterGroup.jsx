@@ -1,16 +1,19 @@
 import React, { useMemo } from 'react';
-import { CircleMarker, Popup } from 'react-leaflet';
-import { motion } from 'framer-motion';
+import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 
 // Import clustering utility
 import { clusterVehicles } from '../../../utils/mapOptimization';
 import ModernVehicleMarker from './../ModernVehicleMarker/ModernVehicleMarker';
 
+// Import CSS
+import './VehicleClusterGroup.css';
+
 const VehicleClusterGroup = ({
     vehicles = [],
     selectedVehicle,
     onVehicleClick,
+    onClusterClick,
     isMobile = false,
     clusterRadius = 100,
     zoomLevel = 12,
@@ -35,7 +38,7 @@ const VehicleClusterGroup = ({
         const svgIcon = `
             <svg width="${size}" height="${size}" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <filter id="cluster-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <filter id="cluster-glow-${cluster.id}" x="-50%" y="-50%" width="200%" height="200%">
                         <feMorphology operator="dilate" radius="1"/>
                         <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                         <feMerge> 
@@ -46,7 +49,7 @@ const VehicleClusterGroup = ({
                 </defs>
                 
                 <!-- Outer pulse ring -->
-                <circle cx="30" cy="30" r="25" fill="${primaryColor}" opacity="0.2" filter="url(#cluster-glow)">
+                <circle cx="30" cy="30" r="25" fill="${primaryColor}" opacity="0.2" filter="url(#cluster-glow-${cluster.id})">
                     <animate attributeName="r" values="25;30;25" dur="2s" repeatCount="indefinite"/>
                     <animate attributeName="opacity" values="0.2;0.1;0.2" dur="2s" repeatCount="indefinite"/>
                 </circle>
@@ -96,6 +99,20 @@ const VehicleClusterGroup = ({
         return { online, moving, alerts, offline: vehicles.length - online };
     };
 
+    // Handle cluster click to zoom in
+    const handleClusterClick = (cluster, map) => {
+        if (onClusterClick) {
+            onClusterClick(cluster);
+        } else if (map) {
+            // Default behavior: zoom in to cluster bounds
+            const bounds = L.latLngBounds(cluster.vehicles.map(v => [
+                v.lastLocation.latitude,
+                v.lastLocation.longitude
+            ]));
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+        }
+    };
+
     return (
         <>
             {clusters.map((item, index) => {
@@ -103,14 +120,13 @@ const VehicleClusterGroup = ({
                     const statusSummary = getClusterStatusSummary(item);
 
                     return (
-                        <CircleMarker
+                        <Marker
                             key={`cluster-${item.id}`}
-                            center={item.position}
+                            position={item.position}
                             icon={createClusterIcon(item)}
                             eventHandlers={{
-                                click: () => {
-                                    // On cluster click, you might want to zoom in or show cluster details
-                                    console.log('Cluster clicked:', item);
+                                click: (e) => {
+                                    handleClusterClick(item, e.target._map);
                                 }
                             }}
                         >
@@ -206,39 +222,23 @@ const VehicleClusterGroup = ({
                                     {/* Actions */}
                                     <div className="cluster-actions">
                                         <button
-                                            className="action-btn primary"
-                                            onClick={() => {
-                                                // Zoom to fit all vehicles in cluster
-                                                console.log('Zoom to cluster vehicles');
+                                            className="cluster-action-btn zoom-btn"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleClusterClick(item, e.target.closest('.leaflet-popup')._map);
                                             }}
                                         >
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                                 <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" fill="none" />
-                                                <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" />
-                                                <path d="M11 8v6M8 11h6" stroke="currentColor" strokeWidth="2" />
+                                                <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                                <path d="M11 8v6M8 11h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                             </svg>
-                                            Zoom to Vehicles
-                                        </button>
-
-                                        <button
-                                            className="action-btn secondary"
-                                            onClick={() => {
-                                                // Show all vehicles individually
-                                                console.log('Show individual vehicles');
-                                            }}
-                                        >
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                                <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" fill="none" />
-                                                <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" fill="none" />
-                                                <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" fill="none" />
-                                                <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" fill="none" />
-                                            </svg>
-                                            Show Individual
+                                            Zoom to Cluster
                                         </button>
                                     </div>
                                 </div>
                             </Popup>
-                        </CircleMarker>
+                        </Marker>
                     );
                 } else {
                     // Individual vehicle marker
