@@ -151,15 +151,6 @@ const ModernVehicleDetailsPanel = ({
                     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" strokeWidth="2" />
                 </svg>
             )
-        },
-        {
-            id: 'history',
-            label: t('gps.modern.tabs.history', 'History'),
-            icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" />
-                </svg>
-            )
         }
     ];
 
@@ -595,17 +586,6 @@ const ModernVehicleDetailsPanel = ({
                             </div>
                         )}
 
-                        {activeTab === 'history' && (
-                            <div className="vehicule-details-panel-history">
-                                <div className="vehicule-details-panel-history-placeholder">
-                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeWidth="2" />
-                                    </svg>
-                                    <h4>{t('gps.modern.historyPlaceholder', 'Route History')}</h4>
-                                    <p>{t('gps.modern.historyDesc', 'Historical route data will be displayed here')}</p>
-                                </div>
-                            </div>
-                        )}
                     </motion.div>
                 </AnimatePresence>
             </div>

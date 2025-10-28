@@ -30,7 +30,7 @@ const TabNavigation = ({ activeTab, onTabChange, customerCount, paymentCount }) 
     ];
 
     return (
-        <div className="tab-navigation">
+        <div className="tab-reservation-navigation">
             <div className="tab-buttons">
                 {tabs.map((tab) => (
                     <button

@@ -129,15 +129,6 @@ const ModernRoutePanel = ({
 
     const tabs = [
         {
-            id: 'overview',
-            label: t('gps.modern.overview', 'Overview'),
-            icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" fill="currentColor" />
-                </svg>
-            )
-        },
-        {
             id: 'timeline',
             label: t('gps.modern.timeline', 'Timeline'),
             icon: (
@@ -275,47 +266,6 @@ const ModernRoutePanel = ({
                     </motion.div>
                 ) : (
                     <AnimatePresence mode="wait">
-                        {activeTab === 'overview' && (
-                            <motion.div
-                                key="overview"
-                                className="tab-content overview"
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <RouteStats
-                                    routeStats={routeStats}
-                                    processedData={processedRouteData}
-                                    selectedVehicle={selectedVehicle}
-                                    dateRange={dateRange}
-                                    isMobile={isMobile}
-                                />
-
-                                {showSpeedChart && (
-                                    <SpeedChart
-                                        data={processedRouteData?.speedPoints || []}
-                                        selectedMetric={selectedMetric}
-                                        onMetricChange={setSelectedMetric}
-                                        isMobile={isMobile}
-                                    />
-                                )}
-
-                                <div className="overview-actions">
-                                    <motion.button
-                                        className="action-btn primary"
-                                        onClick={() => setShowSpeedChart(!showSpeedChart)}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                            <path d="M3 3v18h18M9 17V9M13 17v-6M17 17v-4" stroke="currentColor" strokeWidth="2" fill="none" />
-                                        </svg>
-                                        {showSpeedChart ? t('gps.modern.hideChart', 'Hide Chart') : t('gps.modern.showChart', 'Show Chart')}
-                                    </motion.button>
-
-                                </div>
-                            </motion.div>
-                        )}
 
                         {activeTab === 'timeline' && (
                             <motion.div

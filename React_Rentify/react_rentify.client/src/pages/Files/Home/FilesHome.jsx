@@ -269,7 +269,8 @@ const FilesHome = () => {
         } else if (activeTab === 'cars') {
             return cars.filter(car =>
                 car.licensePlate?.toLowerCase().includes(query) ||
-                car.model?.toLowerCase().includes(query)
+                car.fields.model?.toLowerCase().includes(query) ||
+                car.fields.manufacturer?.toLowerCase().includes(query)
             );
         }
         return [];

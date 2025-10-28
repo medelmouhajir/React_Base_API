@@ -162,7 +162,7 @@ const ModernVehiclePanel = ({
             <div className="panel-header">
                 <div className="header-top">
                     <div className="panel-title">
-                        <h2>{t('gps.modern.vehicles', 'Vehicles')}</h2>
+                        <h2>{t('car.list.title', 'Vehicles')}</h2>
                         <span className="vehicle-count">
                             {processedVehicles.length} of {vehicles.length}
                         </span>
@@ -229,7 +229,7 @@ const ModernVehiclePanel = ({
                 <VehicleSearch
                     value={searchQuery}
                     onChange={handleSearchChange}
-                    placeholder={t('gps.modern.searchVehicles', 'Search vehicles...')}
+                    placeholder={t('car.list.searchPlaceholder', 'Search vehicles...')}
                     isMobile={isMobile}
                 />
 
@@ -276,8 +276,8 @@ const ModernVehiclePanel = ({
                 <span className="sort-label">{t('common.sortBy', 'Sort by')}:</span>
                 <div className="sort-buttons">
                     {[
-                        { key: 'plateNumber', label: 'Plate' },
-                        { key: 'status', label: 'Status' },
+                        { key: 'plateNumber', label: t('car.fields.licensePlate') },
+                        { key: 'status', label: t('car.fields.status') },
                         { key: 'lastUpdate', label: 'Updated' },
                         { key: 'distance', label: 'Distance' }
                     ].map((option) => (
@@ -310,7 +310,7 @@ const ModernVehiclePanel = ({
                 {isLoading ? (
                     <div className="loading-state">
                         <div className="loading-spinner" />
-                        <span>{t('gps.modern.loadingVehicles', 'Loading vehicles...')}</span>
+                        <span>{t('common.loading', 'Loading vehicles...')}</span>
                     </div>
                 ) : processedVehicles.length === 0 ? (
                     <EmptyState
@@ -396,7 +396,7 @@ const ModernVehiclePanel = ({
                         <button
                             className="clear-selection"
                             onClick={() => handleVehicleSelect(null)}
-                            aria-label={t('gps.modern.clearSelection', 'Clear selection')}
+                            aria-label={t('common.clear', 'Clear selection')}
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                                 <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" />

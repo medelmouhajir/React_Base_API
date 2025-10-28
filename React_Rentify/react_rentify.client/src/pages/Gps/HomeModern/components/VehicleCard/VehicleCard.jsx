@@ -160,7 +160,7 @@ const VehicleCard = ({
                         <path d="M9 11L12 14L22 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         <path d="M21 12V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
-                    <span>{t('gps.modern.reserved', 'Reserved')}</span>
+                    <span>{t('reservation.status.' + vehicle.lastReservation.status.toLowerCase(), 'Reserved')}</span>
                 </motion.div>
             )}
 
@@ -183,7 +183,7 @@ const VehicleCard = ({
                     </div>
 
                     {/* Status Pulse Effect for Moving Vehicles */}
-                    {vehicleStatus.status === 'moving' && (
+                    {vehicleStatus.status === 'rented' && (
                         <motion.div
                             className="modern-vehicle-card-pulse"
                             animate={{
@@ -226,7 +226,7 @@ const VehicleCard = ({
                                 <rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="2" />
                                 <path d="M7 10H17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                             </svg>
-                            <span className="modern-vehicle-card-detail-label">{t('gps.modern.model', 'Model')}:</span>
+                            <span className="modern-vehicle-card-detail-label">{t('car.fields.model', 'Model')}:</span>
                             <span className="modern-vehicle-card-detail-value">{model}</span>
                         </div>
 
@@ -235,7 +235,7 @@ const VehicleCard = ({
                                 <path d="M3 9L12 2L21 9V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V9Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 <path d="M9 21V12H15V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
-                            <span className="modern-vehicle-card-detail-label">{t('gps.modern.manufacturer', 'Manufacturer')}:</span>
+                            <span className="modern-vehicle-card-detail-label">{t('car.fields.manufacturer', 'Manufacturer')}:</span>
                             <span className="modern-vehicle-card-detail-value">{manufacturer}</span>
                         </div>
 
@@ -244,7 +244,7 @@ const VehicleCard = ({
                                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
                                 <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                             </svg>
-                            <span className="modern-vehicle-card-detail-label">{t('gps.modern.status', 'Status')}:</span>
+                            <span className="modern-vehicle-card-detail-label">{t('car.fields.status', 'Status')}:</span>
                             <span className="modern-vehicle-card-detail-value">{status}</span>
                         </div>
                     </div>

@@ -404,7 +404,7 @@
 /* ========================================
    TAB NAVIGATION
    ======================================== */
-.tab-navigation {
+.tab-reservation-navigation {
     background: var(--card-bg);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
@@ -1462,7 +1462,7 @@
         font-size: 1.25rem;
     }
 
-    .tab-navigation {
+    .tab-reservation-navigation {
         top: 0;
         margin-bottom: 1rem;
     }
@@ -1603,7 +1603,7 @@
    PRINT STYLES
    ======================================== */
 @media print {
-    .tab-navigation,
+    .tab-reservation-navigation,
     .floating-action-button,
     .sticky-header,
     .btn-primary,

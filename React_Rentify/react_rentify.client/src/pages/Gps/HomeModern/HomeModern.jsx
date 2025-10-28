@@ -67,6 +67,18 @@ const HomeModern = () => {
         startDate: new Date(Date.now() - 24 * 60 * 60 * 1000), // 24 hours ago
         endDate: new Date()
     });
+    // Update dateRange when selectedVehicle changes (based on lastReservation)
+    useEffect(() => {
+        if (selectedVehicle?.lastReservation) {
+            const { startDate, endDate } = selectedVehicle.lastReservation;
+            if (startDate && endDate) {
+                setDateRange({
+                    startDate: new Date(startDate),
+                    endDate: new Date(endDate)
+                });
+            }
+        }
+    }, [selectedVehicle?.lastReservation?.startDate, selectedVehicle?.lastReservation?.endDate]);
 
     // Route Data Hook
 
@@ -84,6 +96,7 @@ const HomeModern = () => {
             fetchRouteData(selectedVehicle.id, dateRange.startDate, dateRange.endDate);
         }
     }, [selectedVehicle?.id, dateRange.startDate, dateRange.endDate, fetchRouteData]);
+
 
     // Alerts Hook
     const {
