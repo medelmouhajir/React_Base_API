@@ -24,11 +24,11 @@ const ModernVehicleMarker = ({
 
     // Vehicle status calculation
     const vehicleStatus = useMemo(() => {
-        if (!vehicle.isOnline) return { status: 'offline', color: '#EF4444' };
-        if (vehicle.isMoving) return { status: 'moving', color: '#22C55E' };
-        if (vehicle.speed > 0) return { status: 'moving', color: '#22C55E' };
+        if (!vehicle.status === 'Available') return { status: 'offline', color: '#EF4444' };
+        if (vehicle.status === 'Rented') return { status: 'moving', color: '#22C55E' };
+        if (vehicle.status === 'Maintenance') return { status: 'maintenance', color: '#22C55E' };
         return { status: 'idle', color: '#F59E0B' };
-    }, [vehicle.isOnline, vehicle.isMoving, vehicle.speed]);
+    }, [vehicle.status]);
 
     // Create custom marker icon with SVG
     const markerIcon = useMemo(() => {
@@ -37,28 +37,25 @@ const ModernVehicleMarker = ({
 
         // Vehicle icon based on type
         const getVehicleIcon = () => {
-            switch (vehicle.type?.toLowerCase()) {
-                case 'truck':
-                case 'camion':
+            switch (vehicle.status?.toLowerCase()) {
+                case 'available':
                     return `
                         <path d="M3 7h3v2H3V7zm14 0h3v2h-3V7zM5 10v4h2v-2h10v2h2v-4H5z" fill="currentColor"/>
                         <rect x="7" y="6" width="10" height="3" fill="currentColor"/>
                     `;
-                case 'bus':
-                case 'autobus':
+                case 'rented':
                     return `
                         <path d="M4 7h16v8H4V7zm2 2v4h12V9H6z" fill="currentColor"/>
                         <circle cx="8" cy="17" r="1.5" fill="currentColor"/>
                         <circle cx="16" cy="17" r="1.5" fill="currentColor"/>
                     `;
-                case 'motorcycle':
-                case 'moto':
+                case 'maintenance':
                     return `
                         <circle cx="7" cy="16" r="3" fill="currentColor"/>
                         <circle cx="17" cy="16" r="3" fill="currentColor"/>
                         <path d="M10 8h4l-1 4h-2l-1-4z" fill="currentColor"/>
                     `;
-                default: // car/voiture
+                default:
                     return `
                         <path d="M5 11l1.5-4.5h11L19 11v8h-2v-2H7v2H5v-8z" fill="currentColor"/>
                         <circle cx="8.5" cy="15.5" r="1.5" fill="white"/>
@@ -134,12 +131,12 @@ const ModernVehicleMarker = ({
 
     const getStatusText = useCallback(() => {
         switch (vehicleStatus.status) {
-            case 'moving':
-                return t('gps.modern.marker.status.moving', 'Moving');
-            case 'idle':
-                return t('gps.modern.marker.status.idle', 'Idle');
-            case 'offline':
-                return t('gps.modern.marker.status.offline', 'Offline');
+            case 'rented':
+                return t('car.status.rented', 'Moving');
+            case 'available':
+                return t('car.status.available', 'Idle');
+            case 'maintenance':
+                return t('car.status.maintenance', 'Offline');
             default:
                 return t('gps.modern.marker.status.online', 'Online');
         }
