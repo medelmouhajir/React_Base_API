@@ -130,7 +130,7 @@ const ModernVehicleMarker = ({
     }, [t]);
 
     const getStatusText = useCallback(() => {
-        switch (vehicleStatus.status) {
+        switch (vehicleStatus.status.toLowerCase()) {
             case 'rented':
                 return t('car.status.rented', 'Moving');
             case 'available':
