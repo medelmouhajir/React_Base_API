@@ -511,7 +511,7 @@ namespace React_Rentify.Server.Controllers
         /// Updates an existing car. Accepts UpdateCarDto.
         /// </summary>
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateCar(Guid id, [FromBody] UpdateCarDto dto)
+        public async Task<IActionResult> UpdateCar(Guid id, [FromForm] UpdateCarDto dto)
         {
             _logger.LogInformation("Updating car {CarId}", id);
 
@@ -529,6 +529,7 @@ namespace React_Rentify.Server.Controllers
 
             var existingCar = await _context.Set<Car>()
                 .Include(c => c.Car_Attachments)
+                .Include(c => c.Car_Images)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (existingCar == null)
@@ -537,26 +538,28 @@ namespace React_Rentify.Server.Controllers
                 return NotFound(new { message = $"Car with Id '{id}' not found." });
             }
 
+            // Authorization on current agency
             if (!await _authService.HasAccessToAgencyAsync(existingCar.AgencyId))
                 return Unauthorized();
 
-            // If Agency was changed, verify new agency
+            // If Agency changed, verify and also ensure the caller has access to the target agency
             if (existingCar.AgencyId != dto.AgencyId)
             {
-                var agencyExists = await _context.Set<Agency>()
-                    .AnyAsync(a => a.Id == dto.AgencyId);
+                var agencyExists = await _context.Set<Agency>().AnyAsync(a => a.Id == dto.AgencyId);
                 if (!agencyExists)
                 {
                     _logger.LogWarning("Agency with Id {AgencyId} does not exist", dto.AgencyId);
                     return BadRequest(new { message = $"Agency with Id '{dto.AgencyId}' does not exist." });
                 }
+
+                if (!await _authService.HasAccessToAgencyAsync(dto.AgencyId))
+                    return Unauthorized();
             }
 
-            // If Car_Model changed, verify it
+            // If Car_Model changed, verify
             if (existingCar.Car_ModelId != dto.Car_ModelId)
             {
-                var modelExists = await _context.Set<Car_Model>()
-                    .AnyAsync(m => m.Id == dto.Car_ModelId);
+                var modelExists = await _context.Set<Car_Model>().AnyAsync(m => m.Id == dto.Car_ModelId);
                 if (!modelExists)
                 {
                     _logger.LogWarning("Car_Model with Id {ModelId} does not exist", dto.Car_ModelId);
@@ -564,11 +567,10 @@ namespace React_Rentify.Server.Controllers
                 }
             }
 
-            // If Car_Year changed, verify it
+            // If Car_Year changed, verify
             if (existingCar.Car_YearId != dto.Car_YearId)
             {
-                var yearExists = await _context.Set<Car_Year>()
-                    .AnyAsync(y => y.Id == dto.Car_YearId);
+                var yearExists = await _context.Set<Car_Year>().AnyAsync(y => y.Id == dto.Car_YearId);
                 if (!yearExists)
                 {
                     _logger.LogWarning("Car_Year with Id {YearId} does not exist", dto.Car_YearId);
@@ -576,37 +578,174 @@ namespace React_Rentify.Server.Controllers
                 }
             }
 
+            // Validate legal dates if provided
+            if (dto.AssuranceStartDate.HasValue && dto.AssuranceEndDate.HasValue &&
+                dto.AssuranceStartDate.Value >= dto.AssuranceEndDate.Value)
+            {
+                return BadRequest(new { message = "Insurance start date must be before end date." });
+            }
+
+            if (dto.TechnicalVisitStartDate.HasValue && dto.TechnicalVisitEndDate.HasValue &&
+                dto.TechnicalVisitStartDate.Value >= dto.TechnicalVisitEndDate.Value)
+            {
+                return BadRequest(new { message = "Technical visit start date must be before end date." });
+            }
+
             // Update scalar properties
             existingCar.AgencyId = dto.AgencyId;
             existingCar.Car_ModelId = dto.Car_ModelId;
             existingCar.Car_YearId = dto.Car_YearId;
-            existingCar.LicensePlate = dto.LicensePlate;
+            existingCar.LicensePlate = dto.LicensePlate?.Trim();
             existingCar.Color = dto.Color;
             existingCar.IsAvailable = dto.IsAvailable;
             existingCar.Status = dto.Status;
             existingCar.DailyRate = dto.DailyRate;
             existingCar.HourlyRate = dto.HourlyRate;
-            existingCar.DeviceSerialNumber = dto.DeviceSerialNumber;
+
+            existingCar.DeviceSerialNumber = string.IsNullOrWhiteSpace(dto.DeviceSerialNumber)
+                ? null
+                : dto.DeviceSerialNumber.Trim();
+
             existingCar.IsTrackingActive = dto.IsTrackingActive;
 
-            // Replace attachments if provided
-            if (dto.Attachments != null)
+            // Powertrain
+            existingCar.Gear_Type = dto.Gear_Type;
+            existingCar.Engine_Type = dto.Engine_Type;
+
+            // Odometer with timestamp bump if changed
+            if (dto.CurrentKM.HasValue && dto.CurrentKM.Value != existingCar.CurrentKM)
             {
-                _logger.LogInformation("Updating attachments for Car {CarId}", id);
+                existingCar.CurrentKM = dto.CurrentKM.Value;
+                existingCar.LastKmUpdate = DateTime.UtcNow;
+            }
 
-                _context.Set<Car_Attachment>().RemoveRange(existingCar.Car_Attachments);
+            // Legal docs (optional)
+            if (dto.AssuranceName != null) existingCar.AssuranceName = dto.AssuranceName;
+            if (dto.AssuranceStartDate.HasValue)
+                existingCar.AssuranceStartDate = dto.AssuranceStartDate.Value.ToUniversalTime();
+            if (dto.AssuranceEndDate.HasValue)
+                existingCar.AssuranceEndDate = dto.AssuranceEndDate.Value.ToUniversalTime();
 
-                foreach (var attachDto in dto.Attachments)
+            if (dto.TechnicalVisitStartDate.HasValue)
+                existingCar.TechnicalVisitStartDate = dto.TechnicalVisitStartDate.Value.ToUniversalTime();
+            if (dto.TechnicalVisitEndDate.HasValue)
+                existingCar.TechnicalVisitEndDate = dto.TechnicalVisitEndDate.Value.ToUniversalTime();
+
+            // Attachments: remove specific ones, then replace or append
+            if (dto.AttachmentIdsToRemove != null && dto.AttachmentIdsToRemove.Count > 0)
+            {
+                var toRemove = existingCar.Car_Attachments
+                    .Where(a => dto.AttachmentIdsToRemove.Contains(a.Id))
+                    .ToList();
+                if (toRemove.Count > 0)
+                    _context.Set<Car_Attachment>().RemoveRange(toRemove);
+            }
+
+            if (dto.AttachmentsReplace == true)
+            {
+                if (existingCar.Car_Attachments?.Count > 0)
+                    _context.Set<Car_Attachment>().RemoveRange(existingCar.Car_Attachments);
+                existingCar.Car_Attachments = new List<Car_Attachment>();
+            }
+
+            if (dto.Attachments != null && dto.Attachments.Count > 0)
+            {
+                var newAttachments = dto.Attachments.Select(a => new Car_Attachment
                 {
-                    var newAttach = new Car_Attachment
+                    Id = Guid.NewGuid(),
+                    CarId = existingCar.Id,
+                    FileName = a.FileName,
+                    FilePath = a.FilePath,
+                    UploadedAt = DateTime.UtcNow
+                }).ToList();
+
+                await _context.Set<Car_Attachment>().AddRangeAsync(newAttachments);
+            }
+
+            // Images: remove requested, then add new files, and set main
+            if (dto.ImageIdsToRemove != null && dto.ImageIdsToRemove.Count > 0)
+            {
+                var imgsToRemove = existingCar.Car_Images
+                    .Where(i => dto.ImageIdsToRemove.Contains(i.Id))
+                    .ToList();
+                if (imgsToRemove.Count > 0)
+                    _context.Set<Car_Image>().RemoveRange(imgsToRemove);
+            }
+
+            Guid? lastAddedMainImageId = null;
+
+            if (dto.ImagesToAdd != null && dto.ImagesToAdd.Count > 0)
+            {
+                var uploadsFolder = Path.Combine(
+                    _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
+                    "uploads", "agencies", existingCar.AgencyId.ToString(), "cars", existingCar.Id.ToString());
+
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var newImages = new List<Car_Image>();
+
+                foreach (var img in dto.ImagesToAdd)
+                {
+                    if (img?.Image == null || img.Image.Length == 0) continue;
+
+                    var uniqueFileName = $"image_{Guid.NewGuid()}{Path.GetExtension(img.Image.FileName)}";
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fs = new FileStream(filePath, FileMode.Create))
                     {
-                        Id = Guid.NewGuid(),
-                        FileName = attachDto.FileName,
-                        FilePath = attachDto.FilePath,
+                        await img.Image.CopyToAsync(fs);
+                    }
+
+                    var urlPath = $"/uploads/agencies/{existingCar.AgencyId}/cars/{existingCar.Id}/{uniqueFileName}";
+                    var newId = Guid.NewGuid();
+
+                    newImages.Add(new Car_Image
+                    {
+                        Id = newId,
                         CarId = existingCar.Id,
-                        UploadedAt = DateTime.UtcNow
-                    };
-                    _context.Set<Car_Attachment>().Add(newAttach);
+                        Path = urlPath,
+                        IsMainImage = img.IsMain
+                    });
+
+                    if (img.IsMain) lastAddedMainImageId = newId;
+                }
+
+                if (newImages.Count > 0)
+                    await _context.Set<Car_Image>().AddRangeAsync(newImages);
+            }
+
+            // Main image resolution: priority to explicit MainImageId, then last added with IsMain=true
+            Guid? desiredMainId = dto.MainImageId ?? lastAddedMainImageId;
+
+            if (desiredMainId.HasValue)
+            {
+                // Clear all then set the desired one
+                foreach (var im in existingCar.Car_Images)
+                    im.IsMainImage = false;
+
+                // It may be one of the newly added images that are not tracked via existingCar.Car_Images yet
+                var existingMain = existingCar.Car_Images.FirstOrDefault(i => i.Id == desiredMainId.Value);
+                if (existingMain != null)
+                {
+                    existingMain.IsMainImage = true;
+                }
+                else
+                {
+                    // Mark in DB anyway
+                    var justAdded = await _context.Set<Car_Image>().FirstOrDefaultAsync(i => i.Id == desiredMainId.Value);
+                    if (justAdded != null)
+                        justAdded.IsMainImage = true;
+                }
+            }
+            else
+            {
+                // If multiple mains exist after adds, keep only the latest one as main
+                var mains = existingCar.Car_Images.Where(i => i.IsMainImage).ToList();
+                if (mains.Count > 1)
+                {
+                    foreach (var im in mains) im.IsMainImage = false;
+                    mains.Last().IsMainImage = true;
                 }
             }
 
@@ -615,9 +754,60 @@ namespace React_Rentify.Server.Controllers
 
             _logger.LogInformation("Updated car {CarId}", id);
 
+            // Return refreshed CarDto
+            var refreshed = await _context.Set<Car>()
+                .Include(c => c.Car_Model).ThenInclude(m => m.Manufacturer)
+                .Include(c => c.Car_Year)
+                .Include(c => c.Car_Attachments)
+                .Include(c => c.Car_Images)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            return Ok();
+            var dtoOut = new CarDto
+            {
+                Id = refreshed.Id,
+                AgencyId = refreshed.AgencyId,
+                Car_ModelId = refreshed.Car_ModelId,
+                Car_YearId = refreshed.Car_YearId,
+                LicensePlate = refreshed.LicensePlate,
+                Color = refreshed.Color,
+                IsAvailable = refreshed.IsAvailable,
+                Status = refreshed.Status,
+                DailyRate = refreshed.DailyRate,
+                HourlyRate = refreshed.HourlyRate,
+                DeviceSerialNumber = refreshed.DeviceSerialNumber,
+                IsTrackingActive = refreshed.IsTrackingActive,
+                Fields = new Car_Fields
+                {
+                    Manufacturer = refreshed.Car_Model?.Manufacturer?.Name,
+                    Model = refreshed.Car_Model?.Name,
+                    Year = refreshed.Car_Year?.YearValue ?? 0
+                },
+                CurrentKM = refreshed.CurrentKM,
+                LastKmUpdate = refreshed.LastKmUpdate,
+                Engine = refreshed.Engine_Type.ToString(),
+                Gear = refreshed.Gear_Type.ToString(),
+                AssuranceName = refreshed.AssuranceName,
+                AssuranceStartDate = refreshed.AssuranceStartDate,
+                AssuranceEndDate = refreshed.AssuranceEndDate,
+                TechnicalVisitStartDate = refreshed.TechnicalVisitStartDate,
+                TechnicalVisitEndDate = refreshed.TechnicalVisitEndDate,
+                Attachments = refreshed.Car_Attachments?.Select(a => new CarAttachmentDto
+                {
+                    Id = a.Id,
+                    FileName = a.FileName,
+                    FilePath = a.FilePath,
+                    UploadedAt = a.UploadedAt
+                }).ToList(),
+                Images = refreshed.Car_Images?.Select(i => new Car_Details_Image_DTO
+                {
+                    Path = i.Path,
+                    IsMainImage = i.IsMainImage
+                }).ToList()
+            };
+
+            return Ok(dtoOut);
         }
+
 
 
         /// <summary>
@@ -1015,10 +1205,16 @@ namespace React_Rentify.Server.Controllers
     {
         public Guid Id { get; set; }
         public Guid AgencyId { get; set; }
+
+        // Identity/typing
         public string Car_ModelId { get; set; }
         public int Car_YearId { get; set; }
+
+        // Basic
         public string LicensePlate { get; set; }
         public string Color { get; set; }
+
+        // Availability/pricing/tracking
         public bool IsAvailable { get; set; }
         public string Status { get; set; }
         public decimal DailyRate { get; set; }
@@ -1026,11 +1222,42 @@ namespace React_Rentify.Server.Controllers
         public string? DeviceSerialNumber { get; set; }
         public bool IsTrackingActive { get; set; }
 
-        /// <summary>
-        /// Optional: if provided, replaces the existing attachments.
-        /// </summary>
+        // Powertrain (aligning with CreateCarDto)
+        public Gear_type Gear_Type { get; set; }
+        public Engine_Type Engine_Type { get; set; }
+
+        // Odometer
+        public int? CurrentKM { get; set; }
+
+        // Legal docs (optional full update here even though you have dedicated endpoints)
+        public string? AssuranceName { get; set; }
+        public DateTime? AssuranceStartDate { get; set; }
+        public DateTime? AssuranceEndDate { get; set; }
+        public DateTime? TechnicalVisitStartDate { get; set; }
+        public DateTime? TechnicalVisitEndDate { get; set; }
+
+        // Attachments behavior:
+        // If true, existing attachments are wiped and replaced with the provided list.
+        // If false or null, provided attachments are appended.
+        public bool? AttachmentsReplace { get; set; }
         public List<CreateCarAttachmentDto>? Attachments { get; set; }
+        public List<Guid>? AttachmentIdsToRemove { get; set; }
+
+        // Images: add via files, remove by Id, and optionally set main
+        public List<UpdateCarImageCreateDto>? ImagesToAdd { get; set; }
+        public List<Guid>? ImageIdsToRemove { get; set; }
+
+        // If provided, the image with this Id (or the last added with IsMain=true) becomes the only main image
+        public Guid? MainImageId { get; set; }
     }
+
+    // For adding images during update
+    public class UpdateCarImageCreateDto
+    {
+        public IFormFile Image { get; set; }
+        public bool IsMain { get; set; }
+    }
+
 
     public class CarAttachmentDto
     {

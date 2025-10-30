@@ -111,41 +111,48 @@ namespace React_Rentify.Server.Controllers
                 "Searching blacklist entries with NationalId='{NationalId}', PassportId='{PassportId}', LicenseNumber='{LicenseNumber}'",
                 nationalId, passportId, licenseNumber);
 
-            IQueryable<Blacklist_Entry> query = _context.Set<Blacklist_Entry>()
-                .Include(e => e.ReportedByAgency);
-
-            if (!string.IsNullOrWhiteSpace(nationalId))
+            try
             {
-                query = query.Where(e => e.NationalId != null && e.NationalId.Contains(nationalId));
+                IQueryable<Blacklist_Entry> query = _context.Set<Blacklist_Entry>()
+                    .Include(e => e.ReportedByAgency);
+
+                if (!string.IsNullOrWhiteSpace(nationalId))
+                {
+                    query = query.Where(e => e.NationalId != null && e.NationalId.Contains(nationalId));
+                }
+
+                if (!string.IsNullOrWhiteSpace(passportId))
+                {
+                    query = query.Where(e => e.PassportId != null && e.PassportId.Contains(passportId));
+                }
+
+                if (!string.IsNullOrWhiteSpace(licenseNumber))
+                {
+                    query = query.Where(e => e.LicenseNumber != null && e.LicenseNumber.Contains(licenseNumber));
+                }
+
+                var results = await query.ToListAsync();
+
+                var dtoList = results.Select(e => new BlacklistEntryDto
+                {
+                    Id = e.Id,
+                    NationalId = e.NationalId,
+                    PassportId = e.PassportId,
+                    LicenseNumber = e.LicenseNumber,
+                    FullName = e.FullName,
+                    Reason = e.Reason,
+                    DateAdded = e.DateAdded,
+                    ReportedByAgencyId = e.ReportedByAgencyId,
+                    ReportedByAgencyName = e.ReportedByAgency != null ? e.ReportedByAgency.Name : null
+                }).ToList();
+
+                _logger.LogInformation("Search returned {Count} entries", dtoList.Count);
+                return Ok(dtoList);
             }
-
-            if (!string.IsNullOrWhiteSpace(passportId))
-            {
-                query = query.Where(e => e.PassportId != null && e.PassportId.Contains(passportId));
+            catch (Exception e)
+            { 
+                return BadRequest(e);
             }
-
-            if (!string.IsNullOrWhiteSpace(licenseNumber))
-            {
-                query = query.Where(e => e.LicenseNumber != null && e.LicenseNumber.Contains(licenseNumber));
-            }
-
-            var results = await query.ToListAsync();
-
-            var dtoList = results.Select(e => new BlacklistEntryDto
-            {
-                Id = e.Id,
-                NationalId = e.NationalId,
-                PassportId = e.PassportId,
-                LicenseNumber = e.LicenseNumber,
-                FullName = e.FullName,
-                Reason = e.Reason,
-                DateAdded = e.DateAdded,
-                ReportedByAgencyId = e.ReportedByAgencyId,
-                ReportedByAgencyName = e.ReportedByAgency != null ? e.ReportedByAgency.Name : null
-            }).ToList();
-
-            _logger.LogInformation("Search returned {Count} entries", dtoList.Count);
-            return Ok(dtoList);
         }
 
         /// <summary>

@@ -165,6 +165,7 @@ namespace React_Rentify.Server.Data
         public DbSet<Car_Attachment> Car_Attachments { get; set; }
         public DbSet<Agency_Attachment> Agency_Attachments { get; set; }
         public DbSet<Customer_Attachment> Customer_Attachments { get; set; }
+        public DbSet<Blacklist_Entry> Blacklist_Entries { get; set; }
 
 
 

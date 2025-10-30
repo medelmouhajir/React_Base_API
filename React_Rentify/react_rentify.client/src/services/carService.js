@@ -57,8 +57,6 @@ export const carService = {
 
     async create(carData) {
         try {
-            console.warn(carData);
-
             const formData = new FormData();
 
             // Add car data as JSON string or individual fields
@@ -110,6 +108,7 @@ export const carService = {
     async createWithImages(carData, images, mainImageIndex = 0) {
         try {
             console.warn(carData);
+            console.warn(images);
             const formData = new FormData();
 
             // Add car data as JSON string or individual fields
@@ -175,6 +174,117 @@ export const carService = {
             console.error(`❌ Error updating car with ID ${id}:`, error);
             throw error;
         }
+    },
+
+    async updateWithImages(
+        id,
+        carData,
+        images = [],
+        mainImageIndex = null,
+        opts = {}
+    ) 
+    {
+        const {
+            imageIdsToRemove = [],
+            attachmentsReplace = null,
+            attachments = [],
+            attachmentIdsToRemove = [],
+            mainImageId = null
+        } = opts;
+
+        const fd = new FormData();
+
+        // API compares URL id and DTO.Id ⇒ send Id explicitly
+        fd.append('Id', id);
+
+        // Required identity & typing
+        fd.append('AgencyId', carData.AgencyId);
+        fd.append('Car_ModelId', carData.Car_ModelId);
+        fd.append('Car_YearId', carData.Car_YearId);
+
+        // Basic
+        if (carData.LicensePlate != null) fd.append('LicensePlate', String(carData.LicensePlate).trim());
+        if (carData.Color != null) fd.append('Color', String(carData.Color));
+
+        // Availability / pricing / tracking
+        if (typeof carData.IsAvailable === 'boolean') fd.append('IsAvailable', String(carData.IsAvailable));
+        if (carData.Status != null) fd.append('Status', String(carData.Status));
+        if (carData.DailyRate != null) fd.append('DailyRate', String(carData.DailyRate));
+        if (carData.HourlyRate != null) fd.append('HourlyRate', String(carData.HourlyRate));
+        if (carData.DeviceSerialNumber != null) fd.append('DeviceSerialNumber', String(carData.DeviceSerialNumber).trim());
+        if (typeof carData.IsTrackingActive === 'boolean') fd.append('IsTrackingActive', String(carData.IsTrackingActive));
+
+        // Powertrain
+        if (carData.Gear_Type != null) fd.append('Gear_Type', String(carData.Gear_Type));
+        if (carData.Engine_Type != null) fd.append('Engine_Type', String(carData.Engine_Type));
+
+        // Odometer
+        if (carData.CurrentKM != null) fd.append('CurrentKM', String(carData.CurrentKM));
+
+        // Legal docs (dates as ISO if Date objects)
+        if (carData.AssuranceName) fd.append('AssuranceName', carData.AssuranceName);
+        if (carData.AssuranceStartDate) {
+            const v = carData.AssuranceStartDate instanceof Date
+                ? carData.AssuranceStartDate.toISOString()
+                : String(carData.AssuranceStartDate);
+            fd.append('AssuranceStartDate', v);
+        }
+        if (carData.AssuranceEndDate) {
+            const v = carData.AssuranceEndDate instanceof Date
+                ? carData.AssuranceEndDate.toISOString()
+                : String(carData.AssuranceEndDate);
+            fd.append('AssuranceEndDate', v);
+        }
+        if (carData.TechnicalVisitStartDate) {
+            const v = carData.TechnicalVisitStartDate instanceof Date
+                ? carData.TechnicalVisitStartDate.toISOString()
+                : String(carData.TechnicalVisitStartDate);
+            fd.append('TechnicalVisitStartDate', v);
+        }
+        if (carData.TechnicalVisitEndDate) {
+            const v = carData.TechnicalVisitEndDate instanceof Date
+                ? carData.TechnicalVisitEndDate.toISOString()
+                : String(carData.TechnicalVisitEndDate);
+            fd.append('TechnicalVisitEndDate', v);
+        }
+
+        // Attachments
+        if (attachmentsReplace !== null) {
+            fd.append('AttachmentsReplace', String(attachmentsReplace));
+        }
+        attachments.forEach((att, i) => {
+            if (!att) return;
+            if (att.FileName != null) fd.append(`Attachments[${i}].FileName`, String(att.FileName));
+            if (att.FilePath != null) fd.append(`Attachments[${i}].FilePath`, String(att.FilePath));
+        });
+        attachmentIdsToRemove.forEach((attId, i) => {
+            fd.append(`AttachmentIdsToRemove[${i}]`, attId);
+        });
+
+        // Images to add (files)
+        images.forEach((file, idx) => {
+            if (!file) return;
+            fd.append(`ImagesToAdd[${idx}].Image`, file);
+            const isMain = mainImageIndex != null && idx === Number(mainImageIndex);
+            fd.append(`ImagesToAdd[${idx}].IsMain`, String(isMain));
+        });
+
+        // Existing image deletes
+        imageIdsToRemove.forEach((imgId, i) => {
+            fd.append(`ImageIdsToRemove[${i}]`, imgId);
+        });
+
+        // Explicit main image selection by Id (optional)
+        if (mainImageId) {
+            fd.append('MainImageId', mainImageId);
+        }
+
+        console.warn(fd);
+
+        const res = await apiClient.put(`/cars/${id}`, fd, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return res.data;
     },
 
     async delete(id) {

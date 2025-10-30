@@ -338,51 +338,33 @@ const EditCar = () => {
         try {
             // Prepare car data payload
             const carPayload = {
-                id: formData.id,
                 AgencyId: agencyId,
                 Car_ModelId: formData.Car_ModelId,
                 Car_YearId: parseInt(formData.Car_YearId, 10),
-                LicensePlate: formData.LicensePlate,
-                Color: formData.Color,
-                IsAvailable: formData.IsAvailable,
-                Status: formData.Status,
+                LicensePlate: formData.LicensePlate.trim(),
+                Color: formData.Color.trim(),
                 DailyRate: parseFloat(formData.DailyRate),
-                HourlyRate: formData.HourlyRate ? parseFloat(formData.HourlyRate) : null,
-                DeviceSerialNumber: formData.DeviceSerialNumber,
-                IsTrackingActive: formData.IsTrackingActive,
-                Gear_Type: parseInt(formData.Gear_Type),
-                Engine_Type: parseInt(formData.Engine_Type),
-                CurrentKM: parseInt(formData.CurrentKM),
-                AssuranceName: formData.AssuranceName,
+                Gear_Type: parseInt(formData.Gear_Type, 10),
+                Engine_Type: parseInt(formData.Engine_Type, 10),
+                CurrentKM: parseInt(formData.CurrentKM, 10) || 0,
+                AssuranceName: formData.AssuranceName?.trim() || null,
                 AssuranceStartDate: formData.AssuranceStartDate || null,
                 AssuranceEndDate: formData.AssuranceEndDate || null,
                 TechnicalVisitStartDate: formData.TechnicalVisitStartDate || null,
                 TechnicalVisitEndDate: formData.TechnicalVisitEndDate || null,
             };
 
-            // Update car data
-            await carService.update(id, carPayload);
 
-            // Upload new images if any
+            let response;
             if (selectedImages.length > 0) {
-                const imageFormData = new FormData();
-                selectedImages.forEach(image => {
-                    imageFormData.append('images', image);
-                });
-                imageFormData.append('carId', id);
-
-                await carAttachmentService.upload(imageFormData);
+                response = await carService.updateWithImages(formData.id,carPayload, selectedImages, mainImageIndex);
+            } else {
+                response = await carService.update({ ...carPayload, Images: null });
             }
 
-            // Update main image if needed
-            if (existingImages.length > 0 && mainImageIndex >= 0) {
-                const mainImage = existingImages[mainImageIndex];
-                if (mainImage && !mainImage.isMainImage) {
-                    await carAttachmentService.setMainImage(mainImage.id);
-                }
-            }
+            const carId = response.id;
+            navigate(`/cars/${carId}`);
 
-            navigate('/cars');
         } catch (err) {
             console.error('❌ Error updating car:', err);
             setError(t('car.edit.error') || 'Failed to update car');
@@ -934,8 +916,9 @@ const EditCar = () => {
                             </button>
                         ) : (
                             <button
-                                type="submit"
+                                type="button"
                                 className="btn btn-primary"
+                                onClick={handleSubmit}
                                 disabled={isSubmitting}
                             >
                                 {isSubmitting ? (

@@ -23,9 +23,8 @@ const ModernRoutePanel = ({
     onPlaybackStateChange
 }) => {
     const { t } = useTranslation();
-    const [activeTab, setActiveTab] = useState('overview'); // overview, timeline, playback, analytics
+    const [activeTab, setActiveTab] = useState('timeline'); // overview, timeline, playback, analytics
     const [currentTimeIndex, setCurrentTimeIndex] = useState(0);
-    const [showSpeedChart, setShowSpeedChart] = useState(false);
     const [selectedMetric, setSelectedMetric] = useState('speed'); // speed, distance, stops
 
     // Calculate distance between two points

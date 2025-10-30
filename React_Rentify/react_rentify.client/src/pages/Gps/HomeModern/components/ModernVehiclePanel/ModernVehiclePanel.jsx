@@ -41,7 +41,8 @@ const ModernVehiclePanel = ({
                 vehicle.plateNumber?.toLowerCase().includes(query) ||
                 vehicle.deviceSerialNumber?.toLowerCase().includes(query) ||
                 vehicle.driverName?.toLowerCase().includes(query) ||
-                vehicle.lastLocation?.address?.toLowerCase().includes(query)
+                vehicle.fields?.model?.toLowerCase().includes(query)||
+                vehicle.fields?.manufacturer?.toLowerCase().includes(query)
             );
         }
 

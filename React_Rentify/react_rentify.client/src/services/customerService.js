@@ -69,10 +69,6 @@ export const customerService = {
 
     async update(id, customerData) {
         try {
-            if (id !== customerData.id) {
-                throw new Error("The ID in the URL does not match the customerData.id");
-            }
-
             const response = await apiClient.put(`/customers/${id}`, customerData);
             return response.data;
         } catch (error) {
